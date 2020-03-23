@@ -37,6 +37,10 @@ return [
         'order' => [
             'class' => 'backend\modules\order\Module',
         ],
+        /** ------活动模块 ------ **/
+        'market' => [
+            'class' => 'backend\modules\market\Module',
+        ],
 
         /** ------商城設置 ------ **/
         'setting' => [
