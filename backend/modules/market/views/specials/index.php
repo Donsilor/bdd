@@ -29,9 +29,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     'columns' => [
                         [
                             'class' => 'yii\grid\SerialColumn',
-                            'visible' => true, // 不显示#
+                            'visible' => false, // 不显示#
                         ],
-                        'title',
+                        'id',
                         [
                             'label' => '类型',
                             'attribute' => 'type',
@@ -46,39 +46,21 @@ $this->params['breadcrumbs'][] = $this->title;
                             },
                         ],
                         [
-                            'label' => '可领取时间',
+                            'label' => '时间',
                             'format' => 'raw',
                             'value' => function ($model) {
                                 $html = '';
                                 $html .= '开始时间：' . Yii::$app->formatter->asDatetime($model->start_time) . "<br>";
                                 $html .= '结束时间：' . Yii::$app->formatter->asDatetime($model->end_time) . "<br>";
-                                $html .= '有效状态：' . Html::timeStatus($model->get_start_time, $model->end_time);
+                                $html .= '有效状态：' . Html::timeStatus($model->start_time, $model->end_time);
 
                                 return $html;
                             },
                         ],
                         [
-                            'label' => '生效时间',
-                            'format' => 'raw',
-                            'value' => function ($model) {
-                                if ($model->term_of_validity_type != \common\enums\StatusEnum::ENABLED) {
-                                    $html = '';
-                                    $html .= '开始时间：' . Yii::$app->formatter->asDatetime($model->start_time) . "<br>";
-                                    $html .= '结束时间：' . Yii::$app->formatter->asDatetime($model->end_time) . "<br>";
-                                    $html .= '有效状态：' . Html::timeStatus($model->start_time, $model->end_time);
-
-                                    return $html;
-                                } else {
-                                    $day = $model->fixed_term;
-
-                                    return "领取之日起{$day}天内有效";
-                                }
-                            },
-                        ],
-                        [
                             'header' => "操作",
                             'class' => 'yii\grid\ActionColumn',
-                            'template' => '{coupon} {edit} {status} {delete}',
+                            'template' => '{coupon} {edit} {status}',
                             'buttons' => [
                                 'coupon' => function ($url, $model, $key) {
                                     return Html::linkButton([
