@@ -126,4 +126,28 @@ class TypeService extends Service
 
         return $model['type_name'];
     }
+
+    public static function getTypeList($language=null)
+    {
+        if(empty($language)) {
+            $language = Yii::$app->params['language'];
+        }
+        $query = Type::find()->alias('a');
+        $model = $query->leftJoin('{{%goods_type}} b', 'b.pid = a.id')
+        ->leftJoin('{{%goods_type_lang}} c', 'c.master_id = a.id and c.language = "'.$language.'"')
+        ->andWhere(['a.status'=>1])
+        ->andWhere(['b.id'=>null])
+        ->select([ 'a.id','c.type_name'])
+        ->orderBy('a.pid asc,a.sort asc,a.created_at asc')
+        ->asArray()
+        ->all();
+
+        $data = [];
+
+        foreach ($model as $item) {
+            $data[$item['id']] = $item['type_name'];
+        }
+
+        return $data;
+    }
 }

@@ -16,9 +16,9 @@ use Yii;
  * @property int $get_count 已领取数量
  * @property int $max_fetch 每人最大领取个数 0无限制
  * @property string $at_least 满多少元使用 0代表无限制
- * @property array $area_attach
- * @property array $goods_attach
- * @property array $goods_type_attach
+ * @property array $area_attach 活动地区
+ * @property array $goods_attach 活动款号
+ * @property array $goods_type_attach 产品线
  * @property int $status 状态[-1:删除;0:禁用;1启用]
  * @property int $created_at 创建时间
  * @property int $updated_at 修改时间
@@ -60,9 +60,9 @@ class MarketCoupon extends \common\models\base\BaseModel
             'get_count' => '已领取数量',
             'max_fetch' => '每人最大领取个数 0无限制',
             'at_least' => '满多少元使用 0代表无限制',
-            'area_attach' => 'Area Attach',
-            'goods_attach' => 'Goods Attach',
-            'goods_type_attach' => 'Goods Type Attach',
+            'area_attach' => '活动地区',
+            'goods_attach' => '活动款号',
+            'goods_type_attach' => '产品线',
             'status' => '状态[-1:删除;0:禁用;1启用]',
             'created_at' => '创建时间',
             'updated_at' => '修改时间',

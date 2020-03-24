@@ -10,6 +10,7 @@ use common\enums\LanguageEnum;
 use common\enums\StatusEnum;
 use common\models\base\SearchModel;
 use common\models\market\MarketCoupon;
+use services\goods\TypeService;
 use yii\base\Exception;
 
 /**
@@ -57,7 +58,7 @@ class CouponController extends BaseController
      *
      * @return mixed
      */
-    public function actionEdit()
+    public function actionEditt()
     {
         $id = \Yii::$app->request->get('id', null);
         $returnUrl = \Yii::$app->request->get('returnUrl',['index']);

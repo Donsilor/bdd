@@ -28,8 +28,20 @@ $this->params['breadcrumbs'][] = $this->title;
             ]); ?>
             <div class="box-body">
                 <div class="col-lg-12">
-                    <?= $form->field($model, 'type')->radioList(PreferentialTypeEnum::getMap()); ?>
-                    <?= $form->field($model, 'status')->radioList(StatusEnum::getMap()); ?>
+                    <div class="row form-group">
+                        <div class="col-sm-2 text-right">
+                            <label class="control-label">优惠券类型</label>
+                        </div>
+                        <div class="col-sm-10">
+                            <?= PreferentialTypeEnum::getValue($model->type); ?>
+                        </div>
+                    </div>
+                    <?= $form->field($model, 'goods_type_attach')->checkboxList(\services\goods\TypeService::getTypeList()); ?>
+                    <?= $form->field($model, 'goods_attach')->textarea(['rows'=>3]); ?>
+                    <?= $form->field($model, 'area_attach')->checkboxList(AreaEnum::getMap()); ?>
+                    <?= $form->field($model, 'count')->textInput(); ?>
+                    <?= $form->field($model, 'money')->textInput(); ?>
+                    <?= $form->field($model, 'discount')->textInput(); ?>
                 </div>
             </div>
             <div class="box-footer text-center">
