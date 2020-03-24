@@ -50,9 +50,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             'format' => 'raw',
                             'value' => function ($model) {
                                 $html = '';
-                                $html .= '开始时间：' . Yii::$app->formatter->asDatetime($model->get_start_time) . "<br>";
-                                $html .= '结束时间：' . Yii::$app->formatter->asDatetime($model->get_end_time) . "<br>";
-                                $html .= '有效状态：' . Html::timeStatus($model->get_start_time, $model->get_end_time);
+                                $html .= '开始时间：' . Yii::$app->formatter->asDatetime($model->start_time) . "<br>";
+                                $html .= '结束时间：' . Yii::$app->formatter->asDatetime($model->end_time) . "<br>";
+                                $html .= '有效状态：' . Html::timeStatus($model->get_start_time, $model->end_time);
 
                                 return $html;
                             },
