@@ -4,7 +4,7 @@ use common\helpers\Html;
 use yii\grid\GridView;
 use common\enums\PreferentialTypeEnum;
 
-$this->title = '活动专题管理';
+$this->title = '优惠管理';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -46,18 +46,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             },
                         ],
                         [
-                            'label' => '时间',
-                            'format' => 'raw',
-                            'value' => function ($model) {
-                                $html = '';
-                                $html .= '开始时间：' . Yii::$app->formatter->asDatetime($model->start_time) . "<br>";
-                                $html .= '结束时间：' . Yii::$app->formatter->asDatetime($model->end_time) . "<br>";
-                                $html .= '有效状态：' . Html::timeStatus($model->start_time, $model->end_time);
-
-                                return $html;
-                            },
-                        ],
-                        [
                             'header' => "操作",
                             'class' => 'yii\grid\ActionColumn',
                             'template' => '{coupon} {edit} {status}',
@@ -66,16 +54,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return Html::linkButton([
                                         'coupon/index',
                                         'specials_id' => $model['id'],
-                                    ], '优惠管理');
-                                },
-                                'status' => function ($url, $model, $key) {
-                                    return Html::status($model->status);
+                                    ], '活动产品');
                                 },
                                 'edit' => function ($url, $model, $key) {
                                     return Html::edit(['edit', 'id' => $model['id']]);
-                                },
-                                'delete' => function ($url, $model, $key) {
-                                    return Html::delete(['delete', 'id' => $model->id]);
                                 },
                             ],
                         ],

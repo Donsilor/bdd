@@ -141,34 +141,5 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <script>
-    $("input[name='CouponTypeForm[range_type]']").click(function () {
-        var val = $(this).val();
-        if (parseInt(val) === 1) {
-            $('#productIds').addClass('hide');
-        } else {
-            $('#productIds').removeClass('hide');
-        }
-    });
 
-    $("input[name='CouponTypeForm[term_of_validity_type]']").click(function () {
-        var val = $(this).val();
-        if (parseInt(val) === 1) {
-            $('#time').addClass('hide');
-            $('#fixed_term').removeClass('hide');
-        } else {
-            $('#time').removeClass('hide');
-            $('#fixed_term').addClass('hide');
-        }
-    });
-
-    $("input[name='CouponTypeForm[type]']").click(function () {
-        var val = $(this).val();
-        if (parseInt(val) === 2) {
-            $('#money').addClass('hide');
-            $('#discount').removeClass('hide');
-        } else {
-            $('#money').removeClass('hide');
-            $('#discount').addClass('hide');
-        }
-    })
 </script>
