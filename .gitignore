@@ -12,3 +12,4 @@
 /web/api/favicon.ico
 *-local.php
 *.htaccess
+.htaccess
