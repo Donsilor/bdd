@@ -129,6 +129,12 @@ class TypeService extends Service
 
     public static function getTypeList($language=null)
     {
+        static $data = [];
+
+        if(!empty($data)) {
+            return $data;
+        }
+
         if(empty($language)) {
             $language = Yii::$app->params['language'];
         }
@@ -141,8 +147,6 @@ class TypeService extends Service
         ->orderBy('a.pid asc,a.sort asc,a.created_at asc')
         ->asArray()
         ->all();
-
-        $data = [];
 
         foreach ($model as $item) {
             $data[$item['id']] = $item['type_name'];

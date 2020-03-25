@@ -40,6 +40,9 @@ class SpecialsController extends BaseController
                 'id' => SORT_DESC,
             ],
             'pageSize' => $this->pageSize,
+            'relations' => [
+                'lang' => ['title'],
+            ]
         ]);
 
         $dataProvider = $searchModel->search(\Yii::$app->request->queryParams);

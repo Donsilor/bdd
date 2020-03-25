@@ -48,12 +48,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'header' => "操作",
                             'class' => 'yii\grid\ActionColumn',
-                            'template' => '{coupon} {edit} {status}',
+                            'template' => '{goods} {edit} {status}',
                             'buttons' => [
-                                'coupon' => function ($url, $model, $key) {
+                                'goods' => function ($url, $model, $key) {
                                     return Html::linkButton([
-                                        'coupon/index',
-                                        'specials_id' => $model['id'],
+                                        !empty($model->goods_attach)?'goods/index':'goods-type/index',
+                                        'specials_id' => $model['specials_id'],
+                                        'coupon_id' => $model['id'],
                                     ], '活动产品');
                                 },
                                 'edit' => function ($url, $model, $key) {

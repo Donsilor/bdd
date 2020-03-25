@@ -9,10 +9,10 @@ namespace common\enums;
  * @package addons\TinyShop\common\enums
  * @author jianyan74 <751393839@qq.com>
  */
-class PreferentialTypeEnum extends BaseEnum
+class ProductRangeEnum extends BaseEnum
 {
-    const MONEY = 1;
-    const DISCOUNT = 2;
+    const GOODS = 1;
+    const GOODSTYPE = 2;
 
     /**
      * @return array
@@ -20,8 +20,8 @@ class PreferentialTypeEnum extends BaseEnum
     public static function getMap(): array
     {
         return [
-            self::MONEY => '优惠券',
-            self::DISCOUNT => '折扣',
+            self::GOODS => '特定商品',
+            self::GOODSTYPE => '产品线',
         ];
     }
 }

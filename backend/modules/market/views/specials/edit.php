@@ -7,6 +7,7 @@ use common\enums\StatusEnum;
 use common\helpers\StringHelper;
 use kartik\datetime\DateTimePicker;
 use common\enums\PreferentialTypeEnum;
+use common\enums\ProductRangeEnum;
 use common\helpers\Html;
 use common\enums\AreaEnum;
 
@@ -79,6 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ]); ?>
                         </div>
                     </div>
+                    <?= $form->field($model, 'area_attach')->checkboxList(AreaEnum::getMap()); ?>
                     <div class="row">
                         <div class="col-sm-2 text-right">
                             <label class="control-label">活动图标</label>
@@ -128,6 +130,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?php } ?>
                     </div>
                     <?= $form->field($model, 'type')->radioList(PreferentialTypeEnum::getMap()); ?>
+                    <?= $form->field($model, 'product_range')->radioList(ProductRangeEnum::getMap()); ?>
                     <?= $form->field($model, 'status')->radioList(StatusEnum::getMap()); ?>
                 </div>
             </div>

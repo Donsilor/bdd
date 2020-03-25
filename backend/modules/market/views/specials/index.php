@@ -6,6 +6,7 @@ use common\enums\PreferentialTypeEnum;
 
 $this->title = '活动专题管理';
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 
 <div class="row">
@@ -18,6 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
             <div class="box-body table-responsive">
+
                 <?= GridView::widget([
                     'dataProvider' => $dataProvider,
                     'filterModel' => $searchModel,
@@ -33,17 +35,19 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         'id',
                         [
-                            'label' => '类型',
-                            'attribute' => 'type',
-                            'format' => 'raw',
-                            'filter' => Html::activeDropDownList($searchModel, 'type', PreferentialTypeEnum::getMap(), [
-                                    'prompt' => '全部',
-                                    'class' => 'form-control'
-                                ]
-                            ),
-                            'value' => function ($model) {
-                                return "<span class='label label-primary'>" . PreferentialTypeEnum::getValue($model->type) . "</span>";
-                            },
+                            'attribute' => 'lang.title',
+                            'filter' => Html::activeTextInput($searchModel, 'lang.title', [
+                                'class' => 'form-control',
+                            ]),
+//                            'format' => 'raw',
+//                            'filter' => Html::activeDropDownList($searchModel, 'type', PreferentialTypeEnum::getMap(), [
+//                                    'prompt' => '全部',
+//                                    'class' => 'form-control'
+//                                ]
+//                            ),
+//                            'value' => function ($model) {
+//                                return "<span class='label label-primary'>" . PreferentialTypeEnum::getValue($model->type) . "</span>";
+//                            },
                         ],
                         [
                             'label' => '时间',
@@ -58,15 +62,96 @@ $this->params['breadcrumbs'][] = $this->title;
                             },
                         ],
                         [
+                            'attribute' => 'area_attach',
+                            'value' => function($model) {
+                                if(empty($model->area_attach)) {
+                                    return '';
+                                }
+
+                                $value = [];
+                                foreach ($model->area_attach as $areaId) {
+                                    $value[] = \common\enums\AreaEnum::getValue($areaId);
+                                }
+                                return implode('/', $value);
+                            }
+                        ],
+                        [
+                            'label' => '活动类型',
+                            'attribute' => 'type',
+                            'format' => 'raw',
+                            'filter' => Html::activeDropDownList($searchModel, 'type', PreferentialTypeEnum::getMap(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control'
+                                ]
+                            ),
+                            'value' => function ($model) {
+                                return "<span class='label label-primary'>" . PreferentialTypeEnum::getValue($model->type) . "</span>";
+                            },
+                        ],
+                        [
+                            'label' => '活动产品线',
+                            'value' => function($model) {
+                                if($model->product_range==1) {
+                                    return '特定产品';
+                                }
+
+                                $value = [];
+                                foreach ($model->coupons as $conpon) {
+                                    $value = array_merge($value, $conpon->goods_type_attach);
+                                }
+
+                                //产品线列表
+                                $typeList = \services\goods\TypeService::getTypeList();
+
+                                $html = [];
+                                foreach ($value as $item) {
+                                    $html[$item] = $typeList[$item];
+                                }
+
+                                return implode('/', $html);
+                            }
+                        ],
+                        [
+                            'label' => '优惠券数量',
+                            'value' => function($model) {
+                                $value = 0;
+                                foreach ($model->coupons as $conpon) {
+                                    $value += $conpon->count;
+                                }
+                                return $value;
+                            }
+                        ],
+                        [
+                            'label' => '活动产品数量',
+                        ],
+                        [
+                            'label' => '添加时间',
+                            'attribute' => 'created_at',
+                            'value' => function ($model) {
+                                return Yii::$app->formatter->asDatetime($model->created_at);
+                            },
+                            'filter' => false,
+                        ],
+                        [
+                            'label' => '添加人',
+                            'attribute' => 'user.username',
+                        ],
+                        [
                             'header' => "操作",
                             'class' => 'yii\grid\ActionColumn',
-                            'template' => '{coupon} {edit} {status}',
+                            'template' => '{goods} {coupon} {edit} {status}',
                             'buttons' => [
+                                'goods' => function ($url, $model, $key) {
+                                    return Html::linkButton([
+                                        $model->product_range==1?'goods/index':'goods-type/index',
+                                        'specials_id' => $model['id'],
+                                    ], '活动商品');
+                                },
                                 'coupon' => function ($url, $model, $key) {
                                     return Html::linkButton([
                                         'coupon/index',
                                         'specials_id' => $model['id'],
-                                    ], '优惠管理');
+                                    ], '折扣设置');
                                 },
                                 'status' => function ($url, $model, $key) {
                                     return Html::status($model->status);
