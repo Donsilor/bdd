@@ -11,6 +11,7 @@ use common\enums\StatusEnum;
 use common\models\base\SearchModel;
 use common\models\market\MarketCoupon;
 use services\goods\TypeService;
+use services\market\CouponService;
 use yii\base\Exception;
 
 /**
@@ -58,42 +59,23 @@ class CouponController extends BaseController
      *
      * @return mixed
      */
-    public function actionEditt()
+    public function actionEdit()
     {
         $id = \Yii::$app->request->get('id', null);
         $returnUrl = \Yii::$app->request->get('returnUrl',['index']);
         $model = $this->findModel($id);
         if (\Yii::$app->request->isPost) {
             $post = \Yii::$app->request->post();
-            $lang = \Yii::$app->request->post('MarketSpecialsLang');
-            $area = \Yii::$app->request->post('MarketSpecialsArea');
 
             $trans = \Yii::$app->db->beginTransaction();
 
             try {
                 $model->load($post);
-                if(false === $model->save()){
+                if(false === $model->save()) {
                     throw new Exception($this->getError($model));
                 }
 
-                //保存语言
-                foreach (LanguageEnum::getKeys() as $key) {
-                    $langModel = $model->getLangOne($key);
-
-                    $langModel->setAttributes($lang[$key]);
-                    if(false === $langModel->save()){
-                        throw new Exception($this->getError($langModel));
-                    }
-                }
-
-                //保存地区
-                foreach (AreaEnum::getKeys() as $key) {
-                    $AreaModel = $model->getAreaOne($key);
-                    $AreaModel->setAttributes($area[$key]);
-                    if(false === $AreaModel->save()){
-                        throw new Exception($this->getError($AreaModel));
-                    }
-                }
+                CouponService::generatedData($model);
 
                 $trans->commit();
             } catch (\Exception $exception) {
