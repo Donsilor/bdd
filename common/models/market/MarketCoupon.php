@@ -53,7 +53,8 @@ class MarketCoupon extends \common\models\base\BaseModel
         return [
             [['specials_id','money', 'at_least', 'type', 'discount', 'count', 'get_count', 'max_fetch', 'status', 'created_at', 'updated_at'], 'integer'],
             [['area_attach', 'goods_attach', 'goods_type_attach'], 'safe'],
-            [['area_attach', 'count', 'at_least'], 'required'],
+            [['area_attach', 'count'], 'required'],
+            [['at_least'], 'required', 'on'=>['edit-1-1', 'edit-2-1']],
             [['money'], 'required', 'on'=>['edit-1-1', 'edit-2-1']],
             [['discount'], 'required', 'on'=>['edit-1-2', 'edit-2-2']],
             [['goods_attach'], 'required', 'on'=>['edit-1-1', 'edit-1-2']],

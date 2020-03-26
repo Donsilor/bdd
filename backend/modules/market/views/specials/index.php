@@ -3,6 +3,8 @@
 use common\helpers\Html;
 use yii\grid\GridView;
 use common\enums\PreferentialTypeEnum;
+use common\enums\AreaEnum;
+use services\goods\TypeService;
 
 $this->title = '活动专题管理';
 $this->params['breadcrumbs'][] = $this->title;
@@ -39,15 +41,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             'filter' => Html::activeTextInput($searchModel, 'lang.title', [
                                 'class' => 'form-control',
                             ]),
-//                            'format' => 'raw',
-//                            'filter' => Html::activeDropDownList($searchModel, 'type', PreferentialTypeEnum::getMap(), [
-//                                    'prompt' => '全部',
-//                                    'class' => 'form-control'
-//                                ]
-//                            ),
-//                            'value' => function ($model) {
-//                                return "<span class='label label-primary'>" . PreferentialTypeEnum::getValue($model->type) . "</span>";
-//                            },
+                            'format' => 'raw',
+                            'value' => function ($model) {
+                                return Html::a($model->lang->title, [
+                                    'edit',
+                                    'id' => $model['id'],
+                                ], ['style'=>"text-decoration:underline;color:#3c8dbc"]);
+                            },
                         ],
                         [
                             'label' => '时间',
@@ -64,15 +64,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'attribute' => 'area_attach',
                             'value' => function($model) {
-                                if(empty($model->area_attach)) {
-                                    return '';
+                                $value = [];
+                                foreach ($model->coupons as $conpon) {
+                                    $value = array_merge($value, $conpon->area_attach);
                                 }
 
-                                $value = [];
-                                foreach ($model->area_attach as $areaId) {
-                                    $value[] = \common\enums\AreaEnum::getValue($areaId);
+                                $html = [];
+                                foreach (AreaEnum::getMap() as $key => $item) {
+                                    if(in_array($key, $value))
+                                        $html[] = $item;
                                 }
-                                return implode('/', $value);
+
+                                return implode('/', $html);
                             },
                             'filter' => false,
                         ],
@@ -102,11 +105,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 }
 
                                 //产品线列表
-                                $typeList = \services\goods\TypeService::getTypeList();
+                                $typeList = TypeService::getTypeList();
 
                                 $html = [];
-                                foreach ($value as $item) {
-                                    $html[$item] = $typeList[$item];
+                                foreach ($typeList as $key => $item) {
+                                    if(in_array($key, $value))
+                                        $html[] = $item;
                                 }
 
                                 return implode('/', $html);
@@ -140,7 +144,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'header' => "操作",
                             'class' => 'yii\grid\ActionColumn',
-                            'template' => '{goods} {coupon} {edit} {status}',
+                            'template' => '{goods} {coupon} {status}',
                             'buttons' => [
                                 'goods' => function ($url, $model, $key) {
                                     return Html::linkButton([
@@ -157,9 +161,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'status' => function ($url, $model, $key) {
                                     return Html::status($model->status);
                                 },
-                                'edit' => function ($url, $model, $key) {
-                                    return Html::edit(['edit', 'id' => $model['id']]);
-                                },
+//                                'edit' => function ($url, $model, $key) {
+//                                    return Html::edit(['edit', 'id' => $model['id']]);
+//                                },
                                 'delete' => function ($url, $model, $key) {
                                     return Html::delete(['delete', 'id' => $model->id]);
                                 },

@@ -14,7 +14,6 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="box-header">
                 <h3 class="box-title"><?= $this->title; ?></h3>
                 <div class="box-tools">
-                    <?= Html::create(['edit']) ?>
                 </div>
             </div>
             <div class="box-body table-responsive">

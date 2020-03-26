@@ -80,27 +80,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             ]); ?>
                         </div>
                     </div>
-                    <?= $form->field($model, 'area_attach')->checkboxList(AreaEnum::getMap()); ?>
                     <?= $form->field($model, "banner_image")->widget(common\widgets\webuploader\Files::class, [
                         'config' => [
                             'pick' => [
                                 'multiple' => true,
-                            ],
-                            /* 'formData' => [
-                                    'drive' => 'oss',// 默认本地 支持 qiniu/oss 上传
-                                    'thumb' => [
-                                            [
-                                                    'width' => 800,
-                                                    'height' => 800,
-                                            ]
-                                    ]
-                            ], */
-                        ]
-                    ]); ?>
-                    <?= $form->field($model, "label_image")->widget(common\widgets\webuploader\Files::class, [
-                        'config' => [
-                            'pick' => [
-                                'multiple' => false,
                             ],
                             /* 'formData' => [
                                     'drive' => 'oss',// 默认本地 支持 qiniu/oss 上传

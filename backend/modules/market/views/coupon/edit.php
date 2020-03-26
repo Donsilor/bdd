@@ -38,14 +38,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                     <?php if($specials->product_range==1) { ?>
                         <?php $model->goods_attach = empty($model->goods_attach)?'':implode(',', $model->goods_attach);  ?>
-                        <?= $form->field($model, 'goods_attach')->textarea(['rows'=>3]); ?>
+                        <?= $form->field($model, 'goods_attach')->textarea(['rows'=>3])->hint(' 0代表无限制'); ?>
                     <?php } else { ?>
                         <?= $form->field($model, 'goods_type_attach')->checkboxList(\services\goods\TypeService::getTypeList()); ?>
                     <?php } ?>
                     <?= $form->field($model, 'area_attach')->checkboxList(AreaEnum::getMap()); ?>
                     <?= $form->field($model, 'count')->textInput(); ?>
-                    <?= $form->field($model, 'at_least')->textInput()->hint(' 0代表无限制'); ?>
                     <div id="money" class="<?= $specials->type == PreferentialTypeEnum::DISCOUNT ? 'hide' : ''; ?>">
+                        <?= $form->field($model, 'at_least')->textInput()->hint(' 0代表无限制'); ?>
                         <?= $form->field($model, 'money')->textInput(); ?>
                     </div>
                     <div id="discount" class="<?= $specials->type == PreferentialTypeEnum::MONEY ? 'hide' : ''; ?>">
