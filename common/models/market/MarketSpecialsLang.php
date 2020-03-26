@@ -32,7 +32,7 @@ class MarketSpecialsLang extends \common\models\base\BaseModel
     {
         return [
             [['master_id', 'created_at', 'updated_at'], 'integer'],
-            [['language'], 'required'],
+            [['language', 'title', 'describe'], 'required'],
             [['language'], 'string', 'max' => 5],
             [['title'], 'string', 'max' => 80],
             [['describe'], 'string', 'max' => 50],

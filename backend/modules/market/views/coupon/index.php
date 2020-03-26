@@ -14,7 +14,10 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="box-header">
                 <h3 class="box-title"><?= $this->title; ?></h3>
                 <div class="box-tools">
-                    <?= Html::create(['edit']) ?>
+                    <?= Html::create([
+                        'edit',
+                        'specials_id' => $searchModel->specials_id,
+                    ]) ?>
                 </div>
             </div>
             <div class="box-body table-responsive">
@@ -53,8 +56,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'goods' => function ($url, $model, $key) {
                                     return Html::linkButton([
                                         !empty($model->goods_attach)?'goods/index':'goods-type/index',
-                                        'specials_id' => $model['specials_id'],
-                                        'coupon_id' => $model['id'],
+                                        'SearchModel[specials_id]' => $model['specials_id'],
+                                        'SearchModel[coupon_id]' => $model['id'],
                                     ], '活动产品');
                                 },
                                 'edit' => function ($url, $model, $key) {

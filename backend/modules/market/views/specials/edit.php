@@ -81,54 +81,38 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                     </div>
                     <?= $form->field($model, 'area_attach')->checkboxList(AreaEnum::getMap()); ?>
-                    <div class="row">
-                        <div class="col-sm-2 text-right">
-                            <label class="control-label">活动图标</label>
-                        </div>
-                        <div class="col-sm-10">
-                            <?= Html::areaTab() ?>
-                        </div>
-                    </div>
-                    <div class="tab-content">
-                        <?php foreach (AreaEnum::getKeys() as $area_id) { ?>
-                            <div class="tab-pane<?php echo $area_id == AreaEnum::China ?" active":"" ?>" id="<?= 'areaTab_'.$area_id?>">
-                                <?php $areaModel = $model->getAreaOne($area_id); ?>
-                                <?= $form->field($areaModel, "[{$area_id}]status")->radioList(StatusEnum::getMap()); ?>
-                                <?= $form->field($areaModel, "[{$area_id}]banner_image")->widget(common\widgets\webuploader\Files::class, [
-                                    'config' => [
-                                        'pick' => [
-                                            'multiple' => true,
-                                        ],
-                                        /* 'formData' => [
-                                                'drive' => 'oss',// 默认本地 支持 qiniu/oss 上传
-                                                'thumb' => [
-                                                        [
-                                                                'width' => 800,
-                                                                'height' => 800,
-                                                        ]
-                                                ]
-                                        ], */
+                    <?= $form->field($model, "banner_image")->widget(common\widgets\webuploader\Files::class, [
+                        'config' => [
+                            'pick' => [
+                                'multiple' => true,
+                            ],
+                            /* 'formData' => [
+                                    'drive' => 'oss',// 默认本地 支持 qiniu/oss 上传
+                                    'thumb' => [
+                                            [
+                                                    'width' => 800,
+                                                    'height' => 800,
+                                            ]
                                     ]
-                                ]); ?>
-                                <?= $form->field($areaModel, "[{$area_id}]label_image")->widget(common\widgets\webuploader\Files::class, [
-                                    'config' => [
-                                        'pick' => [
-                                            'multiple' => false,
-                                        ],
-                                        /* 'formData' => [
-                                                'drive' => 'oss',// 默认本地 支持 qiniu/oss 上传
-                                                'thumb' => [
-                                                        [
-                                                                'width' => 800,
-                                                                'height' => 800,
-                                                        ]
-                                                ]
-                                        ], */
+                            ], */
+                        ]
+                    ]); ?>
+                    <?= $form->field($model, "label_image")->widget(common\widgets\webuploader\Files::class, [
+                        'config' => [
+                            'pick' => [
+                                'multiple' => false,
+                            ],
+                            /* 'formData' => [
+                                    'drive' => 'oss',// 默认本地 支持 qiniu/oss 上传
+                                    'thumb' => [
+                                            [
+                                                    'width' => 800,
+                                                    'height' => 800,
+                                            ]
                                     ]
-                                ]); ?>
-                            </div>
-                        <?php } ?>
-                    </div>
+                            ], */
+                        ]
+                    ]); ?>
                     <?= $form->field($model, 'type')->radioList(PreferentialTypeEnum::getMap()); ?>
                     <?= $form->field($model, 'product_range')->radioList(ProductRangeEnum::getMap()); ?>
                     <?= $form->field($model, 'status')->radioList(StatusEnum::getMap()); ?>

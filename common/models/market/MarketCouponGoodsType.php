@@ -2,6 +2,8 @@
 
 namespace common\models\market;
 
+use common\models\goods\Goods;
+use common\models\goods\GoodsType;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -45,5 +47,20 @@ class MarketCouponGoodsType extends ActiveRecord
             'coupon_id' => '优惠券id',
             'goods_type' => '产品线ID',
         ];
+    }
+
+    public function getCoupon()
+    {
+        return $this->hasOne(MarketCoupon::class,['id'=>'coupon_id']);
+    }
+
+    public function getSpecials()
+    {
+        return $this->hasOne(MarketSpecials::class,['id'=>'specials_id']);
+    }
+
+    public function getGoodsType()
+    {
+        return $this->hasOne(GoodsType::class,['id'=>'goods_type']);
     }
 }

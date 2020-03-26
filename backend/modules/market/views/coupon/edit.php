@@ -33,19 +33,22 @@ $this->params['breadcrumbs'][] = $this->title;
                             <label class="control-label">优惠券类型</label>
                         </div>
                         <div class="col-sm-10">
-                            <?= PreferentialTypeEnum::getValue($model->type); ?>
+                            <?= PreferentialTypeEnum::getValue($specials->type); ?>
                         </div>
                     </div>
-                    <?= $form->field($model, 'goods_type_attach')->checkboxList(\services\goods\TypeService::getTypeList()); ?>
-                    <?php $model->goods_attach = empty($model->goods_attach)?'':implode(',', $model->goods_attach);  ?>
-                    <?= $form->field($model, 'goods_attach')->textarea(['rows'=>3]); ?>
+                    <?php if($specials->product_range==1) { ?>
+                        <?php $model->goods_attach = empty($model->goods_attach)?'':implode(',', $model->goods_attach);  ?>
+                        <?= $form->field($model, 'goods_attach')->textarea(['rows'=>3]); ?>
+                    <?php } else { ?>
+                        <?= $form->field($model, 'goods_type_attach')->checkboxList(\services\goods\TypeService::getTypeList()); ?>
+                    <?php } ?>
                     <?= $form->field($model, 'area_attach')->checkboxList(AreaEnum::getMap()); ?>
                     <?= $form->field($model, 'count')->textInput(); ?>
                     <?= $form->field($model, 'at_least')->textInput()->hint(' 0代表无限制'); ?>
-                    <div id="money" class="<?= $model->type == PreferentialTypeEnum::DISCOUNT ? 'hide' : ''; ?>">
+                    <div id="money" class="<?= $specials->type == PreferentialTypeEnum::DISCOUNT ? 'hide' : ''; ?>">
                         <?= $form->field($model, 'money')->textInput(); ?>
                     </div>
-                    <div id="discount" class="<?= $model->type == PreferentialTypeEnum::MONEY ? 'hide' : ''; ?>">
+                    <div id="discount" class="<?= $specials->type == PreferentialTypeEnum::MONEY ? 'hide' : ''; ?>">
                         <?= $form->field($model, 'discount')->textInput()->hint('百分比，范围(1-100)'); ?>
                     </div>
                 </div>

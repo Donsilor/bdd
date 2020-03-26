@@ -10,6 +10,7 @@ use common\enums\LanguageEnum;
 use common\enums\StatusEnum;
 use common\models\base\SearchModel;
 use common\models\market\MarketCoupon;
+use common\models\market\MarketSpecials;
 use services\goods\TypeService;
 use services\market\CouponService;
 use yii\base\Exception;
@@ -62,8 +63,21 @@ class CouponController extends BaseController
     public function actionEdit()
     {
         $id = \Yii::$app->request->get('id', null);
-        $returnUrl = \Yii::$app->request->get('returnUrl',['index']);
+        $specials_id = \Yii::$app->request->get('specials_id', null);
+        $returnUrl = \Yii::$app->request->get('returnUrl',['index', 'specials_id'=>$specials->id]);
+
         $model = $this->findModel($id);
+
+        $specials = MarketSpecials::findOne($model->specials_id??$specials_id);
+
+        if(!$specials) {
+            return $this->redirect($returnUrl);
+        }
+
+        $returnUrl = \Yii::$app->request->get('returnUrl',['index', 'SearchModel'=>['specials_id'=>$specials->id]]);
+
+        $model->setScenario('edit-'.$specials->product_range.'-'.$specials->type);
+
         if (\Yii::$app->request->isPost) {
             $post = \Yii::$app->request->post();
 
@@ -71,18 +85,26 @@ class CouponController extends BaseController
 
             try {
                 $model->load($post);
+
+                //添加人
+                if(empty($model->user_id)) {
+                    $model->user_id = \Yii::$app->user->id;
+                    $model->specials_id = $specials->id;
+                    $model->type = $specials->type;
+                }
+
                 if(false === $model->save()) {
                     throw new Exception($this->getError($model));
                 }
 
-                CouponService::generatedData($model);
+                //CouponService::generatedData($model);
 
                 $trans->commit();
             } catch (\Exception $exception) {
                 $trans->rollBack();
                 $error = $exception->getMessage();
                 \Yii::error($error);
-                return $this->message("保存失败:".$error, $this->redirect([$this->action->id,'id'=>$model->id]), 'error');
+                return $this->message("保存失败:".$error, $this->redirect([$this->action->id,'id'=>$model->id,'specials_id'=>$specials->id]), 'error');
             }
 
             return $this->redirect($returnUrl);
@@ -90,6 +112,7 @@ class CouponController extends BaseController
 
         return $this->render($this->action->id, [
             'model' => $model,
+            'specials' => $specials,
         ]);
     }
 }

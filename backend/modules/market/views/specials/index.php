@@ -144,13 +144,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'goods' => function ($url, $model, $key) {
                                     return Html::linkButton([
                                         $model->product_range==1?'goods/index':'goods-type/index',
-                                        'specials_id' => $model['id'],
+                                        'SearchModel[specials_id]' => $model['id'],
                                     ], '活动商品');
                                 },
                                 'coupon' => function ($url, $model, $key) {
                                     return Html::linkButton([
                                         'coupon/index',
-                                        'specials_id' => $model['id'],
+                                        'SearchModel[specials_id]' => $model['id'],
                                     ], '折扣设置');
                                 },
                                 'status' => function ($url, $model, $key) {

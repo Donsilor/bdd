@@ -74,7 +74,13 @@ class SpecialsController extends BaseController
 
             try {
                 $model->load($post);
-                if(false === $model->save()){
+
+                //添加人
+                if(empty($model->user_id)) {
+                    $model->user_id = \Yii::$app->user->id;
+                }
+
+                if(false === $model->save()) {
                     throw new Exception($this->getError($model));
                 }
 
@@ -89,13 +95,13 @@ class SpecialsController extends BaseController
                 }
 
                 //保存地区
-                foreach (AreaEnum::getKeys() as $key) {
-                    $AreaModel = $model->getAreaOne($key);
-                    $AreaModel->setAttributes($area[$key]);
-                    if(false === $AreaModel->save()){
-                        throw new Exception($this->getError($AreaModel));
-                    }
-                }
+//                foreach (AreaEnum::getKeys() as $key) {
+//                    $AreaModel = $model->getAreaOne($key);
+//                    $AreaModel->setAttributes($area[$key]);
+//                    if(false === $AreaModel->save()){
+//                        throw new Exception($this->getError($AreaModel));
+//                    }
+//                }
 
                 $trans->commit();
             } catch (\Exception $exception) {
