@@ -73,7 +73,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                     $value[] = \common\enums\AreaEnum::getValue($areaId);
                                 }
                                 return implode('/', $value);
-                            }
+                            },
+                            'filter' => false,
                         ],
                         [
                             'label' => '活动类型',
@@ -89,7 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             },
                         ],
                         [
-                            'label' => '活动产品线',
+                            'label' => '活动产品',
                             'value' => function($model) {
                                 if($model->product_range==1) {
                                     return '特定产品';

@@ -98,4 +98,9 @@ class MarketCoupon extends \common\models\base\BaseModel
     {
         return $this->hasOne(Member::class,['id'=>'user_id']);
     }
+
+    public function getSpecials()
+    {
+        return $this->hasOne(MarketSpecials::class,['id'=>'specials_id']);
+    }
 }

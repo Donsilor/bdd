@@ -46,8 +46,8 @@ class CouponController extends BaseController
         ]);
 
         $dataProvider = $searchModel->search(\Yii::$app->request->queryParams);
-        $dataProvider->query
-            ->andWhere(['>=', 'status', StatusEnum::DISABLED]);
+//        $dataProvider->query
+//            ->andWhere(['>=', 'status', StatusEnum::DISABLED]);
 
         return $this->render($this->action->id, [
             'dataProvider' => $dataProvider,
@@ -97,7 +97,7 @@ class CouponController extends BaseController
                     throw new Exception($this->getError($model));
                 }
 
-                //CouponService::generatedData($model);
+                CouponService::generatedData($model);
 
                 $trans->commit();
             } catch (\Exception $exception) {

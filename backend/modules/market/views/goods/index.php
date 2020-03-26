@@ -79,7 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     $value = '-'.$model->coupon->money.'元';
                                 }
                                 else {
-                                    $value = '基础价 X '.($model->coupon->discount/100).'元';
+                                    $value = '基础价 * '.($model->coupon->discount/100);
                                 }
                                 return $value;
                             }
