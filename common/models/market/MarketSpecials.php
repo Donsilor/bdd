@@ -17,7 +17,6 @@ use yii\db\JsonExpression;
  * @property int $merchant_id 商户ID
  * @property string $title 活动名称
  * @property string $describe 活动描述
- * @property JsonExpression $areas 活动地区
  * @property int $type 优惠券类型 1:满减;2:折扣
  * @property array $area_attach 活动地区
  * @property int $start_time 开始时间
@@ -48,7 +47,7 @@ class MarketSpecials extends \common\models\base\BaseModel
             [['product_range'], 'required'],
 //            [['describe', 'areas'], 'string'],
 //            [['title'], 'string', 'max' => 80],
-            [['start_time', 'end_time', 'area_attach'], 'safe'],
+            [['start_time', 'end_time'], 'safe'],
             [['banner_image'], 'safe'],
             [['label_image'], 'string', 'max' => 255],
         ];
@@ -66,7 +65,6 @@ class MarketSpecials extends \common\models\base\BaseModel
 //            'describe' => '活动描述',
 //            'areas' => '活动地区',
             'type' => '优惠券类型',
-            'area_attach' => '活动地区',
             'product_range' => '产品范围',
             'start_time' => '开始时间',
             'end_time' => '结束时间',

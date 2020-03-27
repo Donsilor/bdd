@@ -71,7 +71,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             },
                         ],
                         [
-                            'attribute' => 'area_attach',
+                            'label' => '活动地区',
                             'value' => function($model) {
                                 $value = [];
                                 foreach ($model->coupons as $conpon) {
