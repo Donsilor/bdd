@@ -32,6 +32,8 @@ class SpecialsController extends BaseController
      */
     public function actionIndex()
     {
+        $searchParams = \Yii::$app->request->get('SearchModel');
+
         $searchModel = new SearchModel([
             'model' => $this->modelClass,
             'scenario' => 'default',
@@ -47,9 +49,29 @@ class SpecialsController extends BaseController
             ]
         ]);
 
-        $dataProvider = $searchModel->search(\Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(\Yii::$app->request->queryParams, ['created_at']);
         $dataProvider->query
             ->andWhere(['>=', 'status', StatusEnum::DISABLED]);
+
+        if(!empty($searchParams['created_at'])) {
+            $time = time();
+
+            //1=未开始，2=进行中，3=已结束
+            if($searchParams['created_at']==1) {
+                $dataProvider->query->andWhere(['>', 'start_time', $time]);
+            }
+
+            if($searchParams['created_at']==2) {
+                $dataProvider->query
+                    ->andWhere(['<=', 'start_time', $time])
+                    ->andWhere(['>=', 'end_time', $time]);
+            }
+
+            if($searchModel['created_at']==3) {
+                $dataProvider->query
+                    ->andWhere(['<', 'end_time', $time]);
+            }
+        }
 
         return $this->render($this->action->id, [
             'dataProvider' => $dataProvider,

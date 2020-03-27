@@ -52,10 +52,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'label' => '时间',
                             'format' => 'raw',
-                            'filter' => Html::activeDropDownList($searchModel, 'start_time', [
-                                '未开始',
-                                '进行中',
-                                '已结束',
+                            'filter' => Html::activeDropDownList($searchModel, 'created_at', [
+                                '1'=>'未开始',
+                                '2'=>'进行中',
+                                '3'=>'已结束',
                             ], [
                                     'prompt' => '全部',
                                     'class' => 'form-control'
