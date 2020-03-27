@@ -104,4 +104,13 @@ class MarketCoupon extends \common\models\base\BaseModel
     {
         return $this->hasOne(MarketSpecials::class,['id'=>'specials_id']);
     }
+
+    /**
+     * 已领取
+     * @return mixed
+     */
+    public function getUseCount()
+    {
+        return MarketCouponDetails::find()->where(['coupon_id'=>$this->id, 'coupon_status'=>2])->count('id');
+    }
 }

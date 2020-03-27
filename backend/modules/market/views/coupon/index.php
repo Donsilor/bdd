@@ -100,9 +100,17 @@ $this->params['breadcrumbs'][] = $this->title;
                             }
                         ],
                         [
-                            'label' => '优惠券总数量',
+                            'label' => '优惠券数量',
                             'attribute' => 'count',
                             'filter' => false,
+                        ],
+                        [
+                            'label' => '已使用数量',
+//                            'attribute' => 'count',
+//                            'filter' => false,
+                            'value' => function($model) {
+                                return $model->getUseCount();
+                            }
                         ],
                         [
                             'label' => '添加人',

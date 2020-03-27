@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                     <?php if($specials->product_range==1) { ?>
                         <?php $model->goods_attach = empty($model->goods_attach)?'':implode(',', $model->goods_attach);  ?>
-                        <?= $form->field($model, 'goods_attach')->textarea(['rows'=>3])->hint(' 0代表无限制'); ?>
+                        <?= $form->field($model, 'goods_attach')->textarea(['rows'=>3])->hint('款号之间用英文状态下,隔开。'); ?>
                     <?php } else { ?>
                         <?= $form->field($model, 'goods_type_attach')->checkboxList(\services\goods\TypeService::getTypeList()); ?>
                     <?php } ?>

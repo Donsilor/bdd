@@ -103,7 +103,7 @@ class CouponController extends BaseController
             } catch (\Exception $exception) {
                 $trans->rollBack();
                 $error = $exception->getMessage();
-                \Yii::error($error);
+                \Yii::error($error);var_dump($error);exit;
                 return $this->message("保存失败:".$error, $this->redirect([$this->action->id,'id'=>$model->id,'specials_id'=>$specials->id]), 'error');
             }
 

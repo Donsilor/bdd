@@ -30,8 +30,8 @@ class MarketCouponGoods extends ActiveRecord
     public function rules()
     {
         return [
-            [['specials_id', 'coupon_id', 'style_id'], 'required'],
-            [['specials_id', 'coupon_id', 'style_id'], 'integer'],
+            [['specials_id', 'coupon_id', 'style_id', 'goods_type'], 'required'],
+            [['specials_id', 'coupon_id', 'style_id', 'goods_type'], 'integer'],
         ];
     }
 
@@ -45,6 +45,7 @@ class MarketCouponGoods extends ActiveRecord
             'specials_id' => '活动ID',
             'coupon_id' => '优惠券id',
             'style_id' => '款式ID',
+            'goods_type' => '产品线ID',
         ];
     }
 

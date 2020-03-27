@@ -83,7 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= $form->field($model, "banner_image")->widget(common\widgets\webuploader\Files::class, [
                         'config' => [
                             'pick' => [
-                                'multiple' => true,
+                                'multiple' => false,
                             ],
                             /* 'formData' => [
                                     'drive' => 'oss',// 默认本地 支持 qiniu/oss 上传

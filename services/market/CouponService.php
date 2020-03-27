@@ -39,19 +39,61 @@ class CouponService extends Service
     {
         $where = [
             'specials_id' => $model->specials_id,
-            'coupon_id' => $model->id,
+            'coupon_id' => $model->id
         ];
 
-        //清除旧数据
-        MarketCouponArea::deleteAll($where);
-        MarketCouponGoods::deleteAll($where);
-        MarketCouponGoodsType::deleteAll($where);
+        //验证并生成产品数据
+        $ids = [];
+        foreach ($model->goods_attach as $goodsSn) {
+
+            $goodsData = Goods::find()->where(['goods_sn'=>$goodsSn])->select(['style_id', 'type_id'])->one();
+
+            if(empty($goodsData)) {
+                throw new Exception(sprintf('[%s]产品未找到~！', $goodsSn));
+            }
+
+            $data = [
+                'goods_type' => $goodsData->type_id,
+                'style_id' => $goodsData->style_id
+            ];
+
+            if(($goods = MarketCouponGoods::find()->where(array_merge($where, $data))->one())) {
+
+                //如果商品存在，则维护商品数据
+                if($goods->exclude) {
+                    $goods->exclude = 0;
+                    $goods->save();
+                }
+
+                $ids[] = $goods->id;
+                continue;
+            }
+            else {
+
+                $goods = new MarketCouponGoods();
+                $goods->setAttributes($where);
+                $goods->setAttributes($data);
+                $goods->count = $model->count;
+
+                if(!$goods->save()) {
+                    throw new Exception(sprintf('[%d]产品保存失败~！', $goodsSn));
+                }
+                $ids[] = $goods->id;
+            }
+        }
+
+        //商品排除
+        MarketCouponGoods::updateAll(['exclude'=>1], array_merge(['and'], [$where], [['NOT IN', 'id', $ids]]));
 
         //验证并生成产品线数据
         $typeList = TypeService::getTypeList();
         foreach ($model->goods_type_attach as $goodsTypeId) {
             if(!isset($typeList[$goodsTypeId])) {
                 throw new Exception(sprintf('[%d]产品线未找到~！', $goodsTypeId));
+            }
+
+            if(MarketCouponGoodsType::find()->where(array_merge($where, ['goods_type'=>$goodsTypeId]))->count('id')) {
+                continue;
             }
 
             $goodsType = new MarketCouponGoodsType();
@@ -62,27 +104,20 @@ class CouponService extends Service
             }
         }
 
-        //验证并生成产品数据
-        foreach ($model->goods_attach as $goodsSn) {
+        //产品线排除
+        MarketCouponGoodsType::deleteAll(array_merge(['and'], [$where], [['NOT IN', 'goods_type', $model->goods_type_attach]]));
 
-            $goodsData = Goods::find()->where(['goods_sn'=>$goodsSn])->select(['style_id'])->one();
-
-            if(empty($goodsData)) {
-                throw new Exception(sprintf('[%s]产品未找到~！', $goodsSn));
-            }
-
-            $goods = new MarketCouponGoods();
-            $goods->setAttributes($where);
-            $goods->setAttributes($goodsData->toArray());
-            if(!$goods->save()) {
-                throw new Exception(sprintf('[%d]产品保存失败~！', $goodsSn));
-            }
-        }
+        //启用产品线对应的商品
+        MarketCouponGoods::updateAll(['exclude'=>0], array_merge(['and'], [$where], [['IN', 'goods_type', $model->goods_type_attach]]));
 
         //生成地区数据
         foreach ($model->area_attach as $areaId) {
             if(empty(AreaEnum::getValue($areaId))) {
                 throw new Exception(sprintf('[%d]地区未找到~！', $areaId));
+            }
+
+            if(MarketCouponArea::find()->where(array_merge($where, ['area_id'=>$areaId]))->count('id')) {
+                continue;
             }
 
             $area = new MarketCouponArea();
@@ -92,5 +127,8 @@ class CouponService extends Service
                 throw new Exception(sprintf('[%d]地区保存失败~！', $areaId));
             }
         }
+
+        //地区排除
+        MarketCouponArea::deleteAll(array_merge(['and'], [$where], [['NOT IN', 'area_id', $model->area_attach]]));
     }
 }
