@@ -23,7 +23,6 @@ use yii\db\JsonExpression;
  * @property int $end_time 结束时间
  * @property int $status 状态[-1:删除;0:禁用;1启用]
  * @property array $banner_image Banner图片
- * @property string $label_image 标签图片
  * @property int $created_at 创建时间
  * @property int $updated_at 修改时间
  */
@@ -49,7 +48,6 @@ class MarketSpecials extends \common\models\base\BaseModel
 //            [['title'], 'string', 'max' => 80],
             [['start_time', 'end_time'], 'safe'],
             [['banner_image'], 'safe'],
-            [['label_image'], 'string', 'max' => 255],
         ];
     }
 
@@ -70,7 +68,6 @@ class MarketSpecials extends \common\models\base\BaseModel
             'end_time' => '结束时间',
             'status' => '启用状态',
             'banner_image' => 'Banner图片',
-            'label_image' => '标签图片',
             'created_at' => '创建时间',
             'updated_at' => '修改时间',
         ];
