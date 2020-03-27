@@ -52,6 +52,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'label' => '时间',
                             'format' => 'raw',
+                            'filter' => Html::activeDropDownList($searchModel, 'start_time', [
+                                '未开始',
+                                '进行中',
+                                '已结束',
+                            ], [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control'
+                                ]
+                            ),
                             'value' => function ($model) {
                                 $html = '';
                                 $html .= '开始时间：' . Yii::$app->formatter->asDatetime($model->start_time) . "<br>";
