@@ -64,7 +64,7 @@ class CouponController extends BaseController
     {
         $id = \Yii::$app->request->get('id', null);
         $specials_id = \Yii::$app->request->get('specials_id', null);
-        $returnUrl = \Yii::$app->request->get('returnUrl',['index', 'specials_id'=>$specials->id]);
+        $returnUrl = \Yii::$app->request->get('returnUrl',['index', 'specials_id'=>$specials_id]);
 
         $model = $this->findModel($id);
 
