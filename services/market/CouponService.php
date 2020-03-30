@@ -35,6 +35,12 @@ use yii\web\UnprocessableEntityHttpException;
  */
 class CouponService extends Service
 {
+
+    /**
+     * 生成优惠数据
+     * @param MarketCoupon $model
+     * @throws Exception
+     */
     static public function generatedData(MarketCoupon $model)
     {
         $where = [
@@ -131,4 +137,50 @@ class CouponService extends Service
         //地区排除
         MarketCouponArea::deleteAll(array_merge(['and'], [$where], [['NOT IN', 'area_id', $model->area_attach]]));
     }
+
+    //所有进行中优惠信息列表
+    static public function getCouponList($areaId, $timeStatus=null)
+    {
+        static $data = [];
+
+        $key = $areaId.'-'.$timeStatus;
+        if(isset($data[$key])) {
+            return $data[$key];
+        }
+
+        $where = [
+            'and'
+        ];
+
+        $where[] = [
+            'market_coupon_area.area_id' => $areaId,
+            'market_coupon.status' => 1,
+            'market_specials.status' => 1,
+        ];
+
+        $time = time();
+        if($timeStatus==1) {
+            //未开始
+            $where[] = ['>', 'market_specials.start_time', $time];
+        } elseif($timeStatus==2) {
+            //时行中
+            $where[] = ['<=', 'market_specials.start_time', $time];
+            $where[] = ['>=', 'market_specials.end_time', $time];
+        } elseif($timeStatus==3) {
+            //已结束
+            $where[] = ['<', 'market_specials.end_time', $time];
+        }
+
+        $data[$key] = MarketCoupon::find()
+            ->leftJoin('market_specials', 'market_coupon.specials_id=market_specials.id')
+            ->leftJoin('market_coupon_area', 'market_coupon.id=market_coupon_area.coupon_id')
+            ->where($where)
+            ->all();
+
+        return $data[$key];
+    }
+
+    //根据活动类型，地区，产品线，款式获取优惠信息
+
+    //根据活动地区，产品线，款式
 }

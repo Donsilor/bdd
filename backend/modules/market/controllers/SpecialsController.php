@@ -10,6 +10,7 @@ use common\enums\LanguageEnum;
 use common\enums\StatusEnum;
 use common\models\base\SearchModel;
 use common\models\market\MarketSpecials;
+use services\market\CouponService;
 use yii\base\Exception;
 
 /**
@@ -32,6 +33,8 @@ class SpecialsController extends BaseController
      */
     public function actionIndex()
     {
+//        CouponService::getCouponList(1);exit;
+
         $searchParams = \Yii::$app->request->get('SearchModel');
 
         $searchModel = new SearchModel([
