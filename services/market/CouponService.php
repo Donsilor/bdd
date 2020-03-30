@@ -188,11 +188,13 @@ class CouponService extends Service
         return $data[$key];
     }
 
-    //根据活动类型，地区，产品线，款式获取优惠信息
-    static public function getCouponBy()
+    //列表，根据活动类型，地区，产品线，款式获取优惠信息
+    static public function getCouponByList()
     {
 
     }
+
+
 
 
     //根据活动地区，产品线，款式
