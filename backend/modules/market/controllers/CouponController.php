@@ -60,7 +60,7 @@ class CouponController extends BaseController
      *
      * @return mixed
      */
-    public function actionEdit()
+    public function actionAjaxEditLang()
     {
         $id = \Yii::$app->request->get('id', null);
         $specials_id = \Yii::$app->request->get('specials_id', null);
@@ -103,14 +103,14 @@ class CouponController extends BaseController
             } catch (\Exception $exception) {
                 $trans->rollBack();
                 $error = $exception->getMessage();
-                \Yii::error($error);
-                return $this->message("保存失败:".$error, $this->redirect([$this->action->id,'id'=>$model->id,'specials_id'=>$specials->id]), 'error');
+                \Yii::error($error);var_dump($error);exit;
+                $this->message("保存失败:".$error, $this->redirect([$this->action->id,'id'=>$model->id,'specials_id'=>$specials->id]), 'error');
             }
 
             return $this->redirect($returnUrl);
         }
 
-        return $this->render($this->action->id, [
+        return $this->renderAjax($this->action->id, [
             'model' => $model,
             'specials' => $specials,
         ]);

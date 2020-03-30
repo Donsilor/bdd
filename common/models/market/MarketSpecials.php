@@ -5,6 +5,7 @@ namespace common\models\market;
 use common\helpers\StringHelper;
 use common\models\backend\Member;
 use common\models\base\User;
+use common\models\goods\Goods;
 use common\models\goods\GoodsTypeLang;
 use Yii;
 use yii\db\Expression;
@@ -47,6 +48,7 @@ class MarketSpecials extends \common\models\base\BaseModel
 //            [['describe', 'areas'], 'string'],
 //            [['title'], 'string', 'max' => 80],
             [['start_time', 'end_time'], 'safe'],
+            [['start_time', 'end_time'], 'validateStartTime'],
             [['banner_image'], 'safe'],
         ];
     }
@@ -62,7 +64,7 @@ class MarketSpecials extends \common\models\base\BaseModel
 //            'title' => '活动名称',
 //            'describe' => '活动描述',
 //            'areas' => '活动地区',
-            'type' => '优惠券类型',
+            'type' => '活动类型',
             'product_range' => '产品范围',
             'start_time' => '开始时间',
             'end_time' => '结束时间',
@@ -71,6 +73,14 @@ class MarketSpecials extends \common\models\base\BaseModel
             'created_at' => '创建时间',
             'updated_at' => '修改时间',
         ];
+    }
+
+    //验证活动时间
+    public function validateStartTime($attribute)
+    {
+        if($this->end_time<=$this->start_time) {
+            $this->addError($attribute, sprintf('结束时间必需大于开始时间~！'));
+        }
     }
 
     /**

@@ -8,6 +8,7 @@ use common\enums\OrderStatusEnum;
 use common\enums\OrderTouristStatusEnum;
 use common\enums\PayStatusEnum;
 use common\models\goods\Goods;
+use common\models\goods\Style;
 use common\models\market\MarketCoupon;
 use common\models\market\MarketCouponArea;
 use common\models\market\MarketCouponGoods;
@@ -52,7 +53,7 @@ class CouponService extends Service
         $ids = [];
         foreach ($model->goods_attach as $goodsSn) {
 
-            $goodsData = Goods::find()->where(['goods_sn'=>$goodsSn])->select(['style_id', 'type_id'])->one();
+            $goodsData = Style::find()->where(['style_sn'=>$goodsSn])->select(['id', 'type_id'])->one();
 
             if(empty($goodsData)) {
                 throw new Exception(sprintf('[%s]产品未找到~！', $goodsSn));
@@ -60,7 +61,7 @@ class CouponService extends Service
 
             $data = [
                 'goods_type' => $goodsData->type_id,
-                'style_id' => $goodsData->style_id
+                'style_id' => $goodsData->id
             ];
 
             if(($goods = MarketCouponGoods::find()->where(array_merge($where, $data))->one())) {
@@ -139,11 +140,11 @@ class CouponService extends Service
     }
 
     //所有进行中优惠信息列表
-    static public function getCouponList($areaId, $timeStatus=null)
+    static public function getCouponList($areaId, $type=null, $timeStatus=null)
     {
         static $data = [];
 
-        $key = $areaId.'-'.$timeStatus;
+        $key = $areaId.'-'.$type.'-'.$timeStatus;
         if(isset($data[$key])) {
             return $data[$key];
         }
@@ -151,6 +152,13 @@ class CouponService extends Service
         $where = [
             'and'
         ];
+
+        //券的类型
+        if(!empty($type)) {
+            $where[] = [
+                'market_coupon.type' => $type
+            ];
+        }
 
         $where[] = [
             'market_coupon_area.area_id' => $areaId,
@@ -181,6 +189,11 @@ class CouponService extends Service
     }
 
     //根据活动类型，地区，产品线，款式获取优惠信息
+    static public function getCouponBy()
+    {
+
+    }
+
 
     //根据活动地区，产品线，款式
 }

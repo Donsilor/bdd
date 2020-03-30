@@ -14,10 +14,10 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="box-header">
                 <h3 class="box-title"><?= $this->title; ?></h3>
                 <div class="box-tools">
-                    <?= Html::create([
-                        'edit',
-                        'specials_id' => $searchModel->specials_id,
-                    ]) ?>
+                    <?= Html::create(['ajax-edit-lang', 'specials_id' => $searchModel->specials_id], '创建', [
+                        'data-toggle' => 'modal',
+                        'data-target' => '#ajaxModalLg',
+                    ])?>
                 </div>
             </div>
             <div class="box-body table-responsive">
@@ -105,6 +105,14 @@ $this->params['breadcrumbs'][] = $this->title;
                             'filter' => false,
                         ],
                         [
+                            'label' => '已领取数量',
+//                            'attribute' => 'count',
+//                            'filter' => false,
+                            'value' => function($model) {
+                                return $model->getReceiveCount();
+                            }
+                        ],
+                        [
                             'label' => '已使用数量',
 //                            'attribute' => 'count',
 //                            'filter' => false,
@@ -136,8 +144,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'SearchModel[coupon_id]' => $model['id'],
                                     ], '活动产品');
                                 },
-                                'edit' => function ($url, $model, $key) {
-                                    return Html::edit(['edit', 'id' => $model['id']]);
+                                'edit' => function($url, $model, $key) {
+                                    return Html::edit(['ajax-edit-lang','id' => $model->id], '编辑', [
+                                        'data-toggle' => 'modal',
+                                        'data-target' => '#ajaxModalLg',
+                                    ]);
                                 },
                             ],
                         ],

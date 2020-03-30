@@ -1,5 +1,6 @@
 <?php
 
+use common\enums\StatusEnum;
 use common\helpers\Html;
 use yii\grid\GridView;
 use common\enums\PreferentialTypeEnum;
@@ -17,7 +18,10 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="box-header">
                 <h3 class="box-title"><?= $this->title; ?></h3>
                 <div class="box-tools">
-                    <?= Html::create(['edit']) ?>
+                    <?= Html::create(['ajax-edit-lang'], '创建', [
+                        'data-toggle' => 'modal',
+                        'data-target' => '#ajaxModalLg',
+                    ])?>
                 </div>
             </div>
             <div class="box-body table-responsive">
@@ -43,10 +47,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             ]),
                             'format' => 'raw',
                             'value' => function ($model) {
-                                return Html::a($model->lang->title, [
-                                    'edit',
-                                    'id' => $model['id'],
-                                ], ['style'=>"text-decoration:underline;color:#3c8dbc"]);
+                                return Html::edit(['ajax-edit-lang','id' => $model->id], $model->lang->title, [
+                                    'data-toggle' => 'modal',
+                                    'data-target' => '#ajaxModalLg',
+                                    'style'=>"text-decoration:underline;color:#3c8dbc",
+                                    'class'=>''
+                                ]);
                             },
                         ],
                         [
@@ -151,9 +157,21 @@ $this->params['breadcrumbs'][] = $this->title;
                             'attribute' => 'user.username',
                         ],
                         [
+                            'attribute' => 'status',
+                            'format' => 'raw',
+                            'filter' => Html::activeDropDownList($searchModel, 'status', StatusEnum::getMap(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control'
+                                ]
+                            ),
+                            'value' => function($model) {
+                                return Html::status($model->status);
+                            },
+                        ],
+                        [
                             'header' => "操作",
                             'class' => 'yii\grid\ActionColumn',
-                            'template' => '{goods} {coupon} {status}',
+                            'template' => '{goods} {coupon}',
                             'buttons' => [
                                 'goods' => function ($url, $model, $key) {
                                     return Html::linkButton([
@@ -167,12 +185,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'SearchModel[specials_id]' => $model['id'],
                                     ], '折扣设置');
                                 },
-                                'status' => function ($url, $model, $key) {
-                                    return Html::status($model->status);
-                                },
-//                                'edit' => function ($url, $model, $key) {
-//                                    return Html::edit(['edit', 'id' => $model['id']]);
-//                                },
                                 'delete' => function ($url, $model, $key) {
                                     return Html::delete(['delete', 'id' => $model->id]);
                                 },

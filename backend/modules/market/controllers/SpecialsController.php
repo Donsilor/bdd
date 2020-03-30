@@ -33,7 +33,7 @@ class SpecialsController extends BaseController
      */
     public function actionIndex()
     {
-//        CouponService::getCouponList(1);exit;
+        //$data = CouponService::getCouponList(1,2,3);var_dump($data);exit;
 
         $searchParams = \Yii::$app->request->get('SearchModel');
 
@@ -87,7 +87,7 @@ class SpecialsController extends BaseController
      *
      * @return mixed
      */
-    public function actionEdit()
+    public function actionAjaxEditLang()
     {
         $id = \Yii::$app->request->get('id', null);
         $returnUrl = \Yii::$app->request->get('returnUrl',['index']);
@@ -141,7 +141,7 @@ class SpecialsController extends BaseController
             return $this->redirect($returnUrl);
         }
 
-        return $this->render($this->action->id, [
+        return $this->renderAjax($this->action->id, [
             'model' => $model,
         ]);
     }

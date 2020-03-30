@@ -35,10 +35,14 @@ $this->params['breadcrumbs'][] = $this->title;
                             'attribute' => 'specials.lang.title',
                         ],
                         [
+//                            'label' => '商品图',
+                            'attribute' => 'style.style_sn',
+                        ],
+                        [
                             'label' => '商品图',
-                            'attribute' => 'goods.goods_image',
+                            'attribute' => 'style.style_image',
                             'value' => function ($model) {
-                                return \common\helpers\ImageHelper::fancyBox($model->goods->goods_image);
+                                return \common\helpers\ImageHelper::fancyBox($model->style->style_image);
                             },
                             'filter' => false,
                             'format' => 'raw',
