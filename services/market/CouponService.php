@@ -226,7 +226,11 @@ class CouponService extends Service
 
     //获取产品线优惠信息
 
-    //列表，根据活动类型，地区，产品线，款式获取优惠信息
+    /**
+     * 列表，根据活动类型，地区，产品线，款式,价格获取优惠信息
+     * @param int $areaId 区域ID
+     * @param array $records 商品列表数据
+     */
     static public function getCouponByList($areaId, &$records)
     {
 //        $coupon = [
