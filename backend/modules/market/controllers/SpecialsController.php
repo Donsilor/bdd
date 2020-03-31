@@ -25,6 +25,14 @@ class SpecialsController extends BaseController
      */
     public $modelClass = MarketSpecials::class;
 
+    public function actionTest()
+    {
+        $areaId = $this->getAreaId();
+        $data = CouponService::getCouponByStyleInfo($areaId, 2, 23, 8888);
+
+        var_dump($data);exit;
+    }
+
     /**
      * 首页
      *
