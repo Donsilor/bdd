@@ -307,6 +307,9 @@ class CouponService extends Service
             $couponForGoods[$goodsKey][$coupun->id] = $goods;
         }
 
+        //把列表单成一个订单，可以使用的优惠券
+        $couponsList = [];
+
         /**
          * 1、有折扣则不能使用优惠券
          * 2、优惠券最低使用金额过滤
@@ -340,10 +343,10 @@ class CouponService extends Service
             //合并优惠券
             $moneys = array_merge($goodsCoupon[PreferentialTypeEnum::MONEY]??[], $goodsTypeCoupon[PreferentialTypeEnum::MONEY]??[]);
             foreach ($moneys as $money) {
-                //过滤金额不可用的券（最低使用金额不为0且小于款式金额，则过滤）
-                if($money->at_least!=0 && $money->at_least > $style['price']) {
-                    continue;
-                }
+//                过滤金额不可用的券（最低使用金额不为0且小于款式金额，则过滤）
+//                if($money->at_least!=0 && $money->at_least > $style['price']) {
+//                    continue;
+//                }
 
                 //过滤可用数量不足的券
                 if($money->count <= $money->get_count) {
@@ -353,16 +356,30 @@ class CouponService extends Service
                 /**
                  * @var number $price 转换后的价格
                  */
-                $price = \Yii::$app->services->currency->exchangeAmount($money->money);
+//                $price = \Yii::$app->services->currency->exchangeAmount($money->money);
 
-                $coupons[] = [
+                $coupon = [
                     'coupon_id' => $money->id,
                     'specials_id' => $money->specials_id,
                     'count' => $money->count,
                     'get_count' => $money->get_count,
-                    'money' => $money->money,
-                    'price' => $style['price']-$price,//这里需要汇率转换
+                    'money' => self::exchangeAmount($money->money),
+                    'at_least' => self::exchangeAmount($money->at_least),
+//                    'price' => $style['price']-$price,//这里需要汇率转换
                 ];
+
+                $coupons[] = $coupon;
+
+                if(!isset($couponsList[$money->id])) {
+                    //累加金额
+                    $coupon['price'] = $style['price'];
+
+                    $couponsList[$money->id] = $coupon;
+                }
+                else {
+                    //累加金额
+                    $couponsList[$money->id]['price'] += $style['price'];
+                }
             }
 
             if(!empty($coupons)) {
@@ -371,6 +388,26 @@ class CouponService extends Service
                 $record['coupon']['money'] = $coupons;
             }
         }
+
+        foreach ($couponsList as $key => $item) {
+            if($item['at_least']!=0 && $item['at_least'] > $item['price']) {
+                unset($couponsList[$key]);
+            }
+        }
+
+        //返回可以使用券的列表
+        return $couponsList;
+    }
+
+    /**
+     *
+     * @param \common\components\unknown $money
+     * @return array
+     * @throws UnprocessableEntityHttpException
+     */
+    static private function exchangeAmount($money)
+    {
+        return \Yii::$app->services->currency->exchangeAmount($money);
     }
 
     /**
