@@ -224,12 +224,12 @@ class CouponService extends Service
 //        return $couponForGoodsType;
 //    }
 
-    //获取产品线优惠信息
 
     /**
      * 列表，根据活动类型，地区，产品线，款式,价格获取优惠信息
      * @param int $areaId 区域ID
      * @param array $records 商品列表数据
+     * @throws UnprocessableEntityHttpException
      */
     static public function getCouponByList($areaId, &$records)
     {
@@ -237,22 +237,24 @@ class CouponService extends Service
 //            'type_id',//产品线ID
 //            'style_id',//款式ID
 //            'price',//价格
+//            'price',//币种
 //        ];
 
         //产品线ID
         $goodsTypeIds = [];
 
         //款式列表
-        $styles = [];
+        $styles = ['or'];
 
         foreach ($records as $record) {
             if(empty($record['coupon'])) {
                 continue;
             }
-            $goodsTypeIds[] = $record['type_id'];
+            $style = $record['coupon'];
+            $goodsTypeIds[] = $style['type_id'];
             $styles[] = [
-                'goods_type' => $record['type_id'],
-                'style_id' => $record['style_id'],
+                'goods_type' => $style['type_id'],
+                'style_id' => $style['style_id'],
             ];
         }
 
@@ -289,7 +291,7 @@ class CouponService extends Service
         }
 
         //获取款式列表
-        $couponGoods = MarketCouponGoods::find()->where(['coupon_id'=>$couponIds,'exclude'=>0])->andWhere(['or', $styles])->all();
+        $couponGoods = MarketCouponGoods::find()->where(['coupon_id'=>$couponIds,'exclude'=>0])->andWhere($styles)->all();
 
         //款式活动信息
         foreach ($couponGoods as $goods) {
@@ -328,7 +330,7 @@ class CouponService extends Service
 
             //如果没有折扣，则获到优惠券列表
             if(!empty($coupon)) {
-                $coupon['price'] = $style['price']*$style['discount']/100;
+                $coupon['price'] = $style['price']*$coupon['discount']/100;
                 $record['coupon']['discount'] = $coupon;
                 continue;
             }
@@ -339,7 +341,7 @@ class CouponService extends Service
             $moneys = array_merge($goodsCoupon[PreferentialTypeEnum::MONEY]??[], $goodsTypeCoupon[PreferentialTypeEnum::MONEY]??[]);
             foreach ($moneys as $money) {
                 //过滤金额不可用的券（最低使用金额不为0且小于款式金额，则过滤）
-                if($money->at_least!=0 && $money->at_least < $style['price']) {
+                if($money->at_least!=0 && $money->at_least > $style['price']) {
                     continue;
                 }
 
@@ -348,13 +350,18 @@ class CouponService extends Service
                     continue;
                 }
 
+                /**
+                 * @var number $price 转换后的价格
+                 */
+                $price = \Yii::$app->services->currency->exchangeAmount($money->money);
+
                 $coupons[] = [
                     'coupon_id' => $money->id,
                     'specials_id' => $money->specials_id,
                     'count' => $money->count,
                     'get_count' => $money->get_count,
                     'money' => $money->money,
-                    'price' => $style['price']-$money->money,
+                    'price' => $style['price']-$price,//这里需要汇率转换
                 ];
             }
 
@@ -379,7 +386,7 @@ class CouponService extends Service
         }
 
         //排序
-        $discounts = self::arraySort($discounts, 'discount', SORT_ASC);
+        $discounts = self::arraySort($discounts, 'discount');
 
         //
         foreach ($discounts as $discount) {
@@ -404,16 +411,14 @@ class CouponService extends Service
         return null;
     }
 
-    //优惠券排序
-
     /**
-     *
+     * 排序方法
      * @param array $array
      * @param $keys
      * @param int $sort 排序方法：SORT_DESC=降序，SORT_ASC=升序
      * @return array
      */
-    static private function arraySort($array, $keys, $sort = SORT_DESC) {
+    static private function arraySort($array, $keys, $sort = SORT_ASC) {
         $keysValue = [];
         foreach ($array as $k => $v) {
             $keysValue[$k] = $v[$keys];
@@ -422,6 +427,35 @@ class CouponService extends Service
         return $array;
     }
 
-
     //根据活动地区，产品线，款式
+
+    /**
+     * 应用统一的入口，所以这里用上列表的数据获取方法
+     * @param $areaId
+     * @param $type_id
+     * @param $style_id
+     * @param $price
+     * @return mixed
+     * @throws UnprocessableEntityHttpException
+     */
+    static public function getCouponByStyleInfo($areaId, $type_id, $style_id, $price)
+    {
+        //组装成列表数组
+        $records = [
+            [
+                'coupon' => [
+                    'type_id' => $type_id,
+                    'style_id' => $style_id,
+                    'price' => $price,
+                ]
+            ]
+        ];
+
+        self::getCouponByList($areaId, $records);
+
+        return $records[0]['coupon'];
+    }
+
+
+
 }
