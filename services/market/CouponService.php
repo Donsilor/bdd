@@ -289,7 +289,7 @@ class CouponService extends Service
         }
 
         //获取款式列表
-        $couponGoods = MarketCouponGoods::find()->where(['coupon_id'=>$couponIds])->andWhere(['or', $styles])->all();
+        $couponGoods = MarketCouponGoods::find()->where(['coupon_id'=>$couponIds,'exclude'=>0])->andWhere(['or', $styles])->all();
 
         //款式活动信息
         foreach ($couponGoods as $goods) {
