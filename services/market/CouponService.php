@@ -7,6 +7,7 @@ use common\enums\AreaEnum;
 use common\enums\OrderStatusEnum;
 use common\enums\OrderTouristStatusEnum;
 use common\enums\PayStatusEnum;
+use common\enums\PreferentialTypeEnum;
 use common\models\goods\Goods;
 use common\models\goods\Style;
 use common\models\market\MarketCoupon;
@@ -140,7 +141,7 @@ class CouponService extends Service
     }
 
     //所有进行中优惠信息列表
-    static public function getCouponList($areaId, $type=null, $timeStatus=null)
+    static public function getCoupons($areaId, $type=null, $timeStatus=null)
     {
         static $data = [];
 
@@ -188,13 +189,234 @@ class CouponService extends Service
         return $data[$key];
     }
 
-    //列表，根据活动类型，地区，产品线，款式获取优惠信息
-    static public function getCouponByList()
-    {
+    //获取产品线优惠信息
+//    static public function getTypeCouponByTypes($areaId, $goodsTypes)
+//    {
+//        //优惠券列表
+//        $couponTypes = [];
+//
+//        //所有优惠ID
+//        $couponIds = [];
+//
+//        //产品线活动信息
+//        $couponForGoodsType = [];
+//
+//        $coupons = self::getCoupons($areaId, null, 2);
+//        foreach ($coupons as $coupon) {
+//            $couponTypes[$coupon->type][$coupon->id] = $coupon;
+//            $couponIds[] = $coupon->id;
+//        }
+//
+//        //获取产品线
+//        $where = [];
+//        $where['coupon_id'] = $couponIds;
+//        $where['goods_type'] = $goodsTypes;
+//        $couponGoodsTypes = MarketCouponGoodsType::find()->where($where)->all();
+//
+//        foreach ($couponGoodsTypes as $couponGoodsType) {
+//            foreach (PreferentialTypeEnum::getMap() as $key => $value) {
+//                if(!empty($couponTypes[$key]) && !empty($couponTypes[$key][$couponGoodsType->coupon_id])) {
+//                    $couponForGoodsType[$couponGoodsType->goods_type][$key][] = $couponTypes[$key][$couponGoodsType->coupon_id];
+//                }
+//            }
+//        }
+//
+//        return $couponForGoodsType;
+//    }
 
+    //获取产品线优惠信息
+
+    //列表，根据活动类型，地区，产品线，款式获取优惠信息
+    static public function getCouponByList($areaId, &$records)
+    {
+//        $coupon = [
+//            'type_id',//产品线ID
+//            'style_id',//款式ID
+//            'price',//价格
+//        ];
+
+        //产品线ID
+        $goodsTypeIds = [];
+
+        //款式列表
+        $styles = [];
+
+        foreach ($records as $record) {
+            if(empty($record['coupon'])) {
+                continue;
+            }
+            $goodsTypeIds[] = $record['type_id'];
+            $styles[] = [
+                'goods_type' => $record['type_id'],
+                'style_id' => $record['style_id'],
+            ];
+        }
+
+        if(empty($goodsTypeIds)) {
+            return;
+        }
+
+        //优惠券列表
+        $couponTypes = [];
+        $couponList = [];
+
+        //所有优惠ID
+        $couponIds = [];
+
+        $coupons = self::getCoupons($areaId, null, 2);
+        foreach ($coupons as $coupon) {
+            $couponList[$coupon->id] = $coupon;
+            $couponTypes[$coupon->type][$coupon->id] = $coupon;
+            $couponIds[] = $coupon->id;
+        }
+
+        //获取产品线
+        $where = [];
+        $where['coupon_id'] = $couponIds;
+        $where['goods_type'] = $goodsTypeIds;
+        $couponGoodsTypes = MarketCouponGoodsType::find()->where($where)->all();
+
+        //产品活动信息
+        $couponForGoods = [];
+
+        foreach ($couponGoodsTypes as $couponGoodsType) {
+            $coupun = $couponList[$couponGoodsType->coupon_id];
+            $couponForGoods[$couponGoodsType->goods_type][$coupun->type][$coupun->id] = $coupun;
+        }
+
+        //获取款式列表
+        $couponGoods = MarketCouponGoods::find()->where(['coupon_id'=>$couponIds])->andWhere(['or', $styles])->all();
+
+        //款式活动信息
+        foreach ($couponGoods as $goods) {
+            $coupun = $couponList[$goods->coupon_id];
+
+            //款式对应的活动
+            $goodsCouponKey = $goods->goods_type . '-' . $goods->style_id;
+            $couponForGoods[$goodsCouponKey][$coupun->type][$coupun->id] = $coupun;
+
+            //商品的活动信息
+            $goodsKey = $goods->goods_type . '-' . $goods->style_id . '-goods';
+//            $couponForGoods[$goodsKey][$coupun->type][$coupun->id] = $goods;
+            $couponForGoods[$goodsKey][$coupun->id] = $goods;
+        }
+
+        /**
+         * 1、有折扣则不能使用优惠券
+         * 2、优惠券最低使用金额过滤
+         * 3、过滤可使用数不足的券
+         */
+        foreach ($records as &$record) {
+            $style = $record['coupon'];
+
+            $key = $style['type_id'] . '-' . $style['style_id'];
+            $goodsKey = $goods->goods_type . '-' . $goods->style_id . '-goods';
+
+            $goodsInfos = $couponForGoods[$goodsKey]??[];//商品信息
+            $goodsCoupon = $couponForGoods[$key]??[];//商品活动
+            $goodsTypeCoupon = $couponForGoods[$style['type_id']]??[];//产品线活动列表
+
+            //合并款式和产品线折扣活动列表
+            $discounts = array_merge($goodsCoupon[PreferentialTypeEnum::DISCOUNT]??[], $goodsTypeCoupon[PreferentialTypeEnum::DISCOUNT]??[]);
+
+            //获取最优折扣
+            $coupon = self::getDiscount($discounts, $goodsInfos);
+
+            //如果没有折扣，则获到优惠券列表
+            if(!empty($coupon)) {
+                $coupon['price'] = $style['price']*$style['discount']/100;
+                $record['coupon']['discount'] = $coupon;
+                continue;
+            }
+
+            $coupons = [];//款式的优惠券列表
+
+            //合并优惠券
+            $moneys = array_merge($goodsCoupon[PreferentialTypeEnum::MONEY]??[], $goodsTypeCoupon[PreferentialTypeEnum::MONEY]??[]);
+            foreach ($moneys as $money) {
+                //过滤金额不可用的券（最低使用金额不为0且小于款式金额，则过滤）
+                if($money->at_least!=0 && $money->at_least < $style['price']) {
+                    continue;
+                }
+
+                //过滤可用数量不足的券
+                if($money->count <= $money->get_count) {
+                    continue;
+                }
+
+                $coupons[] = [
+                    'coupon_id' => $money->id,
+                    'specials_id' => $money->specials_id,
+                    'count' => $money->count,
+                    'get_count' => $money->get_count,
+                    'money' => $money->money,
+                    'price' => $style['price']-$money->money,
+                ];
+            }
+
+            if(!empty($coupons)) {
+                //排序
+                $coupons = self::arraySort($coupons, 'money');
+                $record['coupon']['money'] = $coupons;
+            }
+        }
     }
 
+    /**
+     * 获取最优折扣券券
+     * @param array $discounts
+     * @param array $goodsInfos
+     * @return null|array 返回折扣优惠信息
+     */
+    static public function getDiscount($discounts, $goodsInfos=[])
+    {
+        if(empty($discounts)) {
+            return null;
+        }
 
+        //排序
+        $discounts = self::arraySort($discounts, 'discount', SORT_ASC);
+
+        //
+        foreach ($discounts as $discount) {
+            //折扣券使用数
+            $getCount = 0;
+            if(!empty($goodsInfos[$discount->id])) {
+                $getCount = ($goodsInfos[$discount->id])->get_count;
+            }
+
+            //有可用折扣券，返回折扣信息
+            if($getCount < $discount->count) {
+                return [
+                    'coupon_id' => $discount->id,
+                    'specials_id' => $discount->specials_id,
+                    'count' => $discount->count,
+                    'get_count' => $getCount,
+                    'discount' => $discount->discount,
+                ];
+            }
+        }
+
+        return null;
+    }
+
+    //优惠券排序
+
+    /**
+     *
+     * @param array $array
+     * @param $keys
+     * @param int $sort 排序方法：SORT_DESC=降序，SORT_ASC=升序
+     * @return array
+     */
+    static private function arraySort($array, $keys, $sort = SORT_DESC) {
+        $keysValue = [];
+        foreach ($array as $k => $v) {
+            $keysValue[$k] = $v[$keys];
+        }
+        array_multisort($keysValue, $sort, $array);
+        return $array;
+    }
 
 
     //根据活动地区，产品线，款式
