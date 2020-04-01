@@ -159,58 +159,19 @@ class OrderService extends OrderBaseService
         }
         
         $cart_list = OrderCart::find()->where(['member_id'=>$buyer_id,'id'=>$cart_ids])->all();
+
         if(empty($cart_list)) {
             throw new UnprocessableEntityHttpException("订单商品查询失败");
         }
-        $buyerAddress = Address::find()->where(['id'=>$buyer_address_id,'member_id'=>$buyer_id])->one();
-        $orderGoodsList = [];
-        $goods_amount = 0;
-        foreach ($cart_list as $cart) {
-            
-            $goods = \Yii::$app->services->goods->getGoodsInfo($cart->goods_id,$cart->goods_type,false);
-            if(empty($goods) || $goods['status'] != StatusEnum::ENABLED) {
-                continue;
-            }
-            $sale_price = $this->exchangeAmount($goods['sale_price']);
-            $goods_amount += $sale_price;
-            $orderGoodsList[] = [
-                    'goods_id' => $cart->goods_id,
-                    'goods_sn' => $goods['goods_sn'],
-                    'style_id' => $goods['style_id'],
-                    'style_sn' => $goods['style_sn'],
-                    'goods_name' => $goods['goods_name'],
-                    'goods_price' => $sale_price,
-                    'goods_pay_price' => $sale_price,
-                    'goods_num' => $cart->goods_num,
-                    'goods_type' => $cart->goods_type,
-                    'goods_image' => $goods['goods_image'],
-                    'promotions_id' => 0,
-                    'goods_attr' =>$goods['goods_attr'],
-                    'goods_spec' =>$goods['goods_spec'],
-            ];
-        }
-        //金额
-        $discount_amount = 0;//优惠金额 
-        $shipping_fee = 0;//运费 
-        $tax_fee = 0;//税费 
-        $safe_fee = 0;//保险费 
-        $other_fee = 0;//其他费用 
-        
-        $order_amount = $goods_amount + $shipping_fee + $tax_fee + $safe_fee + $other_fee;//订单总金额 
 
-        return [
-                'shipping_fee' => $shipping_fee,
-                'order_amount'  => $order_amount,           
-                'goods_amount' => $goods_amount,
-                'safe_fee' => $safe_fee,
-                'tax_fee'  => $tax_fee,
-                'discount_amount'=>$discount_amount,                
-                'currency' => $this->getCurrency(),
-                'exchange_rate'=>$this->getExchangeRate(),
-                'plan_days' =>\Yii::$app->services->orderTourist->getDeliveryTimeByGoods($orderGoodsList),
-                'buyerAddress'=>$buyerAddress,
-                'orderGoodsList'=>$orderGoodsList,
-        ];
+        $buyerAddress = Address::find()->where(['id'=>$buyer_address_id,'member_id'=>$buyer_id])->one();
+
+        $result = $this->getAccountTaxByCartList($cart_list);
+
+        $result['plan_days'] = \Yii::$app->services->orderTourist->getDeliveryTimeByGoods($result['orderGoodsList']);
+        $result['buyerAddress'] = $buyerAddress;
+
+        return $result;
     }
     /**
      * 获取订单支付金额

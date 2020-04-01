@@ -160,7 +160,7 @@ class OrderBaseService extends Service
     public function getAccountTaxByCartList($cartList)
     {
         $goods_amount = 0;
-        $details = [];
+        $orderGoodsList = [];
         foreach ($cartList as $item) {
             $goods = \Yii::$app->services->goods->getGoodsInfo($item['goods_id'], $item['goods_type'], false);
             if(empty($goods) || $goods['status'] != StatusEnum::ENABLED) {
@@ -172,26 +172,26 @@ class OrderBaseService extends Service
 
             $goods_amount += $sale_price;
 
-            $detail = [];
-            $detail['goods_id'] = $item['goods_id'];//商品ID
-            $detail['goods_sn'] = $goods['goods_sn'];//商品编号
-            $detail['style_id'] = $goods['style_id'];//商品ID
-            $detail['style_sn'] = $goods['style_sn'];//款式编码
-            $detail['goods_name'] = $goods['goods_name'];//价格
-            $detail['goods_price'] = $sale_price;//价格
-            $detail['goods_pay_price'] = $sale_price;//实际支付价格
-            $detail['goods_num'] = $item['goods_num'];//数量
-            $detail['goods_type'] = $goods['type_id'];//产品线
-            $detail['goods_image'] = $goods['goods_image'];//商品图片
-            $detail['coupon_id'] = $item['coupon_id']??0;//活动券ID
+            $orderGoods = [];
+            $orderGoods['goods_id'] = $item['goods_id'];//商品ID
+            $orderGoods['goods_sn'] = $goods['goods_sn'];//商品编号
+            $orderGoods['style_id'] = $goods['style_id'];//商品ID
+            $orderGoods['style_sn'] = $goods['style_sn'];//款式编码
+            $orderGoods['goods_name'] = $goods['goods_name'];//价格
+            $orderGoods['goods_price'] = $sale_price;//价格
+            $orderGoods['goods_pay_price'] = $sale_price;//实际支付价格
+            $orderGoods['goods_num'] = $item['goods_num'];//数量
+            $orderGoods['goods_type'] = $item['type_id'];//产品线
+            $orderGoods['goods_image'] = $goods['goods_image'];//商品图片
+            $orderGoods['coupon_id'] = $item['coupon_id']??0;//活动券ID
 
-            $detail['group_id'] = $item['group_id'];//组ID
-            $detail['group_type'] = $item['group_type'];//分组类型
+            $orderGoods['group_id'] = $item['group_id'];//组ID
+            $orderGoods['group_type'] = $item['group_type'];//分组类型
 
-            $detail['goods_attr'] = $goods['goods_attr'];//商品规格
-            $detail['goods_spec'] = $goods['goods_spec'];//商品规格
+            $orderGoods['goods_attr'] = $goods['goods_attr'];//商品规格
+            $orderGoods['goods_spec'] = $goods['goods_spec'];//商品规格
 
-            $details[] = $detail;
+            $orderGoodsList[] = $orderGoods;
         }
 
         //金额
@@ -204,22 +204,22 @@ class OrderBaseService extends Service
         $order_amount = $goods_amount + $shipping_fee + $tax_fee + $safe_fee + $other_fee;//订单总金额
 
         //保存订单信息
-        $order = [];
+        $result = [];
 
-        $order['shipping_fee'] = $shipping_fee;//运费
-        $order['order_amount'] = $order_amount;//订单金额
-        $order['goods_amount'] = $goods_amount;//商品总金额
-        $order['safe_fee'] = $safe_fee;//保险费
-        $order['tax_fee'] = $tax_fee;//税费
-        $order['discount_amount'] = $discount_amount;//优惠金额
-        $order['currency'] = $this->getCurrency();//货币
-        $order['exchange_rate'] = $this->getExchangeRate();//汇率
+        $result['shipping_fee'] = $shipping_fee;//运费
+        $result['order_amount'] = $order_amount;//订单金额
+        $result['goods_amount'] = $goods_amount;//商品总金额
+        $result['safe_fee'] = $safe_fee;//保险费
+        $result['tax_fee'] = $tax_fee;//税费
+        $result['discount_amount'] = $discount_amount;//优惠金额
+        $result['currency'] = $this->getCurrency();//货币
+        $result['exchange_rate'] = $this->getExchangeRate();//汇率
+        $result['other_fee'] = $other_fee;//附加费
 
-        $order['other_fee'] = $other_fee;//附加费
+//        $result['plan_days'] = \Yii::$app->services->orderTourist->getDeliveryTimeByGoods($orderGoodsList);;
+        $result['orderGoodsList'] = $orderGoodsList;
 
-        $order['orderGoodsList'] = $details;
-
-        return $order;
+        return $result;
 	}
 
     /**
