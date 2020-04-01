@@ -2,6 +2,7 @@
 
 namespace common\models\order;
 
+use common\models\common\PayLog;
 use common\models\member\Member;
 use Yii;
 
@@ -176,8 +177,6 @@ class Order extends \common\models\base\BaseModel
     {
         return $this->hasMany(OrderGoods::class,['order_id'=>'id']);
     }
-
-
     /**
      * 对应快递模型
      * @return \yii\db\ActiveQuery
@@ -185,5 +184,13 @@ class Order extends \common\models\base\BaseModel
     public function getExpress()
     {
         return $this->hasOne(\common\models\common\Express::class, ['id'=>'express_id']);
+	}
+    /**
+     * 对应订单商品信息模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPaylogs()
+    {
+        return $this->hasMany(PayLog::class,['order_sn'=>'order_sn']);
     }
 }

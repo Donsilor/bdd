@@ -33,7 +33,7 @@ class DiamondController extends OnAuthController
     public function actionSearch(){
         $sort_map = [
             "sale_price"=>'sale_price',//价格
-            "sale_volume"=>'sale_volume',//销量
+            "sale_volume"=>'virtual_volume',//销量
             "carat"=>'m.carat',//价格
         ];
         $params_map = [
@@ -68,7 +68,7 @@ class DiamondController extends OnAuthController
         $order_type = \Yii::$app->request->get("sortType", 1);//排序方式 1-升序；2-降序;
 
         //排序
-        $order = '';
+        $order = 'virtual_volume desc';
         if(!empty($order_param)){
           $order_type = $order_type == 1? "asc": "desc";
           $order = $sort_map[$order_param]. " ".$order_type;
@@ -295,7 +295,7 @@ class DiamondController extends OnAuthController
         $fields = ['m.id', 'm.goods_images', 'm.style_sn','lang.style_name','IFNULL(markup.sale_price,m.sale_price) as sale_price'];
         $style_list = \Yii::$app->services->goodsStyle->getStyleList($type_id,$limit,$order, $fields ,$language);
         $webSite = array();
-        $webSite['moduleTitle'] = '最畅销订婚戒指';
+        $webSite['moduleTitle'] = \Yii::t('common','最畅销订婚戒指');
         $webSite['type'] = $type_id;
         foreach ($style_list as $val){
             $moduleGoods = array();

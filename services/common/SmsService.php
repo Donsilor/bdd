@@ -246,8 +246,7 @@ class SmsService extends Service
         $log = new SmsLog();
         $log = $log->loadDefaultValues();
         $log->attributes = $data;
-        $log->save();
-
+        $log->save(false);
         return $log;
     }
 }

@@ -68,6 +68,18 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'attribute' => 'ip',
                             ],
                             [
+                                'attribute' => 'ip_area_id',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'ip_area_id', \common\enums\AreaEnum::getMap(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    return \common\enums\AreaEnum::getValue($model->ip_area_id);
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
                                 'attribute' => 'status',
                                 'headerOptions' => ['class' => 'col-md-1'],
                                 'filter' => Html::activeDropDownList($searchModel, 'status', ['未支付', '已支付'], [

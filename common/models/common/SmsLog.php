@@ -55,9 +55,10 @@ class SmsLog extends \common\models\base\BaseModel
     public function rules()
     {
         return [
-            [['merchant_id', 'member_id', 'error_code', 'used', 'mobile', 'code', 'use_time', 'ip', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['merchant_id', 'member_id', 'error_code', 'used', 'mobile', 'code', 'use_time', 'status', 'created_at', 'updated_at'], 'integer'],
             [['error_data'], 'string'],
             [['usage'], 'string', 'max' => 20],
+            [['ip'], 'string', 'max' => 30],
             [['content'], 'string', 'max' => 500],
             [['error_msg'], 'string', 'max' => 200],
         ];
@@ -94,7 +95,7 @@ class SmsLog extends \common\models\base\BaseModel
      */
     public function beforeSave($insert)
     {
-        /* if ($this->isNewRecord) {
+        /* if (!$this->ip) {
             $this->ip = Yii::$app->request->userIP;
         } */
 

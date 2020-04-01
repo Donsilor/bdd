@@ -10,6 +10,7 @@ use common\enums\OrderStatusEnum;
 use common\enums\OrderTouristStatusEnum;
 use common\enums\StatusEnum;
 use common\helpers\RegularHelper;
+use common\models\common\DeliveryTime;
 use common\models\common\EmailLog;
 use common\models\common\SmsLog;
 use common\models\order\Order;
@@ -147,6 +148,7 @@ class OrderBaseService extends Service
 
         $orderInfo = $order->toArray();
         $orderInfo['details'] = $details;
+        $orderInfo['planDays'] = $this->getDeliveryTimeByGoods($details);
 
         return $orderInfo;
     }
@@ -218,5 +220,42 @@ class OrderBaseService extends Service
         $order['orderGoodsList'] = $details;
 
         return $order;
+	}
+
+    /**
+     * 预计下单送达时间
+     * @param unknown $goods_id  商品ID
+     * @param unknown $quantity  变化数量
+     * @param unknown $for_sale 销售
+     */
+    public function getDeliveryTimeByGoods($goods_list){
+        $plan_days = '5-12';
+        $area_id = $this->getAreaId();
+        $model = DeliveryTime::find()
+            ->where(['area_id' => $area_id, 'status' => StatusEnum::ENABLED])
+            ->asArray()
+            ->one();
+        if(!$model){
+            return $plan_days;
+        }
+
+        //判断是期货还是现货
+        $delivery_type = 'stock_time';
+        foreach ($goods_list as $goods){
+            //产品线是裸钻或者戒托的是期货
+            if(in_array($goods['goods_type'],[15,12])){
+                $delivery_type = 'futures_time';
+                continue;
+            }
+            $goods_attr = json_decode($goods['goods_attr'],true);
+            if($goods_attr['12'] != '194'){
+                $delivery_type = 'futures_time';
+                continue;
+            }
+        }
+
+
+        $plan_days = $model[$delivery_type] ? $model[$delivery_type] : $plan_days;
+        return $plan_days;
     }
 }

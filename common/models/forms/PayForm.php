@@ -2,7 +2,9 @@
 
 namespace common\models\forms;
 
+use common\enums\PayStatusEnum;
 use common\models\order\OrderTourist;
+use Omnipay\Common\Message\AbstractResponse;
 use Yii;
 use yii\base\Model;
 use yii\web\UnprocessableEntityHttpException;
@@ -136,8 +138,35 @@ class PayForm extends Model
 
                 $order = Order::find()->where(['id'=>$this->orderId,'member_id'=>$this->memberId])->one();
                 if(empty($order) || $order->order_status != OrderStatusEnum::ORDER_UNPAID) {
-                    throw new UnprocessableEntityHttpException("支付失败,订单状态已变更");
+                    if($order && $order->order_status === OrderStatusEnum::ORDER_PAID) {
+                        throw new UnprocessableEntityHttpException(\Yii::t('payment', 'ORDER_PAID'));
+                    }
+                    else {
+                        throw new UnprocessableEntityHttpException(\Yii::t('payment', 'ORDER_STATUS_CHANGED'));
+                    }
                 }
+
+                //验证重复支付
+                if(!empty($order->paylogs)) {
+                    foreach ($order->paylogs as $paylog) {
+                        //获取支付类
+                        $pay = Yii::$app->services->pay->getPayByType($paylog->pay_type);
+
+                        /**
+                         * @var $state AbstractResponse
+                         */
+                        $state = $pay->verify(['model'=>$paylog, 'isVerify'=>true]);
+
+                        if(in_array($state->getCode(), ['null'])) {
+                            throw new UnprocessableEntityHttpException(\Yii::t('payment','ORDER_PAYMENT_VERIFICATION_ERROR'));
+                        }
+                        elseif(in_array($state->getCode(), ['completed', 'pending', 'payer']) || $paylog->pay_status==PayStatusEnum::PAID) {
+                            //此订单正在付款中
+                            throw new UnprocessableEntityHttpException(\Yii::t('payment','ORDER_BEING_PAID'));
+                        }
+                    }
+                }
+
                 // TODO 查询订单获取订单信息
                 $orderSn = $order->order_sn;
                 $totalFee = $order->account->order_amount - $order->account->discount_amount;

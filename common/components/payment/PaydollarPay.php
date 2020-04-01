@@ -104,21 +104,19 @@ class PaydollarPay
     /**
      * 验证支付是否成功
      * @param array $info
-     * @return bool
+     * @return \Omnipay\Common\Message\ResponseInterface
      * @throws \Omnipay\Common\Exception\InvalidRequestException
      */
     public function verify($info=[])
     {
         $params = [
-            'orderRef'       => $info['Ref'],
+            'orderRef'       => ($info['model'])->out_trade_no,
         ];
 
         $gateway = $this->create();
 
         $request = $gateway->query($params);
 
-        $response = $request->send();
-
-        return $response->isPaid();
+        return $request->send();
     }
 }

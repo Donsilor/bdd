@@ -2,8 +2,10 @@
 
 namespace api\controllers;
 
+use common\enums\PayStatusEnum;
 use common\models\common\PayLog;
 use Yii;
+use yii\db\Exception;
 use yii\web\Controller;
 use yii\helpers\Json;
 use yii\web\UnprocessableEntityHttpException;
@@ -12,6 +14,7 @@ use common\helpers\ArrayHelper;
 use common\helpers\FileHelper;
 use common\helpers\WechatHelper;
 use common\helpers\AmountHelper;
+use Omnipay\Paypal\PaypalLog;
 
 /**
  * 支付回调
@@ -203,87 +206,93 @@ class NotifyController extends Controller
         ];
 
         $data = Yii::$app->request->post();
-
         if(empty($data)) {
             return $result;
         }
 
         //买家付款事件
-        if(!empty($data['event_type']) && $data['event_type']=='PAYMENTS.PAYMENT.CREATED') {
-            $paymentId = $data['resource']['id'];
+        if(!empty($data['event_type']) && in_array($data['event_type'],['PAYMENTS.PAYMENT.CREATED', 'PAYMENT.SALE.COMPLETED'])) {
 
+            //创建订单
+            if($data['event_type']=='PAYMENTS.PAYMENT.CREATED') {
+                $paymentId = $data['resource']['id'];
+            }
+
+            //订单成功
+            if($data['event_type']=='PAYMENT.SALE.COMPLETED') {
+                $paymentId = $data['resource']['parent_payment'];
+            }
+
+            $transaction = Yii::$app->db->beginTransaction();
+
+            /**
+             * @var $model PayLog
+             */
             $model = PayLog::find()->where(['transaction_id'=>$paymentId])->one();
 
             if(!$model) {
+                PaypalLog::writeLog($paymentId."找不到订单日志",'notify-'.date('Y-m-d').'.log');
                 return exit(Json::encode($result));
             }
-
+            $logPrix = "[".$model->order_sn."]";
+            //判断订单支付状态
+            if ($model->pay_status == PayStatusEnum::PAID) {
+                PaypalLog::writeLog($logPrix.'该笔订单已支付','notify-'.date('Y-m-d').'.log');
+                return exit(Json::encode($result));
+            }
+             
             try {
+
+                //更新支付记录
+                $update = [
+                    'pay_fee' => $model->total_fee,
+                    'pay_status' => PayStatusEnum::PAID,
+                    'pay_time' => time(),
+                ];
+                $updated = PayLog::updateAll($update, ['id'=>$model->id,'pay_status'=>PayStatusEnum::UNPAID]);
+                if(!$updated) {
+                    PaypalLog::writeLog($logPrix.'更新支付状态失败','notify-'.date('Y-m-d').'.log');
+                    throw new \Exception('该笔订单已支付~！'.$model->order_sn);
+                }
                 
-                $notify = Yii::$app->pay->Paypal()->notify(['model'=>$model]);
+                $model->refresh();
+                //更新订单记录
+                Yii::$app->services->pay->notify($model, $this->payment);
 
-                if ($notify) {
+                $response = Yii::$app->pay->Paypal()->notify(['model'=>$model]);
 
-                    $message = [];//= Yii::$app->request->post();
-                    $message['out_trade_no'] = $model->out_trade_no;
-                    $message['pay_fee'] = $model->total_fee;
-                    // 日志记录
-                    $logPath = $this->getLogPath('paypal_hooks');
-                    FileHelper::writeLog($logPath, Json::encode(ArrayHelper::toArray($message)));
+                if ($response->isPaid()) {
 
-                    if ($this->pay($message)) {
-                        $result['verification_status'] = 'SUCCESS';
-                    }
+                    $transaction->commit();
+
+                    $result['verification_status'] = 'SUCCESS';
+                    //日志记录
+                    $messsage = $logPrix.' isPaid:SUCCESS'.PHP_EOL;
+                    $messsage .= 'response->getMessage:'.$response->getCode().'|'.$response->getMessage().PHP_EOL;
+                    $messsage .= 'response->getData:'.var_export($response->getData(),true).PHP_EOL;
+                    
+                    PaypalLog::writeLog($messsage,'notify-'.date('Y-m-d').'.log');
+                }
+                else {
+                    $messsage = $logPrix.' isPaid:Failed'.PHP_EOL;;
+                    $messsage .= 'response->getMessage:'.$response->getCode().'|'.$response->getMessage().PHP_EOL;
+                    $messsage .= 'response->getData:'.var_export($response->getData(),true).PHP_EOL;                    
+                    PaypalLog::writeLog($messsage,'notify-'.date('Y-m-d').'.log');
+                    throw new \Exception('该笔订单验证异常~！'.$model->order_sn);
                 }
             } catch (\Exception $e) {
-                // 记录报错日志
-                $logPath = $this->getLogPath('error');
-                FileHelper::writeLog($logPath, $e->getMessage());
+
+                $transaction->rollBack();
+                
+                $messsage = $logPrix.'Notify Exception:'.PHP_EOL;
+                $messsage .= 'Exception->message:'.$e->getCode().'|'.$e->getMessage().PHP_EOL;
+                $messsage .= 'Exception->line:'.$e->getLine().'|'.$e->getFile().PHP_EOL;
+                PaypalLog::writeLog($messsage,'notify-'.date('Y-m-d').'.log');
             }
         }
 
         return exit(Json::encode($result));
     }
-
-//    public function actionPaypal()
-//    {
-//        if(empty($_GET['success']) || $_GET['success'] !== 'true') {
-//            die('fail');
-//        }
-//
-//        $paymentId = Yii::$app->request->get('paymentId');
-//
-//        $model = PayLog::find()->where(['transaction_id'=>$paymentId])->one();
-//
-//        if(!$model) {
-//            exit('fail');
-//        }
-//
-//        try {
-//            $result = Yii::$app->pay->Paypal()->notify(['model'=>$model]);
-//
-//            if ($result) {
-//
-//                $message = [];//= Yii::$app->request->post();
-//                $message['out_trade_no'] = $model->out_trade_no;
-//
-//                // 日志记录
-//                $logPath = $this->getLogPath('paypal');
-//                FileHelper::writeLog($logPath, Json::encode(ArrayHelper::toArray($message)));
-//
-//                if ($this->pay($message)) {
-//                    die('success');
-//                }
-//            }
-//
-//        } catch (\Exception $e) {
-//            // 记录报错日志
-//            $logPath = $this->getLogPath('error');
-//            FileHelper::writeLog($logPath, $e->getMessage());
-//            die('fail'); // 通知响应
-//        }
-//    }
-
     /**
      * 公用支付回调 - 微信
      *
