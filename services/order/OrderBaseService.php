@@ -17,6 +17,7 @@ use common\models\order\Order;
 use common\models\order\OrderLog;
 use common\models\order\OrderTourist;
 use common\models\order\OrderTouristDetails;
+use services\market\CouponService;
 use yii\web\UnprocessableEntityHttpException;
 
 class OrderBaseService extends Service
@@ -91,11 +92,11 @@ class OrderBaseService extends Service
 
     /**
      * @param array $cartList 购物车数据计算金额税费
+     * @param int $coupon_id 活动优惠券ID
      * @return array
      */
-    public function getCartAccountTax($cartList)
+    public function getCartAccountTax($cartList, $coupon_id=null)
     {
-        $goods_amount = 0;
         $orderGoodsList = [];
         foreach ($cartList as $item) {
             $goods = \Yii::$app->services->goods->getGoodsInfo($item['goods_id'], $item['goods_type'], false);
@@ -104,9 +105,7 @@ class OrderBaseService extends Service
             }
 
             //商品价格
-            $sale_price = $this->exchangeAmount($goods['sale_price']*$item['goods_num']);
-
-            $goods_amount += $sale_price;
+            $sale_price = $this->exchangeAmount($goods['sale_price']);
 
             $orderGoods = [];
             $orderGoods['goods_id'] = $item['goods_id'];//商品ID
@@ -114,12 +113,12 @@ class OrderBaseService extends Service
             $orderGoods['style_id'] = $goods['style_id'];//商品ID
             $orderGoods['style_sn'] = $goods['style_sn'];//款式编码
             $orderGoods['goods_name'] = $goods['goods_name'];//价格
-            $orderGoods['goods_price'] = $sale_price;//价格
+            $orderGoods['goods_price'] = $sale_price;//单位价格
             $orderGoods['goods_pay_price'] = $sale_price;//实际支付价格
             $orderGoods['goods_num'] = $item['goods_num'];//数量
             $orderGoods['goods_type'] = $item['type_id'];//产品线
             $orderGoods['goods_image'] = $goods['goods_image'];//商品图片
-            $orderGoods['coupon_id'] = $item['coupon_id']??0;//活动券ID
+            $orderGoods['coupon_id'] = $item['coupon_id']??0;//活动折扣券ID（折扣需要提交此ID）
 
             $orderGoods['group_id'] = $item['group_id'];//组ID
             $orderGoods['group_type'] = $item['group_type'];//分组类型
@@ -127,17 +126,65 @@ class OrderBaseService extends Service
             $orderGoods['goods_attr'] = $goods['goods_attr'];//商品规格
             $orderGoods['goods_spec'] = $goods['goods_spec'];//商品规格
 
+            //用于活动获取活动信息的接口
+            $orderGoods['coupon'] = [
+                'type_id' => $goods['type_id'],
+                'style_id' => $goods['style_id'],
+                'price' => $sale_price,
+                'num' => $item['goods_num'],
+            ];
+
             $orderGoodsList[] = $orderGoods;
         }
 
-        //金额
+        $goods_amount = 0;
         $discount_amount = 0;//优惠金额
+
+        $coupons = CouponService::getCouponByList($this->getAreaId(), $orderGoodsList);
+
+        if(!is_null($coupon_id)) {
+            if(!isset($coupons[$coupon_id])) {
+                throw new UnprocessableEntityHttpException("优惠券不能使用");
+            }
+            else {
+                //优惠券优惠金额
+                $discount_amount += $coupons[$coupon_id]['money'];
+            }
+        }
+
+        foreach ($orderGoodsList as &$orderGoods) {
+            $goodsPrice = floatval($orderGoods['goods_price']);
+
+            //商品总价计算
+            $goods_amount += ($goodsPrice * $orderGoods['num']);
+
+            if($orderGoods['coupon_id']!=0) {
+                //如果使用折扣券
+                if(!isset($orderGoods['coupon']['discount']) || $orderGoods['coupon']['discount']['coupon_id']!=$orderGoods['coupon_id']) {
+                    throw new UnprocessableEntityHttpException("折扣不能使用");
+                }
+
+                $coupon = $orderGoods['coupon']['discount'];
+
+                //折扣价计算
+                $orderGoods['goods_pay_price'] = $goodsPrice * ($coupon['discount'])/100;
+
+                //计算优惠金额
+                $discount_amount += ($goodsPrice - $orderGoods['goods_pay_price']);
+            }
+            elseif(!is_null($coupon_id) && isset($orderGoods['coupon']['money']) && isset($orderGoods['coupon']['money'][$coupon_id])) {
+                //此商品可以使用优惠券
+                $orderGoods['coupon_id'] = $coupon_id;
+            }
+        }
+
+        //金额
         $shipping_fee = 0;//运费
         $tax_fee = 0;//税费
         $safe_fee = 0;//保险费
         $other_fee = 0;//其他费用
 
-        $order_amount = $goods_amount + $shipping_fee + $tax_fee + $safe_fee + $other_fee;//订单总金额
+        $order_amount = $goods_amount - $discount_amount + $shipping_fee + $tax_fee + $safe_fee + $other_fee;//订单总金额
 
         //保存订单信息
         $result = [];

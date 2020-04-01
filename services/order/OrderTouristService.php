@@ -30,7 +30,8 @@ class OrderTouristService extends OrderBaseService
 
 
     /**
-     * @param $cartList
+     * @param array $cartList
+     * @param array $invoice_info
      */
     public function createOrder($cartList, $invoice_info)
     {
@@ -46,16 +47,10 @@ class OrderTouristService extends OrderBaseService
 
         //保存订单信息
         $order = new OrderTourist();
-        $order->order_sn  = $this->createOrderSn();//生成订单号
-//        $order->merchant_id = null;//商铺ID
-        $order->store_id = null;//店铺ID
-        $order->tourist_key = null;//游客的KEY
 
         $order->order_amount = $orderAccountTax['order_amount'];//订单金额
         $order->goods_amount = $orderAccountTax['goods_amount'];//商品总金额
         $order->discount_amount = $orderAccountTax['discount_amount'];//优惠金额
-        $order->pay_amount = 0;//实际支付金额
-        $order->refund_amount = 0;//退款金额
         $order->shipping_fee = $orderAccountTax['shipping_fee'];//运费
         $order->tax_fee = $orderAccountTax['tax_fee'];//税费
         $order->safe_fee = $orderAccountTax['safe_fee'];//保险费
@@ -63,9 +58,16 @@ class OrderTouristService extends OrderBaseService
 
         $order->currency = $orderAccountTax['currency'];//货币
         $order->exchange_rate = $orderAccountTax['exchange_rate'];//汇率
-        $order->language   = $this->getLanguage();//语言
-        $order->ip = \Yii::$app->request->userIP;  //用户下单ip
 
+        $order->order_sn  = $this->createOrderSn();//生成订单号
+//        $order->merchant_id = null;//商铺ID
+        $order->store_id = null;//店铺ID
+        $order->tourist_key = null;//游客的KEY
+        $order->pay_amount = 0;//实际支付金额
+        $order->refund_amount = 0;//退款金额
+        $order->language   = $this->getLanguage();//语言
+
+        $order->ip = \Yii::$app->request->userIP;  //用户下单ip
         $order->ip_location = $ip_location;
         $order->ip_area_id = $ip_area_id;
 

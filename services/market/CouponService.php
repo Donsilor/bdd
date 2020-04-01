@@ -229,6 +229,7 @@ class CouponService extends Service
      * 列表，根据活动类型，地区，产品线，款式,价格获取优惠信息
      * @param int $areaId 区域ID
      * @param array $records 商品列表数据
+     * @return void|array
      * @throws UnprocessableEntityHttpException
      */
     static public function getCouponByList($areaId, &$records)
@@ -368,7 +369,7 @@ class CouponService extends Service
 //                    'price' => $style['price']-$price,//这里需要汇率转换
                 ];
 
-                $coupons[] = $coupon;
+                $coupons[$money->id] = $coupon;
 
                 if(!isset($couponsList[$money->id])) {
                     //累加金额
