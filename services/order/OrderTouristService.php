@@ -32,10 +32,13 @@ class OrderTouristService extends OrderBaseService
     /**
      * @param array $cartList
      * @param array $invoice_info
+     * @param int $coupon_id
+     * @return int
+     * @throws UnprocessableEntityHttpException
      */
-    public function createOrder($cartList, $invoice_info)
+    public function createOrder($cartList, $invoice_info, $coupon_id=0)
     {
-        $orderAccountTax = $this->getCartAccountTax($cartList);
+        $orderAccountTax = $this->getCartAccountTax($cartList, $coupon_id);
 
         //商品列表
         if(empty($orderAccountTax['orderGoodsList'])) {
@@ -100,6 +103,11 @@ class OrderTouristService extends OrderBaseService
             if(false === $invoice->save()) {
                 throw new UnprocessableEntityHttpException($this->getError($invoice));
             }
+        }
+
+        if($coupon_id) {
+            //扣减优惠券总数
+            //创建游客使用优惠券记录
         }
 
         return $order->id;

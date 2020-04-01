@@ -37,6 +37,11 @@ use yii\web\UnprocessableEntityHttpException;
  */
 class CouponService extends Service
 {
+    //扣减优惠券
+    static public function dds()
+    {
+
+    }
 
     /**
      * 生成优惠数据

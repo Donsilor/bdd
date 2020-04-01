@@ -29,14 +29,14 @@ class OrderService extends OrderBaseService
      * @param array $order_info
      * @param array $invoice_info
      */
-    public function createOrder($cart_ids,$buyer_id, $buyer_address_id, $order_info, $invoice_info)
+    public function createOrder($cart_ids,$buyer_id, $buyer_address_id, $order_info, $invoice_info, $coupon_id=0)
     {
         $buyer = Member::find()->where(['id'=>$buyer_id])->one();
         
         if($cart_ids && !is_array($cart_ids)) {
             $cart_ids = explode(',', $cart_ids);
         }
-        $orderAccountTax = $this->getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id);
+        $orderAccountTax = $this->getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $coupon_id);
 
         if(empty($orderAccountTax['buyerAddress'])) {
             throw new UnprocessableEntityHttpException("收货地址不能为空");
@@ -148,11 +148,11 @@ class OrderService extends OrderBaseService
      * @param unknown $cart_ids
      * @param unknown $buyer_id
      * @param unknown $buyer_address_id
-     * @param number $promotion_id
+     * @param int $coupon_id
      * @throws UnprocessableEntityHttpException
      * @return array
      */
-    public function getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $promotion_id = 0)
+    public function getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $coupon_id=0)
     {
         if($cart_ids && !is_array($cart_ids)) {
             $cart_ids = explode(',', $cart_ids);
@@ -166,7 +166,7 @@ class OrderService extends OrderBaseService
 
         $buyerAddress = Address::find()->where(['id'=>$buyer_address_id,'member_id'=>$buyer_id])->one();
 
-        $result = $this->getCartAccountTax($cart_list);
+        $result = $this->getCartAccountTax($cart_list, $coupon_id);
 
         $result['buyerAddress'] = $buyerAddress;
 

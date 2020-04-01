@@ -94,8 +94,9 @@ class OrderBaseService extends Service
      * @param array $cartList 购物车数据计算金额税费
      * @param int $coupon_id 活动优惠券ID
      * @return array
+     * @throws UnprocessableEntityHttpException
      */
-    public function getCartAccountTax($cartList, $coupon_id=null)
+    public function getCartAccountTax($cartList, $coupon_id=0)
     {
         $orderGoodsList = [];
         foreach ($cartList as $item) {
@@ -140,9 +141,10 @@ class OrderBaseService extends Service
         $goods_amount = 0;
         $discount_amount = 0;//优惠金额
 
+        //执行优惠券接口。
         $coupons = CouponService::getCouponByList($this->getAreaId(), $orderGoodsList);
 
-        if(!is_null($coupon_id)) {
+        if($coupon_id) {
             if(!isset($coupons[$coupon_id])) {
                 throw new UnprocessableEntityHttpException("优惠券不能使用");
             }
@@ -172,7 +174,7 @@ class OrderBaseService extends Service
                 //计算优惠金额
                 $discount_amount += ($goodsPrice - $orderGoods['goods_pay_price']);
             }
-            elseif(!is_null($coupon_id) && isset($orderGoods['coupon']['money']) && isset($orderGoods['coupon']['money'][$coupon_id])) {
+            elseif($coupon_id && isset($orderGoods['coupon']['money']) && isset($orderGoods['coupon']['money'][$coupon_id])) {
                 //此商品可以使用优惠券
                 $orderGoods['coupon_id'] = $coupon_id;
             }
