@@ -34,7 +34,7 @@ class StyleController extends OnAuthController
     public function actionSearch(){
         $sort_map = [
             "sale_price"=>'m.sale_price',//价格
-            "sale_volume"=>'m.sale_volume',//销量
+            "sale_volume"=>'m.virtual_volume',//销量
         ];
         $type_id = \Yii::$app->request->post("categoryId");//产品线ID
         if(!$type_id){
@@ -44,7 +44,7 @@ class StyleController extends OnAuthController
         $order_type = \Yii::$app->request->post("orderType", 1);//排序方式 1-升序；2-降序;
 
         //排序
-        $order = '';
+        $order = 'm.virtual_volume desc';
         if(!empty($order_param)){
             $order_type = $order_type == 1? "asc": "desc";
             $order = $sort_map[$order_param]. " ".$order_type;
@@ -146,14 +146,14 @@ class StyleController extends OnAuthController
         $fields = ['m.id', 'm.goods_images', 'm.style_sn','lang.style_name','IFNULL(markup.sale_price,m.sale_price) as sale_price'];
         $style_list = \Yii::$app->services->goodsStyle->getStyleList($type_id,$limit,$order, $fields ,$language);
         $webSite = array();
-        $webSite['moduleTitle'] = '最畅销订婚戒指';
+        $webSite['moduleTitle'] = \Yii::t('common','最畅销订婚戒指');
         foreach ($style_list as $val){
             $moduleGoods = array();
             $moduleGoods['id'] = $val['id'];
             $moduleGoods['categoryId'] = $type_id;
             $moduleGoods['coinType'] = $this->getCurrencySign();
             $moduleGoods['goodsCode'] = $val['style_sn'];
-            $moduleGoods['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'mid');
+            $moduleGoods['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'big');
             $moduleGoods['goodsName'] = $val['style_name'];
             $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price']);
             $webSite['moduleGoods'][] = $moduleGoods;

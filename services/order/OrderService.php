@@ -2,7 +2,6 @@
 
 namespace services\order;
 
-use common\components\Service;
 use common\models\order\OrderCart;
 use common\models\order\OrderInvoice;
 use yii\web\UnprocessableEntityHttpException;
@@ -12,14 +11,9 @@ use common\models\member\Address;
 use common\models\order\OrderAccount;
 use common\models\order\OrderAddress;
 use common\enums\PayStatusEnum;
-use common\models\common\EmailLog;
 use common\models\member\Member;
-use common\helpers\RegularHelper;
-use common\models\common\SmsLog;
 use common\enums\OrderStatusEnum;
-use common\enums\ExpressEnum;
 use common\enums\StatusEnum;
-use common\models\order\OrderLog;
 
 /**
  * Class OrderService
@@ -213,7 +207,7 @@ class OrderService extends OrderBaseService
                 'discount_amount'=>$discount_amount,                
                 'currency' => $this->getCurrency(),
                 'exchange_rate'=>$this->getExchangeRate(),
-                'plan_days' =>'1-12',
+                'plan_days' =>\Yii::$app->services->orderTourist->getDeliveryTimeByGoods($orderGoodsList),
                 'buyerAddress'=>$buyerAddress,
                 'orderGoodsList'=>$orderGoodsList,
         ];

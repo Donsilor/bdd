@@ -65,6 +65,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="col-lg-4">
                         <?= $form->field($model, 'market_price')->textInput(['maxlength' => true]) ?>
                     </div>
+                    <div class="col-lg-4">
+                        <?= $form->field($model, 'sale_volume')->textInput(['maxlength'=>true,'disabled'=>true]) ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <?= $form->field($model, 'virtual_volume')->textInput(['maxlength'=>true]) ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <?= $form->field($model, 'goods_clicks')->textInput(['maxlength'=>true,'disabled'=>true]) ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <?= $form->field($model, 'virtual_clicks')->textInput(['maxlength'=>true]) ?>
+                    </div>
                 </div>
 
 

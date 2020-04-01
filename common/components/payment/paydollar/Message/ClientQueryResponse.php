@@ -13,48 +13,37 @@ use Omnipay\Paydollar\Helper;
  */
 class ClientQueryResponse extends AbstractResponse
 {
-    public function isRedirect()
+    public function isPaid()
     {
-        return false;
+        return isset($this->data['prc']) && $this->data['prc'] == '0';
     }
 
-
-    public function getRedirectMethod()
+    /**
+     * Response code
+     *
+     * @return null|string A response code from the payment gateway //标准化订单状态： completed, partially_refunded, pending, refunded, denied, failed, nopayer
+     */
+    public function getCode()
     {
-        return 'POST';
+        if(!isset($this->data['prc'])) {
+            return null;
+        }
+
+        switch($this->data['prc'])
+        {
+            case '0':
+                return 'completed';
+            case '1':
+                return 'denied';
+            case '3':
+                return 'nopayer';
+            default:
+                return 'failed';
+        }
     }
-
-
-    public function getRedirectUrl()
-    {
-        return false;
-    }
-
-
-    public function getRedirectHtml()
-    {
-        return false;
-    }
-
-
-    public function getTransactionNo()
-    {
-        return isset($this->data['ref']) && $this->data['ref'] == '0';
-    }
-
 
     public function isSuccessful()
     {
         return isset($this->data['resultCode']) && $this->data['resultCode'] == '0';
-    }
-
-    public function getMessage()
-    {
-        return isset($this->data['errMsg']) ? $this->data['errMsg'] : '';
-    }
-
-    public function isPaid()
-    {
-        return !empty($this->data['orderStatus']) && $this->data['orderStatus'] == 'Accepted';
     }
 }

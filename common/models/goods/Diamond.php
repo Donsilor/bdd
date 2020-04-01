@@ -50,7 +50,7 @@ class Diamond extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id','goods_num', 'shape', 'source_id', 'is_stock', 'status', 'created_at', 'updated_at','onsale_time','type_id','goods_id'], 'integer'],
+            [['id','goods_num', 'shape', 'source_id', 'is_stock', 'status', 'created_at', 'updated_at','onsale_time','type_id','goods_id','sale_volume','virtual_volume','virtual_clicks','goods_clicks'], 'integer'],
             [['sale_price','source_id','shape','goods_num','goods_sn', 'carat', 'clarity', 'cut', 'color', 'symmetry', 'polish', 'fluorescence'], 'required'],
             [['goods_num','market_price', 'sale_price', 'cost_price', 'carat', 'source_discount','length','width','aspect_ratio'], 'number'],
             ['sale_price','compare','compareValue' => 0, 'operator' => '>'],
@@ -146,6 +146,10 @@ class Diamond extends \yii\db\ActiveRecord
             'source_discount' => '来源折扣',
             'is_stock' => '库存类型',
             'onsale_time' => '上架时间',
+            'sale_volume' => Yii::t('goods', '销量'),
+            'virtual_volume' => Yii::t('goods', '虚拟销量'),
+            'goods_clicks' => Yii::t('goods', '浏览量'),
+            'virtual_clicks' => Yii::t('goods', '虚拟浏览量'),
             'status' => '上架状态',
             'created_at' => Yii::t('common', '创建时间'),
             'updated_at' => Yii::t('common', '更新时间'),

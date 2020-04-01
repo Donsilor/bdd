@@ -82,7 +82,7 @@ class DiamondController extends BaseController
                 }
 
                 //同步款式库的状态
-                Style::updateAll(['status'=>$model->status],['id'=>$model->style_id]);
+                Style::updateAll(['status'=>$model->status,'virtual_clicks'=>$model->virtual_clicks,'virtual_volume'=>$model->virtual_volume],['id'=>$model->style_id]);
 
                 $this->editLang($model);
                 //同步裸钻数据到goods

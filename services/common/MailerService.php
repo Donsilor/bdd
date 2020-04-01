@@ -64,7 +64,7 @@ class MailerService extends Service
         if($language) {
             $template = 'languages/'.$language.'/'.$template;
         }
-        $subject = Yii::t('mail', $subject);
+        $subject = Yii::t('mail', $subject,[],$language);
         $data['ip'] = Yii::$app->request->userIP;
         
         if ($this->queueSwitch == true) {

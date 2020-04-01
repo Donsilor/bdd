@@ -37,21 +37,21 @@ class RingController extends OnAuthController
     public function actionSearch(){
         $sort_map = [
             "sale_price"=>'m.sale_price',//价格
-            "sale_volume"=>'m.sale_volume',//销量
+            "sale_volume"=>'virtual_volume',//销量
         ];
         //$type_id = \Yii::$app->request->get("type_id", 12);//产品线ID
         $order_param = \Yii::$app->request->post("orderParam");//排序参数
         $order_type = \Yii::$app->request->post("orderType", 1);//排序方式 1-升序；2-降序;
 
         //排序
-        $order = '';
+        $order = 'virtual_volume desc';
         if(!empty($order_param)){
           $order_type = $order_type == 1? "asc": "desc";
           $order = $sort_map[$order_param]. " ".$order_type;
         }
 
 
-        $fields = ['m.id','m.ring_sn','lang.ring_name','m.ring_images','m.sale_price','m.ring_style','m.status'];
+        $fields = ['m.id','m.ring_sn','lang.ring_name','m.ring_images','m.sale_price','m.ring_style','m.status','m.virtual_volume'];
         $query = Ring::find()->alias('m')->select($fields)
             ->innerJoin(RingLang::tableName().' lang',"m.id=lang.master_id and lang.language='".$this->language."'");
 
@@ -119,7 +119,7 @@ class RingController extends OnAuthController
         }
         $style_list = $query->asArray()->select($fields)->all();
         $ring_web_site = array();
-        $ring_web_site['moduleTitle'] = '最暢銷訂婚戒指';
+        $ring_web_site['moduleTitle'] = \Yii::t('common','最畅销订婚戒指');
         $ring_web_site['id'] = $type_id;
         foreach ($style_list as $val){
             $moduleGoods = array();
@@ -127,7 +127,7 @@ class RingController extends OnAuthController
             $moduleGoods['categoryId'] = $type_id;
             $moduleGoods['coinType'] = $this->getCurrencySign();
             $moduleGoods['ringCode'] = $val['ring_sn'];
-            $moduleGoods['ringImg'] = ImageHelper::goodsThumbs($val['ring_images'],'mid');
+            $moduleGoods['ringImg'] = ImageHelper::goodsThumbs($val['ring_images'],'big');
             $moduleGoods['name'] = $val['ring_name'];
             $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price']);
             $ring_web_site['moduleGoods'][] = $moduleGoods;
@@ -136,16 +136,16 @@ class RingController extends OnAuthController
 
         $where = ['a.attr_id'=>26, 'a.attr_value_id'=>41];
         $man_web_site = $this->getAdvertStyle($where);
-        $man_web_site['moduleTitle'] = '自由搭配 爱我所爱';
+        $man_web_site['moduleTitle'] = \Yii::t('common','自由搭配 爱我所爱');
         $man_web_site['recommendInfo'] = 'Go for the traditional, classic wedding band, or dare to be different with a unique alternative metal wedding ring made from cobalt, tantalum or titanium.';
-        $man_web_site['title'] = '男士结婚戒指';
+        $man_web_site['title'] = \Yii::t('common','男士结婚戒指');
         $man_web_site['id'] = $type_id;
 
         $where = ['a.attr_id'=>26, 'a.attr_value_id'=>42];
         $woman_web_site = $this->getAdvertStyle($where);
-        $woman_web_site['moduleTitle'] = '自由搭配 爱我所爱';
+        $woman_web_site['moduleTitle'] = \Yii::t('common','自由搭配 爱我所爱');
         $woman_web_site['recommendInfo'] = 'Go for the traditional, classic wedding band, or dare to be different with a unique alternative metal wedding ring made from cobalt, tantalum or titanium.';
-        $woman_web_site['title'] = '女士结婚戒指';
+        $woman_web_site['title'] = \Yii::t('common','女士结婚戒指');
         $woman_web_site['id'] = $type_id;
 
 
@@ -266,7 +266,7 @@ class RingController extends OnAuthController
             $moduleGoods['categoryId'] = $type_id;
             $moduleGoods['coinType'] = $this->getCurrencySign();
             $moduleGoods['goodsCode'] = $val['style_sn'];
-            $moduleGoods['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'mid');
+            $moduleGoods['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'big');
             $moduleGoods['goodsName'] = $val['style_name'];
             $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price']);
             $result['moduleGoods'][] = $moduleGoods;

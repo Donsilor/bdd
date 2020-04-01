@@ -36,7 +36,7 @@ class Ring extends BaseModel
     public function rules()
     {
         return [
-            [['id','ring_salenum', 'ring_style', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['id','ring_salenum', 'ring_style', 'status', 'created_at', 'updated_at','sale_volume','virtual_volume','virtual_clicks','goods_clicks'], 'integer'],
             [['sale_price'], 'number'],
             [['ring_sn','sale_price'],'required'],
             ['sale_price','compare','compareValue' => 0, 'operator' => '>'],
@@ -70,6 +70,10 @@ class Ring extends BaseModel
             'market_price' => Yii::t('goods', '市场价')."({$currency})",
             'cost_price' => Yii::t('goods', '成本价')."({$currency})",
             'status' => '上架状态',
+            'sale_volume' => Yii::t('goods', '销量'),
+            'virtual_volume' => Yii::t('goods', '虚拟销量'),
+            'goods_clicks' => Yii::t('goods', '浏览量'),
+            'virtual_clicks' => Yii::t('goods', '虚拟浏览量'),
             'ring_3ds' => '360°主图',
             'created_at' => '创建时间',
             'updated_at' => '修改时间',

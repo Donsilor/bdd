@@ -76,7 +76,7 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 									<dt><img src="<?= ImageHelper::thumb($goods->goods_image)?>"></dt>
 								</dl>
 								<dl>
-									<dd class="good"><?= $goods->goods_name?></dd>
+									<dd class="good"><?= $goods->lang->goods_name?></dd>
 									<dd class="attr"><?= $goods_attr?></dd>
 									<dd class="price"><?= AmountHelper::outputAmount($goods->goods_price,2,$currency)?></dd>
 								</dl>

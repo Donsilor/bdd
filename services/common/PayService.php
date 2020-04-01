@@ -16,6 +16,7 @@ use common\enums\OrderStatusEnum;
 use common\enums\PayStatusEnum;
 use common\models\order\OrderAccount;
 use common\helpers\AmountHelper;
+use yii\web\UnprocessableEntityHttpException;
 
 /**
  * Class PayService
@@ -287,21 +288,22 @@ class PayService extends Service
 
         switch ($log->order_group) {
             case PayEnum::ORDER_GROUP :   
-                if($log->pay_status == 1 && ($order = Order::find()->where(['order_sn'=>$log->order_sn,'order_status'=>OrderStatusEnum::ORDER_UNPAID])->one())){ 
+                if($log->pay_status == 1 && ($order = Order::find()->where(['order_sn'=>$log->order_sn, 'order_status'=>OrderStatusEnum::ORDER_UNPAID])->one())) {
                     $time = time();
                     $pay_amount = $log->total_fee;
-                    $order->attributes = [
-                            'pay_sn'=>$log->out_trade_no,
-                            'api_pay_time'=>$time,
-                            'payment_type' =>$log->pay_type,
-                            'payment_time' =>$time,
-                            'payment_status'=>PayStatusEnum::PAID,
-                            'order_status'=>OrderStatusEnum::ORDER_PAID
+
+                    $update = [
+                        'pay_sn'=>$log->out_trade_no,
+                        'api_pay_time'=>$time,
+                        'payment_type' =>$log->pay_type,
+                        'payment_time' =>$time,
+                        'payment_status'=>PayStatusEnum::PAID,
+                        'order_status'=>OrderStatusEnum::ORDER_PAID
                     ];
-                    $result = $order->save();
-                    
-                    
-                    if($result == 1){ 
+
+                    $result = Order::updateAll($update, ['id' => $order->id, 'order_status'=>OrderStatusEnum::ORDER_UNPAID]);
+
+                    if($result) {
                         $accountUpdata = [
                              'pay_amount'=> $pay_amount,                            
                         ];
@@ -310,6 +312,12 @@ class PayService extends Service
                         //订单发送邮件
                         \Yii::$app->services->order->sendOrderNotification($order->id);
                     }
+                    else {
+                        throw new \Exception('Order 更新失败'.$log->order_sn);
+                    }
+                }
+                else {
+                    throw new \Exception('Order 无需更新'.$log->order_sn);
                 }
                 // TODO 处理订单
                 return true;
@@ -320,10 +328,24 @@ class PayService extends Service
                     //保存游客支付订单状态
                     $orderTourist->status = OrderTouristStatusEnum::ORDER_PAID;
                     $orderTourist->pay_amount = $log->total_fee;
-                    if($orderTourist->save()) {
+
+                    $update = [
+                        'status' => OrderTouristStatusEnum::ORDER_PAID,
+                        'pay_amount' => $log->total_fee
+                    ];
+
+                    $result = OrderTourist::updateAll($update, ['id' => $orderTourist->id, 'status'=>OrderTouristStatusEnum::ORDER_UNPAID]);
+
+                    if($result) {
                         //同步游客订单到标准订单
                         \Yii::$app->services->orderTourist->sync($orderTourist, $log);
                     }
+                    else {
+                        throw new \Exception('OrderTourist 更新失败'.$log->order_sn);
+                    }
+                }
+                else {
+                    throw new \Exception('OrderTourist 无需更新'.$log->order_sn);
                 }
                 return true;
                 break;

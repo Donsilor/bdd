@@ -55,9 +55,13 @@ class MailerJob extends Job
     {       
         try{
             
-            echo date("Y-m-d H:i:s").'=>send mail start =>'.$this->email.PHP_EOL;
+            echo date("Y-m-d H:i:s").'=>send mail start'.PHP_EOL;
+            echo 'email=>'.$this->email.PHP_EOL;
+            echo 'subject=>'.$this->subject.PHP_EOL;
+            echo 'template=>'.$this->template.PHP_EOL;
+            echo 'usage=>'.$this->usage.PHP_EOL;
             $res = Yii::$app->services->mailer->realSend($this->email, $this->subject, $this->template, $this->usage, $this->data);
-            if($res) {
+            if($res) {                
                 echo date("Y-m-d H:i:s").'=>send email success!'.var_export($res,true).PHP_EOL;
             }else{
                 echo date("Y-m-d H:i:s").'=>send email failed!'.var_export($res,true).PHP_EOL;

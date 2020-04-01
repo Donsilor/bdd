@@ -94,6 +94,7 @@ class Helper
 
     public static function sendQueryRequest($url, $params)
     {
+        ob_start();
         $ch = curl_init();
         curl_setopt ($ch, CURLOPT_URL, $url);
         curl_setopt ($ch, CURLOPT_POST, 1);

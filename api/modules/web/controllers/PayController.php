@@ -2,10 +2,13 @@
 
 namespace api\modules\web\controllers;
 
+use common\enums\PayStatusEnum;
 use common\enums\StatusEnum;
 use common\helpers\ArrayHelper;
 use common\helpers\FileHelper;
 use common\models\common\PayLog;
+use Omnipay\Common\Message\AbstractResponse;
+use Omnipay\Paydollar\Message\AuthorizeResponse;
 use Yii;
 use api\controllers\OnAuthController;
 use common\enums\PayEnum;
@@ -115,83 +118,104 @@ class PayController extends OnAuthController
             'verification_status' => 'false'
         ];
 
-//        //测试不验证结果
-//        $result['verification_status'] = 'true';
-//        return $result;
-
         //获取操作实例
         $returnUrl = Yii::$app->request->post('return_url', null);
 
+        $urlInfo = parse_url($returnUrl);
+        $query = parse_query($urlInfo['query']);
+
+        //获取支付记录模型
+        /**
+         * @var $model PayLog
+         */
+        $model = $this->getPayModelByReturnUrlQuery($query);
+
+        if(empty($model)) {
+            $result['verification_status'] = 'failed';
+            return $result;
+        }
+
+        //记录验证日志
+        Yii::$app->services->actionLog->create('verify', $model->out_trade_no);
+
+        $transaction = Yii::$app->db->beginTransaction();
+
         try {
-            $urlInfo = parse_url($returnUrl);
-            $query = parse_query($urlInfo['query']);
 
-            //获取支付记录模型
-            $model = $this->getPayModelByReturnUrlQuery($query);
-
-            if(empty($model)) {
-                throw new \Exception('数据异常');
+            //判断订单支付状态
+            if ($model->pay_status == PayStatusEnum::PAID) {
+                $result['verification_status'] = 'completed';
+                return $result;
             }
 
-            //获取支付类
-            $pay = Yii::$app->services->pay->getPayByType($model->pay_type);
+            $update = [
+                'pay_fee' => $model->total_fee,
+                'pay_status' => PayStatusEnum::PAID,
+                'pay_time' => time(),
+            ];
+            $updated = PayLog::updateAll($update, ['pay_status'=>PayStatusEnum::UNPAID, 'id'=>$model->id]);
 
-            //验证是否支付
-            $notify = $pay->verify(array_merge($query, ['model'=>$model]));
-
-            //验证重试一次
-            if(!$notify && $model->pay_type == 6) {
-                sleep(3);
-                $notify = $pay->verify(array_merge($query, ['model'=>$model]));
+            if(!$updated) {
+                throw new \Exception('该笔订单已支付~！');
             }
 
-            if($notify) {
-                $message = [];                
-                $message['out_trade_no'] = $model->out_trade_no;
-                $message['pay_fee'] = $model->total_fee;
-                // 日志记录
-                $logPath = $this->getLogPath(PayEnum::$payTypeAction[$model->pay_type]);
-                FileHelper::writeLog($logPath, Json::encode(ArrayHelper::toArray($message)));
+            $model->refresh();
 
-                //操作成功，则返回 true .
-                if ($this->pay($message)) {
-                    $result['verification_status'] = 'true';
+            //更新订单状态
+            Yii::$app->services->pay->notify($model, null);
+
+            /**
+             * @var $response AbstractResponse
+             */
+            $response = Yii::$app->services->pay->getPayByType($model->pay_type)->verify(['model'=>$model]);
+
+            //支付成功
+            if($response->isPaid()) {
+
+                $result['verification_status'] = 'completed';
+
+                $transaction->commit();
+            }
+            else {
+                if($response->getCode() == 'pending') {
+                    $result['verification_status'] = 'pending';
+                }
+                elseif(in_array($response->getCode(), ['failed', 'denied', 'nopayer'])) {
+                    //支付失败，失败被拒绝，无支付返回支付失败
+                    $result['verification_status'] = 'failed';
                 }
                 else {
-                    throw new \Exception('数据库操作异常');
+                    $result['verification_status'] = 'null';
                 }
+                $transaction->rollBack();
             }
         } catch (\Exception $e) {
+            $transaction->rollBack();
+
             // 记录报错日志
             $logPath = $this->getLogPath('error');
             FileHelper::writeLog($logPath, $e->getMessage());
+
+            //服务器错误的时候，返回订单处理中
+            $result['verification_status'] = 'pending';
         }
         return $result;
     }
 
     /**
      * 此方法复制于 NotifyController.php
-     * @param $message
+     * @param $payLog
      * @return bool
      */
-    protected function pay($message)
+    protected function pay($payLog)
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            if (!($payLog = Yii::$app->services->pay->findByOutTradeNo($message['out_trade_no']))) {
-                throw new UnprocessableEntityHttpException('找不到支付信息');
-            };
 
-            // 支付完成
-            if ($payLog->pay_status == StatusEnum::ENABLED) {
-                return true;
-            };
-
-            $payLog->attributes = $message;
             $payLog->pay_status = StatusEnum::ENABLED;
             $payLog->pay_time = time();
             if (!$payLog->save()) {
-                throw new UnprocessableEntityHttpException('日志修改失败');
+                throw new UnprocessableEntityHttpException('支付记录保存失败');
             }
 
             // 业务回调
