@@ -166,9 +166,8 @@ class OrderService extends OrderBaseService
 
         $buyerAddress = Address::find()->where(['id'=>$buyer_address_id,'member_id'=>$buyer_id])->one();
 
-        $result = $this->getAccountTaxByCartList($cart_list);
+        $result = $this->getCartAccountTax($cart_list);
 
-        $result['plan_days'] = \Yii::$app->services->orderTourist->getDeliveryTimeByGoods($result['orderGoodsList']);
         $result['buyerAddress'] = $buyerAddress;
 
         return $result;
