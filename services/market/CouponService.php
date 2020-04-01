@@ -390,10 +390,14 @@ class CouponService extends Service
         }
 
         foreach ($couponsList as $key => $item) {
+            //过滤不能使用的券
             if($item['at_least']!=0 && $item['at_least'] > $item['price']) {
                 unset($couponsList[$key]);
             }
         }
+
+        //排序
+        $couponsList = self::arraySort($couponsList, 'money');
 
         //返回可以使用券的列表
         return $couponsList;
