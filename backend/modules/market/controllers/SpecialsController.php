@@ -27,8 +27,13 @@ class SpecialsController extends BaseController
 
     public function actionTest()
     {
+
         $areaId = $this->getAreaId();
-        $data = CouponService::getCouponByStyleInfo($areaId, 2, 23, 8888);
+        try {
+            $data = CouponService::fetchCoupon(10, 4);
+        } catch (\Exception $exception) {
+            $data=$exception->getMessage();
+        }
 
         var_dump($data);exit;
     }

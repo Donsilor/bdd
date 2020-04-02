@@ -19,7 +19,7 @@ use Yii;
  * @property int $goods_num 商品数量
  * @property string $goods_image 商品图片
  * @property string $goods_pay_price 商品实际成交价
- * @property int $promotions_id 
+ * @property int $coupon_id
  * @property string $goods_spec 商品规格
  * @property string $goods_attr 商品属性
  * @property float $exchange_rate 交易汇率
@@ -44,7 +44,7 @@ class OrderGoods extends \common\models\base\BaseModel
     public function rules()
     {
         return [
-            [['merchant_id', 'order_id','style_id', 'goods_id', 'goods_type', 'goods_num', 'promotions_id', 'created_at', 'updated_at'], 'integer'],
+            [['merchant_id', 'order_id','style_id', 'goods_id', 'goods_type', 'goods_num', 'coupon_id', 'created_at', 'updated_at'], 'integer'],
             [['order_id', 'goods_id'], 'required'],
             [['goods_price', 'goods_pay_price','exchange_rate'], 'number'],
             [['goods_attr'], 'string'],
@@ -74,7 +74,7 @@ class OrderGoods extends \common\models\base\BaseModel
             'goods_image' => '商品图片',
             'goods_pay_price' => '商品实际成交价',
             'member_id' => '买家ID',
-            'promotions_id' => '促销活动ID',
+            'coupon_id' => '促销活动ID',
             'exchange_rate' => '交易汇率',
             'currency' => '货币',
             'goods_spec' => '商品规格',
