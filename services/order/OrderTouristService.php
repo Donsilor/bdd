@@ -6,6 +6,7 @@ use common\components\Service;
 use common\enums\OrderStatusEnum;
 use common\enums\OrderTouristStatusEnum;
 use common\enums\PayStatusEnum;
+use common\models\market\MarketCouponDetails;
 use common\models\member\Member;
 use common\models\order\Order;
 use common\models\order\OrderAccount;
@@ -19,6 +20,7 @@ use common\models\order\OrderTouristInvoice;
 use PayPal\Api\PayerInfo;
 use PayPal\Api\Payment;
 use PayPal\Api\ShippingAddress;
+use services\market\CouponService;
 use yii\web\UnprocessableEntityHttpException;
 
 /**
@@ -27,7 +29,6 @@ use yii\web\UnprocessableEntityHttpException;
  */
 class OrderTouristService extends OrderBaseService
 {
-
 
     /**
      * @param array $cartList
@@ -81,8 +82,36 @@ class OrderTouristService extends OrderBaseService
             throw new UnprocessableEntityHttpException($this->getError($order));
         }
 
+        if($coupon_id) {
+            //使用优惠券
+            //CouponService::incrMoneyUse($coupon_id, 1);
+
+            $couponDetails = new MarketCouponDetails();
+            $couponDetails->setAttributes([
+                'specials_id' => '',
+                'coupon_id' => $coupon_id,
+                'coupon_code' => '',
+                'order_sn' => $order->order_sn,
+                'get_type' => 3,
+                'coupon_status' => 2,
+                'fetch_time' => time(),
+                'use_time' => time(),
+            ]);
+
+            if(false === $couponDetails->save()) {
+                throw new UnprocessableEntityHttpException($this->getError($couponDetails));
+            }
+        }
+
         $orderGoodsList = $orderAccountTax['orderGoodsList'];
         foreach ($orderGoodsList as $goods) {
+
+            if($goods['coupon_id'] && $goods['coupon']['discount']) {
+                //使用折扣券
+                $coupon = $goods['coupon'];
+                CouponService::incrDiscountUse($goods['coupon_id'], $coupon['type_id'], $coupon['style_id'], $coupon['num']);
+            }
+
             $detail = new OrderTouristDetails();
             $detail->attributes = $goods;
 
@@ -103,11 +132,6 @@ class OrderTouristService extends OrderBaseService
             if(false === $invoice->save()) {
                 throw new UnprocessableEntityHttpException($this->getError($invoice));
             }
-        }
-
-        if($coupon_id) {
-            //扣减优惠券总数
-            //创建游客使用优惠券记录
         }
 
         return $order->id;
@@ -265,8 +289,8 @@ class OrderTouristService extends OrderBaseService
                 'goods_price' => $detail->goods_price,
                 'goods_num' => $detail->goods_num,
                 'goods_image' => $detail->goods_image,
-                'goods_pay_price' => $detail->goods_price,
-                'promotions_id' => $detail->promotions_id,
+                'goods_pay_price' => $detail->goods_pay_price,
+                'coupon_id' => $detail->coupon_id,
                 'goods_spec' => $detail->goods_spec,
                 'goods_attr' => $detail->goods_attr,
                 'currency' => $orderTourist->currency,

@@ -29,6 +29,7 @@ use PayPal\Api\Payment;
 use PayPal\Api\ShippingAddress;
 use services\goods\TypeService;
 use yii\base\Exception;
+use yii\db\Expression;
 use yii\web\UnprocessableEntityHttpException;
 
 /**
@@ -37,10 +38,82 @@ use yii\web\UnprocessableEntityHttpException;
  */
 class CouponService extends Service
 {
-    //扣减优惠券
-    static public function dds()
+    /**
+     * 增加折扣券的使用
+     * @param int $coupon_id
+     * @param int $type_id
+     * @param int $style_id
+     * @param int $num
+     * @return bool
+     */
+    static public function incrDiscountUse($coupon_id, $type_id, $style_id, $num)
     {
+        try {
+            $result = true;
 
+            $where = [];
+            $where['coupon_id'] = $coupon_id;
+            $where['goods_type'] = $type_id;
+            $where['style_id'] = $style_id;
+
+            $goods = MarketCouponGoods::findOne($where);
+
+            if(!$goods) {
+                $coupon = MarketCoupon::findOne($coupon_id);
+
+                if(!$coupon || $coupon->type!=PreferentialTypeEnum::DISCOUNT) {
+                    throw new \Exception('error');
+                }
+
+                $goods = new MarketCouponGoods();
+                $goods->setAttributes($where);
+                $goods->specials_id = $coupon->specials_id;
+                $goods->count = $coupon->count;
+
+                $goods->get_count = $num;
+                $goods->save();
+            }
+            else {
+                $data = [
+                    'get_count'=> new Expression("get_count-({$num})")
+                ];
+                $where = ['and'];
+                $where[] = [
+                    'id' => $goods->id
+                ];
+                $where[] = [
+                    '<', 'get_count', new Expression("count")
+                ];
+                $result = MarketCouponGoods::updateAll($data, $where) > 0;
+            }
+        } catch (\Exception $exception) {
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    /**
+     * 增加优惠券的使用
+     * @param int $coupon_id
+     * @param int $num
+     * @return bool
+     */
+    static public function incrMoneyUse($coupon_id, $num)
+    {
+        $data = [
+            'get_count'=> new Expression("get_count-({$num})")
+        ];
+
+        $where = ['and'];
+        $where[] = [
+            'id' => $coupon_id
+        ];
+        $where[] = [
+            '<', 'get_count', new Expression("count")
+        ];
+
+        return MarketCoupon::updateAll($data, $where) > 0;
     }
 
     /**

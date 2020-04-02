@@ -37,6 +37,7 @@ class OrderTouristController extends OnAuthController
         $orderSn = \Yii::$app->request->post('orderSn');
         $goodsCartList = \Yii::$app->request->post('goodsCartList');
         $invoiceInfo = \Yii::$app->request->post('invoice');
+        $coupon_id = \Yii::$app->request->post('coupon_id',0);
 
         if(empty($orderSn)) {
             if (empty($goodsCartList)) {
@@ -60,7 +61,7 @@ class OrderTouristController extends OnAuthController
             $trans = \Yii::$app->db->beginTransaction();
             if(empty($orderSn)) {
                 //创建订单
-                $orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $invoiceInfo);
+                $orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $invoiceInfo, $coupon_id);
             }
             else {
                 //按单号支付

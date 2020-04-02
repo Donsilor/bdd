@@ -2,8 +2,10 @@
 
 namespace services\order;
 
+use common\models\market\MarketCouponDetails;
 use common\models\order\OrderCart;
 use common\models\order\OrderInvoice;
+use services\market\CouponService;
 use yii\web\UnprocessableEntityHttpException;
 use common\models\order\OrderGoods;
 use common\models\order\Order;
@@ -28,14 +30,26 @@ class OrderService extends OrderBaseService
      * @param int $buyer_address_id
      * @param array $order_info
      * @param array $invoice_info
+     * @param int $coupon_details_id
      */
-    public function createOrder($cart_ids,$buyer_id, $buyer_address_id, $order_info, $invoice_info, $coupon_id=0)
+    public function createOrder($cart_ids,$buyer_id, $buyer_address_id, $order_info, $invoice_info, $coupon_details_id=0)
     {
-        $buyer = Member::find()->where(['id'=>$buyer_id])->one();
-        
-        if($cart_ids && !is_array($cart_ids)) {
-            $cart_ids = explode(',', $cart_ids);
+        $coupon_id = 0;
+        if($coupon_details_id) {
+            $where = [
+                'id' => $coupon_details_id,
+                'owner_id' => $coupon_details_id,
+            ];
+            if($couponDetails = MarketCouponDetails::findOne($where)) {
+                $coupon_id = $couponDetails->coupon_id;
+            }
+            else {
+                throw new UnprocessableEntityHttpException("收货地址不能为空");
+            }
         }
+
+        $buyer = Member::find()->where(['id'=>$buyer_id])->one();
+
         $orderAccountTax = $this->getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $coupon_id);
 
         if(empty($orderAccountTax['buyerAddress'])) {
@@ -64,17 +78,45 @@ class OrderService extends OrderBaseService
         if(false === $order->save()){
             throw new UnprocessableEntityHttpException($this->getError($order));
         }
+
+        if($coupon_details_id) {
+            //使用优惠券
+            //CouponService::incrMoneyUse($coupon_id, 1);
+
+            $data = [
+                'coupon_code' => '',
+                'order_id' => $order->id,
+                'order_sn' => $order->order_sn,
+                'coupon_status' => 2,
+                'use_time' => time(),
+            ];
+
+            $where = [
+                'id' => $coupon_details_id,
+                'owner_id' => $buyer_id,
+                'coupon_status' => 1,
+            ];
+
+            MarketCouponDetails::updateAll($data, $where);
+        }
+
         //订单商品       
         foreach ($orderGoodsList as $goods) {
+            if($goods['coupon_id'] && $goods['coupon']['discount']) {
+                //使用折扣券
+                $coupon = $goods['coupon'];
+                CouponService::incrDiscountUse($goods['coupon_id'], $coupon['type_id'], $coupon['style_id'], $coupon['num']);
+            }
 
             $orderGoods = new OrderGoods();
             $orderGoods->attributes = $goods;
             $orderGoods->order_id = $order->id;
             $orderGoods->exchange_rate = $exchange_rate;
             $orderGoods->currency = $currency;
-            if(false === $orderGoods->save()){
+            if(false === $orderGoods->save()) {
                 throw new UnprocessableEntityHttpException($this->getError($orderGoods));
-            }            
+            }
+
              //订单商品明细
             foreach (array_keys($languages) as $language){
                 $goods = \Yii::$app->services->goods->getGoodsInfo($orderGoods->goods_id,$orderGoods->goods_type,false,$language);
@@ -154,14 +196,33 @@ class OrderService extends OrderBaseService
      */
     public function getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $coupon_id=0)
     {
-        if($cart_ids && !is_array($cart_ids)) {
-            $cart_ids = explode(',', $cart_ids);
+        if(empty($cart_ids) || !is_array($cart_ids)) {
+            throw new UnprocessableEntityHttpException("[cart_ids]参数错误");
+        }
+
+        $cartIds = [];
+        $discounts = [];
+
+        foreach ($cart_ids as $cart) {
+            if(empty($cart['cart_id'])) {
+                throw new UnprocessableEntityHttpException("[cart_id]参数错误");
+            }
+
+            $cartIds[] = $cart['cart_id'];
+
+            if(!empty($cart['discount'])) {
+                $discounts[$cart['cart_id']] = $cart['discount'];
+            }
         }
         
-        $cart_list = OrderCart::find()->where(['member_id'=>$buyer_id,'id'=>$cart_ids])->all();
+        $cart_list = OrderCart::find()->where(['member_id'=>$buyer_id,'id'=>$cartIds])->all();
 
         if(empty($cart_list)) {
             throw new UnprocessableEntityHttpException("订单商品查询失败");
+        }
+
+        foreach ($cart_list as &$item) {
+            $item['coupon_id'] = $discounts[$item['id']]??0;
         }
 
         $buyerAddress = Address::find()->where(['id'=>$buyer_address_id,'member_id'=>$buyer_id])->one();

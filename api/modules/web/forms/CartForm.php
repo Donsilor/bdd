@@ -17,6 +17,7 @@ class CartForm extends Model
     public $goods_num;//商品数量
     public $group_type;
     public $group_id;
+    public $coupon_id;//折扣券ID
     
     /**
      * @inheritdoc
@@ -25,18 +26,19 @@ class CartForm extends Model
     {
         return [
              [['goods_id','goods_type','goods_num'], 'required'],
-             [['goods_id','goods_type','goods_num','group_type','group_id'], 'number'],
+             [['goods_id','goods_type','goods_num','group_type','group_id','coupon_id'], 'number'],
         ];
     }
     
     public function attributeLabels()
     {
         return [
-                'goods_id' => 'goods_id',
-                'goods_type' => 'goods_type',
-                'goods_num' => 'goods_num', 
-                'group_type' => 'group_type',
-                'group_id' => 'group_id',
+            'goods_id' => 'goods_id',
+            'goods_type' => 'goods_type',
+            'goods_num' => 'goods_num',
+            'group_type' => 'group_type',
+            'group_id' => 'group_id',
+            'coupon_id' => 'coupon_id',
         ];
     }
     
