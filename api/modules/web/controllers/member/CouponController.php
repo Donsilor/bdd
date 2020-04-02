@@ -4,7 +4,10 @@ namespace api\modules\web\controllers\member;
 
 use \api\controllers\UserAuthController;
 use common\enums\CouponStatusEnum;
+use common\models\market\MarketCoupon;
 use common\models\market\MarketCouponDetails;
+use services\market\CouponService;
+use yii\web\UnprocessableEntityHttpException;
 
 class CouponController extends UserAuthController
 {
@@ -40,6 +43,25 @@ class CouponController extends UserAuthController
         }
         $result['data'] = $couponList;
         return $result;
+    }
+
+    /**
+     * 领取优惠券
+     */
+    public function actionFetch()
+    {
+        try {
+            $coupon_id = \Yii::$app->request->post('coupon_id');
+
+            $couponDetails = CouponService::fetchCoupon($coupon_id, $this->member_id);
+
+        } catch (\Exception $exception) {
+            throw $exception;
+        }
+
+        return [
+            'id' => $couponDetails->id,
+        ];
     }
 
 }

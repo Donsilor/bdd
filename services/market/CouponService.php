@@ -4,6 +4,7 @@ namespace services\market;
 
 use common\components\Service;
 use common\enums\AreaEnum;
+use common\enums\CouponStatusEnum;
 use common\enums\OrderStatusEnum;
 use common\enums\OrderTouristStatusEnum;
 use common\enums\PayStatusEnum;
@@ -12,6 +13,7 @@ use common\models\goods\Goods;
 use common\models\goods\Style;
 use common\models\market\MarketCoupon;
 use common\models\market\MarketCouponArea;
+use common\models\market\MarketCouponDetails;
 use common\models\market\MarketCouponGoods;
 use common\models\market\MarketCouponGoodsType;
 use common\models\member\Member;
@@ -114,6 +116,57 @@ class CouponService extends Service
         ];
 
         return MarketCoupon::updateAll($data, $where) > 0;
+    }
+
+    /**
+     * @param int $coupon_id 活动ID
+     * @param int $member_id 会员ID
+     * @throws UnprocessableEntityHttpException
+     */
+    static public function fetchCoupon($coupon_id, $member_id)
+    {
+        $coupon = MarketCoupon::findOne($coupon_id);
+
+        if(!$coupon) {
+            throw new UnprocessableEntityHttpException("参数错误");
+        }
+
+        //活动状态判断
+        if(!$coupon->status || !$coupon->specials->status) {
+            throw new UnprocessableEntityHttpException("券不能被领取");
+        }
+
+        //活动时间判断
+        if($coupon->specials->end_time<time()) {
+            throw new UnprocessableEntityHttpException("活动已结束");
+        }
+
+        //折扣券剩余判断
+        if($coupon->count<=$coupon->get_count) {
+            throw new UnprocessableEntityHttpException("券已被领完了");
+        }
+
+        //券的使用数加1
+        CouponService::incrMoneyUse($coupon->id, 1);
+
+        $couponDetails = new MarketCouponDetails();
+        $couponDetails->setAttributes([
+            //'merchant_id' => $coupon->specials_id,
+            'specials_id' => $coupon->specials_id,
+            'coupon_id' => $coupon->coupon_id,
+            'coupon_code' => '',
+            'coupon_status' => CouponStatusEnum::COUPON_FETCH,
+            'member_id' => $member_id,
+            'get_type' => 2,
+            'fetch_time' => time(),
+        ]);
+
+        $couponDetails->save();
+        if(!$couponDetails->save()) {
+            throw new UnprocessableEntityHttpException("券保存失败");
+        }
+
+        return $couponDetails;
     }
 
     /**
