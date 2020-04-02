@@ -88,6 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ], */
             ]
         ]); ?>
+        <?= $form->field($model, 'recommend_text')->textarea(['rows'=>4])->hint('1、请在此输入款式编码，款式编码之前请用英文逗号","隔开。<br/> 2、活动页不同类型的推荐商品请用换行区分。') ?>
         <?= $form->field($model, 'type')->radioList(PreferentialTypeEnum::getMap()); ?>
         <?= $form->field($model, 'product_range')->radioList(ProductRangeEnum::getMap()); ?>
         <?= $form->field($model, 'status')->radioList(StatusEnum::getMap()); ?>
