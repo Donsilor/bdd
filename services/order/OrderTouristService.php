@@ -227,7 +227,16 @@ class OrderTouristService extends OrderBaseService
             throw new UnprocessableEntityHttpException($this->getError($order));
         }
 
-        //订单地址信息
+        //更新优惠券信息
+        if($coupon = MarketCouponDetails::findOne(['order_sn'=>$order->order_sn])) {
+            $coupon->order_id = $order->id;
+            $coupon->member_id = $member->id;
+            if(false === $coupon->save()) {
+                throw new UnprocessableEntityHttpException($this->getError($coupon));
+            }
+        }
+
+       //订单地址信息
         $orderAddress = new OrderAddress();
         $orderAddress->attributes = [
             'order_id' => $order->id,

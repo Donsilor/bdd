@@ -186,7 +186,7 @@ class OrderBaseService extends Service
         $safe_fee = 0;//保险费
         $other_fee = 0;//其他费用
 
-        $order_amount = $goods_amount - $discount_amount + $shipping_fee + $tax_fee + $safe_fee + $other_fee;//订单总金额
+        $order_amount = $goods_amount + $shipping_fee + $tax_fee + $safe_fee + $other_fee;//订单总金额
 
         //保存订单信息
         $result = [];
