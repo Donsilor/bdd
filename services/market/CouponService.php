@@ -67,6 +67,10 @@ class CouponService extends Service
                     throw new \Exception('error');
                 }
 
+                if(!in_array($type_id, $coupon->goods_type_attach)) {
+                    throw new \Exception('error');
+                }
+
                 $goods = new MarketCouponGoods();
                 $goods->setAttributes($where);
                 $goods->specials_id = $coupon->specials_id;
@@ -77,7 +81,7 @@ class CouponService extends Service
             }
             else {
                 $data = [
-                    'get_count'=> new Expression("get_count-({$num})")
+                    'get_count'=> new Expression("get_count+({$num})")
                 ];
                 $where = ['and'];
                 $where[] = [
@@ -104,12 +108,13 @@ class CouponService extends Service
     static public function incrMoneyUse($coupon_id, $num)
     {
         $data = [
-            'get_count'=> new Expression("get_count-({$num})")
+            'get_count'=> new Expression("get_count+({$num})")
         ];
 
         $where = ['and'];
         $where[] = [
-            'id' => $coupon_id
+            'id' => $coupon_id,
+            'type' => PreferentialTypeEnum::MONEY
         ];
         $where[] = [
             '<', 'get_count', new Expression("count")
@@ -121,6 +126,7 @@ class CouponService extends Service
     /**
      * @param int $coupon_id 活动ID
      * @param int $member_id 会员ID
+     * @return MarketCouponDetails
      * @throws UnprocessableEntityHttpException
      */
     static public function fetchCoupon($coupon_id, $member_id)
@@ -153,8 +159,8 @@ class CouponService extends Service
         $couponDetails->setAttributes([
             //'merchant_id' => $coupon->specials_id,
             'specials_id' => $coupon->specials_id,
-            'coupon_id' => $coupon->coupon_id,
-            'coupon_code' => '',
+            'coupon_id' => $coupon->id,
+            'coupon_code' => self::generatedCouponSn(),
             'coupon_status' => CouponStatusEnum::COUPON_FETCH,
             'member_id' => $member_id,
             'get_type' => 2,
@@ -167,6 +173,15 @@ class CouponService extends Service
         }
 
         return $couponDetails;
+    }
+
+    /**
+     * @param string $prefix
+     * @return string
+     */
+    static public function generatedCouponSn($prefix = 'CP')
+    {
+        return $prefix.date('Ymd').mt_rand(3,9).str_pad(mt_rand(1, 99999),6,'1',STR_PAD_LEFT);
     }
 
     /**
@@ -495,8 +510,8 @@ class CouponService extends Service
                     'specials_id' => $money->specials_id,
                     'count' => $money->count,
                     'get_count' => $money->get_count,
-                    'money' => self::exchangeAmount($money->money),
-                    'at_least' => self::exchangeAmount($money->at_least),
+                    'money' => self::_exchangeAmount($money->money),
+                    'at_least' => self::_exchangeAmount($money->at_least),
 //                    'price' => $style['price']-$price,//这里需要汇率转换
                 ];
 
@@ -541,7 +556,7 @@ class CouponService extends Service
      * @return array
      * @throws UnprocessableEntityHttpException
      */
-    static private function exchangeAmount($money)
+    static public function _exchangeAmount($money)
     {
         return \Yii::$app->services->currency->exchangeAmount($money);
     }
