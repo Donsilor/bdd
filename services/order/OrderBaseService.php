@@ -117,7 +117,7 @@ class OrderBaseService extends Service
             $orderGoods['goods_price'] = $sale_price;//单位价格
             $orderGoods['goods_pay_price'] = $sale_price;//实际支付价格
             $orderGoods['goods_num'] = $item['goods_num'];//数量
-            $orderGoods['goods_type'] = $item['type_id'];//产品线
+            $orderGoods['goods_type'] = $goods['type_id'];//产品线
             $orderGoods['goods_image'] = $goods['goods_image'];//商品图片
             $orderGoods['coupon_id'] = $item['coupon_id']??0;//活动折扣券ID（折扣需要提交此ID）
 
@@ -158,7 +158,7 @@ class OrderBaseService extends Service
             $goodsPrice = floatval($orderGoods['goods_price']);
 
             //商品总价计算
-            $goods_amount += ($goodsPrice * $orderGoods['num']);
+            $goods_amount += ($goodsPrice * $orderGoods['goods_num']);
 
             if($orderGoods['coupon_id']!=0) {
                 //如果使用折扣券
