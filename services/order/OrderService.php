@@ -38,7 +38,7 @@ class OrderService extends OrderBaseService
         if($coupon_details_id) {
             $where = [
                 'id' => $coupon_details_id,
-                'owner_id' => $coupon_details_id,
+                'member_id' => $coupon_details_id,
             ];
             if($couponDetails = MarketCouponDetails::findOne($where)) {
                 $coupon_id = $couponDetails->coupon_id;
@@ -93,7 +93,7 @@ class OrderService extends OrderBaseService
 
             $where = [
                 'id' => $coupon_details_id,
-                'owner_id' => $buyer_id,
+                'member_id' => $buyer_id,
                 'coupon_status' => 1,
             ];
 
