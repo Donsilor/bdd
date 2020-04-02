@@ -515,7 +515,7 @@ class CouponService extends Service
 //                    'price' => $style['price']-$price,//这里需要汇率转换
                 ];
 
-                $coupons[$money->id] = $coupon;
+                $coupons[] = $coupon;
 
                 if(!isset($couponsList[$money->id])) {
                     //累加金额
@@ -532,22 +532,28 @@ class CouponService extends Service
             if(!empty($coupons)) {
                 //排序
                 $coupons = self::arraySort($coupons, 'money');
-                $record['coupon']['money'] = $coupons;
-            }
-        }
+                $moneys = [];
+                foreach ($coupons as $coupon) {
+                    $moneys[$coupon['coupon_id']] = $coupon;
+                }
 
-        foreach ($couponsList as $key => $item) {
-            //过滤不能使用的券
-            if($item['at_least']!=0 && $item['at_least'] > $item['price']) {
-                unset($couponsList[$key]);
+                $record['coupon']['money'] = $moneys;
             }
         }
 
         //排序
         $couponsList = self::arraySort($couponsList, 'money');
 
+        $result = [];
+        foreach ($couponsList as $key => $item) {
+            //过滤不能使用的券
+            if($item['at_least']==0 || $item['at_least'] <= $item['price']) {
+                $result[$item['coupon_id']] = $item;
+            }
+        }
+
         //返回可以使用券的列表
-        return $couponsList;
+        return $result;
     }
 
     /**

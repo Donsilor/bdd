@@ -3,6 +3,7 @@
 namespace services\order;
 
 use common\components\Service;
+use common\enums\CouponStatusEnum;
 use common\enums\OrderStatusEnum;
 use common\enums\OrderTouristStatusEnum;
 use common\enums\PayStatusEnum;
@@ -88,9 +89,9 @@ class OrderTouristService extends OrderBaseService
 
             $couponDetails = new MarketCouponDetails();
             $couponDetails->setAttributes([
-                'specials_id' => '',
+                'specials_id' => $orderAccountTax['coupon']['specials_id'],
                 'coupon_id' => $coupon_id,
-                'coupon_code' => '',
+                'coupon_code' => CouponService::generatedCouponSn(),
                 'order_sn' => $order->order_sn,
                 'get_type' => 3,
                 'coupon_status' => 2,
@@ -287,9 +288,9 @@ class OrderTouristService extends OrderBaseService
                 'goods_type' => $detail->goods_type,
                 'goods_name' => $detail->goods_name,
                 'goods_price' => $detail->goods_price,
+                'goods_pay_price' => $detail->goods_pay_price,
                 'goods_num' => $detail->goods_num,
                 'goods_image' => $detail->goods_image,
-                'goods_pay_price' => $detail->goods_pay_price,
                 'coupon_id' => $detail->coupon_id,
                 'goods_spec' => $detail->goods_spec,
                 'goods_attr' => $detail->goods_attr,
