@@ -5,6 +5,7 @@ namespace api\modules\wap\controllers\home;
 use api\controllers\OnAuthController;
 use common\helpers\ImageHelper;
 use common\models\goods\Style;
+use services\market\CouponService;
 
 
 /**
@@ -39,8 +40,18 @@ class IndexController extends OnAuthController
             $moduleGoods['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'mid');
             $moduleGoods['goodsName'] = $val['style_name'];
             $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price']);
+
+            $moduleGoods['coupon'] = [
+                'type_id' => $type_id,//产品线ID
+                'style_id' => $val['id'],//款式ID
+                'price' => $moduleGoods['salePrice'],//价格
+                'num' =>1,//数量
+            ];
+
             $webSite['moduleGoods'][] = $moduleGoods;
         }
+
+        CouponService::getCouponByList($this->getAreaId(), $webSite['moduleGoods']);
 
         $advert_list = \Yii::$app->services->advert->getTypeAdvertImage(0,2, $language);
         $advert = array();

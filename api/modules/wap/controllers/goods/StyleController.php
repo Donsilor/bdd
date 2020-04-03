@@ -9,6 +9,7 @@ use common\models\goods\Style;
 use common\helpers\ResultHelper;
 use common\models\goods\StyleLang;
 use common\models\goods\StyleMarkup;
+use services\market\CouponService;
 use yii\db\Exception;
 use yii\db\Expression;
 use common\models\goods\AttributeIndex;
@@ -143,8 +144,17 @@ class StyleController extends OnAuthController
             $arr['isJoin'] = null;
             $arr['showType'] = 2;
             $arr['specsModels'] = null;
+
+            $arr['coupon'] = [
+                'type_id' => $type_id,//产品线ID
+                'style_id' => $val['id'],//款式ID
+                'price' => $arr['salePrice'],//价格
+                'num' =>1,//数量
+            ];
+
             $val = $arr;
         }
+        CouponService::getCouponByList($this->getAreaId(), $result['data']);
         return $result;
 
     }
@@ -169,8 +179,19 @@ class StyleController extends OnAuthController
             $moduleGoods['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'mid');
             $moduleGoods['goodsName'] = $val['style_name'];
             $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price']);
+
+            $moduleGoods['coupon'] = [
+                'type_id' => $type_id,//产品线ID
+                'style_id' => $val['id'],//款式ID
+                'price' => $moduleGoods['salePrice'],//价格
+                'num' =>1,//数量
+            ];
+
             $webSite['moduleGoods'][] = $moduleGoods;
         }
+
+        CouponService::getCouponByList($this->getAreaId(), $webSite['moduleGoods']);
+
         $advert_list = \Yii::$app->services->advert->getTypeAdvertImage(0,3, $language);
         $advert = array();
         foreach ($advert_list as $val){
@@ -248,9 +269,18 @@ class StyleController extends OnAuthController
                 $recommend['isJoin'] = null;
                 $recommend['specsModels'] = null;
                 $recommend['coinType'] = $this->getCurrencySign();
+
+                $recommend['coupon'] = [
+                    'type_id' => $model->type_id,//产品线ID
+                    'style_id' => $val->id,//款式ID
+                    'price' => $recommend['salePrice'],//价格
+                    'num' =>1,//数量
+                ];
+
                 $style['recommends'][] = $recommend;
             }
 
+            CouponService::getCouponByList($this->getAreaId(), $style['recommends']);
 
             $model->goods_clicks = new Expression("goods_clicks+1");
             $model->virtual_clicks = new Expression("virtual_clicks+1");
