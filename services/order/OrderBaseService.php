@@ -203,6 +203,7 @@ class OrderBaseService extends Service
 
         $result['plan_days'] = '1-2';//$this->getDeliveryTimeByGoods($orderGoodsList);;
         $result['orderGoodsList'] = $orderGoodsList;
+        $result['coupons'] = $coupons;
         $result['coupon'] = $coupons[$coupon_id]??[];
 
         return $result;

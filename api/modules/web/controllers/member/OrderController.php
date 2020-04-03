@@ -5,6 +5,7 @@ namespace api\modules\web\controllers\member;
 use common\helpers\ImageHelper;
 use common\helpers\ResultHelper;
 use api\controllers\UserAuthController;
+use common\models\market\MarketCouponDetails;
 use common\models\member\Member;
 use yii\base\Exception;
 use common\models\order\Order;
@@ -132,10 +133,11 @@ class OrderController extends UserAuthController
             $model = new OrderCreateForm();
             $model->attributes = \Yii::$app->request->post();
             $invoiceInfo = \Yii::$app->request->post('invoice');
+            $coupon_id = \Yii::$app->request->post('coupon_id',0);
             if(!$model->validate()) {
                 return ResultHelper::api(422,$this->getError($model));
             }
-            $result = \Yii::$app->services->order->createOrder($model->cart_ids, $this->member_id, $model->buyer_address_id,$model->toArray(),$invoiceInfo);
+            $result = \Yii::$app->services->order->createOrder($model->carts, $this->member_id, $model->buyer_address_id,$model->toArray(),$invoiceInfo,$coupon_id);
             $trans->commit();
             //订单发送邮件
             \Yii::$app->services->order->sendOrderNotification($result['order_id']);
@@ -359,21 +361,38 @@ class OrderController extends UserAuthController
      */
     public function actionTax()
     {
-        $cartIds = \Yii::$app->request->post("cartIds");
+        $carts = \Yii::$app->request->post("carts");
         $addressId = \Yii::$app->request->post("addressId");
-        if(empty($cartIds)) {
-            return ResultHelper::api(422,"cartIds不能为空");
+        $coupon_id = \Yii::$app->request->post("coupon_id");
+        if(empty($carts)) {
+            return ResultHelper::api(422,"carts不能为空");
         }
-        $taxInfo = \Yii::$app->services->order->getOrderAccountTax($cartIds, $this->member_id, $addressId); 
+        $taxInfo = \Yii::$app->services->order->getOrderAccountTax($carts, $this->member_id, $addressId, $coupon_id);
+
+        $myCoupons = [];
+
+        $where = [];
+        $where['member_id'] = $this->member_id;
+        $where['coupon_status'] = 1;
+        $where['coupon_id'] = array_keys($taxInfo['coupons']);
+        $conpouList = MarketCouponDetails::find()->where($where)->select('coupon_id')->distinct('coupon_id')->asArray()->all();
+
+        foreach ($conpouList as $item) {
+            $myCoupons[] = $item['coupon_id'];
+        }
+
         return [
-                'logisticsFee' => $taxInfo['shipping_fee'],
-                'orderAmount'  => $taxInfo['order_amount'],
-                'productAmount' => $taxInfo['goods_amount'],
-                'safeFee'=> $taxInfo['safe_fee'],
-                'taxFee'  => $taxInfo['tax_fee'],
-                'planDays' => $taxInfo['plan_days'],
-                'currency' => $taxInfo['currency'],
-                'exchangeRate'=> $taxInfo['exchange_rate']
+            'logisticsFee' => $taxInfo['shipping_fee'],
+            'orderAmount'  => $taxInfo['order_amount'],
+            'productAmount' => $taxInfo['goods_amount'],
+            'preferFee' => $taxInfo['discount_amount'],
+            'safeFee'=> $taxInfo['safe_fee'],
+            'taxFee'  => $taxInfo['tax_fee'],
+            'planDays' => $taxInfo['plan_days'],
+            'currency' => $taxInfo['currency'],
+            'exchangeRate'=> $taxInfo['exchange_rate'],
+            'coupons' => $taxInfo['coupons'],
+            'myCoupons' => $myCoupons,
         ];
     }
     

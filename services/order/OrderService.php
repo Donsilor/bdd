@@ -30,21 +30,18 @@ class OrderService extends OrderBaseService
      * @param int $buyer_address_id
      * @param array $order_info
      * @param array $invoice_info
-     * @param int $coupon_details_id
+     * @param int $coupon_id
      */
-    public function createOrder($cart_ids,$buyer_id, $buyer_address_id, $order_info, $invoice_info, $coupon_details_id=0)
+    public function createOrder($cart_ids,$buyer_id, $buyer_address_id, $order_info, $invoice_info, $coupon_id=0)
     {
-        $coupon_id = 0;
-        if($coupon_details_id) {
+        if($coupon_id) {
             $where = [
-                'id' => $coupon_details_id,
-                'member_id' => $coupon_details_id,
+                'coupon_id' => $coupon_id,
+                'member_id' => $buyer_id,
+                'coupon_status' => 1,
             ];
-            if($couponDetails = MarketCouponDetails::findOne($where)) {
-                $coupon_id = $couponDetails->coupon_id;
-            }
-            else {
-                throw new UnprocessableEntityHttpException("收货地址不能为空");
+            if(!($couponDetails = MarketCouponDetails::findOne($where))) {
+                throw new UnprocessableEntityHttpException("优惠券已失效");
             }
         }
 
@@ -79,7 +76,7 @@ class OrderService extends OrderBaseService
             throw new UnprocessableEntityHttpException($this->getError($order));
         }
 
-        if($coupon_details_id) {
+        if($coupon_id) {
             //使用优惠券
             //CouponService::incrMoneyUse($coupon_id, 1);
 
@@ -92,12 +89,14 @@ class OrderService extends OrderBaseService
             ];
 
             $where = [
-                'id' => $coupon_details_id,
+                'id' => $couponDetails->id,
                 'member_id' => $buyer_id,
                 'coupon_status' => 1,
             ];
 
-            MarketCouponDetails::updateAll($data, $where);
+            if(!MarketCouponDetails::updateAll($data, $where)) {
+                throw new UnprocessableEntityHttpException("优惠券使用失败");
+            }
         }
 
         //订单商品       
@@ -187,35 +186,35 @@ class OrderService extends OrderBaseService
     }
     /**
      * 获取订单金额，税费信息
-     * @param unknown $cart_ids
+     * @param array $carts
      * @param unknown $buyer_id
      * @param unknown $buyer_address_id
      * @param int $coupon_id
      * @throws UnprocessableEntityHttpException
      * @return array
      */
-    public function getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $coupon_id=0)
+    public function getOrderAccountTax($carts, $buyer_id, $buyer_address_id, $coupon_id=0)
     {
-        if(empty($cart_ids) || !is_array($cart_ids)) {
-            throw new UnprocessableEntityHttpException("[cart_ids]参数错误");
+        if(empty($carts) || !is_array($carts)) {
+            throw new UnprocessableEntityHttpException("[carts]参数错误");
         }
 
         $cartIds = [];
         $discounts = [];
 
-        foreach ($cart_ids as $cart) {
+        foreach ($carts as $cart) {
             if(empty($cart['cart_id'])) {
-                throw new UnprocessableEntityHttpException("[cart_id]参数错误");
+                throw new UnprocessableEntityHttpException("[carts]参数错误");
             }
 
             $cartIds[] = $cart['cart_id'];
 
-            if(!empty($cart['discount'])) {
-                $discounts[$cart['cart_id']] = $cart['discount'];
+            if(!empty($cart['coupon_id'])) {
+                $discounts[$cart['cart_id']] = $cart['coupon_id'];
             }
         }
         
-        $cart_list = OrderCart::find()->where(['member_id'=>$buyer_id,'id'=>$cartIds])->all();
+        $cart_list = OrderCart::find()->where(['member_id'=>$buyer_id,'id'=>$cartIds])->asArray()->all();
 
         if(empty($cart_list)) {
             throw new UnprocessableEntityHttpException("订单商品查询失败");
