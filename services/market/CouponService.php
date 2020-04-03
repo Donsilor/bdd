@@ -384,7 +384,7 @@ class CouponService extends Service
 //            'type_id',//产品线ID
 //            'style_id',//款式ID
 //            'price',//价格
-//            'price',//币种
+//            'num',//币种
 //        ];
 
         //产品线ID

@@ -146,7 +146,7 @@ class OrderBaseService extends Service
 
         if($coupon_id) {
             if(!isset($coupons[$coupon_id])) {
-                throw new UnprocessableEntityHttpException("优惠券不能使用");
+                throw new UnprocessableEntityHttpException("优惠券已失效");
             }
             else {
                 //优惠券优惠金额
@@ -163,7 +163,7 @@ class OrderBaseService extends Service
             if($orderGoods['coupon_id']!=0) {
                 //如果使用折扣券
                 if(!isset($orderGoods['coupon']['discount']) || $orderGoods['coupon']['discount']['coupon_id']!=$orderGoods['coupon_id']) {
-                    throw new UnprocessableEntityHttpException("折扣不能使用");
+                    throw new UnprocessableEntityHttpException("折扣已失效");
                 }
 
                 $coupon = $orderGoods['coupon']['discount'];
@@ -227,7 +227,7 @@ class OrderBaseService extends Service
 
         //判断是期货还是现货
         $delivery_type = 'stock_time';
-        foreach ($goods_list as $goods){
+        foreach ($goods_list as $goods) {
             //产品线是裸钻或者戒托的是期货
             if(in_array($goods['goods_type'],[15,12])){
                 $delivery_type = 'futures_time';

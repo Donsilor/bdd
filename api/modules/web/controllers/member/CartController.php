@@ -9,6 +9,7 @@ use common\models\order\OrderCart;
 use api\modules\web\forms\CartForm;
 use common\helpers\ResultHelper;
 use api\controllers\UserAuthController;
+use services\market\CouponService;
 use yii\base\Exception;
 use yii\web\UnprocessableEntityHttpException;
 
@@ -60,6 +61,13 @@ class CartController extends UserAuthController
             $cart['groupType'] = $model->group_type;
             $cart['goodsType'] = $model->goods_type;
             $cart['groupId'] = $model->group_id;
+            $cart['coupon'] = [
+                'type_id' => $model->goods_type,//产品线ID
+                'style_id' => $goods['style_id'],//款式ID
+                'price' => $sale_price,//价格
+                'num' =>1,//数量
+            ];
+
             $simpleGoodsEntity = [
                     "goodId"=>$goods['style_id'],
                     "goodsDetailsId"=>$model->goods_id,
@@ -128,6 +136,7 @@ class CartController extends UserAuthController
          
             $cart_list[] = $cart;
         }
+        CouponService::getCouponByList($this->getAreaId(), $cart_list);
         return $cart_list;
     }
     /**

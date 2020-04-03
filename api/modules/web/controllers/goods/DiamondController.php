@@ -9,6 +9,7 @@ use common\models\goods\DiamondLang;
 use api\controllers\OnAuthController;
 use common\helpers\ResultHelper;
 use common\models\goods\StyleMarkup;
+use services\market\CouponService;
 use yii\db\Expression;
 
 
@@ -127,9 +128,17 @@ class DiamondController extends OnAuthController
             $specsModels['shape'] = \Yii::$app->attr->valueName($val['shape']);
             $specsModels['symmetry'] = \Yii::$app->attr->valueName($val['symmetry']);
             $arr['specsModels'] = $specsModels;
+
+            $arr['coupon'] = [
+                'type_id' => $type_id,//产品线ID
+                'style_id' => $arr['style_id'],//款式ID
+                'price' => $arr['salePrice'],//价格
+                'num' =>1,//数量
+            ];
             $val = $arr;
 
         }
+        CouponService::getCouponByList($this->getAreaId(), $result['data']);
         return $result;
 
     }
@@ -170,7 +179,7 @@ class DiamondController extends OnAuthController
 
         $diamond = array();
         $diamond['id'] = $model->style_id;
-        $diamond['categoryId'] = 1;
+        $diamond['categoryId'] = 15;
         $diamond['coinType'] = $this->getCurrencySign();
         $diamond['goodsName'] = $model->lang->goods_name;
         $diamond['goodsCode'] = $model->goods_sn;
@@ -264,6 +273,8 @@ class DiamondController extends OnAuthController
         }
         $diamond['specs'] = $specs;
 
+        $diamond['coupon'] = CouponService::getCouponByStyleInfo($this->getAreaId(), $diamond['categoryId'], $diamond['id'], $diamond['salePrice']);
+
         $model->goods_clicks = new Expression("goods_clicks+1");
         $model->virtual_clicks = new Expression("virtual_clicks+1");
         $model->save(false);//更新浏览量
@@ -294,8 +305,19 @@ class DiamondController extends OnAuthController
             $moduleGoods['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'big');
             $moduleGoods['goodsName'] = $val['style_name'];
             $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price']);
+
+            $moduleGoods['coupon'] = [
+                'type_id' => $type_id,//产品线ID
+                'style_id' => $moduleGoods['id'],//款式ID
+                'price' => $moduleGoods['salePrice'],//价格
+                'num' =>1,//数量
+            ];
+
             $webSite['moduleGoods'][] = $moduleGoods;
         }
+
+        CouponService::getCouponByList($this->getAreaId(), $webSite['moduleGoods']);
+
         $result = array();
         $result['webSite'] = $webSite;
         $result['advert'] = array(

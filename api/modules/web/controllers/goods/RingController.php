@@ -12,6 +12,7 @@ use api\controllers\OnAuthController;
 use common\helpers\ResultHelper;
 use common\models\goods\StyleLang;
 use common\models\goods\StyleMarkup;
+use services\market\CouponService;
 use yii\base\Exception;
 use yii\db\Expression;
 use common\models\goods\AttributeIndex;
@@ -223,8 +224,18 @@ class RingController extends OnAuthController
                 $searchGoods['isJoin'] = null;
                 $searchGoods['salePrice'] = $style['salePrice'];
                 $searchGoods['specsModels'] = null;
+
+                $searchGoods['coupon'] = [
+                    'type_id' => $style['categoryId'],//产品线ID
+                    'style_id' => $style['id'],//款式ID
+                    'price' => $style['salePrice'],//价格
+                    'num' =>1,//数量
+                ];
+
                 $searchGoodsModels[] = $searchGoods;
             }
+
+            CouponService::getCouponByList($this->getAreaId(), $searchGoodsModels);
 
             $ring['goodsModels'] = $goodsModels;
             $ring['searchGoodsModels'] = $searchGoodsModels;
@@ -269,8 +280,17 @@ class RingController extends OnAuthController
             $moduleGoods['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'big');
             $moduleGoods['goodsName'] = $val['style_name'];
             $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price']);
+
+            $moduleGoods['coupon'] = [
+                'type_id' => $type_id,//产品线ID
+                'style_id' => $val['id'],//款式ID
+                'price' => $moduleGoods['salePrice'],//价格
+                'num' =>1,//数量
+            ];
+
             $result['moduleGoods'][] = $moduleGoods;
         }
+        CouponService::getCouponByList($this->getAreaId(), $result['moduleGoods']);
         return $result;
     }
 

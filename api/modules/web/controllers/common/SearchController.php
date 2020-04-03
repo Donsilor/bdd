@@ -9,6 +9,7 @@ use common\models\goods\Style;
 use common\models\goods\StyleLang;
 use common\models\goods\Ring;
 use common\models\goods\RingLang;
+use services\market\CouponService;
 use yii\db\Query;
 use common\models\goods\StyleMarkup;
 use yii\data\Pagination;
@@ -83,8 +84,19 @@ class SearchController extends OnAuthController
             $arr['goodsName'] = $val['style_name'];
             $arr['isJoin'] = null;
             $arr['specsModels'] = null;
+
+            $arr['coupon'] = [
+                'type_id' => $val['type_id'],//产品线ID
+                'style_id' => $val['id'],//款式ID
+                'price' => $arr['salePrice'],//价格
+                'num' =>1,//数量
+            ];
+
             $val = $arr;
         }
+
+        CouponService::getCouponByList($this->getAreaId(), $result['data']);
+
         return $result;
 
     }

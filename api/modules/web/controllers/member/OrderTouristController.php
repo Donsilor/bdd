@@ -205,8 +205,9 @@ class OrderTouristController extends OnAuthController
 //            'orderType' => $order->order_type,
             'payChannel' => 6,
 //            'productCount' => count($orderDetails),
-            'preferFee' => $order->discount_amount, //优惠金额
             'productAmount' => $order->goods_amount,
+            'preferFee' => $order->discount_amount, //优惠金额
+            'payAmount' => $order->pay_amount, //支付金额
             'logisticsFee' => $order->shipping_fee,
             'orderAmount' => $order->order_amount,
             'otherFee' => $order->other_fee,
