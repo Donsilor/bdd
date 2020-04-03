@@ -229,6 +229,7 @@ class OrderTouristController extends OnAuthController
     public function actionTax()
     {
         $goodsCartList = \Yii::$app->request->post('goodsCartList');
+        $coupon_id = \Yii::$app->request->post('coupon_id');
         if (empty($goodsCartList)) {
             return ResultHelper::api(422, "goodsCartList不能为空");
         }
@@ -246,7 +247,7 @@ class OrderTouristController extends OnAuthController
         }
 
         try {
-            $taxInfo = \Yii::$app->services->orderTourist->getCartAccountTax($cartList);
+            $taxInfo = \Yii::$app->services->orderTourist->getCartAccountTax($cartList, $coupon_id);
         } catch (\Exception $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
