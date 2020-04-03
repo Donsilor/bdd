@@ -168,8 +168,8 @@ class OrderBaseService extends Service
 
                 $coupon = $orderGoods['coupon']['discount'];
 
-                //折扣价计算
-                $orderGoods['goods_pay_price'] = $goodsPrice * ($coupon['discount'])/100;
+                //支付折扣价
+                $orderGoods['goods_pay_price'] = $coupon['price'];
 
                 //计算优惠金额
                 $discount_amount += ($goodsPrice - $orderGoods['goods_pay_price']);

@@ -480,7 +480,8 @@ class CouponService extends Service
 
             //如果没有折扣，则获到优惠券列表
             if(!empty($coupon)) {
-                $coupon['price'] = $style['price']*$coupon['discount']/100;
+                //折扣价格计算
+                $coupon['price'] = round($style['price']*$coupon['discount']/100, 2);
                 $record['coupon']['discount'] = $coupon;
                 continue;
             }

@@ -139,7 +139,7 @@ class TypeService extends Service
             $language = Yii::$app->params['language'];
         }
         $query = Type::find()->alias('a');
-        $model = $query->leftJoin('{{%goods_type}} b', 'b.pid = a.id')
+        $model = $query->leftJoin('{{%goods_type}} b', 'b.pid = a.id and b.status=1')
         ->leftJoin('{{%goods_type_lang}} c', 'c.master_id = a.id and c.language = "'.$language.'"')
         ->andWhere(['a.status'=>1])
         ->andWhere(['b.id'=>null])
