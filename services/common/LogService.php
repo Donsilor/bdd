@@ -96,7 +96,15 @@ class LogService extends Service
 
         return $this->errData;
     }
-
+    /**
+     * 队列
+     * @param string $queueSwitch
+     */
+    public function queue($queueSwitch = false)
+    {
+        $this->queueSwitch = $queueSwitch;
+        return $this;
+    }
     /**
      * 推入日志
      *

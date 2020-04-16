@@ -43,11 +43,12 @@ class OrderAddress extends \common\models\base\BaseModel
     {
         return [
             [['order_id'], 'required'],
-            [['order_id', 'merchant_id', 'member_id', 'country_id', 'province_id', 'city_id', 'zip_code', 'created_at', 'updated_at'], 'integer'],
+            [['order_id', 'merchant_id', 'member_id', 'country_id', 'province_id', 'city_id',  'created_at', 'updated_at'], 'integer'],
             [['realname','email'], 'string', 'max' => 60],
             [['firstname', 'lastname','country_name', 'province_name', 'city_name'], 'string', 'max' => 30],
             [['address_details'], 'string', 'max' => 200],
             [['mobile'], 'string', 'max' => 20],
+            [['zip_code'], 'string', 'max' => 20],
             [['mobile_code'], 'string', 'max' => 10],
             [['order_id'], 'unique'],
         ];

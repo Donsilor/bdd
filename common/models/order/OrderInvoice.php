@@ -69,4 +69,13 @@ class OrderInvoice extends \common\models\base\BaseModel
             $this->addError($attribute, \Yii::t('order','企业发票税号不能为空'));
         }
     }
+
+    /**
+     * 对应订单电子发票扩展信息模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInvoiceEle()
+    {
+        return $this->hasOne(OrderInvoiceEle::class, ['invoice_id'=>'id']);
+    }
 }

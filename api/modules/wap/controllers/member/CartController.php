@@ -48,7 +48,7 @@ class CartController extends UserAuthController
             if($model->goods_type == \Yii::$app->params['goodsType.diamond']) {
                 $model->goods_type  = 1;//裸钻
             }
-            $sale_price = $this->exchangeAmount($goods['sale_price']);
+            $sale_price = $this->exchangeAmount($goods['sale_price'],0);
             $cart = array();
             $cart['id'] = $model->id;
             $cart['userId'] = $this->member_id;

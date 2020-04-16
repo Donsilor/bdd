@@ -274,7 +274,7 @@ class NotifyController extends Controller
                     PaypalLog::writeLog($messsage,'notify-'.date('Y-m-d').'.log');
                 }
                 else {
-                    $messsage = $logPrix.' isPaid:Failed'.PHP_EOL;;
+                    $messsage = $logPrix.' isPaid:Failed'.PHP_EOL;
                     $messsage .= 'response->getMessage:'.$response->getCode().'|'.$response->getMessage().PHP_EOL;
                     $messsage .= 'response->getData:'.var_export($response->getData(),true).PHP_EOL;                    
                     PaypalLog::writeLog($messsage,'notify-'.date('Y-m-d').'.log');
@@ -283,6 +283,7 @@ class NotifyController extends Controller
             } catch (\Exception $e) {
 
                 $transaction->rollBack();
+                Yii::$app->services->actionLog->create('PayPal钩子校验','Exception:'.$e->getMessage());
                 
                 $messsage = $logPrix.'Notify Exception:'.PHP_EOL;
                 $messsage .= 'Exception->message:'.$e->getCode().'|'.$e->getMessage().PHP_EOL;

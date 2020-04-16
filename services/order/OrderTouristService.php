@@ -43,7 +43,7 @@ class OrderTouristService extends OrderBaseService
             $goods = \Yii::$app->services->goods->getGoodsInfo($item['goods_id'], $item['goods_type']);
 
             //商品价格
-            $sale_price = $this->exchangeAmount($goods['sale_price']*$item['goods_num']);
+            $sale_price = $this->exchangeAmount($goods['sale_price'],0)*$item['goods_num'];
             $goods_amount += $sale_price;
 
             $detail = new OrderTouristDetails();
@@ -143,11 +143,11 @@ class OrderTouristService extends OrderBaseService
 
         /** @var Payment $payment */
         $payment = $pay->getPayment(['model'=>$payLog]);
-//        $payment->getPayer();
+//      $payment->getPayer();
 
         //记录订单日志
-        \Yii::error($payment->toArray());
-
+        //\Yii::error($payment->toArray());
+        \Yii::$app->services->actionLog->create('同步游客订单','订单号:'.$orderTourist->order_sn,$payment->toArray());
         /** @var PayerInfo $payerInfo */
         $payerInfo = $payment->getPayer()->getPayerInfo();
 

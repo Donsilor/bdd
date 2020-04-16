@@ -67,8 +67,10 @@ class PayController extends OnAuthController
             $config = $model->getConfig();
             $trans->commit();            
             return $config;
-        }catch (Exception $e) {
+        }catch (\Exception $e) {
+            
             $trans->rollBack();
+            \Yii::$app->services->actionLog->create('用户创建支付单号',$e->getMessage());
             throw  $e;
         }
     }
@@ -123,7 +125,9 @@ class PayController extends OnAuthController
 
         $urlInfo = parse_url($returnUrl);
         $query = parse_query($urlInfo['query']);
-
+        //记录验证日志
+        $orderId = $query['order_sn']??($query['orderId']??'');
+        Yii::$app->services->actionLog->create('用户支付校验','订单号:'.$orderId);
         //获取支付记录模型
         /**
          * @var $model PayLog
@@ -134,20 +138,20 @@ class PayController extends OnAuthController
             $result['verification_status'] = 'failed';
             return $result;
         }
-
-        //记录验证日志
-        Yii::$app->services->actionLog->create('verify', $model->out_trade_no);
-
+        
         $transaction = Yii::$app->db->beginTransaction();
-
-        try {
-
+        try {            
             //判断订单支付状态
             if ($model->pay_status == PayStatusEnum::PAID) {
-                $result['verification_status'] = 'completed';
+                $transaction->rollBack();
+                Yii::$app->services->actionLog->create('用户支付校验','支付结果: completed');
+                
+                $result['verification_status'] = 'completed';                
                 return $result;
-            }
-
+            }            
+            
+            //记录验证日志  
+            Yii::$app->services->actionLog->create('用户支付校验','支付单号:'.($model->out_trade_no));            
             $update = [
                 'pay_fee' => $model->total_fee,
                 'pay_status' => PayStatusEnum::PAID,
@@ -185,17 +189,18 @@ class PayController extends OnAuthController
                     $result['verification_status'] = 'failed';
                 }
                 else {
-                    $result['verification_status'] = 'null';
+                    $result['verification_status'] = $response->getCode();
                 }
                 $transaction->rollBack();
             }
+            Yii::$app->services->actionLog->create('用户支付校验','支付结果:'.($response->getCode()));
         } catch (\Exception $e) {
             $transaction->rollBack();
 
             // 记录报错日志
             $logPath = $this->getLogPath('error');
             FileHelper::writeLog($logPath, $e->getMessage());
-
+            Yii::$app->services->actionLog->create('用户支付校验','Exception:'.$e->getMessage());
             //服务器错误的时候，返回订单处理中
             $result['verification_status'] = 'pending';
         }
@@ -239,6 +244,6 @@ class PayController extends OnAuthController
      */
     protected function getLogPath($type)
     {
-        return Yii::getAlias('@runtime') . "/pay-logs/" . date('Y_m_d') . '/' . $type . '.txt';
+        return Yii::getAlias('@runtime') . "/pay-logs/" . date('Y-m-d') . '/' . $type . '.log';
     }
 }

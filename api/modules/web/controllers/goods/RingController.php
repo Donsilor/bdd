@@ -44,10 +44,10 @@ class RingController extends OnAuthController
         $order_type = \Yii::$app->request->post("orderType", 1);//排序方式 1-升序；2-降序;
 
         //排序
-        $order = 'virtual_volume desc';
+        $order = 'virtual_volume desc ,m.id desc';
         if(!empty($order_param)){
           $order_type = $order_type == 1? "asc": "desc";
-          $order = $sort_map[$order_param]. " ".$order_type;
+          $order = $sort_map[$order_param]. " ".$order_type .",m.id desc";
         }
 
 
@@ -64,8 +64,8 @@ class RingController extends OnAuthController
         $material = \Yii::$app->request->post("materialValue");//成色Id
         $query->andWhere(['=','m.ring_style', $ring_style]);
         if($begin_price && $end_price){
-            $begin_price = $this->exchangeAmount($begin_price,2, 'CNY', $this->getCurrency());
-            $end_price = $this->exchangeAmount($end_price,2, 'CNY', $this->getCurrency());
+            $begin_price = $this->exchangeAmount($begin_price,0, 'CNY', $this->getCurrency());
+            $end_price = $this->exchangeAmount($end_price,0, 'CNY', $this->getCurrency());
             $query->andWhere(['between','m.sale_price', $begin_price, $end_price]);
         }
 
@@ -89,7 +89,7 @@ class RingController extends OnAuthController
             $arr['ringImg'] = ImageHelper::goodsThumbs($val['ring_images'],'mid');
             $arr['ringStyle'] = $val['ring_style'];
             $arr['name'] = $val['ring_name'];
-            $arr['salePrice'] = $this->exchangeAmount($val['sale_price']);
+            $arr['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
             $arr['status'] = $val['status'];
             $val = $arr;
         }
@@ -129,7 +129,7 @@ class RingController extends OnAuthController
             $moduleGoods['ringCode'] = $val['ring_sn'];
             $moduleGoods['ringImg'] = ImageHelper::goodsThumbs($val['ring_images'],'big');
             $moduleGoods['name'] = $val['ring_name'];
-            $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price']);
+            $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
             $ring_web_site['moduleGoods'][] = $moduleGoods;
         }
 
@@ -196,7 +196,7 @@ class RingController extends OnAuthController
         $ring['name'] = $model->lang->ring_name;
         $ring['ringImg'] = ImageHelper::goodsThumbs($model->ring_images,'big');
         $ring['ringCode'] = $model->ring_sn;
-        $ring['salePrice'] = $this->exchangeAmount($model->sale_price);
+        $ring['salePrice'] = $this->exchangeAmount($model->sale_price,0);
         $ring['coinType'] = $this->getCurrencySign();
         $ring['status'] = $model->status;
         $ring['metaDesc'] = $model->lang->meta_desc;
@@ -268,7 +268,7 @@ class RingController extends OnAuthController
             $moduleGoods['goodsCode'] = $val['style_sn'];
             $moduleGoods['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'big');
             $moduleGoods['goodsName'] = $val['style_name'];
-            $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price']);
+            $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
             $result['moduleGoods'][] = $moduleGoods;
         }
         return $result;

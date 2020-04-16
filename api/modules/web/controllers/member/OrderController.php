@@ -141,9 +141,9 @@ class OrderController extends UserAuthController
                 "orderAmount"=> $result['order_amount'],
                 "orderId" => $result['order_id'],
             ];            
-        }catch(Exception $e) {
-            
+        }catch(Exception $e) {            
             $trans->rollBack();
+            \Yii::$app->services->actionLog->create('用户创建订单',$e->getMessage());
             throw $e;
         }
     }
@@ -359,17 +359,22 @@ class OrderController extends UserAuthController
         if(empty($cartIds)) {
             return ResultHelper::api(422,"cartIds不能为空");
         }
-        $taxInfo = \Yii::$app->services->order->getOrderAccountTax($cartIds, $this->member_id, $addressId); 
-        return [
-                'logisticsFee' => $taxInfo['shipping_fee'],
-                'orderAmount'  => $taxInfo['order_amount'],
-                'productAmount' => $taxInfo['goods_amount'],
-                'safeFee'=> $taxInfo['safe_fee'],
-                'taxFee'  => $taxInfo['tax_fee'],
-                'planDays' => $taxInfo['plan_days'],
-                'currency' => $taxInfo['currency'],
-                'exchangeRate'=> $taxInfo['exchange_rate']
-        ];
+        try{
+            $taxInfo = \Yii::$app->services->order->getOrderAccountTax($cartIds, $this->member_id, $addressId); 
+            return [
+                    'logisticsFee' => $taxInfo['shipping_fee'],
+                    'orderAmount'  => $taxInfo['order_amount'],
+                    'productAmount' => $taxInfo['goods_amount'],
+                    'safeFee'=> $taxInfo['safe_fee'],
+                    'taxFee'  => $taxInfo['tax_fee'],
+                    'planDays' => $taxInfo['plan_days'],
+                    'currency' => $taxInfo['currency'],
+                    'exchangeRate'=> $taxInfo['exchange_rate']
+            ];
+        }catch (\Exception $e) {
+            \Yii::$app->services->actionLog->create('用户订单金额汇总',$e->getMessage());
+            throw $e;
+        }
     }
     
 }

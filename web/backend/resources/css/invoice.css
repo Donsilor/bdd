@@ -1,0 +1,246 @@
+.rfHeaderFont{
+    display: none;
+}
+.content-header{
+    padding: 0px;
+}
+.content{
+    padding-top: 0px;
+}
+
+/* -webkit-print-color-adjust: exact; */
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.clf::after {
+    display: block;
+    content: '.';
+    opacity: 0;
+    height: 0;
+    visibility: hidden;
+    clear: both;
+}
+
+ul,
+li {
+    list-style: none;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+}
+
+.scroll {
+    overflow-y: scroll;
+    box-sizing: border-box;
+    background-color: #fff;
+    border: 3px solid #333;
+    padding: 10px;
+}
+
+.template {
+    width: 100%;
+    background-color: #fff;
+}
+
+.invoice-data {
+    width: 300px;
+    border: 1px solid #333;
+}
+
+.invoice-data-topcolor {
+    height: 30px;
+    background: #333 !important;
+    color: #fff !important;
+    text-align: center;
+    line-height: 30px;
+}
+
+.invoice-data-l {
+    width: 42%;
+    padding: 0 3%;
+    box-sizing: border-box;
+    border-right: 1px solid #333;
+}
+
+.invoice-data-r {
+    width: 42%;
+    padding: 0 3%;
+    box-sizing: border-box;
+}
+
+.invoice-data-type {
+    font-size: 12px;
+    color: #333;
+}
+
+.invoice-data-val {
+    font-size: 16px;
+    margin: 10px 0 4px;
+    text-align: center;
+
+}
+
+.site-type .list {
+    width: 50%;
+    padding-top: 20px;
+}
+
+.site-type .list-tit {
+    font-size: 14px;
+    color: #333;
+    width: 100px;
+}
+
+.site-type .child-name{
+    font-size: 16px;
+    width: 200px;
+    word-break: break-all;
+    overflow: hidden;
+}
+.site-type .child-addr{
+    font-size: 16px;
+    width: 200px;
+    word-break: break-all;
+}
+
+.package-information {
+    margin-top: 40px;
+}
+
+.package-tit {
+    height: 30px;
+    background-color: #333 !important;
+    color: #fff !important;
+    text-align: center;
+    line-height: 30px;
+}
+
+.package-info {
+    border: 1px solid #333;
+    box-sizing: border-box;
+}
+
+.package-child {
+    width: 29%;
+    padding: 0 2%;
+    box-sizing: border-box;
+}
+
+.package-child:nth-child(2) {
+    border-left: 1px solid #333;
+    border-right: 1px solid #333;
+}
+
+.package-child-v {
+    font-size: 12px;
+    line-height: 20px;
+    color: #333;
+    font-weight: 600;
+}
+
+.package-child-val {
+    font-size: 16px;
+    line-height: 32px;
+    text-align: center;
+}
+
+table{
+    border: 1px solid #333;
+    margin-top: 30px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+th{
+    height: 30px;
+    background-color: #333 !important;
+    color: #fff !important;
+    font-weight: normal;
+    padding: 0 2%;
+    box-sizing: border-box;
+}
+td{
+    text-align: center;
+    height: 30px;
+    padding: 0 2%;
+    box-sizing: border-box;
+    word-break:break-all;
+}
+th:first-child{
+    text-align: left;
+}
+td:first-child{
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.item-description .table-child {
+    text-align: left;
+}
+
+.table .table-child:not(:first-child) {
+    line-height: 22px;
+}
+
+.signature {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.signature-name {
+    width: 260px;
+}
+
+.signature-date {
+    width: 150px;
+    margin-left: 50px;
+}
+
+.signature-t {
+    height: 50px;
+    border-bottom: 1px solid #333;
+    line-height: 50px;
+}
+
+.signature .text {
+    line-height: 30px;
+}
+
+.signature-name .signature-t {
+    font-size: 32px;
+}
+
+.total {
+    margin-top: 80px;
+    text-align: right;
+    line-height: 30px;
+}
+
+.total-bg {
+    width: 240px;
+    height: 30px;
+    border: 1px solid #333;
+    background-color: #333 !important;
+    color: #fff !important;
+    padding: 0 10px;
+    box-sizing: border-box;
+
+}
+
+.total-val {
+    width: 180px;
+    height: 30px;
+    border: 1px solid #333;
+    color: #333;
+    padding: 0 10px;
+    box-sizing: border-box;
+}

@@ -100,12 +100,23 @@ class MailerService extends Service
              $ip = $data['ip']??'';
              
              $this->setConfig();
-             $result = Yii::$app->mailer
+            $send = Yii::$app->mailer
                 ->compose($template, $data)
                 ->setFrom([$this->config['smtp_username'] => $this->config['smtp_name']])
                 ->setTo($email)
-                ->setSubject($subject)
-                ->send(); 
+                ->setSubject($subject);
+
+            //邮件上传附件
+            if(isset($data['file'])){
+                $file_content = isset($data['file']['file_content']) ? $data['file']['file_content'] : '';
+                $file_ext = isset($data['file']['file_ext']) ? $data['file']['file_ext'] : 'txt';
+                $contentType = isset($data['file']['contentType']) ? $data['file']['contentType'] : 'text/xml';
+                $send->attachContent($file_content, [
+                    'fileName'    => $subject.'.'.$file_ext,
+                    'contentType' => $contentType
+                ]);
+            }
+            $result = $send->send();
             
             $this->saveLog([
                     'title'=>$subject,
