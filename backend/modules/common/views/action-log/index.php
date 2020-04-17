@@ -58,7 +58,11 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['index']];
                             },
                             'format' => 'raw',
                         ],
-                        'remark',
+                        [
+                             'attribute' => 'remark',
+                             'filter' => true, 
+                             'format' => 'raw',
+                        ],
                         [
                             'attribute' => 'created_at',
                             'filter' => false, //不显示搜索框

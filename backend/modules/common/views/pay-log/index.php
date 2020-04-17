@@ -41,7 +41,10 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['index']];
                             'attribute'=>'order_sn',
                             'value' => function ($model) {
                                 $str = '订单编号：' . $model->order_sn . '<br>';
-                                $str .= '订单类型：' . $model->order_group;
+                                $str .= '订单类型：' . $model->order_group. '<br>';
+                                if($model->pay_time) {
+                                    $str .= '支付时间：' . Yii::$app->formatter->asDatetime($model->pay_time) . '<br>';
+                                }
                                 return $str;
                             },
                             'filter' => Html::activeTextInput($searchModel, 'order_sn', [
