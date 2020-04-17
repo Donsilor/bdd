@@ -36,4 +36,7 @@ return [
 	"对戒信息不存在" => "Warning information does not exist",
 	"精选结婚对戒" => "Selected wedding ring",
 	"精选订婚钻戒" => "Selected engagement diamond ring",
+        
+    "您选购的商品不存在"=>'Your product does not exist',
+    "订单中部分商品已下架,请重新下单"=>'Some of the product have been taken off the shelves,please re order!'
 ];
