@@ -72,7 +72,7 @@ class PayLog extends \common\models\base\BaseModel
             'order_group' => '订单组别',
             'openid' => 'Openid',
             'mch_id' => '商户编号',
-            'out_trade_no' => '支付订单号',
+            'out_trade_no' => '支付编号',
             'transaction_id' => 'Transaction ID',
             'total_fee' => '实际支付',
             'fee_type' => 'Fee Type',

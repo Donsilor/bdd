@@ -12,6 +12,7 @@ use common\enums\PayEnum;
 use common\enums\OrderStatusEnum;
 use common\models\order\Order;
 use common\enums\CurrencyEnum;
+use common\helpers\Url;
 
 /**
  * Class PayForm
@@ -119,7 +120,8 @@ class PayForm extends Model
     {
         $action = PayEnum::$payTypeAction[$this->payType];
         $baseOrder = $this->getBaseOrderInfo();
-
+        $this->notifyUrl = Url::buildUrl($this->notifyUrl,['out_trade_no'=>$baseOrder['out_trade_no']]);
+        $this->returnUrl = Url::buildUrl($this->returnUrl,['out_trade_no'=>$baseOrder['out_trade_no']]);
         return Yii::$app->services->pay->$action($this, $baseOrder);
     }
 

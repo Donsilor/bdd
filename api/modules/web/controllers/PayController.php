@@ -135,11 +135,11 @@ class PayController extends OnAuthController
         $model = $this->getPayModelByReturnUrlQuery($query);
 
         if(empty($model)) {
-            Yii::$app->services->actionLog->create('用户支付校验','订单号:'.$orderSn."<br/>状态：查询支付记录失败");
+            Yii::$app->services->actionLog->create('用户支付校验','订单号：'.$orderSn."<br/>支付状态：查询支付记录失败");
             $result['verification_status'] = 'failed';
             return $result;
         }
-        $logMessage = "订单号: ".$model->order_sn.'<br/>支付单号: '.$model->out_trade_no;
+        $logMessage = "订单号：".$model->order_sn.'<br/>支付编号：'.$model->out_trade_no;
         
         $transaction = Yii::$app->db->beginTransaction();
         try {
@@ -148,7 +148,7 @@ class PayController extends OnAuthController
             if ($model->pay_status == PayStatusEnum::PAID) {
                 $transaction->rollBack();
                 
-                $logMessage .= "<br/>状态： 已支付";
+                $logMessage .= "<br/>支付状态：已支付";
                 Yii::$app->services->actionLog->create('用户支付校验',$logMessage); 
                 
                 $result['verification_status'] = 'completed';                
@@ -175,7 +175,7 @@ class PayController extends OnAuthController
              * @var $response AbstractResponse
              */
             $response = Yii::$app->services->pay->getPayByType($model->pay_type)->verify(['model'=>$model]);
-
+            $payCode = $response->getCode();
             //支付成功
             if($response->isPaid()) {
 
@@ -184,20 +184,20 @@ class PayController extends OnAuthController
                 $transaction->commit();
             }
             else {
-                if($response->getCode() == 'pending') {
+                if($payCode == 'pending') {
                     $result['verification_status'] = 'pending';
                 }
-                elseif(in_array($response->getCode(), ['failed', 'denied', 'nopayer'])) {
+                elseif(in_array($payCode, ['failed', 'denied', 'nopayer'])) {
                     //支付失败，失败被拒绝，无支付返回支付失败
                     $result['verification_status'] = 'failed';
                 }
                 else {
-                    $result['verification_status'] = $response->getCode();
+                    $result['verification_status'] = $payCode;
                 }
                 $transaction->rollBack();
             }
             
-            $logMessage .= "<br/>状态： ".($response->getCode());
+            $logMessage .= "<br/>支付状态： ".($payCode ? $payCode : 'wating');
             Yii::$app->services->actionLog->create('用户支付校验',$logMessage,$response);
         } catch (\Exception $e) {
             $transaction->rollBack();
@@ -205,7 +205,7 @@ class PayController extends OnAuthController
             // 记录报错日志
             $logPath = $this->getLogPath('error');
             FileHelper::writeLog($logPath, $e->getMessage());
-            Yii::$app->services->actionLog->create('用户支付校验','Exception:'.$e->getMessage());
+            Yii::$app->services->actionLog->create('用户支付校验','Exception：'.$e->getMessage());
             //服务器错误的时候，返回订单处理中
             $result['verification_status'] = 'pending';
         }

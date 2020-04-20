@@ -17,6 +17,7 @@ use common\enums\PayStatusEnum;
 use common\models\order\OrderAccount;
 use common\helpers\AmountHelper;
 use yii\web\UnprocessableEntityHttpException;
+use common\helpers\Url;
 
 /**
  * Class PayService
@@ -166,8 +167,8 @@ class PayService extends Service
     public function paydollar(PayForm $payForm, $baseOrder)
     {
         //成功，失败返回URL
-        $cancelUrl = sprintf('%s%s%s', $payForm->returnUrl, (strpos($payForm->returnUrl,'?')?'&':'?'), 'success=false');
-        $returnUrl = sprintf('%s%s%s', $payForm->returnUrl, (strpos($payForm->returnUrl,'?')?'&':'?'), 'success=true');
+        $cancelUrl = Url::buildUrl($payForm->returnUrl,['success'=>'false']);
+        $returnUrl = Url::buildUrl($payForm->returnUrl,['success'=>'true']);
 
         // 配置
         $config = [
@@ -316,9 +317,9 @@ class PayService extends Service
                         throw new \Exception('Order 更新失败'.$log->order_sn);
                     }
                 }
-                else {
+                 /*else {
                     throw new \Exception('Order 无需更新'.$log->order_sn);
-                }
+                }*/
                 // TODO 处理订单
                 return true;
                 break;
@@ -344,9 +345,9 @@ class PayService extends Service
                         throw new \Exception('OrderTourist 更新失败'.$log->order_sn);
                     }
                 }
-                else {
+                /*else {
                     throw new \Exception('OrderTourist 无需更新'.$log->order_sn);
-                }
+                }*/
                 return true;
                 break;
             case PayEnum::ORDER_GROUP_RECHARGE :
