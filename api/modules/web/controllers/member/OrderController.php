@@ -181,7 +181,8 @@ class OrderController extends UserAuthController
             \Yii::$app->services->order->sendOrderNotification($result['order_id']);
             return [
                 "coinType" => $result['currency'],
-                "orderAmount"=> $result['order_amount']-$cardUseAmount,
+                "orderAmount"=> $result['order_amount'],
+                "payAmount"=> bcsub($result['order_amount'], $cardUseAmount, 2),
                 "orderId" => $result['order_id'],
                 "payStatus" => $pay['payStatus']??0,
             ];            
