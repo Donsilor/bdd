@@ -4,6 +4,7 @@ namespace services\common;
 
 use common\enums\OrderTouristStatusEnum;
 use common\models\order\OrderTourist;
+use services\market\CardService;
 use Yii;
 use common\enums\PayEnum;
 use common\components\Service;
@@ -328,11 +329,13 @@ class PayService extends Service
                         OrderAccount::updateAll($accountUpdata,['order_id'=>$order->id]);
                         
                         //订单发送邮件
-                        \Yii::$app->services->order->sendOrderNotification($order->id);
+//                        \Yii::$app->services->order->sendOrderNotification($order->id);
                     }
                     else {
                         throw new \Exception('Order 更新失败'.$log->order_sn);
                     }
+
+                    CardService::setSuccess($order->id);
                 }
                  else {
                     throw new \Exception('Order 无需更新'.$log->order_sn);

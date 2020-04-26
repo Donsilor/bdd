@@ -62,6 +62,7 @@ use common\components\Service;
  * @property \services\order\OrderTouristService $orderTourist 订单
  * @property \services\common\ExpressService $express 快递
  * @property \services\order\OrderInvoiceService $orderInvoice 订单
+ * @property \services\market\CardService $card 订单
  */
 class Application extends Service
 {
@@ -146,5 +147,8 @@ class Application extends Service
         'orderTourist' => 'services\order\OrderTouristService',
         'orderInvoice' => 'services\order\OrderInvoiceService',
         'express' => 'services\common\ExpressService',
+
+
+        'card' => 'services\market\CardService',
     ];
 }

@@ -265,6 +265,8 @@ class NotifyController extends Controller
 
                     $transaction->commit();
 
+                    \Yii::$app->services->order->sendOrderNotification($model->order_sn);
+
                     $result['verification_status'] = 'SUCCESS';
                     //日志记录
                     $messsage = $logPrix.' isPaid:SUCCESS'.PHP_EOL;
@@ -363,6 +365,9 @@ class NotifyController extends Controller
             Yii::$app->services->pay->notify($payLog, $this->payment);
 
             $transaction->commit();
+
+            \Yii::$app->services->order->sendOrderNotification($payLog->order_sn);
+            
             return true;
         } catch (\Exception $e) {
             $transaction->rollBack();

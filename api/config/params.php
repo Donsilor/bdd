@@ -23,5 +23,17 @@ return [
     'user.httpSignAccount' => [
         'doormen' => 'e3de3825cfbf',
     ],
-    'payReturn'
+    'smsNotice'=>[
+            'open'=>true,
+            'userName'=>'管理员',
+            'siteName'=>'BDD测试API',
+            'mobiles'=>['15989407534'],
+            'routes'=>[
+                    'member/order/create',
+                    'member/order/tax',
+                    'member/order-tourist/create',
+                    'member/order-tourist/tax',
+                    'pay/create',
+            ]
+    ],//错误日志短信提醒 
 ];

@@ -197,6 +197,8 @@ class PayController extends OnAuthController
                 $result['verification_status'] = 'completed';
 
                 $transaction->commit();
+
+                \Yii::$app->services->order->sendOrderNotification($model->order_sn);
             }
             else {
                 if($payCode == 'pending') {

@@ -27,7 +27,7 @@ class OrderBaseService extends Service
      */
     public function sendOrderNotification($order_id)
     {
-        $order = Order::find()->where(['id'=>$order_id])->one();
+        $order = Order::find()->where(['or',['id'=>$order_id],['order_sn'=>$order_id]])->one();
 
         if($order->is_tourist) {
             if(RegularHelper::verify('email',$order->member->email)) {
