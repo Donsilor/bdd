@@ -27,8 +27,6 @@ return [
                 'member/order-tourist/create',
                 'member/order-tourist/tax',
                 'pay/create',
-                
-                'order/sync-paypal-phone',
         ]
     ],//错误日志短信提醒 
     
