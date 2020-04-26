@@ -105,7 +105,7 @@ class ActionLogService extends Service
      */
     public function sendNoticeSms($behavior, $route, $log, $time = 600)
     {
-        $id  = $log['id']??9999999;
+        $id  = $log['id']??0;
         $user_id = $log['user_id']??0;
         $smsConfig  = Yii::$app->params['smsNotice']??[];
         if(!empty($smsConfig['open']) && in_array($route,$smsConfig['routes']) ) {
