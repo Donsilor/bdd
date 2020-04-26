@@ -39,16 +39,19 @@ class OrderLogController extends BaseController
             'defaultOrder' => [
                 'id' => SORT_DESC,
             ],
-            'pageSize' => $this->pageSize+5,
+            'pageSize' => $this->pageSize,
             'relations' => []
         ]);
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at']);
+
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         //创建时间过滤
-        if (!empty(Yii::$app->request->queryParams['SearchModel']['created_at'])) {
-            list($start_date, $end_date) = explode('/', Yii::$app->request->queryParams['SearchModel']['created_at']);
-            $dataProvider->query->andFilterWhere(['between', 'created_at', strtotime($start_date), strtotime($end_date) + 86400]);
-        }
+//        if (!empty(Yii::$app->request->queryParams['SearchModel']['created_at'])) {
+//            list($start_date, $end_date) = explode('/', Yii::$app->request->queryParams['SearchModel']['created_at']);
+//            $dataProvider->query->andFilterWhere(['between', 'created_at', strtotime($start_date), strtotime($end_date) + 86400]);
+//        }
+
+        $dataProvider->query->andWhere(['order_id'=>$model->id]);
 
         return $this->render($this->action->id, [
             'model' => $model,

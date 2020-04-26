@@ -37,10 +37,51 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'headerOptions' => ['width'=>'30'],
                             ],
                             [
+                                'label'=>'序号',
+                                'filter' => false,
                                 'attribute' => 'id',
                             ],
                             [
-                                'log_time',
+                                'label'=>'操作时间',
+                                'filter' => false,
+                                'attribute'=>'log_time',
+                                'value'=>function($model){
+                                    return Yii::$app->formatter->asDatetime($model->log_time);
+                                }
+                            ],
+//                            [
+//                                'label'=>'操作模块',
+//                                'filter' => false,
+//                                'attribute'=>'log_time',
+//                            ],
+                            [
+                                'label'=>'操作内容',
+                                'filter' => false,
+                                'attribute'=>'log_msg',
+                            ],
+                            [
+                                'label'=>'操作类型',
+                                'filter' => Html::activeDropDownList($searchModel, 'log_role', [
+                                    'system'=>'系统',
+                                    '管理员'=>'管理员',
+                                    'buyer'=>'客户',
+                                ], [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'attribute'=>'log_role',
+                                'value'=>function($model) {
+                                    return array_get([
+                                        'system'=>'系统',
+                                        '管理员'=>'管理员',
+                                        'buyer'=>'客户',
+                                    ], $model->log_role);
+                                }
+                            ],
+                            [
+                                'label'=>'操作人',
+                                'filter' => false,
+                                'attribute'=>'log_user',
                             ],
                         ],
                     ]);
