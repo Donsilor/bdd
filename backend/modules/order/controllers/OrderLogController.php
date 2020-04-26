@@ -3,11 +3,11 @@
 namespace backend\modules\order\controllers;
 
 use backend\controllers\BaseController;
+use common\models\order\Order;
 use common\models\order\OrderLog;
 use Yii;
 use common\components\Curd;
 use common\models\base\SearchModel;
-use common\models\order\OrderTourist;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -15,10 +15,9 @@ use yii\web\NotFoundHttpException;
  */
 class OrderLogController extends BaseController
 {
-    use Curd;
 
     /**
-     * @var OrderTourist
+     * @var OrderLog
      */
     public $modelClass = OrderLog::class;
 
@@ -29,6 +28,10 @@ class OrderLogController extends BaseController
      */
     public function actionIndex()
     {
+        $id = Yii::$app->request->get('id', null);
+
+        $model = Order::findOne($id);
+
         $searchModel = new SearchModel([
             'model' => $this->modelClass,
             'scenario' => 'default',
@@ -36,7 +39,7 @@ class OrderLogController extends BaseController
             'defaultOrder' => [
                 'id' => SORT_DESC,
             ],
-            'pageSize' => $this->pageSize,
+            'pageSize' => $this->pageSize+5,
             'relations' => []
         ]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at']);
@@ -48,6 +51,7 @@ class OrderLogController extends BaseController
         }
 
         return $this->render($this->action->id, [
+            'model' => $model,
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
         ]);
