@@ -2,6 +2,7 @@
 
 namespace services\order;
 
+
 use common\models\market\MarketCard;
 use common\models\market\MarketCardDetails;
 use common\models\order\OrderCart;
@@ -19,6 +20,8 @@ use common\enums\PayStatusEnum;
 use common\models\member\Member;
 use common\enums\OrderStatusEnum;
 use common\enums\StatusEnum;
+use common\models\common\PayLog;
+use common\enums\PayEnum;
 
 /**
  * Class OrderService
@@ -83,13 +86,15 @@ class OrderService extends OrderBaseService
              //订单商品明细
             foreach (array_keys($languages) as $language){
                 $goods = \Yii::$app->services->goods->getGoodsInfo($orderGoods->goods_id,$orderGoods->goods_type,false,$language);
-                if(empty($goods) || $goods['status'] != 1) {
-                    continue;
-                }
-
-                //验证库存
-                if($orderGoods->goods_num>$goods['goods_storage']) {
-                    throw new UnprocessableEntityHttpException(sprintf("[%s]商品库存不足", $goods['goods_sn']));
+                if($language == $this->getLanguage()) {
+                    if(empty($goods) || $goods['status'] != 1) {
+                        throw new UnprocessableEntityHttpException("订单中部分商品已下架,请重新下单");
+                    }
+    
+                    //验证库存
+                    if($orderGoods->goods_num > $goods['goods_storage']) {
+                        throw new UnprocessableEntityHttpException("订单中部分商品已下架,请重新下单");
+                    }
                 }
 
                 $langModel = $orderGoods->langModel();
@@ -162,10 +167,9 @@ class OrderService extends OrderBaseService
         if($cart_ids && !is_array($cart_ids)) {
             $cart_ids = explode(',', $cart_ids);
         }
-        
         $cart_list = OrderCart::find()->where(['member_id'=>$buyer_id,'id'=>$cart_ids])->all();
         if(empty($cart_list)) {
-            throw new UnprocessableEntityHttpException("订单商品查询失败");
+            throw new UnprocessableEntityHttpException("您的购物车商品不存在");
         }
         $buyerAddress = Address::find()->where(['id'=>$buyer_address_id,'member_id'=>$buyer_id])->one();
         $orderGoodsList = [];
@@ -182,15 +186,13 @@ class OrderService extends OrderBaseService
             if(empty($goods) || $goods['status'] != StatusEnum::ENABLED) {
                 continue;
             }
-            $sale_price = $this->exchangeAmount($goods['sale_price']);
-
+            $sale_price = $this->exchangeAmount($goods['sale_price'],0);
             if(!isset($goodsTypeAmounts[$goods['type_id']])) {
                 $goodsTypeAmounts[$goods['type_id']] = $sale_price;
             }
             else {
                 $goodsTypeAmounts[$goods['type_id']] = bcadd($goodsTypeAmounts[$goods['type_id']], $sale_price, 2);
             }
-
             $goods_amount += $sale_price;
             $orderGoodsList[] = [
                     'goods_id' => $cart->goods_id,
@@ -339,6 +341,47 @@ class OrderService extends OrderBaseService
         //订单日志
         $this->addOrderLog($order_id, $remark, $log_role, $log_user,$order->order_status);
     }
-          
+    
+    /**
+     * 同步订单 手机号
+     * @param int $order_id 订单ID
+     * @throws \Exception
+     */
+    public function syncPayPalPhone($order_id)
+    {
+        $order = Order::find()->where(['id'=>$order_id])->one();
+        if(!$order) {
+            throw new \Exception('订单查询失败,order_id='.$order_id);
+        }
+        
+        $payLog = PayLog::find()->where(['order_sn'=>$order->order_sn,'pay_type'=>PayEnum::PAY_TYPE_PAYPAL,'pay_status'=>PayStatusEnum::PAID])->one();
+        if(!$payLog) {
+            throw new \Exception('非PayPal支付');
+        }
+        
+        $pay = \Yii::$app->services->pay->getPayByType($payLog->pay_type);
+        /**
+         * @var $payment Payment
+         */
+        $payment = $pay->getPayment(['model'=>$payLog]);
+
+        $payer = $payment->getPayer()->getPayerInfo();
+        
+        $phone = $payer->getPhone();
+        $conuntryCode = $payer->getCountryCode();
+        $mobileCodeMap = ['HK'=>'+852','C2'=>'+86','MO'=>'+853','TW'=>'+886','CN'=>'+86','US'=>'+1'];
+        if($phone) {
+            $address = OrderAddress::findOne(['order_id'=>$order->id]);
+            $address->mobile = $phone;   
+            $address->mobile_code = $mobileCodeMap[$conuntryCode]??'';
+            if(!$address->save()) {
+                throw new \Exception($this->getError($address));
+            }
+        }
+        else {
+            throw new \Exception('PayPal手机号为空');
+        }
+    }
+
     
 }

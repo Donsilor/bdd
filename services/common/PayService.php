@@ -18,6 +18,7 @@ use common\enums\PayStatusEnum;
 use common\models\order\OrderAccount;
 use common\helpers\AmountHelper;
 use yii\web\UnprocessableEntityHttpException;
+use common\helpers\Url;
 
 /**
  * Class PayService
@@ -39,7 +40,7 @@ class PayService extends Service
         if($payType && method_exists(Yii::$app->pay, $payType)) {
             return call_user_func([Yii::$app->pay, $payType], $config);
         }
-        return null;
+        throw new \Exception("PayType Error");
     }
 
     /**
@@ -167,8 +168,8 @@ class PayService extends Service
     public function paydollar(PayForm $payForm, $baseOrder)
     {
         //成功，失败返回URL
-        $cancelUrl = sprintf('%s%s%s', $payForm->returnUrl, (strpos($payForm->returnUrl,'?')?'&':'?'), 'success=false');
-        $returnUrl = sprintf('%s%s%s', $payForm->returnUrl, (strpos($payForm->returnUrl,'?')?'&':'?'), 'success=true');
+        $cancelUrl = Url::buildUrl($payForm->returnUrl,['success'=>'false']);
+        $returnUrl = Url::buildUrl($payForm->returnUrl,['success'=>'true']);
 
         // 配置
         $config = [
@@ -187,6 +188,23 @@ class PayService extends Service
             'curr_code' => $baseOrder['currency'],//货币
             'lang' => Yii::$app->language,
         ];
+
+        //扩展支付
+        switch ($payForm->payType) {
+            case '81':
+                $order['payMethod'] = 'CHINAPAY';
+                break;
+            case '82':
+                $order['payMethod'] = 'ALIPAY';
+                break;
+            case '83':
+                $order['payMethod'] = 'WECHAT';//wechat
+                break;
+            default:
+                $order['payMethod'] = 'ALL';
+                break;
+        }
+
         // 交易类型
         $tradeType = $payForm->tradeType;
         return [
@@ -319,7 +337,7 @@ class PayService extends Service
 
                     CardService::setSuccess($order->id);
                 }
-                else {
+                 else {
                     throw new \Exception('Order 无需更新'.$log->order_sn);
                 }
                 // TODO 处理订单

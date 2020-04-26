@@ -2,11 +2,15 @@
 
 namespace api\modules\web\controllers;
 
+use common\enums\OrderStatusEnum;
+use common\enums\OrderTouristStatusEnum;
 use common\enums\PayStatusEnum;
 use common\enums\StatusEnum;
 use common\helpers\ArrayHelper;
 use common\helpers\FileHelper;
 use common\models\common\PayLog;
+use common\models\order\Order;
+use common\models\order\OrderTourist;
 use Omnipay\Common\Message\AbstractResponse;
 use Omnipay\Paydollar\Message\AuthorizeResponse;
 use Yii;
@@ -67,8 +71,10 @@ class PayController extends OnAuthController
             $config = $model->getConfig();
             $trans->commit();            
             return $config;
-        }catch (Exception $e) {
+        }catch (\Exception $e) {
+            
             $trans->rollBack();
+            \Yii::$app->services->actionLog->create('用户创建支付单号',$e->getMessage());
             throw  $e;
         }
     }
@@ -124,7 +130,8 @@ class PayController extends OnAuthController
         $urlInfo = parse_url($returnUrl);
         $query = parse_query($urlInfo['query']);
         //记录验证日志
-        Yii::$app->services->actionLog->create('verify',$query['order_sn']??($query['orderId']??''));
+        $orderSn = $query['order_sn']??($query['orderId']??'');
+        
         //获取支付记录模型
         /**
          * @var $model PayLog
@@ -132,21 +139,40 @@ class PayController extends OnAuthController
         $model = $this->getPayModelByReturnUrlQuery($query);
 
         if(empty($model)) {
+            Yii::$app->services->actionLog->create('用户支付校验','订单号：'.$orderSn."<br/>支付状态：查询支付记录失败");
             $result['verification_status'] = 'failed';
             return $result;
         }
-        //记录验证日志   
+        $logMessage = "订单号：".$model->order_sn.'<br/>支付编号：'.$model->out_trade_no;
 
+        //验证是否支付成功
+        if(
+            //普通订单已支付成功
+            $model->order_group==PayEnum::ORDER_GROUP && Order::find()->where(['order_sn'=>$model->order_sn, 'order_status'=>OrderStatusEnum::ORDER_PAID])->count('id') ||
+            //游客订单已支付成功
+            $model->order_group==PayEnum::ORDER_TOURIST && OrderTourist::find()->where(['order_sn'=>$model->order_sn, 'status'=>OrderTouristStatusEnum::ORDER_PAID])->count('id')
+        ) {
+            $logMessage .= "<br/>订单支付状态：已支付";
+            Yii::$app->services->actionLog->create('用户支付校验',$logMessage);
+
+            $result['verification_status'] = 'completed';
+            return $result;
+        }
+        
         $transaction = Yii::$app->db->beginTransaction();
-
         try {
-            Yii::$app->services->actionLog->create('verify',$model->out_trade_no);
-            //判断订单支付状态
+            
+            //判断订单状态
             if ($model->pay_status == PayStatusEnum::PAID) {
-                $result['verification_status'] = 'completed';
+                $transaction->rollBack();
+                
+                $logMessage .= "<br/>支付状态：已支付";
+                Yii::$app->services->actionLog->create('用户支付校验',$logMessage); 
+                
+                $result['verification_status'] = 'completed';                
                 return $result;
-            }
-
+            }          
+          
             $update = [
                 'pay_fee' => $model->total_fee,
                 'pay_status' => PayStatusEnum::PAID,
@@ -162,12 +188,9 @@ class PayController extends OnAuthController
 
             //更新订单状态
             Yii::$app->services->pay->notify($model, null);
-
-            /**
-             * @var $response AbstractResponse
-             */
+           
             $response = Yii::$app->services->pay->getPayByType($model->pay_type)->verify(['model'=>$model]);
-
+            $payCode = $response->getCode() ?? 'error';
             //支付成功
             if($response->isPaid()) {
 
@@ -178,25 +201,28 @@ class PayController extends OnAuthController
                 \Yii::$app->services->order->sendOrderNotification($model->order_sn);
             }
             else {
-                if($response->getCode() == 'pending') {
+                if($payCode == 'pending') {
                     $result['verification_status'] = 'pending';
                 }
-                elseif(in_array($response->getCode(), ['failed', 'denied', 'nopayer'])) {
+                elseif(in_array($payCode, ['failed', 'denied', 'nopayer'])) {
                     //支付失败，失败被拒绝，无支付返回支付失败
                     $result['verification_status'] = 'failed';
                 }
                 else {
-                    $result['verification_status'] = 'null';
+                    $result['verification_status'] = $payCode;
                 }
                 $transaction->rollBack();
             }
+            
+            $logMessage .= "<br/>支付状态： ".($payCode ? $payCode : 'wating');
+            Yii::$app->services->actionLog->create('用户支付校验',$logMessage,$response);
         } catch (\Exception $e) {
             $transaction->rollBack();
 
             // 记录报错日志
             $logPath = $this->getLogPath('error');
             FileHelper::writeLog($logPath, $e->getMessage());
-
+            Yii::$app->services->actionLog->create('用户支付校验','Exception：'.$e->getMessage());
             //服务器错误的时候，返回订单处理中
             $result['verification_status'] = 'pending';
         }
@@ -240,6 +266,6 @@ class PayController extends OnAuthController
      */
     protected function getLogPath($type)
     {
-        return Yii::getAlias('@runtime') . "/pay-logs/" . date('Y-m-d') . '/' . $type . '.log';
+        return Yii::getAlias('@runtime') . "/pay-logs/" . date('Y-m/d') . '/' . $type . '.log';
     }
 }

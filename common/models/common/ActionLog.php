@@ -49,7 +49,7 @@ class ActionLog extends \common\models\base\BaseModel
     public function rules()
     {
         return [
-            [['merchant_id', 'user_id', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['id','merchant_id', 'user_id', 'status', 'created_at', 'updated_at'], 'integer'],
             [['get_data', 'post_data', 'header_data'], 'safe'],
             [['behavior', 'app_id', 'module', 'controller', 'action', 'country', 'provinces', 'city'], 'string', 'max' => 50],
             [['method'], 'string', 'max' => 20],

@@ -40,7 +40,7 @@ class OrderInvoiceEle extends \common\models\base\BaseModel
             [['invoice_id'], 'unique'],
             [['invoice_id'], 'integer'],
             [['invoice_date','express_id','language', 'delivery_time','created_at'],'safe'],
-            [['sender_name', 'shipper_name'], 'string', 'max' => 50],
+            [['sender_name', 'shipper_name','email'], 'string', 'max' => 50],
             [['sender_address', 'shipper_address'], 'string', 'max' => 255],
             [['express_no'], 'string', 'max' => 100],
         ];
@@ -63,6 +63,7 @@ class OrderInvoiceEle extends \common\models\base\BaseModel
             'express_id' => '运输公司',
             'express_no' => '国际空运单号',
             'delivery_time' => '发货时间',
+            'email' => '接收邮箱',
             'create_at' => '创建时间',
             'updated_at' => '修改时间',
         ];

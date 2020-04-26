@@ -66,7 +66,9 @@ class StyleController extends OnAuthController
         if(!empty($params)){
 
             $subQuery = AttributeIndex::find()->alias('a')->select(['a.style_id'])->distinct("a.style_id");
-            if($type_id) {
+            if(is_array($type_id)) {
+                $query ->andWhere(['in','m.type_id',$type_id]);
+            }else{
                 $query ->andWhere(['m.type_id'=>$type_id]);
             }
 
@@ -80,11 +82,11 @@ class StyleController extends OnAuthController
                     $min_price = $param['beginValue'];
                     $max_price = $param['endValue'];
                     if(is_numeric($min_price)){
-                        $min_price = $this->exchangeAmount($min_price,2, 'CNY', $this->getCurrency());
+                        $min_price = $this->exchangeAmount($min_price,0, 'CNY', $this->getCurrency());
                         $query->andWhere(['>','IFNULL(markup.sale_price,m.sale_price)',$min_price]);
                     }
                     if(is_numeric($max_price) && $max_price>0){
-                        $max_price = $this->exchangeAmount($max_price,2, 'CNY', $this->getCurrency());
+                        $max_price = $this->exchangeAmount($max_price,0, 'CNY', $this->getCurrency());
                         $query->andWhere(['<=','IFNULL(markup.sale_price,m.sale_price)',$max_price]);
                     }
                     continue;
@@ -125,7 +127,7 @@ class StyleController extends OnAuthController
             $arr['categoryId'] = $type_id;
             $arr['coinType'] = $this->getCurrencySign();
             $arr['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'mid');
-            $arr['salePrice'] = $this->exchangeAmount($val['sale_price']);
+            $arr['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
             $arr['goodsName'] = $val['style_name'];
             $arr['isJoin'] = null;
             $arr['showType'] = 2;
@@ -155,7 +157,7 @@ class StyleController extends OnAuthController
             $moduleGoods['goodsCode'] = $val['style_sn'];
             $moduleGoods['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'big');
             $moduleGoods['goodsName'] = $val['style_name'];
-            $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price']);
+            $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
             $webSite['moduleGoods'][] = $moduleGoods;
         }
         $result = array();
@@ -213,7 +215,7 @@ class StyleController extends OnAuthController
                 $recommend['id'] = $val->id;
                 $recommend['goodsName'] = $val->lang->style_name;
                 $recommend['categoryId'] = $model->type_id;
-                $recommend['salePrice'] = $this->exchangeAmount($val->sale_price);
+                $recommend['salePrice'] = $this->exchangeAmount($val->sale_price,0);
                 $recommend['goodsImages'] = ImageHelper::goodsThumbs($val->goods_images,'mid');
                 $recommend['isJoin'] = null;
                 $recommend['specsModels'] = null;

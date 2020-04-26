@@ -142,7 +142,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_2">
                 <ul class="nav nav-tabs pull-right">
-                    <li class="pull-left header"><i class="fa fa-th"></i> 发票信息 </li>
+                    <li class="pull-left header"><i class="fa fa-th"></i> 发票/发货单信息 </li>
                 </ul>
                 <div class="box-body col-lg-12" style="margin-left:9px">
                     <?php if($model->invoice) {?>
@@ -150,53 +150,53 @@ $this->params['breadcrumbs'][] = $this->title;
 
                             <div class="col-lg-6">
                                 <div class="row">
-                                    <div class="col-lg-5 text-right"><?= $model->getAttributeLabel('invoice.invoice_type') ?>：</label></div>
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('invoice.invoice_type') ?>：</label></div>
                                     <div class="col-lg-7"><?= \common\enums\InvoiceTypeEnum::getValue($model->invoice->invoice_type) ?></div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-5 text-right"><?= $model->getAttributeLabel('invoice.invoice_title') ?>：</label> </div>
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('invoice.invoice_title') ?>：</label> </div>
                                     <div class="col-lg-7"><?= $model->invoice->invoice_title ?></div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-5 text-right"><?= $model->getAttributeLabel('invoice.tax_number') ?>：</label></div>
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('invoice.tax_number') ?>：</label></div>
                                     <div class="col-lg-7"><?= $model->invoice->tax_number ?></div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-5 text-right"><?= $model->getAttributeLabel('invoice.is_electronic') ?>：</label></div>
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('invoice.is_electronic') ?>：</label></div>
                                     <div class="col-lg-7"><?= \common\enums\InvoiceElectronicEnum::getValue($model->invoice->is_electronic) ?></div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-5 text-right"><?= $model->getAttributeLabel('invoice.email') ?>：</label></div>
-                                    <div class="col-lg-7"><?= $model->invoice->email ?></div>
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('invoice.email') ?>：</label></div>
+                                    <div class="col-lg-7"><?= $model->invoice->invoiceEle && $model->invoice->invoiceEle->email ? $model->invoice->invoiceEle->email : $model->invoice->email ?></div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-5 text-right">电子凭证：</label></div>
+                                    <div class="col-lg-5 text-right"><label>电子凭证：</label></div>
                                     <div class="col-lg-7"><?= $model->invoice->invoiceEle ? '已修改': '未修改' ?></div>
                                 </div>
                             </div>
 
                             <div class="col-lg-6">
 
-                                <div class="row" style="margin-top:20px; ">
+                                <div class="row" style="margin-top:0px; ">
                                     <?= Html::edit(['ele-invoice-ajax-edit', 'invoice_id' => $model->invoice->id, 'language'=>$model->language,'returnUrl' => Url::getReturnUrl()],'编辑', [
                                         'data-toggle' => 'modal',
                                         'data-target' => '#ajaxModalLg',
                                         'style'=>'height:25px;font-size:10px;'
                                     ])?>
                                 </div>
-                                <div class="row" style="margin-top:20px; ">
+                                <div class="row" style="margin-top:15px; ">
                                     <?= Html::a('预览',['ele-invoice-pdf?order_id='.$model->id],  [
                                         'class' => 'btn btn-info btn-sm','target'=>'blank',
                                         'style'=>'height:25px;font-size:10px;'
                                     ])?>
 
                                 </div>
-                                <div class="row" style="margin-top:20px; ">
+                                <div class="row" style="margin-top:15px; ">
                                     <?= Html::button('发送('.$model->invoice->send_num.')',['class'=>'btn btn-sm btn-success ele-invoice-send','url'=>Yii::$app->homeUrl."/order/order/ele-invoice-send",'style'=>'height:25px;font-size:10px;'])?>
                                 </div>
-                                <div class="row" style="margin-top:20px; ">
-                                    <?= Html::button('打印',['class'=>'btn btn-primary btn-sm','style'=>'height:25px;font-size:10px;'])?>
-                                </div>
+<!--                                <div class="row" style="margin-top:20px; ">-->
+<!--                                    --><?//= Html::button('打印',['class'=>'btn btn-primary btn-sm','style'=>'height:25px;font-size:10px;'])?>
+<!--                                </div>-->
 
 
                             </div>

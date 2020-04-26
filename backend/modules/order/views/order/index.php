@@ -180,7 +180,11 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                     'class' => 'form-control',
                                 ]),
                                 'value' => function ($model) {
-                                    return \common\enums\PayStatusEnum::getValue($model->payment_status);
+                                    $str = \common\enums\PayStatusEnum::getValue($model->payment_status);
+                                    if($model->payment_type) {                                        
+                                        $str   .= '<br/>'.(\common\enums\PayEnum::getValue($model->payment_type));
+                                    }
+                                    return $str;                                   
                                 },
                                 'format' => 'raw',
                             ],

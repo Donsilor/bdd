@@ -46,7 +46,7 @@ class CartController extends UserAuthController
                 continue;
             }
 
-            $sale_price = $this->exchangeAmount($goods['sale_price']);
+            $sale_price = $this->exchangeAmount($goods['sale_price'],0);
             $cart = array();
             $cart['id'] = $model->id;
             $cart['userId'] = $this->member_id;
@@ -118,7 +118,7 @@ class CartController extends UserAuthController
                     ->select(['r.id','r.ring_style as ringStyle','r.sale_price','r.status','r.ring_images as ringImg','r.ring_sn as ringCode','lang.ring_name as name'])->asArray()->one();
                 $ring['coinType'] = $this->getCurrencySign();
                 $ring['simpleGoodsEntity'] = $simpleGoodsEntity;
-                $ring['salePrice'] = $this->exchangeAmount($ring['sale_price']);
+                $ring['salePrice'] = $this->exchangeAmount($ring['sale_price'],0);
                 $cart['ringsSimpleGoodsEntity'] = $ring;
 
             }else{
@@ -246,7 +246,7 @@ class CartController extends UserAuthController
                 continue;
             }
 
-            $sale_price = $this->exchangeAmount($goods['sale_price']);
+            $sale_price = $this->exchangeAmount($goods['sale_price'],0);
             $cart = array();
             //$cart['id'] = $model->id;
             $cart['userId'] = $this->member_id;
@@ -317,7 +317,7 @@ class CartController extends UserAuthController
                     ->select(['r.id','r.ring_style as ringStyle','r.sale_price','r.status','r.ring_images as ringImg','r.ring_sn as ringCode','lang.ring_name as name'])->asArray()->one();
                 $ring['coinType'] = $this->getCurrencySign();
                 $ring['simpleGoodsEntity'] = $simpleGoodsEntity;
-                $ring['salePrice'] = $this->exchangeAmount($ring['sale_price']);
+                $ring['salePrice'] = $this->exchangeAmount($ring['sale_price'],0);
                 $cart['ringsSimpleGoodsEntity'] = $ring;
 
             }else{

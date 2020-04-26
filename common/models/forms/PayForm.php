@@ -14,6 +14,7 @@ use common\enums\PayEnum;
 use common\enums\OrderStatusEnum;
 use common\models\order\Order;
 use common\enums\CurrencyEnum;
+use common\helpers\Url;
 
 /**
  * Class PayForm
@@ -101,12 +102,14 @@ class PayForm extends Model
                     $this->addError($attribute, 'GlobalAlipay交易类型不符');
                 }
                 break;
-            case PayEnum::PAY_TYPE_PAYDOLLAR :{                
+            case PayEnum::PAY_TYPE_PAYDOLLAR :
+            case PayEnum::PAY_TYPE_PAYDOLLAR_1 :
+            case PayEnum::PAY_TYPE_PAYDOLLAR_2 :
+            case PayEnum::PAY_TYPE_PAYDOLLAR_3 :
                 if(in_array($this->coinType,[CurrencyEnum::CNY,CurrencyEnum::USD])) {
                     $this->addError($attribute, \Yii::t('payment', 'PAYDOLLAR_NOT_SUPPORT_RMB_AND_USD'));
                 }
                 break;
-            }
                 
         }
     }
@@ -120,6 +123,9 @@ class PayForm extends Model
     public function getConfig()
     {
         $baseOrder = $this->getBaseOrderInfo();
+
+        $this->notifyUrl = Url::buildUrl($this->notifyUrl,['out_trade_no'=>$baseOrder['out_trade_no']]);
+        $this->returnUrl = Url::buildUrl($this->returnUrl,['out_trade_no'=>$baseOrder['out_trade_no']]);
 
         //如果订单金额为零，则直接更新订单状态。否则调用支付接口
         if($this->payType == PayEnum::PAY_TYPE_CARD) {
@@ -147,7 +153,6 @@ class PayForm extends Model
                 throw new UnprocessableEntityHttpException(\Yii::t('payment', '请选择支付方式'));
             }
         }
-
         $action = PayEnum::$payTypeAction[$this->payType];
         return Yii::$app->services->pay->$action($this, $baseOrder);
     }

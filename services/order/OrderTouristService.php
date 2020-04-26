@@ -41,9 +41,15 @@ class OrderTouristService extends OrderBaseService
         $details = [];
         foreach ($cartList as $item) {
             $goods = \Yii::$app->services->goods->getGoodsInfo($item['goods_id'], $item['goods_type']);
-
+            if(empty($goods) || $goods['status'] != 1) {
+                throw new UnprocessableEntityHttpException("订单中部分商品已下架,请重新下单");
+            }
+            //验证库存
+            if($goods['goods_storage'] <1) {
+                throw new UnprocessableEntityHttpException("订单中部分商品已下架,请重新下单");
+            }
             //商品价格
-            $sale_price = $this->exchangeAmount($goods['sale_price']*$item['goods_num']);
+            $sale_price = $this->exchangeAmount($goods['sale_price'],0)*$item['goods_num'];
             $goods_amount += $sale_price;
 
             $detail = new OrderTouristDetails();
@@ -135,19 +141,21 @@ class OrderTouristService extends OrderBaseService
      * @throws UnprocessableEntityHttpException|void
      */
     public function sync($orderTourist, $payLog) {
+        
+        $logMessage = "订单号：".$payLog->order_sn."<br/>支付编号：".$payLog->out_trade_no;
+        
         //IP区域ID与地址
         list($ip_area_id, $ip_location) = \Yii::$app->ipLocation->getLocation($orderTourist->ip);
-
         //获取支付信息
         $pay = \Yii::$app->services->pay->getPayByType($payLog->pay_type);
-
-        /** @var Payment $payment */
         $payment = $pay->getPayment(['model'=>$payLog]);
-//        $payment->getPayer();
-
-        //记录订单日志
-        \Yii::error($payment->toArray());
-
+        if($payment) {
+            $logMessage .= "<br/>同步状态：初始化";
+            \Yii::$app->services->actionLog->create('同步游客订单',$logMessage,$payment->toArray());
+        } else {
+            $logMessage .= "<br/>同步状态：支付对象失败";
+            \Yii::$app->services->actionLog->create('同步游客订单',$logMessage,$payLog->toArray());
+        }
         /** @var PayerInfo $payerInfo */
         $payerInfo = $payment->getPayer()->getPayerInfo();
 

@@ -102,8 +102,8 @@ class DiamondController extends OnAuthController
                     $begin_value = $param_value_arr[0];
                     $end_value = $param_value_arr[1];
                     if($param_name == 'sale_price'){
-                        $begin_value = $this->exchangeAmount($begin_value,2, 'CNY', $this->getCurrency());
-                        $end_value = $this->exchangeAmount($end_value,2, 'CNY', $this->getCurrency());
+                        $begin_value = $this->exchangeAmount($begin_value,0, 'CNY', $this->getCurrency());
+                        $end_value = $this->exchangeAmount($end_value,0, 'CNY', $this->getCurrency());
                     }
                     $query->andWhere(['between',$params_map[$param_name], $begin_value, $end_value]);
                 }elseif(strpos($param_value,'||') !== false){
@@ -127,7 +127,7 @@ class DiamondController extends OnAuthController
             $arr['goodsImages'] = ImageHelper::goodsThumbs($val['goods_image'],'mid');
 
             $arr['goodsName'] = $val['goods_name'];
-            $arr['salePrice'] = $this->exchangeAmount($val['sale_price']);
+            $arr['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
             $arr['isJoin'] = null;
             $specsModels['SKU'] = $val['goods_sn'];
             $specsModels['clarity'] = \Yii::$app->attr->valueName($val['clarity']);
@@ -189,7 +189,7 @@ class DiamondController extends OnAuthController
         $diamond['coinType'] = $this->getCurrencySign();
         $diamond['goodsName'] = $model->lang->goods_name;
         $diamond['goodsCode'] = $model->goods_sn;
-        $diamond['salePrice'] = $this->exchangeAmount($model->sale_price);
+        $diamond['salePrice'] = $this->exchangeAmount($model->sale_price,0);
         $diamond['goods3ds'] = $model->goods_3ds;
         $diamond['goodsGiaImage'] = ImageHelper::goodsThumbs($model->goods_gia_image,'big');
         $diamond['goodsImages'] = ImageHelper::goodsThumbs($model->goods_image,'big').",".ImageHelper::goodsThumbs($model->parame_images,'big');
@@ -305,7 +305,7 @@ class DiamondController extends OnAuthController
             $moduleGoods['goodsCode'] = $val['style_sn'];
             $moduleGoods['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'mid');
             $moduleGoods['goodsName'] = $val['style_name'];
-            $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price']);
+            $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
             $webSite['moduleGoods'][] = $moduleGoods;
         }
         $result = array();

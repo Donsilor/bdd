@@ -32,6 +32,7 @@ class SmsLog extends \common\models\base\BaseModel
     const USAGE_REGISTER = 'register';
     const USAGE_UP_PWD = 'up-pwd';
     const USAGE_ORDER_SEND = 'order-send';
+    const USAGE_ERROR_NOTICE = 'error-notice';
     /**
      * @var array
      */
@@ -40,6 +41,7 @@ class SmsLog extends \common\models\base\BaseModel
         self::USAGE_REGISTER => '用户注册验证码',
         self::USAGE_UP_PWD => '修改密码验证码',
         self::USAGE_ORDER_SEND => '订单发货通知',
+        self::USAGE_ERROR_NOTICE => '系统异常提醒',
     ];   
     /**
      * {@inheritdoc}

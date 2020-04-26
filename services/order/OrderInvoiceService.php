@@ -76,6 +76,7 @@ class OrderInvoiceService extends OrderBaseService
             $result['shipper_address'] = $order_invoice_exe['shipper_address'] ? $order_invoice_exe['shipper_address'] : $result['shipper_address'];
             $result['delivery_time'] = $order_invoice_exe['delivery_time'] ? $order_invoice_exe['delivery_time'] : $result['delivery_time'];
             $result['delivery_time'] = $order_invoice_exe['delivery_time'] ? $order_invoice_exe['delivery_time'] : $result['delivery_time'];
+            $result['email'] = $order_invoice_exe['email'] ? $order_invoice_exe['email'] : $result['email'];
             $language = $order_invoice_exe['language'] ? $order_invoice_exe['language'] : $language;
 
             \Yii::$app->params['language'] = $language; //设置语言

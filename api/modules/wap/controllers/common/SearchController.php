@@ -75,7 +75,7 @@ class SearchController extends OnAuthController
             $arr['categoryId'] = (int)$val['type_id'];
             $arr['coinType'] = $this->currency;
             $arr['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'mid');
-            $arr['salePrice'] = $this->exchangeAmount($val['sale_price']);
+            $arr['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
             $arr['goodsName'] = $val['style_name'];
             $arr['isJoin'] = null;
             $arr['specsModels'] = null;

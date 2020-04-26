@@ -186,13 +186,10 @@ class OrderController extends UserAuthController
                 "orderId" => $result['order_id'],
                 "payStatus" => $pay['payStatus']??0,
             ];            
-        }catch(Exception $e) {
-            
+        }catch(Exception $e) {            
             $trans->rollBack();
-
             //记录日志
             \Yii::$app->services->actionLog->create('用户创建订单',$e->getMessage());
-
             throw $e;
         }
     }
@@ -437,7 +434,6 @@ class OrderController extends UserAuthController
         if(empty($cartIds)) {
             return ResultHelper::api(422,"cartIds不能为空");
         }
-
         $cards = \Yii::$app->request->post('cards', []);
         if(!empty($cards)) {
             foreach ($cards as $card) {

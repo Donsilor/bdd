@@ -123,12 +123,12 @@ class Html extends BaseHtml
     public static function a($text, $url = null, $options = [])
     {
         if ($url !== null) {
-            // 权限校验
-            if (!self::beforVerify($url)) {
-                return '';
-            }
-
-            $options['href'] = Url::to($url);
+            if(is_array($url) || !preg_match("/^http/is", $url)) {
+                if (!self::beforVerify($url)) {
+                    return '';
+                }
+            }            
+            $options['href'] = Url::to($url);            
         }
 
         return static::tag('a', $text, $options);

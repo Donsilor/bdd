@@ -155,7 +155,7 @@ class CurrencyService extends Component
         } elseif ($fromCurrency == $toCurrency) {
             return $amount; 
         }
-        return $this->exchangeAmount($amount,$toCurrency,$fromCurrency);
+        return $this->exchangeAmount($amount,$format,$toCurrency,$fromCurrency);
     }       
 
 }

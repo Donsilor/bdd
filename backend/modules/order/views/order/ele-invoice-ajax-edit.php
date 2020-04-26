@@ -61,6 +61,7 @@ $form = ActiveForm::begin([
                     'todayBtn' => true,//今日按钮显示
                 ]
             ]);?>
+         <?= $form->field($model, 'email')->textInput(); ?>
 
         <!-- /.tab-pane -->
     </div>
