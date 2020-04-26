@@ -40,5 +40,5 @@ return [
     "您选购的商品不存在"=>'Your product does not exist',
     "订单中部分商品已下架,请重新下单"=>'Some of the product have been taken off the shelves,please re order!',
         
-    "系统繁忙，请稍后再试" =>'',    
+    "系统繁忙,请稍后再试" =>'The system is busy. Please try again later',    
 ];

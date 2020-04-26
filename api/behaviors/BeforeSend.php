@@ -47,7 +47,7 @@ class BeforeSend extends Behavior
         // 格式化报错输入格式
         if ($response->statusCode >= 500) {
             $response->data['data'] = YII_DEBUG ? $errData : '内部服务器错误,请联系管理员';
-            $response->data['message'] = '系统繁忙，请稍后再试';
+            $response->data['message'] = '系统繁忙,请稍后再试';
         }
 
         // 提取系统 300-499 的报错信息
