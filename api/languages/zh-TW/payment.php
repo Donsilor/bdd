@@ -4,7 +4,7 @@ return [
     'PAYMENT_NOT_SUPPORT_RMB'=>'人民幣暫不支持，請更換其他貨幣!',
     'PAYDOLLAR_NOT_SUPPORT_RMB_AND_USD'=>'由於%s不支持“美元”進行結算，請切換其他貨幣完成本次訂單支付，謝謝！',
     'ORDER_PAID' => '此訂單已經支付成功，請勿重復支付！',
-    'ORDER_STATUS_CHANGED' => '支付失敗,訂單狀態已變更',
+    'ORDER_STATUS_CHANGED' => '支付失敗，該訂單已經支付成功！請勿重新支付！',
     'ORDER_PAYMENT_VERIFICATION_ERROR' => '訂單支付驗證出錯，請重試',
     'ORDER_BEING_PAID' => '訂單正在支付中...',
     'Paydollar 银联' => '銀聯',
