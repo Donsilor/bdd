@@ -66,8 +66,9 @@ class ActionLogService extends Service
         
         //短信提醒 begin
         $route = $model->controller.'/'.$model->action;
-        $smsConfig  = Yii::$app->params['smsNotice']??[]; 
-        if(!empty($smsConfig['open']) && in_array($route,$smsConfig['routes']) ) {
+        $this->sendNoticeSms($behavior, $route, $model->toArray(),600);
+        /*$smsConfig  = Yii::$app->params['smsNotice']??[]; 
+         if(!empty($smsConfig['open']) && in_array($route,$smsConfig['routes']) ) {
             $key = md5(Yii::$app->id.':'.$route.':'.$model->user_id);
             if(!Yii::$app->cache->get($key)){
                 foreach ($smsConfig['mobiles'] as $mobile){
@@ -75,7 +76,7 @@ class ActionLogService extends Service
                 }
                 Yii::$app->cache->set($key,$model->behavior,600);
             }
-       }
+       } */
        //短信提醒 end
         if (!empty($level)) {
             // 创建订阅消息
@@ -95,7 +96,28 @@ class ActionLogService extends Service
         }
         return $model;
     }
-
+    /**
+     * 发送短信通知
+     * @param unknown $behavior
+     * @param unknown $route
+     * @param unknown $data
+     * @param number $time
+     */
+    public function sendNoticeSms($behavior, $route, $log, $time = 600)
+    {
+        $id  = $log['id']??9999999;
+        $user_id = $log['user_id']??0;
+        $smsConfig  = Yii::$app->params['smsNotice']??[];
+        if(!empty($smsConfig['open']) && in_array($route,$smsConfig['routes']) ) {
+            $key = md5(Yii::$app->id.':'.$route.':'.$user_id);
+            if(!Yii::$app->cache->get($key)){
+                foreach ($smsConfig['mobiles'] as $mobile){
+                    Yii::$app->services->sms->queue(true)->send($mobile,SmsLog::USAGE_ERROR_NOTICE,['username'=>$smsConfig['userName'],'sitename'=>$smsConfig['siteName'],'action'=>'['.$behavior.']','code'=>$id]);
+                }
+                Yii::$app->cache->set($key,$behavior,$time);
+            }
+        }
+    }
     /**
      * @param $app_id
      * @param $user_id
