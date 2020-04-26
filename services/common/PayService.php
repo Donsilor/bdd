@@ -4,6 +4,7 @@ namespace services\common;
 
 use common\enums\OrderTouristStatusEnum;
 use common\models\order\OrderTourist;
+use services\market\CardService;
 use Yii;
 use common\enums\PayEnum;
 use common\components\Service;
@@ -187,6 +188,23 @@ class PayService extends Service
             'curr_code' => $baseOrder['currency'],//货币
             'lang' => Yii::$app->language,
         ];
+
+        //扩展支付
+        switch ($payForm->payType) {
+            case '81':
+                $order['payMethod'] = 'CHINAPAY';
+                break;
+            case '82':
+                $order['payMethod'] = 'ALIPAY';
+                break;
+            case '83':
+                $order['payMethod'] = 'WECHAT';//wechat
+                break;
+            default:
+                $order['payMethod'] = 'ALL';
+                break;
+        }
+
         // 交易类型
         $tradeType = $payForm->tradeType;
         return [
@@ -311,15 +329,17 @@ class PayService extends Service
                         OrderAccount::updateAll($accountUpdata,['order_id'=>$order->id]);
                         
                         //订单发送邮件
-                        \Yii::$app->services->order->sendOrderNotification($order->id);
+//                        \Yii::$app->services->order->sendOrderNotification($order->id);
                     }
                     else {
                         throw new \Exception('Order 更新失败'.$log->order_sn);
                     }
+
+                    CardService::setSuccess($order->id);
                 }
-                 /*else {
+                 else {
                     throw new \Exception('Order 无需更新'.$log->order_sn);
-                }*/
+                }
                 // TODO 处理订单
                 return true;
                 break;
@@ -345,9 +365,9 @@ class PayService extends Service
                         throw new \Exception('OrderTourist 更新失败'.$log->order_sn);
                     }
                 }
-                /*else {
+                else {
                     throw new \Exception('OrderTourist 无需更新'.$log->order_sn);
-                }*/
+                }
                 return true;
                 break;
             case PayEnum::ORDER_GROUP_RECHARGE :

@@ -50,9 +50,10 @@ class Address extends \common\models\base\BaseModel
             ['email', 'match', 'pattern' => RegularHelper::email(), 'message' => '请输入正确的邮箱'],
             [['merchant_id', 'member_id','country_id', 'province_id', 'city_id', 'area_id', 'is_default', 'zip_code', 'status', 'created_at', 'updated_at'], 'integer'],
             [['address_name', 'address_details'], 'string', 'max' => 200],
-            [['realname'], 'string', 'max' => 60],
-            [['firstname','lastname'], 'string', 'max' => 30],
-            [['email','country_name','province_name','city_name','area_name'], 'string', 'max' => 60],
+            [['realname'], 'string', 'max' => 200],
+            [['firstname','lastname'], 'string', 'max' => 100],
+            [['email','country_name','province_name','area_name'], 'string', 'max' => 60],
+            [['city_name'], 'string', 'max' => 100],
             [['home_phone', 'mobile'], 'string', 'max' => 20],
             [['mobile_code'], 'string', 'max' => 10],
         ];

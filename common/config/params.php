@@ -171,4 +171,5 @@ return [
             'icon' => 'fa fa-gamepad',
         ],
     ],
+    'cardKey' => 'card-default-key',
 ];

@@ -66,7 +66,9 @@ class StyleController extends OnAuthController
         if(!empty($params)){
 
             $subQuery = AttributeIndex::find()->alias('a')->select(['a.style_id'])->distinct("a.style_id");
-            if($type_id) {
+            if(is_array($type_id)) {
+                $query ->andWhere(['in','m.type_id',$type_id]);
+            }else{
                 $query ->andWhere(['m.type_id'=>$type_id]);
             }
 

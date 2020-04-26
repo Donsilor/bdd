@@ -122,9 +122,25 @@
         <div class="total clf">
             <div class="fr clf">
                 <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_amount']; ?> </div>
-                <div class="fr total-bg">Total</div>
+                <div class="fr total-bg">总金额</div>
             </div>
         </div>
+
+        <div class="total clf">
+            <div class="fr clf">
+                <div class="fr total-val"> - <?php echo $result['currency'] .' '.$result['gift_card_amount']; ?></div>
+                <div class="fr total-bg">购物卡抵扣</div>
+            </div>
+        </div>
+
+        <div class="total clf">
+            <div class="fr clf">
+                <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_paid_amount']; ?></div>
+                <div class="fr total-bg">实付金额</div>
+            </div>
+        </div>
+
+
     </div>
     <!--打印内容结束-->
 

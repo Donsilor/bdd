@@ -61,7 +61,9 @@ class StyleController extends OnAuthController
             ->orderby($order);
 
 
-        if($type_id) {
+        if(is_array($type_id)) {
+            $query ->andWhere(['in','m.type_id',$type_id]);
+        }else{
             $query ->andWhere(['m.type_id'=>$type_id]);
         }
 
@@ -100,15 +102,36 @@ class StyleController extends OnAuthController
                 }elseif ($param_name == 'marry_style_man'){
                     $attr_id = 55;
                     if($param_value == -1){
+                        continue;
                         $marry_style_man_attr = \Yii::$app->attr->valueList(55);
                         $param_value = array_column($marry_style_man_attr,'id');
                     }
                 }elseif ($param_name == 'marry_style_wom'){
                     $attr_id = 54;
                     if($param_value == -1){
+                        continue;
                         $marry_style_man_attr = \Yii::$app->attr->valueList(54);
                         $param_value = array_column($marry_style_man_attr,'id');
                     }
+                }elseif($param_name == 'gender'){
+                    $attr_id = 26;
+                    if($param_value == -1){
+                        continue;
+                        $marry_style_man_attr = \Yii::$app->attr->valueList(26);
+                        $param_value = array_column($marry_style_man_attr,'id');
+                    }else{
+                        //通用款在男戒、女戒里显示
+                        $param_value = [$param_value,43];
+                    }
+
+                }elseif($param_name == 'theme'){
+                    $attr_id = 60;
+                    if($param_value == -1){
+                        continue;
+                        $marry_style_man_attr = \Yii::$app->attr->valueList(26);
+                        $param_value = array_column($marry_style_man_attr,'id');
+                    }
+
                 }else{
                     continue;
                 }
