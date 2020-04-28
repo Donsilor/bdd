@@ -4,6 +4,7 @@ namespace api\modules\web\controllers\member;
 
 use api\controllers\OnAuthController;
 use api\modules\web\forms\CartForm;
+use common\enums\OrderTouristStatusEnum;
 use common\enums\PayEnum;
 use common\helpers\ResultHelper;
 use common\helpers\Url;
@@ -68,6 +69,10 @@ class OrderTouristController extends OnAuthController
                 
                 if(!$order) {
                     throw new UnprocessableEntityHttpException('系统忙，请稍后再试~！');
+                }
+
+                if($order->status==OrderTouristStatusEnum::ORDER_PAID) {
+                    throw new UnprocessableEntityHttpException(\Yii::t('payment', 'ORDER_PAID'));
                 }
                 
                 $orderId = $order->id;
