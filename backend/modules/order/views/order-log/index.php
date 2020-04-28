@@ -89,6 +89,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                     'system'=>'系统',
                                     'admin'=>'管理员',
                                     'buyer'=>'客户',
+                                    'tourist'=>'游客',
                                 ], [
                                     'prompt' => '全部',
                                     'class' => 'form-control',
@@ -99,6 +100,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                         'system'=>'系统',
                                         'admin'=>'管理员',
                                         'buyer'=>'客户',
+                                        'tourist'=>'游客',
                                     ], $model->log_role);
                                 }
                             ],

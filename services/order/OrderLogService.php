@@ -168,6 +168,10 @@ class OrderLogService extends Service
                 $attributes['log_user'] = 'log_user';
             }
         }
+        else {
+            $attributes['log_role'] = 'tourist';
+            $attributes['log_user'] = '游客';
+        }
 
         $attributes['log_time'] = time();
         $attributes['data'] = $attributes['data']?:[[]];
