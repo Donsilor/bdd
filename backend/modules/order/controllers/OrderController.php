@@ -15,6 +15,7 @@ use common\models\order\OrderGoodsLang;
 use common\models\order\OrderInvoice;
 use common\models\order\OrderInvoiceEle;
 use Omnipay\Common\Message\AbstractResponse;
+use services\order\OrderLogService;
 use Yii;
 use common\components\Curd;
 use common\enums\StatusEnum;
@@ -147,8 +148,15 @@ class OrderController extends BaseController
         if ($model->load(Yii::$app->request->post())) {
             
             $model->followed_status = $model->follower_id ? FollowStatusEnum::YES : FollowStatusEnum::NO;
+
+            $result = $model->save();
+
+            if($result) {
+                //日志
+                OrderLogService::follower($model);
+            }
             
-            return $model->save()
+            return $result
                 ? $this->redirect(['index'])
                 : $this->message($this->getError($model), $this->redirect(['index']), 'error');
         }
@@ -175,6 +183,10 @@ class OrderController extends BaseController
             $model->delivery_status = DeliveryStatusEnum::SEND;
             $model->order_status = OrderStatusEnum::ORDER_SEND;//已发货
             $result = $model->save();
+
+            //发货日志
+            OrderLogService::deliver($model);
+
             //订单发送邮件
             \Yii::$app->services->order->sendOrderNotification($id);
             return $result ? $this->redirect(['index']):$this->message($this->getError($model), $this->redirect(['index']), 'error');
@@ -262,6 +274,7 @@ class OrderController extends BaseController
                     throw new Exception($this->getError($model));
                 }                
                 //订单日志
+                OrderLogService::audit($model);
             }
             $trans->commit();
         } catch (Exception $e) {
