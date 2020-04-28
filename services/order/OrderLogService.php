@@ -134,7 +134,7 @@ class OrderLogService extends Service
             $attr['data'][] = [
                 'follower_id' => $follower['username']??$order['follower_id'],
                 'seller_remark' => $order['seller_remark'],
-                'followed_time' => \Yii::$app->formatter->asDatetime($order['followed_time']),
+//                'followed_time' => \Yii::$app->formatter->asDatetime($order['followed_time']),
             ];
         }
         else {
