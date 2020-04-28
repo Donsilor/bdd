@@ -26,11 +26,10 @@ class OrderLogService extends Service
             'email' => $order->address->email,
             'ip_location' => $order['ip_location'],
             'buyer_remark' => $order['buyer_remark'],
-            '测试' => 'fasdf',
         ];
 
         //状态变更
-        $attr['log_msg'] = '订单创建，订单号：'.$attr['order_sn'];
+        $attr['log_msg'] = '订单创建';
         //$attr['log_msg'] .= sprintf("\r\n[订单状态]：“%s”变更为“%s“;", OrderStatusEnum::getValue(OrderStatusEnum::ORDER_UNPAID), OrderStatusEnum::getValue(OrderStatusEnum::ORDER_CANCEL));
 
         return self::log($attr);
@@ -47,7 +46,7 @@ class OrderLogService extends Service
         $attr['data'] = $data;
 
         //状态变更
-        $attr['log_msg'] = '订单取消，订单号：'.$attr['order_sn'];
+        $attr['log_msg'] = '订单取消';
         $attr['log_msg'] .= sprintf("\r\n[订单状态]：“%s”变更为“%s“;", OrderStatusEnum::getValue(OrderStatusEnum::ORDER_UNPAID), OrderStatusEnum::getValue(OrderStatusEnum::ORDER_CANCEL));
 
         return self::log($attr);
@@ -62,7 +61,7 @@ class OrderLogService extends Service
         $attr['data'] = $data;
 
         //状态变更
-        $attr['log_msg'] = '订单支付，订单号：'.$attr['order_sn'];
+        $attr['log_msg'] = '订单支付';
         $attr['log_msg'] .= sprintf("\r\n[订单状态]：“%s”变更为“%s“;", OrderStatusEnum::getValue(OrderStatusEnum::ORDER_UNPAID), OrderStatusEnum::getValue(OrderStatusEnum::ORDER_PAID));
 
         return self::log($attr);
@@ -77,7 +76,7 @@ class OrderLogService extends Service
         $attr['data'] = $data;
 
         //状态变更
-        $attr['log_msg'] = '订单审核，订单号：'.$attr['order_sn'];
+        $attr['log_msg'] = '订单审核';
         $attr['log_msg'] .= sprintf("\r\n[审核状态]：“未审核”变更为“已审核“;");
 
         return self::log($attr);
@@ -92,7 +91,7 @@ class OrderLogService extends Service
         $attr['data'] = $data;
 
         //状态变更
-        $attr['log_msg'] = '订单完成，订单号：'.$attr['order_sn'];
+        $attr['log_msg'] = '订单完成';
         $attr['log_msg'] .= sprintf("\r\n[订单状态]：“%s”变更为“%s“;", OrderStatusEnum::getValue(OrderStatusEnum::ORDER_SEND), OrderStatusEnum::getValue(OrderStatusEnum::ORDER_FINISH));
 
         return self::log($attr);
@@ -118,7 +117,7 @@ class OrderLogService extends Service
         }
 
         //状态变更
-        $attr['log_msg'] = '订单发货，订单号：'.$attr['order_sn'];
+        $attr['log_msg'] = '订单发货';
         $attr['log_msg'] .= sprintf("\r\n[订单状态]：“%s”变更为“%s“;", OrderStatusEnum::getValue(OrderStatusEnum::ORDER_CONFIRM), OrderStatusEnum::getValue(OrderStatusEnum::ORDER_SEND));
 
         return self::log($attr);
@@ -130,8 +129,20 @@ class OrderLogService extends Service
         $attr['action_name'] = strtoupper(__FUNCTION__);
         $attr['order_sn'] = $order['order_sn'];
 
+        if(empty($data)) {
+            $follower = Member::findOne($order['follower_id']);
+            $attr['data'][] = [
+                'follower_id' => $follower['username']??$order['follower_id'],
+                'seller_remark' => $order['seller_remark'],
+                'followed_time' => \Yii::$app->formatter->asDatetime($order['followed_time']),
+            ];
+        }
+        else {
+            $attr['data'] = $data;
+        }
+
         //状态变更
-        $attr['log_msg'] = '订单跟进，订单号：'.$attr['order_sn'];
+        $attr['log_msg'] = '订单跟进';
         $attr['log_msg'] .= sprintf("\r\n[订单状态]：“%s”变更为“%s“;", OrderStatusEnum::getValue(OrderStatusEnum::ORDER_UNPAID), OrderStatusEnum::getValue(OrderStatusEnum::ORDER_CANCEL));
 
         return self::log($attr);
