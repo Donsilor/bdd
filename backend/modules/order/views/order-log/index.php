@@ -3,8 +3,6 @@
 use common\helpers\Url;
 use common\helpers\Html;
 use yii\grid\GridView;
-use common\enums\OrderStatusEnum;
-use kartik\daterange\DateRangePicker;
 
 $this->title = Yii::t('order', '客户订单');
 $this->params['breadcrumbs'][] = ['label' => $this->title];
@@ -49,21 +47,47 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                     return Yii::$app->formatter->asDatetime($model->log_time);
                                 }
                             ],
-//                            [
-//                                'label'=>'操作模块',
-//                                'filter' => false,
-//                                'attribute'=>'log_time',
-//                            ],
+                            [
+                                'label'=>'动作名',
+                                'filter' => false,
+                                'attribute'=>'action_name',
+                                'value'=>function($model){
+                                    return \common\enums\OrderLogEnum::getValue($model->action_name, 'actionName')?:$model->action_name;
+                                }
+                            ],
                             [
                                 'label'=>'操作内容',
                                 'filter' => false,
+                                'format' => 'raw',
                                 'attribute'=>'log_msg',
+                                'value'=>function($model) {
+                                    $value = '<pre>';
+                                    $value .= $model->log_msg;
+
+                                    if(!empty($model->data[0])) {
+                                        foreach ($model->data[0] as $field => $datum) {
+
+                                            $fieldName = \common\enums\OrderLogEnum::getValue($field, 'fieldName')?:$field;
+
+                                            $value .= "\r\n";
+                                            if(empty($model->data[1][$field])) {
+                                                $value .= sprintf('[%s]：“%s”;', $fieldName, $datum);
+                                            }
+                                            else {
+                                                $value .= sprintf('[%s]：“%s”变更为“%s“;', $fieldName, $datum, $model->data[1][$field]??'');
+                                            }
+                                        }
+                                    }
+
+                                    $value .= '</pre>';
+                                    return $value;
+                                }
                             ],
                             [
                                 'label'=>'操作类型',
                                 'filter' => Html::activeDropDownList($searchModel, 'log_role', [
                                     'system'=>'系统',
-                                    '管理员'=>'管理员',
+                                    'admin'=>'管理员',
                                     'buyer'=>'客户',
                                 ], [
                                     'prompt' => '全部',
@@ -73,7 +97,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'value'=>function($model) {
                                     return array_get([
                                         'system'=>'系统',
-                                        '管理员'=>'管理员',
+                                        'admin'=>'管理员',
                                         'buyer'=>'客户',
                                     ], $model->log_role);
                                 }

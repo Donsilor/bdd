@@ -3,8 +3,10 @@
 namespace backend\modules\order\controllers;
 
 use backend\controllers\BaseController;
+use common\enums\OrderLogEnum;
 use common\models\order\Order;
 use common\models\order\OrderLog;
+use services\order\OrderLogService;
 use Yii;
 use common\components\Curd;
 use common\models\base\SearchModel;
@@ -39,7 +41,7 @@ class OrderLogController extends BaseController
             'defaultOrder' => [
                 'id' => SORT_DESC,
             ],
-            'pageSize' => $this->pageSize,
+            'pageSize' => 1000,
             'relations' => []
         ]);
 
@@ -51,7 +53,7 @@ class OrderLogController extends BaseController
 //            $dataProvider->query->andFilterWhere(['between', 'created_at', strtotime($start_date), strtotime($end_date) + 86400]);
 //        }
 
-        $dataProvider->query->andWhere(['order_id'=>$model->id]);
+        $dataProvider->query->andWhere(['order_sn'=>$model->order_sn]);
 
         return $this->render($this->action->id, [
             'model' => $model,
