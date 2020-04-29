@@ -41,7 +41,6 @@ return [
         'market' => [
             'class' => 'backend\modules\market\Module',
         ],
-
         /** ------商城設置 ------ **/
         'setting' => [
             'class' => 'backend\modules\setting\Module',

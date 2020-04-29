@@ -93,10 +93,23 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 									<dd class="num"><span>優惠：</span><em class="discount">-<?= AmountHelper::outputAmount($order->account->discount_amount,2,$currency)?></em></dd>
 									<dd class="num"><span>運費：</span><em>+<?= AmountHelper::outputAmount($order->account->shipping_fee,2,$currency)?></em></dd>
 									<dd class="num"><span>稅費：</span><em>+<?= AmountHelper::outputAmount($order->account->tax_fee,2,$currency)?></em></dd>
+                                    <?php
+                                    $cardUseAmount = 0;
+                                    if($order->cards) {
+                                        foreach ($order->cards as $card) {
+                                            if($card->type!=2) {
+                                                continue;
+                                            }
+                                            $cardUseAmount = bcadd($cardUseAmount, $card->use_amount, 2);
+                                            ?>
+                                            <dd class="num"><span>购物卡 (<?= $card->card->sn ?>)：</span><em>-<?= AmountHelper::outputAmount(abs($card->use_amount),2,$currency)?></em></dd>
+                                        <?php }} ?>
 									<dt class="count"><span>訂單總額：</span><em class="total"><?= AmountHelper::outputAmount($order->account->order_amount,2,$currency)?></em></dt>
 									<?php if($order->order_status == OrderStatusEnum::ORDER_PAID) {?>
-									<dt class="count"><span>实际支付：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
-								    <?php }?>
+									<dt class="count"><span>實際支付：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
+                                    <?php } elseif($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
+                                        <dt class="count"><span>應支付：</span><em class="total"><?= AmountHelper::outputAmount(bcadd($order->account->order_amount, $cardUseAmount, 2),2,$currency)?></em></dt>
+                                    <?php }?>
 								</dl>
 								<?php if($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
 								<a href="<?= \Yii::$app->params['frontBaseUrl']?>/payment-options?orderId=<?= $order->id?>&price=<?= sprintf("%.2f",$order->account->order_amount)?>&coinType=<?= $currency?>" style="text-decoration:none" target="_blank"><div class="btn">立即付款</div></a>

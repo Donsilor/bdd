@@ -22,7 +22,12 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['index']];
                     //重新定义分页样式
                     'tableOptions' => ['class' => 'table table-hover'],
                     'columns' => [
-                        'id',
+                        [
+                                'attribute' => 'id',
+                                'filter' => true,
+                                'format' => 'raw',
+                                'headerOptions' => ['width'=>'80'],
+                        ],
                         [
                             'attribute' => 'app_id',
                             'filter' => Html::activeDropDownList($searchModel, 'app_id', AppEnum::getMap(), [
@@ -53,7 +58,11 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['index']];
                             },
                             'format' => 'raw',
                         ],
-                        'remark',
+                        [
+                             'attribute' => 'remark',
+                             'filter' => true, 
+                             'format' => 'raw',
+                        ],
                         [
                             'attribute' => 'created_at',
                             'filter' => false, //不显示搜索框

@@ -52,4 +52,25 @@ class BackendService extends Service
                 break;
         }
     }
+    /**
+     * 获取用户id
+     * @return number|string|number
+     */
+    public function getUserId() 
+    {        
+        switch (Yii::$app->id) {
+            case AppEnum::BACKEND :
+                return Yii::$app->user->id ?? 0;
+                break;
+            case AppEnum::MERCHANT :
+                return Yii::$app->user->id ?? 0;
+                break;
+            case AppEnum::OAUTH2 :
+                return Yii::$app->user->id ?? 0;
+                break;
+            default :
+                return Yii::$app->user->identity->member_id ?? 0;
+                break;
+        }
+    }
 }

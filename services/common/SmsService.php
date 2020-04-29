@@ -92,8 +92,7 @@ class SmsService extends Service
      */
     public function send($mobile, $usage, $data = [])
     {
-        
-        $data['ip'] = Yii::$app->request->userIP;
+        $data['ip'] = Yii::$app->request->userIP??'127.0.0.1';
         if ($this->queueSwitch == true) {
             
             $messageId = Yii::$app->queue->push(new SmsJob([

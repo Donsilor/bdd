@@ -3,9 +3,14 @@
 namespace services\order;
 
 use common\models\market\MarketCouponDetails;
+use services\market\CouponService;
+use common\models\market\MarketCard;
+use common\models\market\MarketCardDetails;
 use common\models\order\OrderCart;
 use common\models\order\OrderInvoice;
-use services\market\CouponService;
+use services\goods\TypeService;
+use services\market\CardService;
+use yii\db\Expression;
 use yii\web\UnprocessableEntityHttpException;
 use common\models\order\OrderGoods;
 use common\models\order\Order;
@@ -16,6 +21,8 @@ use common\enums\PayStatusEnum;
 use common\models\member\Member;
 use common\enums\OrderStatusEnum;
 use common\enums\StatusEnum;
+use common\models\common\PayLog;
+use common\enums\PayEnum;
 
 /**
  * Class OrderService
@@ -47,7 +54,7 @@ class OrderService extends OrderBaseService
 
         $buyer = Member::find()->where(['id'=>$buyer_id])->one();
 
-        $orderAccountTax = $this->getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $coupon_id);
+        $orderAccountTax = $this->getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $coupon_id, []);
 
         if(empty($orderAccountTax['buyerAddress'])) {
             throw new UnprocessableEntityHttpException("收货地址不能为空");
@@ -119,13 +126,15 @@ class OrderService extends OrderBaseService
              //订单商品明细
             foreach (array_keys($languages) as $language){
                 $goods = \Yii::$app->services->goods->getGoodsInfo($orderGoods->goods_id,$orderGoods->goods_type,false,$language);
-                if(empty($goods) || $goods['status'] != 1) {
-                    continue;
-                }
-
-                //验证库存
-                if($orderGoods->goods_num>$goods['goods_storage']) {
-                    throw new UnprocessableEntityHttpException(sprintf("[%s]商品库存不足", $goods['goods_sn']));
+                if($language == $this->getLanguage()) {
+                    if(empty($goods) || $goods['status'] != 1) {
+                        throw new UnprocessableEntityHttpException("订单中部分商品已下架,请重新下单");
+                    }
+    
+                    //验证库存
+                    if($orderGoods->goods_num > $goods['goods_storage']) {
+                        throw new UnprocessableEntityHttpException("订单中部分商品已下架,请重新下单");
+                    }
                 }
 
                 $langModel = $orderGoods->langModel();
@@ -190,10 +199,11 @@ class OrderService extends OrderBaseService
      * @param unknown $buyer_id
      * @param unknown $buyer_address_id
      * @param int $coupon_id
+     * @param array $cards
      * @throws UnprocessableEntityHttpException
      * @return array
      */
-    public function getOrderAccountTax($carts, $buyer_id, $buyer_address_id, $coupon_id=0)
+    public function getOrderAccountTax($carts, $buyer_id, $buyer_address_id, $coupon_id=0, $cards=[])
     {
         if(empty($carts) || !is_array($carts)) {
             throw new UnprocessableEntityHttpException("[carts]参数错误");
@@ -214,23 +224,22 @@ class OrderService extends OrderBaseService
             }
         }
         
-        $cart_list = OrderCart::find()->where(['member_id'=>$buyer_id,'id'=>$cartIds])->asArray()->all();
+        $cartList = OrderCart::find()->where(['member_id'=>$buyer_id,'id'=>$cartIds])->asArray()->all();
 
-        if(empty($cart_list)) {
-            throw new UnprocessableEntityHttpException("订单商品查询失败");
+        if(empty($cartList)) {
+            throw new UnprocessableEntityHttpException("您的购物车商品不存在");
         }
 
-        foreach ($cart_list as &$item) {
+        foreach ($cartList as &$item) {
             $item['coupon_id'] = $discounts[$item['id']]??0;
         }
 
-        $buyerAddress = Address::find()->where(['id'=>$buyer_address_id,'member_id'=>$buyer_id])->one();
+        $result = $this->getCartAccountTax($cartList, $coupon_id, $cards);
 
-        $result = $this->getCartAccountTax($cart_list, $coupon_id);
-
-        $result['buyerAddress'] = $buyerAddress;
+        $result['buyerAddress'] = Address::find()->where(['id'=>$buyer_address_id,'member_id'=>$buyer_id])->one();;
 
         return $result;
+
     }
     /**
      * 获取订单支付金额
@@ -270,9 +279,52 @@ class OrderService extends OrderBaseService
         $order->seller_remark = $remark;
         $order->order_status = OrderStatusEnum::ORDER_CANCEL;
         $order->save(false);
+        //解冻购物卡
+        CardService::deFrozen($order_id);
         //订单日志
         $this->addOrderLog($order_id, $remark, $log_role, $log_user,$order->order_status);
     }
-          
+    
+    /**
+     * 同步订单 手机号
+     * @param int $order_id 订单ID
+     * @throws \Exception
+     */
+    public function syncPayPalPhone($order_id)
+    {
+        $order = Order::find()->where(['id'=>$order_id])->one();
+        if(!$order) {
+            throw new \Exception('订单查询失败,order_id='.$order_id);
+        }
+        
+        $payLog = PayLog::find()->where(['order_sn'=>$order->order_sn,'pay_type'=>PayEnum::PAY_TYPE_PAYPAL,'pay_status'=>PayStatusEnum::PAID])->one();
+        if(!$payLog) {
+            throw new \Exception('非PayPal支付');
+        }
+        
+        $pay = \Yii::$app->services->pay->getPayByType($payLog->pay_type);
+        /**
+         * @var $payment Payment
+         */
+        $payment = $pay->getPayment(['model'=>$payLog]);
+
+        $payer = $payment->getPayer()->getPayerInfo();
+        
+        $phone = $payer->getPhone();
+        $conuntryCode = $payer->getCountryCode();
+        $mobileCodeMap = ['HK'=>'+852','C2'=>'+86','MO'=>'+853','TW'=>'+886','CN'=>'+86','US'=>'+1'];
+        if($phone) {
+            $address = OrderAddress::findOne(['order_id'=>$order->id]);
+            $address->mobile = $phone;   
+            $address->mobile_code = $mobileCodeMap[$conuntryCode]??'';
+            if(!$address->save()) {
+                throw new \Exception($this->getError($address));
+            }
+        }
+        else {
+            throw new \Exception('PayPal手机号为空');
+        }
+    }
+
     
 }

@@ -34,11 +34,11 @@ class OrderInvoice extends \common\models\base\BaseModel
         return [
             [['order_id', 'invoice_type', 'invoice_title', 'is_electronic'], 'required'],
             [['order_id', 'invoice_type', 'is_electronic'], 'integer'],
-            [['invoice_title'], 'string', 'max' => 80],
+            [['invoice_title'], 'string', 'max' => 225],
             [['tax_number'], 'string', 'max' => 50],
             [['invoice_type'], 'validateTaxNumber'],
             [['invoice_title','tax_number'], 'safe'],
-            [['email'], 'string', 'max' => 60],
+            [['email'], 'string', 'max' => 150],
             ['email', 'match', 'pattern' => RegularHelper::email(), 'message' => \Yii::t('order','请输入正确的发票接收邮箱')],
         ];
     }
@@ -68,5 +68,14 @@ class OrderInvoice extends \common\models\base\BaseModel
         if($invoiceType===1 && empty($this->tax_number)) {
             $this->addError($attribute, \Yii::t('order','企业发票税号不能为空'));
         }
+    }
+
+    /**
+     * 对应订单电子发票扩展信息模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInvoiceEle()
+    {
+        return $this->hasOne(OrderInvoiceEle::class, ['invoice_id'=>'id']);
     }
 }

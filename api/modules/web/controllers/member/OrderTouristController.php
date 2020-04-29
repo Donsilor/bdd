@@ -4,6 +4,7 @@ namespace api\modules\web\controllers\member;
 
 use api\controllers\OnAuthController;
 use api\modules\web\forms\CartForm;
+use common\enums\OrderTouristStatusEnum;
 use common\enums\PayEnum;
 use common\helpers\ResultHelper;
 use common\helpers\Url;
@@ -70,6 +71,10 @@ class OrderTouristController extends OnAuthController
                 if(!$order) {
                     throw new UnprocessableEntityHttpException('系统忙，请稍后再试~！');
                 }
+
+                if($order->status==OrderTouristStatusEnum::ORDER_PAID) {
+                    throw new UnprocessableEntityHttpException(\Yii::t('payment', 'ORDER_PAID'));
+                }
                 
                 $orderId = $order->id;
             }
@@ -93,8 +98,9 @@ class OrderTouristController extends OnAuthController
             $trans->commit();
 
             return $config;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $trans->rollBack();
+            \Yii::$app->services->actionLog->create('游客创建订单',$e->getMessage());
             throw $e;
         }
     }
@@ -233,7 +239,7 @@ class OrderTouristController extends OnAuthController
         if (empty($goodsCartList)) {
             return ResultHelper::api(422, "goodsCartList不能为空");
         }
-
+		
         //验证产品数据
         $cartList = array();
         foreach ($goodsCartList as $cartGoods) {
@@ -245,10 +251,11 @@ class OrderTouristController extends OnAuthController
             }
             $cartList[] = $model->toArray();
         }
-
+        
         try {
             $taxInfo = \Yii::$app->services->orderTourist->getCartAccountTax($cartList, $coupon_id);
         } catch (\Exception $exception) {
+            \Yii::$app->services->actionLog->create('游客订单金额汇总','Exception:'.$e->getMessage());
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 

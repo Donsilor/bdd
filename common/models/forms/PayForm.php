@@ -3,8 +3,10 @@
 namespace common\models\forms;
 
 use common\enums\PayStatusEnum;
+use common\models\common\PayLog;
 use common\models\order\OrderTourist;
 use Omnipay\Common\Message\AbstractResponse;
+use services\market\CardService;
 use Yii;
 use yii\base\Model;
 use yii\web\UnprocessableEntityHttpException;
@@ -12,6 +14,7 @@ use common\enums\PayEnum;
 use common\enums\OrderStatusEnum;
 use common\models\order\Order;
 use common\enums\CurrencyEnum;
+use common\helpers\Url;
 
 /**
  * Class PayForm
@@ -99,12 +102,15 @@ class PayForm extends Model
                     $this->addError($attribute, 'GlobalAlipay交易类型不符');
                 }
                 break;
-            case PayEnum::PAY_TYPE_PAYDOLLAR :{                
+            case PayEnum::PAY_TYPE_PAYDOLLAR :
+            case PayEnum::PAY_TYPE_PAYDOLLAR_1 :
+            case PayEnum::PAY_TYPE_PAYDOLLAR_2 :
+            case PayEnum::PAY_TYPE_PAYDOLLAR_3 :
+                $name = \Yii::t('payment', PayEnum::getValue($this->payType));
                 if(in_array($this->coinType,[CurrencyEnum::CNY,CurrencyEnum::USD])) {
-                    $this->addError($attribute, \Yii::t('payment', 'PAYDOLLAR_NOT_SUPPORT_RMB_AND_USD'));
+                    $this->addError($attribute, sprintf(\Yii::t('payment', 'PAYDOLLAR_NOT_SUPPORT_RMB_AND_USD'), $name));
                 }
                 break;
-            }
                 
         }
     }
@@ -117,9 +123,38 @@ class PayForm extends Model
      */
     public function getConfig()
     {
-        $action = PayEnum::$payTypeAction[$this->payType];
         $baseOrder = $this->getBaseOrderInfo();
 
+        $this->notifyUrl = Url::buildUrl($this->notifyUrl,['out_trade_no'=>$baseOrder['out_trade_no']]);
+        $this->returnUrl = Url::buildUrl($this->returnUrl,['out_trade_no'=>$baseOrder['out_trade_no']]);
+
+        //如果订单金额为零，则直接更新订单状态。否则调用支付接口
+        if($this->payType == PayEnum::PAY_TYPE_CARD) {
+            if($baseOrder['total_fee']==0) {
+                $model = PayLog::findOne(['out_trade_no'=>$baseOrder['out_trade_no']]);
+
+                $update = [
+                    'pay_fee' => $model->total_fee,
+                    'pay_status' => PayStatusEnum::PAID,
+                    'pay_time' => time(),
+                ];
+
+                $model->setAttributes($update);
+
+                if(!$model->save()) {
+                    throw new UnprocessableEntityHttpException(\Yii::t('payment', '系统繁忙，请重试'));
+                }
+
+                //更新订单状态
+                Yii::$app->services->pay->notify($model, null);
+
+                return ['payStatus' => $model->pay_status];// $model->toArray(['pay_status']);
+            }
+            else {
+                throw new UnprocessableEntityHttpException(\Yii::t('payment', '请选择支付方式'));
+            }
+        }
+        $action = PayEnum::$payTypeAction[$this->payType];
         return Yii::$app->services->pay->$action($this, $baseOrder);
     }
 
@@ -149,6 +184,10 @@ class PayForm extends Model
                 //验证重复支付
                 if(!empty($order->paylogs)) {
                     foreach ($order->paylogs as $paylog) {
+                        if($paylog->pay_type==PayEnum::PAY_TYPE_CARD) {
+                            continue;
+                        }
+
                         //获取支付类
                         $pay = Yii::$app->services->pay->getPayByType($paylog->pay_type);
 
@@ -167,14 +206,17 @@ class PayForm extends Model
                     }
                 }
 
+                //获取购物卡使用金额
+                $cardUseAmount = CardService::getUseAmount($order->id);
+
                 // TODO 查询订单获取订单信息
                 $orderSn = $order->order_sn;
-                $totalFee = $order->account->order_amount - $order->account->discount_amount;
+                $totalFee = bcsub($order->account->order_amount - $order->account->discount_amount, $cardUseAmount, 2);
                 $currency = $order->account->currency;
                 $exchangeRate = $order->account->exchange_rate;
                 
                 Order::updateAll(['payment_type'=>$this->payType],['id'=>$order->id]);//更改订单支付方式
-                
+
                 $order = [
                     'body' => "商品",
                     'total_fee' => $totalFee,

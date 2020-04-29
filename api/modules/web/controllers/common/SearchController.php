@@ -35,16 +35,16 @@ class SearchController extends OnAuthController
      */
     public function actionIndex(){
         $sort_map = [
-            '1'=>'virtual_volume desc',//最暢銷
-            '2'=>'sale_price asc ',//價格 - 從低到高
-            '3'=>'sale_price desc',//價格 - 從高到低
+            '1'=>'virtual_volume desc ,id desc',//最暢銷
+            '2'=>'sale_price asc ,id desc',//價格 - 從低到高
+            '3'=>'sale_price desc ,id desc',//價格 - 從高到低
         ];
         $type_id = \Yii::$app->request->get("categoryId");//产品线ID
         $keyword = \Yii::$app->request->get("text");//产品线ID
         $order_type = \Yii::$app->request->get("sortType", 1);//排序方式 1-升序；2-降序;
 
         //排序
-        $order = 'virtual_volume desc';
+        $order = 'virtual_volume desc ,id desc';
         if(!empty($order_type)){
             $order = $sort_map[$order_type];
         }
@@ -80,7 +80,7 @@ class SearchController extends OnAuthController
             $arr['categoryId'] = $val['type_id'];
             $arr['coinType'] = $this->currency;
             $arr['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'mid');
-            $arr['salePrice'] = $this->exchangeAmount($val['sale_price']);
+            $arr['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
             $arr['goodsName'] = $val['style_name'];
             $arr['isJoin'] = null;
             $arr['specsModels'] = null;

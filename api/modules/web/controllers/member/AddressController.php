@@ -44,7 +44,13 @@ class AddressController extends UserAuthController
             "is_default",
         ];
         $models = $this->modelClass::find()->select($fields)->where(['member_id'=>$this->member_id])->orderBy('is_default desc, id desc')->all();
-        return $models;      
+        foreach ($models as &$model){
+            $model['country_name'] = \Yii::$app->services->area->getAreaName($model['country_id']);
+            $model['province_name'] = \Yii::$app->services->area->getAreaName($model['province_id']);
+            $model['city_name'] = \Yii::$app->services->area->getAreaName($model['city_id']);
+        }
+
+        return $models;
         
     }
     /**

@@ -1,5 +1,5 @@
 <?php
-if(isset($_SERVER['host']) && $_SERVER['host']=='bdd.com'){
+if(isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST']=='bddco.com'){
     header('HTTP/1.1 301 Moved Permanently');
     header('Location:https://www.bddco.com');
     exit;

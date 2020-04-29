@@ -16,7 +16,20 @@ return [
     'currencySign' =>'CNY',//当前货币符号
     'cachePrefix'=>'common',//缓存前缀
     'goodsType.diamond'=>15,//裸钻产品线    
-
+    'smsNotice'=>[
+        'open'=>true,
+        'userName'=>'管理员',
+        'siteName'=>'BDD测试站',    
+        'mobiles'=>['15989407534'],
+        'routes'=>[
+                'member/order/create',
+                'member/order/tax',
+                'member/order-tourist/create',
+                'member/order-tourist/tax',
+                'pay/create',
+        ]
+    ],//错误日志短信提醒 
+    
     // 是否在模块内
     'inAddon' => false,
     // 多商户开启
@@ -158,4 +171,5 @@ return [
             'icon' => 'fa fa-gamepad',
         ],
     ],
+    'cardKey' => 'card-default-key',
 ];

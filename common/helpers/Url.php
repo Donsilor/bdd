@@ -233,25 +233,41 @@ class Url extends BaseUrl
     //获取当前url地址
     public static function getReturnUrl()
     {
-        $url = parse_url(Yii::$app->request->url);
-        $returnUrlParams = [];
-        if (isset($url['query'])) {
-            $parts = explode('&', $url['query']);
+        return self::buildUrl(Yii::$app->request->url);
+    }
+    
+    /**
+     * 重新组装url
+     * @param string $url 当前地址
+     * @param array $params 新增参数 二位数组
+     * @param array $ignores 剔除参数 一位数组
+     */
+    public static function buildUrl($url, $params = [], $ignores = [])
+    {
+        $urlInfo= parse_url($url);
+        if(isset($urlInfo['query'])){
+            $parts = explode('&', $urlInfo['query']);
             foreach ($parts as $part) {
                 $pieces = explode('=', $part);
-
-                if (count($pieces) == 2 && strlen($pieces[1]) > 0) {
-                    $returnUrlParams[] = $part;
+                if(count($pieces) == 2 && !in_array($pieces[0],$ignores) && !array_key_exists($pieces[0],$params)) {
+                    $params[$pieces[0]] = $pieces[1];
                 }
             }
+            
         }
-        if (count($returnUrlParams) > 0) {
-            $returnUrl = $url['path'] . '?' . implode('&', $returnUrlParams);
-        } else {
-            $returnUrl = $url['path'];
+        if(!empty($urlInfo['host']) && !empty($urlInfo['scheme'])) {
+            $returnUrl = $urlInfo['scheme'].'://'.$urlInfo['host'].$urlInfo['path'];
+        }else{
+            $returnUrl = $urlInfo['path'];
         }
-
-       return $returnUrl;
-    }
+        if (count($params) > 0) {
+            $returnUrlParams = [];
+            foreach ($params as $key=>$val){
+                $returnUrlParams[] = $key.'='.$val;
+            }
+            $returnUrl = $returnUrl . '?' . implode('&', $returnUrlParams);
+        }
+        return $returnUrl;
+    }  
 
 }

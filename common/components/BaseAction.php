@@ -131,6 +131,7 @@ trait BaseAction
      */ 
     public function exchangeAmount($amount , $format = 2, $toCurrency = null, $fromCurrency = null)
     {
+        if($amount < 1) $format = 2;
         return \Yii::$app->services->currency->exchangeAmount($amount,$format,$toCurrency,$fromCurrency);
     }
     /**

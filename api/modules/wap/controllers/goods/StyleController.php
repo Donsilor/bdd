@@ -46,10 +46,10 @@ class StyleController extends OnAuthController
         $ev = \Yii::$app->request->get("ev");  //属性帅选
 
         //排序
-        $order = 'virtual_volume desc';
+        $order = 'virtual_volume desc ,id desc';
         if(!empty($order_param)){
-            $order_type = $order_type == 1? "asc": "desc";
-            $order = $sort_map[$order_param]. " ".$order_type;
+            $order_type = $order_type == 1 ? "asc": "desc";
+            $order = $sort_map[$order_param]. " ".$order_type . ",id desc";
         }
 
         $area_id = $this->getAreaId(); 
@@ -62,7 +62,9 @@ class StyleController extends OnAuthController
             ->orderby($order);
 
 
-        if($type_id) {
+        if(is_array($type_id)) {
+            $query ->andWhere(['in','m.type_id',$type_id]);
+        }else{
             $query ->andWhere(['m.type_id'=>$type_id]);
         }
 
@@ -83,11 +85,11 @@ class StyleController extends OnAuthController
                     $min_price = $param_sale_price_arr[0];
                     $max_price = $param_sale_price_arr[1];
                     if(is_numeric($min_price)){
-                        $min_price = $this->exchangeAmount($min_price,2, 'CNY', $this->getCurrency());
+                        $min_price = $this->exchangeAmount($min_price,0, 'CNY', $this->getCurrency());
                         $query->andWhere(['>','IFNULL(markup.sale_price,m.sale_price)',$min_price]);
                     }
                     if(is_numeric($max_price) && $max_price>0){
-                        $max_price = $this->exchangeAmount($max_price,2, 'CNY', $this->getCurrency());
+                        $max_price = $this->exchangeAmount($max_price,0, 'CNY', $this->getCurrency());
                         $query->andWhere(['<=','IFNULL(markup.sale_price,m.sale_price)',$max_price]);
                     }
                     continue;
@@ -101,15 +103,36 @@ class StyleController extends OnAuthController
                 }elseif ($param_name == 'marry_style_man'){
                     $attr_id = 55;
                     if($param_value == -1){
+                        continue;
                         $marry_style_man_attr = \Yii::$app->attr->valueList(55);
                         $param_value = array_column($marry_style_man_attr,'id');
                     }
                 }elseif ($param_name == 'marry_style_wom'){
                     $attr_id = 54;
                     if($param_value == -1){
+                        continue;
                         $marry_style_man_attr = \Yii::$app->attr->valueList(54);
                         $param_value = array_column($marry_style_man_attr,'id');
                     }
+                }elseif($param_name == 'gender'){
+                    $attr_id = 26;
+                    if($param_value == -1){
+                        continue;
+                        $marry_style_man_attr = \Yii::$app->attr->valueList(26);
+                        $param_value = array_column($marry_style_man_attr,'id');
+                    }else{
+                        //通用款在男戒、女戒里显示
+                        $param_value = [$param_value,43];
+                    }
+
+                }elseif($param_name == 'theme'){
+                    $attr_id = 60;
+                    if($param_value == -1){
+                        continue;
+                        $marry_style_man_attr = \Yii::$app->attr->valueList(26);
+                        $param_value = array_column($marry_style_man_attr,'id');
+                    }
+
                 }else{
                     continue;
                 }
@@ -139,7 +162,7 @@ class StyleController extends OnAuthController
             $arr['categoryId'] = $type_id;
             $arr['coinType'] = $this->getCurrencySign();
             $arr['goodsImages'] =ImageHelper::goodsThumbs($val['goods_images'],'mid');
-            $arr['salePrice'] = $this->exchangeAmount($val['sale_price']);
+            $arr['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
             $arr['goodsName'] = $val['style_name'];
             $arr['isJoin'] = null;
             $arr['showType'] = 2;
@@ -178,7 +201,7 @@ class StyleController extends OnAuthController
             $moduleGoods['goodsCode'] = $val['style_sn'];
             $moduleGoods['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'mid');
             $moduleGoods['goodsName'] = $val['style_name'];
-            $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price']);
+            $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
 
             $moduleGoods['coupon'] = [
                 'type_id' => $type_id,//产品线ID
@@ -264,7 +287,7 @@ class StyleController extends OnAuthController
                 $recommend['id'] = $val->id;
                 $recommend['goodsName'] = $val->lang->style_name;
                 $recommend['categoryId'] = $model->type_id;
-                $recommend['salePrice'] = $this->exchangeAmount($val->sale_price);
+                $recommend['salePrice'] = $this->exchangeAmount($val->sale_price,0);
                 $recommend['goodsImages'] = ImageHelper::goodsThumbs($val->goods_images,'mid');
                 $recommend['isJoin'] = null;
                 $recommend['specsModels'] = null;

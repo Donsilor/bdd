@@ -8,6 +8,7 @@ use common\models\goods\Style;
 use common\models\goods\Goods;
 use common\models\goods\StyleLang;
 use yii\base\Exception;
+use common\enums\StatusEnum;
 
 
 
@@ -76,6 +77,8 @@ class DiamondService extends Service
             $styleLang->meta_desc = $lang->meta_desc;
             $styleLang->save(false);
         }
+        //先标注所有sku已删除
+        Goods::updateAll(['status'=>StatusEnum::DELETE],['style_id'=>$style_id]);
         
         $goods = Goods::find()->where(['goods_sn'=>$diamond->goods_sn,'style_id'=>$style->id])->one();        
         if(!$goods) {

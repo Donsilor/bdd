@@ -64,8 +64,11 @@ class GoodsService extends Service
               $model->attributes = $attributes;
               $model->save(false);
         }
+        //先标注所有sku已删除
+        Goods::updateAll(['status'=>StatusEnum::DELETE],['style_id'=>$style_id]);
         //商品更新
         $sale_prices= [];
+        $style_status = StatusEnum::DISABLED;
         foreach ($goods_list as $key=>$goods){
             //禁用没有填写商品编号的，过滤掉
             if(empty($goods['goods_sn']) && empty($goods['status'])){
@@ -84,21 +87,28 @@ class GoodsService extends Service
             $goodsModel->market_price = $goods['market_price']??0; //成本价
             $goodsModel->cost_price = $goods['cost_price']??0;//成本价
             $goodsModel->goods_storage = $goods['goods_storage']??0;//库存
-            $goodsModel->status = $goods['status']??0;//上下架状态 
+            $goodsModel->status = $goods['status'] ?? StatusEnum::DISABLED;//上下架状态 
             $goodsModel->spec_key = $key;
             
             if(!empty($default_data['style_spec_b'][$key])){
                 $goods_specs = $default_data['style_spec_b'][$key];
                 $goodsModel->goods_spec = json_encode($goods_specs['spec_keys']);
-            }            
+            }
+
             $goodsModel->save(false);  
             $sale_prices[] = $goodsModel->sale_price;
+
+            #如果商品sku不全部是禁用，则这个款不是禁用状态
+            if($goods['status'] == StatusEnum::ENABLED){
+                $style_status = StatusEnum::ENABLED;
+            }
         }
         //更新最小价格
         $min_sale_price = min($sale_prices);
         if($min_sale_price > 1) {
             $styleModel->sale_price = $min_sale_price;
         }
+        $styleModel -> status = $style_status;
         $styleModel->save(false);
         //计算更新商品加价销售价
         \Yii::$app->services->salepolicy->syncGoodsMarkup($style_id);
@@ -441,7 +451,7 @@ class GoodsService extends Service
         $style['goodsName'] = $model['style_name'];
         $style['goodsCode'] = $model['style_sn'];
         $style['goodsImages'] = $model['goods_images'];
-        $style['salePrice'] = $this->exchangeAmount($model['sale_price']);
+        $style['salePrice'] = $this->exchangeAmount($model['sale_price'],0);
         $style['coinType'] = $this->getCurrencySign();
         $style['goods3ds'] = $model['style_3ds'];
         $style['goodsDesc'] = $model['goods_body'];
@@ -563,7 +573,7 @@ class GoodsService extends Service
             $details[$key]['warehouse'] = $val['warehouse'];
             $details[$key]['categoryId'] = $model['type_id'];
             $details[$key]['goodsDetailsCode'] = $val['goods_sn'];
-            $details[$key]['retailMallPrice'] = (float)$this->exchangeAmount($val['sale_price']);
+            $details[$key]['retailMallPrice'] = (float)$this->exchangeAmount($val['sale_price'],0);
             $details[$key]['retailPrice'] = null;
             $details[$key]['goodsId'] = $style_id;
             $details[$key]['id'] = $val['id'];

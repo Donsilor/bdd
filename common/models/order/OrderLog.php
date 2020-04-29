@@ -40,7 +40,7 @@ class OrderLog extends ActiveRecord
             [['order_id', 'log_time', 'log_role'], 'required'],
             [['log_msg'], 'string', 'max' => 500],
             [['log_role'], 'string', 'max' => 10],
-            [['log_user'], 'string', 'max' => 30],
+            [['log_user'], 'string', 'max' => 60],
         ];
     }
 

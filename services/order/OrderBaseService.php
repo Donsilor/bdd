@@ -13,10 +13,12 @@ use common\helpers\RegularHelper;
 use common\models\common\DeliveryTime;
 use common\models\common\EmailLog;
 use common\models\common\SmsLog;
+use common\models\market\MarketCard;
 use common\models\order\Order;
 use common\models\order\OrderLog;
 use common\models\order\OrderTourist;
 use common\models\order\OrderTouristDetails;
+use services\goods\TypeService;
 use services\market\CouponService;
 use yii\web\UnprocessableEntityHttpException;
 
@@ -28,7 +30,7 @@ class OrderBaseService extends Service
      */
     public function sendOrderNotification($order_id)
     {
-        $order = Order::find()->where(['id'=>$order_id])->one();
+        $order = Order::find()->where(['or',['id'=>$order_id],['order_sn'=>$order_id]])->one();
 
         if($order->is_tourist) {
             if(RegularHelper::verify('email',$order->member->email)) {
@@ -96,7 +98,7 @@ class OrderBaseService extends Service
      * @return array
      * @throws UnprocessableEntityHttpException
      */
-    public function getCartAccountTax($cartList, $coupon_id=0)
+    public function getCartAccountTax($cartList, $coupon_id=0, $cards = [])
     {
         $orderGoodsList = [];
         foreach ($cartList as $item) {
@@ -127,6 +129,9 @@ class OrderBaseService extends Service
             $orderGoods['goods_attr'] = $goods['goods_attr'];//商品规格
             $orderGoods['goods_spec'] = $goods['goods_spec'];//商品规格
 
+
+
+
             //用于活动获取活动信息的接口
             $orderGoods['coupon'] = [
                 'type_id' => $goods['type_id'],
@@ -136,10 +141,28 @@ class OrderBaseService extends Service
             ];
 
             $orderGoodsList[] = $orderGoods;
+
         }
 
         $goods_amount = 0;
         $discount_amount = 0;//优惠金额
+
+        //            foreach ($cart_list as $cart) {
+//
+//                $goods = \Yii::$app->services->goods->getGoodsInfo($cart->goods_id,$cart->goods_type,false);
+//                if(empty($goods) || $goods['status'] != StatusEnum::ENABLED) {
+//                    continue;
+//                }
+//                $sale_price = $this->exchangeAmount($goods['sale_price'],0);
+//                if(!isset($goodsTypeAmounts[$goods['type_id']])) {
+//                    $goodsTypeAmounts[$goods['type_id']] = $sale_price;
+//                }
+//                else {
+//                    $goodsTypeAmounts[$goods['type_id']] = bcadd($goodsTypeAmounts[$goods['type_id']], $sale_price, 2);
+//                }
+//                $goods_amount += $sale_price;
+//
+//            }
 
         //执行优惠券接口。
         $coupons = CouponService::getCouponByList($this->getAreaId(), $orderGoodsList);
@@ -180,6 +203,73 @@ class OrderBaseService extends Service
             }
         }
 
+        //产品线金额
+        $goodsTypeAmounts = [];
+        //所有卡共用了多少金额
+        $cardsUseAmount = 0;
+
+        if(!empty($cards)) {
+            foreach ($cards as &$card) {
+
+                //状态，是否过期，是否有余额
+                $where = ['and'];
+                $where[] = [
+                    'sn' => $card['sn'],
+                    'status' => 1,
+                ];
+                $where[] = ['<=', 'start_time', time()];
+                $where[] = ['>', 'end_time', time()];
+
+                $cardInfo = MarketCard::find()->where($where)->one();
+
+                //验证状态
+                if(!$cardInfo || $cardInfo->balance==0) {
+                    continue;
+                }
+
+                //验证有效期
+
+                $balance = $this->exchangeAmount($cardInfo->balance);
+
+                if($balance==0) {
+                    continue;
+                }
+
+                $cardUseAmount = 0;
+
+                foreach ($goodsTypeAmounts as $goodsType => &$goodsTypeAmount) {
+                    if(!empty($cardInfo->goods_type_attach) && in_array($goodsType, $cardInfo->goods_type_attach) && $goodsTypeAmount > 0) {
+                        if($goodsTypeAmount >= $balance) {
+                            //购物卡余额不足时
+                            $cardUseAmount = bcadd($cardUseAmount, $balance, 2);
+                            $goodsTypeAmount = bcsub($goodsTypeAmount, $balance, 2);
+                            $balance = 0;
+                        }
+                        else {
+                            $cardUseAmount = bcadd($cardUseAmount, $goodsTypeAmount, 2);
+                            $balance = bcsub($balance, $goodsTypeAmount, 2);
+                            $goodsTypeAmount = 0;
+                        }
+                    }
+                }
+
+                $card['useAmount'] = $cardUseAmount;
+                $card['balanceCny'] = $cardInfo->balance;
+                $card['amountCny'] = $cardInfo->amount;
+                $card['goodsTypeAttach'] = $cardInfo->goods_type_attach;
+                $card['balance'] = $this->exchangeAmount($cardInfo->balance);
+                $card['amount'] = $this->exchangeAmount($cardInfo->amount);
+                $goodsTypes = [];
+                foreach (TypeService::getTypeList() as $key => $item) {
+                    if(in_array($key, $card['goodsTypeAttach'])) {
+                        $goodsTypes[$key] = $item;
+                    }
+                }
+                $card['goodsTypes'] = $goodsTypes;
+                $cardsUseAmount = bcadd($cardsUseAmount, $cardUseAmount, 2);
+            }
+        }
+
         //金额
         $shipping_fee = 0;//运费
         $tax_fee = 0;//税费
@@ -205,6 +295,8 @@ class OrderBaseService extends Service
         $result['orderGoodsList'] = $orderGoodsList;
         $result['coupons'] = $coupons;
         $result['coupon'] = $coupons[$coupon_id]??[];
+        $result['cards_use_amount'] = $cardsUseAmount;
+        $result['cards'] = $cards;
 
         return $result;
 	}

@@ -35,6 +35,10 @@ class PayEnum extends BaseEnum
     const PAY_TYPE_PAYPAL = 6;
     const PAY_TYPE_GLOBAL_ALIPAY = 7;
     const PAY_TYPE_PAYDOLLAR = 8;
+    const PAY_TYPE_PAYDOLLAR_1 = 81;
+    const PAY_TYPE_PAYDOLLAR_2 = 82;
+    const PAY_TYPE_PAYDOLLAR_3 = 83;
+    const PAY_TYPE_CARD = 10;
     const PAY_TYPE_OFFLINE = 100;
     
     /**
@@ -43,12 +47,16 @@ class PayEnum extends BaseEnum
     public static function getMap(): array
     {
         return [
-            self::PAY_TYPE_WECHAT => \Yii::t('common','微信'),
-            self::PAY_TYPE_ALI => '支付宝',
-            self::PAY_TYPE_GLOBAL_ALIPAY => '支付宝国际版',
-            self::PAY_TYPE_UNION => '银联',
+           // self::PAY_TYPE_WECHAT => '微信',
+           // self::PAY_TYPE_ALI => '支付宝',
+           // self::PAY_TYPE_GLOBAL_ALIPAY => '支付宝国际版',
+           // self::PAY_TYPE_UNION => '银联',
             self::PAY_TYPE_PAYPAL => 'Paypal',
             self::PAY_TYPE_PAYDOLLAR => 'Paydollar',
+            self::PAY_TYPE_PAYDOLLAR_1 => 'Union',
+            self::PAY_TYPE_PAYDOLLAR_2 => 'AliPay',
+            self::PAY_TYPE_PAYDOLLAR_3 => 'Wechat',
+            self::PAY_TYPE_CARD => 'Card',
             //self::PAY_TYPE_MINI_PROGRAM => '小程序',
             // self::PAY_TYPE_USER_MONEY => '余额',
             //self::PAY_TYPE_OFFLINE => '线下',
@@ -67,6 +75,10 @@ class PayEnum extends BaseEnum
         self::PAY_TYPE_UNION => '银联',
         self::PAY_TYPE_PAYPAL => 'Paypal',
         self::PAY_TYPE_PAYDOLLAR => 'Paydollar',
+        self::PAY_TYPE_PAYDOLLAR_1 => 'Paydollar 银联',
+        self::PAY_TYPE_PAYDOLLAR_2 => 'Paydollar 支付宝',
+        self::PAY_TYPE_PAYDOLLAR_3 => 'Paydollar 微信',
+        self::PAY_TYPE_CARD => 'CARD',
         self::PAY_TYPE_MINI_PROGRAM => '小程序',
         self::PAY_TYPE_USER_MONEY => '余额',
         self::PAY_TYPE_OFFLINE => '线下',
@@ -84,5 +96,8 @@ class PayEnum extends BaseEnum
         self::PAY_TYPE_MINI_PROGRAM => 'miniProgram',
         self::PAY_TYPE_PAYPAL => 'paypal',
         self::PAY_TYPE_PAYDOLLAR => 'Paydollar',
+        self::PAY_TYPE_PAYDOLLAR_1 => 'Paydollar',
+        self::PAY_TYPE_PAYDOLLAR_2 => 'Paydollar',
+        self::PAY_TYPE_PAYDOLLAR_3 => 'Paydollar',
     ];
 }
