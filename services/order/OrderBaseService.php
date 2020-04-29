@@ -95,12 +95,14 @@ class OrderBaseService extends Service
     /**
      * @param array $cartList 购物车数据计算金额税费
      * @param int $coupon_id 活动优惠券ID
+     * @param array $cards 活动优惠券ID
      * @return array
      * @throws UnprocessableEntityHttpException
      */
     public function getCartAccountTax($cartList, $coupon_id=0, $cards = [])
     {
         $orderGoodsList = [];
+
         foreach ($cartList as $item) {
             $goods = \Yii::$app->services->goods->getGoodsInfo($item['goods_id'], $item['goods_type'], false);
             if(empty($goods) || $goods['status'] != StatusEnum::ENABLED) {
@@ -129,9 +131,6 @@ class OrderBaseService extends Service
             $orderGoods['goods_attr'] = $goods['goods_attr'];//商品规格
             $orderGoods['goods_spec'] = $goods['goods_spec'];//商品规格
 
-
-
-
             //用于活动获取活动信息的接口
             $orderGoods['coupon'] = [
                 'type_id' => $goods['type_id'],
@@ -141,18 +140,19 @@ class OrderBaseService extends Service
             ];
 
             $orderGoodsList[] = $orderGoods;
-
         }
+
+        //执行优惠券接口。
+        $coupons = CouponService::getCouponByList($this->getAreaId(), $orderGoodsList);
+
+
 
         $goods_amount = 0;
         $discount_amount = 0;//优惠金额
 
-        //            foreach ($cart_list as $cart) {
+//            foreach ($cart_list as $cart) {
 //
-//                $goods = \Yii::$app->services->goods->getGoodsInfo($cart->goods_id,$cart->goods_type,false);
-//                if(empty($goods) || $goods['status'] != StatusEnum::ENABLED) {
-//                    continue;
-//                }
+
 //                $sale_price = $this->exchangeAmount($goods['sale_price'],0);
 //                if(!isset($goodsTypeAmounts[$goods['type_id']])) {
 //                    $goodsTypeAmounts[$goods['type_id']] = $sale_price;
@@ -164,8 +164,6 @@ class OrderBaseService extends Service
 //
 //            }
 
-        //执行优惠券接口。
-        $coupons = CouponService::getCouponByList($this->getAreaId(), $orderGoodsList);
 
         if($coupon_id) {
             if(!isset($coupons[$coupon_id])) {
@@ -259,6 +257,8 @@ class OrderBaseService extends Service
                 $card['goodsTypeAttach'] = $cardInfo->goods_type_attach;
                 $card['balance'] = $this->exchangeAmount($cardInfo->balance);
                 $card['amount'] = $this->exchangeAmount($cardInfo->amount);
+
+                //产品线语言获取
                 $goodsTypes = [];
                 foreach (TypeService::getTypeList() as $key => $item) {
                     if(in_array($key, $card['goodsTypeAttach'])) {
@@ -266,6 +266,8 @@ class OrderBaseService extends Service
                     }
                 }
                 $card['goodsTypes'] = $goodsTypes;
+
+                //所有获物卡作用金额求和
                 $cardsUseAmount = bcadd($cardsUseAmount, $cardUseAmount, 2);
             }
         }
