@@ -30,9 +30,9 @@ class LoginForm extends \common\models\forms\LoginForm
     public function attributeLabels()
     {
         return [
-            'username' => '登录帐号',
-            'password' => '登录密码',
-            'group' => '组别',
+            'username' => \Yii::t('member','登录帐号'),
+            'password' => \Yii::t('member','登录密码'),
+            'group' => \Yii::t('member','组别'),
         ];
     }
 
