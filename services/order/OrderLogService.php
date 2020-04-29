@@ -143,7 +143,7 @@ class OrderLogService extends Service
 
         //状态变更
         $attr['log_msg'] = '订单跟进';
-        $attr['log_msg'] .= sprintf("\r\n[订单状态]：“%s”变更为“%s“;", OrderStatusEnum::getValue(OrderStatusEnum::ORDER_UNPAID), OrderStatusEnum::getValue(OrderStatusEnum::ORDER_CANCEL));
+//        $attr['log_msg'] .= sprintf("\r\n[订单状态]：“%s”变更为“%s“;", OrderStatusEnum::getValue(OrderStatusEnum::ORDER_UNPAID), OrderStatusEnum::getValue(OrderStatusEnum::ORDER_CANCEL));
 
         return self::log($attr);
     }
