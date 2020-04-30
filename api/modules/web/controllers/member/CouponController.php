@@ -4,13 +4,21 @@ namespace api\modules\web\controllers\member;
 
 use \api\controllers\UserAuthController;
 use common\enums\CouponStatusEnum;
+use common\models\common\Provinces;
 use common\models\market\MarketCoupon;
 use common\models\market\MarketCouponDetails;
+use common\models\member\Contact;
 use services\market\CouponService;
 use yii\web\UnprocessableEntityHttpException;
 
 class CouponController extends UserAuthController
 {
+
+    /**
+     * @var Provinces
+     */
+    public $modelClass = MarketCouponDetails::class;
+
     /**
      * 我的优惠券列表
      */
