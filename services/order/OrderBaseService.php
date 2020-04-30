@@ -103,6 +103,10 @@ class OrderBaseService extends Service
     {
         $orderGoodsList = [];
 
+        //产品线金额
+        $goodsTypeAmounts = [];
+        $goods_amount = 0;
+
         foreach ($cartList as $item) {
             $goods = \Yii::$app->services->goods->getGoodsInfo($item['goods_id'], $item['goods_type'], false);
             if(empty($goods) || $goods['status'] != StatusEnum::ENABLED) {
