@@ -134,7 +134,7 @@ class CouponService extends Service
         $coupon = MarketCoupon::findOne($coupon_id);
 
         if(!$coupon) {
-            throw new UnprocessableEntityHttpException("参数错误");
+            throw new UnprocessableEntityHttpException("优惠券已失效");
         }
 
         //活动状态判断
