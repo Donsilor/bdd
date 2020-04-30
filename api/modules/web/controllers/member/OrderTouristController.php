@@ -36,6 +36,7 @@ class OrderTouristController extends OnAuthController
     public function actionCreate()
     {
         $orderSn = \Yii::$app->request->post('orderSn');
+        $payType = \Yii::$app->request->post('payType', 6);
         $goodsCartList = \Yii::$app->request->post('goodsCartList');
         $invoiceInfo = \Yii::$app->request->post('invoice');
 
@@ -82,7 +83,7 @@ class OrderTouristController extends OnAuthController
             $payForm = new PayForm();
             $payForm->attributes = \Yii::$app->request->post();
             $payForm->orderId = $orderId;//订单ID
-            $payForm->payType = 6;//支付方式使用paypal
+            $payForm->payType = $payType;//支付方式使用paypal
             $payForm->memberId = 0;//支付方式使用paypal
             $payForm->notifyUrl = Url::removeMerchantIdUrl('toFront', ['notify/' . PayEnum::$payTypeAction[$payForm->payType]]);//支付通知URL,paypal不需要,加上只是为了数据的完整性
             $payForm->orderGroup = PayEnum::ORDER_TOURIST;//游客订单
