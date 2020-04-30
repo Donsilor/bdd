@@ -8,6 +8,7 @@ use Omnipay\Omnipay;
 use Omnipay\Paypal\Responses\AopTradeAppPayResponse;
 use Omnipay\Paypal\Responses\AopTradePreCreateResponse;
 use Omnipay\Paypal\Responses\AopTradeWapPayResponse;
+use function GuzzleHttp\Psr7\parse_query;
 
 /**
  * Class PaypalPay
@@ -82,7 +83,23 @@ class PaypalPay
          * 直接跳转
          * return $response->redirect();
          */
-        return $debug == true ? '' : $payment->getApprovalLink();
+        $url = $payment->getApprovalLink();
+        if(!empty($order['payMethod']) && $order['payMethod'] == 'CARD') {
+            $urlInfo = parse_url($url);
+
+            $query = parse_query($urlInfo['query']);
+
+            if(!empty($this->config['sandbox'])) {
+                $baseUrl = 'https://www.sandbox.paypal.com/webapps/xoonboarding?token=%s';
+            }
+            else {
+                $baseUrl = 'https://www.paypal.com/webapps/xoonboarding?token=%s';
+            }
+
+            $url = sprintf($baseUrl, $query['token']);
+        }
+
+        return $debug == true ? '' : $url;
     }
 
     public function wap($order, $debug = false)

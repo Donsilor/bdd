@@ -33,6 +33,7 @@ class PayEnum extends BaseEnum
     const PAY_TYPE_MINI_PROGRAM = 4;
     const PAY_TYPE_USER_MONEY = 5;
     const PAY_TYPE_PAYPAL = 6;
+    const PAY_TYPE_PAYPAL_1 = 61;
     const PAY_TYPE_GLOBAL_ALIPAY = 7;
     const PAY_TYPE_PAYDOLLAR = 8;
     const PAY_TYPE_PAYDOLLAR_1 = 81;
@@ -52,6 +53,7 @@ class PayEnum extends BaseEnum
            // self::PAY_TYPE_GLOBAL_ALIPAY => '支付宝国际版',
            // self::PAY_TYPE_UNION => '银联',
             self::PAY_TYPE_PAYPAL => 'Paypal',
+            self::PAY_TYPE_PAYPAL_1 => 'Paypal Card',
             self::PAY_TYPE_PAYDOLLAR => 'Paydollar',
             self::PAY_TYPE_PAYDOLLAR_1 => 'Union',
             self::PAY_TYPE_PAYDOLLAR_2 => 'AliPay',
@@ -74,6 +76,7 @@ class PayEnum extends BaseEnum
         self::PAY_TYPE_GLOBAL_ALIPAY => '支付宝国际版',
         self::PAY_TYPE_UNION => '银联',
         self::PAY_TYPE_PAYPAL => 'Paypal',
+        self::PAY_TYPE_PAYPAL_1 => 'Paypal Card',
         self::PAY_TYPE_PAYDOLLAR => 'Paydollar',
         self::PAY_TYPE_PAYDOLLAR_1 => 'Paydollar 银联',
         self::PAY_TYPE_PAYDOLLAR_2 => 'Paydollar 支付宝',
@@ -95,6 +98,7 @@ class PayEnum extends BaseEnum
         self::PAY_TYPE_UNION => 'union',
         self::PAY_TYPE_MINI_PROGRAM => 'miniProgram',
         self::PAY_TYPE_PAYPAL => 'paypal',
+        self::PAY_TYPE_PAYPAL_1 => 'paypal',
         self::PAY_TYPE_PAYDOLLAR => 'Paydollar',
         self::PAY_TYPE_PAYDOLLAR_1 => 'Paydollar',
         self::PAY_TYPE_PAYDOLLAR_2 => 'Paydollar',
