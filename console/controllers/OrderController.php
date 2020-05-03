@@ -62,7 +62,7 @@ class OrderController extends Controller
                 $order_list = Order::find()
                     ->select(['order.id','order.order_sn'])
                     ->innerJoin(OrderAddress::tableName().' address','address.order_id=order.id')
-                    ->where(['order.is_tourist'=>1,'payment_type'=>PayEnum::PAY_TYPE_PAYPAL])
+                    ->where(['order.is_tourist'=>1,'payment_type'=>[PayEnum::PAY_TYPE_PAYPAL,PayEnum::PAY_TYPE_PAYPAL_1]])
                     ->andWhere(['address.mobile' => ['',null]])
                     ->limit(100)
                     ->all();
