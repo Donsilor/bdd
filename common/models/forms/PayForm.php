@@ -106,8 +106,9 @@ class PayForm extends Model
             case PayEnum::PAY_TYPE_PAYDOLLAR_1 :
             case PayEnum::PAY_TYPE_PAYDOLLAR_2 :
             case PayEnum::PAY_TYPE_PAYDOLLAR_3 :
+                $name = \Yii::t('payment', PayEnum::getValue($this->payType));
                 if(in_array($this->coinType,[CurrencyEnum::CNY,CurrencyEnum::USD])) {
-                    $this->addError($attribute, \Yii::t('payment', 'PAYDOLLAR_NOT_SUPPORT_RMB_AND_USD'));
+                    $this->addError($attribute, sprintf(\Yii::t('payment', 'PAYDOLLAR_NOT_SUPPORT_RMB_AND_USD'), $name));
                 }
                 break;
                 
