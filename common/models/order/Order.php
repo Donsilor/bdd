@@ -3,6 +3,7 @@
 namespace common\models\order;
 
 use common\models\common\PayLog;
+use common\models\market\MarketCardDetails;
 use common\models\member\Member;
 use Yii;
 
@@ -185,6 +186,7 @@ class Order extends \common\models\base\BaseModel
     {
         return $this->hasOne(\common\models\common\Express::class, ['id'=>'express_id']);
 	}
+
     /**
      * 对应订单商品信息模型
      * @return \yii\db\ActiveQuery
@@ -193,4 +195,15 @@ class Order extends \common\models\base\BaseModel
     {
         return $this->hasMany(PayLog::class,['order_sn'=>'order_sn']);
     }
+
+    /**
+     * 对应订单购物卡记录
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCards()
+    {
+        return $this->hasMany(MarketCardDetails::class, ['order_id'=>'id']);
+    }
+
+
 }

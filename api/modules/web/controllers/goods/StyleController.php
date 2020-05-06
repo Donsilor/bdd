@@ -52,7 +52,7 @@ class StyleController extends OnAuthController
 
 
         $area_id = $this->getAreaId(); 
-        $fields = ['m.id','lang.style_name','m.goods_images','IFNULL(markup.sale_price,m.sale_price) as sale_price'];
+        $fields = ['m.id','m.type_id','lang.style_name','m.goods_images','IFNULL(markup.sale_price,m.sale_price) as sale_price'];
         $query = Style::find()->alias('m')->select($fields)
             ->leftJoin(StyleLang::tableName().' lang',"m.id=lang.master_id and lang.language='".$this->language."'")
             ->leftJoin(StyleMarkup::tableName().' markup', 'm.id=markup.style_id and markup.area_id='.$area_id)
@@ -66,7 +66,9 @@ class StyleController extends OnAuthController
         if(!empty($params)){
 
             $subQuery = AttributeIndex::find()->alias('a')->select(['a.style_id'])->distinct("a.style_id");
-            if($type_id) {
+            if(is_array($type_id)) {
+                $query ->andWhere(['in','m.type_id',$type_id]);
+            }else{
                 $query ->andWhere(['m.type_id'=>$type_id]);
             }
 
@@ -122,7 +124,7 @@ class StyleController extends OnAuthController
         foreach($result['data'] as & $val) {
             $arr = array();
             $arr['id'] = $val['id'];
-            $arr['categoryId'] = $type_id;
+            $arr['categoryId'] = $val['type_id'];
             $arr['coinType'] = $this->getCurrencySign();
             $arr['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'mid');
             $arr['salePrice'] = $this->exchangeAmount($val['sale_price'],0);

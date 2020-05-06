@@ -12,7 +12,7 @@ use Yii;
  * @property string $order_amount 订单总金额
  * @property string $goods_amount 商品总金额
  * @property string $discount_amount 优惠金额
- * @property string $pay_amount 实际支付金额
+ * @property string $pay_amount 实付款
  * @property string $refund_amount 退款金额
  * @property string $shipping_fee 运费
  * @property string $tax_fee 税费
@@ -59,7 +59,7 @@ class OrderAccount extends \common\models\base\BaseModel
             'order_amount' => \Yii::t('order','订单总金额'),
             'goods_amount' => \Yii::t('order','商品总金额'),
             'discount_amount' => \Yii::t('order','优惠金额'),
-            'pay_amount' => \Yii::t('order','实际支付金额'),
+            'pay_amount' => \Yii::t('order','实付款'),
             'refund_amount' => \Yii::t('order','退款金额'),
             'shipping_fee' => \Yii::t('order','运费'),
             'tax_fee' => \Yii::t('order','税费'),

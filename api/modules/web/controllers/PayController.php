@@ -2,11 +2,15 @@
 
 namespace api\modules\web\controllers;
 
+use common\enums\OrderStatusEnum;
+use common\enums\OrderTouristStatusEnum;
 use common\enums\PayStatusEnum;
 use common\enums\StatusEnum;
 use common\helpers\ArrayHelper;
 use common\helpers\FileHelper;
 use common\models\common\PayLog;
+use common\models\order\Order;
+use common\models\order\OrderTourist;
 use Omnipay\Common\Message\AbstractResponse;
 use Omnipay\Paydollar\Message\AuthorizeResponse;
 use Yii;
@@ -140,6 +144,20 @@ class PayController extends OnAuthController
             return $result;
         }
         $logMessage = "订单号：".$model->order_sn.'<br/>支付编号：'.$model->out_trade_no;
+
+        //验证是否支付成功
+        if(
+            //普通订单已支付成功
+            $model->order_group==PayEnum::ORDER_GROUP && Order::find()->where(['order_sn'=>$model->order_sn, 'order_status'=>OrderStatusEnum::ORDER_PAID])->count('id') ||
+            //游客订单已支付成功
+            $model->order_group==PayEnum::ORDER_TOURIST && OrderTourist::find()->where(['order_sn'=>$model->order_sn, 'status'=>OrderTouristStatusEnum::ORDER_PAID])->count('id')
+        ) {
+            $logMessage .= "<br/>订单支付状态：已支付";
+            Yii::$app->services->actionLog->create('用户支付校验',$logMessage);
+
+            $result['verification_status'] = 'completed';
+            return $result;
+        }
         
         $transaction = Yii::$app->db->beginTransaction();
         try {
@@ -170,18 +188,17 @@ class PayController extends OnAuthController
 
             //更新订单状态
             Yii::$app->services->pay->notify($model, null);
-
-            /**
-             * @var $response AbstractResponse
-             */
+           
             $response = Yii::$app->services->pay->getPayByType($model->pay_type)->verify(['model'=>$model]);
-            $payCode = $response->getCode();
+            $payCode = $response->getCode() ?? 'error';
             //支付成功
             if($response->isPaid()) {
 
                 $result['verification_status'] = 'completed';
 
                 $transaction->commit();
+
+                \Yii::$app->services->order->sendOrderNotification($model->order_sn);
             }
             else {
                 if($payCode == 'pending') {

@@ -58,11 +58,13 @@ class RingController extends OnAuthController
        $query->where(['m.status'=>StatusEnum::ENABLED]);
 
         //筛选条件
-        $ring_style = \Yii::$app->request->post("styleValue", 1);//对戒款式
+        $ring_style = \Yii::$app->request->post("styleValue");//对戒款式
         $begin_price = \Yii::$app->request->post("beginPrice",0);//开始价格
         $end_price = \Yii::$app->request->post("endPrice");//结束价格
         $material = \Yii::$app->request->post("materialValue");//成色Id
-        $query->andWhere(['=','m.ring_style', $ring_style]);
+        if($ring_style){
+            $query->andWhere(['=','m.ring_style', $ring_style]);
+        }
         if($begin_price && $end_price){
             $begin_price = $this->exchangeAmount($begin_price,0, 'CNY', $this->getCurrency());
             $end_price = $this->exchangeAmount($end_price,0, 'CNY', $this->getCurrency());

@@ -22,7 +22,7 @@ class PaypalLog {
      */
     public static function logPath()
     {
-        return \Yii::getAlias('@runtime') . "/pay-logs/paypal/".date('Y/m/d');
+        return \Yii::getAlias('@runtime') . "/pay-logs/paypal/".date('Y-m/d');
     }
     /**
      * 创建文件夹

@@ -2,10 +2,15 @@
 
 namespace api\modules\web\controllers\member;
 
+use api\modules\web\forms\CardForm;
+use common\enums\PayEnum;
 use common\helpers\ImageHelper;
 use common\helpers\ResultHelper;
 use api\controllers\UserAuthController;
+use common\helpers\Url;
+use common\models\forms\PayForm;
 use common\models\member\Member;
+use services\market\CardService;
 use yii\base\Exception;
 use common\models\order\Order;
 use api\modules\web\forms\OrderCreateForm;
@@ -14,6 +19,7 @@ use common\models\order\OrderAccount;
 use common\models\order\OrderAddress;
 use common\models\order\OrderGoods;
 use services\order\OrderService;
+use yii\web\UnprocessableEntityHttpException;
 
 /**
  * 用户订单
@@ -53,6 +59,7 @@ class OrderController extends UserAuthController
                 'orderNO' =>$order->order_sn,
                 'orderStatus'=> $order->order_status,
                 'orderAmount'=> $order->account->order_amount,
+                'payAmount'=> bcsub($order->account->order_amount, CardService::getUseAmount($order->id), 2),
                 'productAmount'=> $order->account->goods_amount,
                 'coinCode'=> $currency,
                 'payChannel'=>$order->payment_type,
@@ -132,17 +139,56 @@ class OrderController extends UserAuthController
             if(!$model->validate()) {
                 return ResultHelper::api(422,$this->getError($model));
             }
+
+            $cards = \Yii::$app->request->post('card',[]);
+            foreach ($cards as $card) {
+                $cardForm = new CardForm();
+                $cardForm->setAttributes($card);
+
+                if(!$cardForm->validate()) {
+                    return ResultHelper::api(422, $this->getError($cardForm));
+                }
+            }
+
             $result = \Yii::$app->services->order->createOrder($model->cart_ids, $this->member_id, $model->buyer_address_id,$model->toArray(),$invoiceInfo);
+
+            //购物券消费
+            CardService::consume($result['order_id'], $cards);
+
+            //购物券使用金额
+            $cardUseAmount = CardService::getUseAmount($result['order_id']);
+
+            //如果订单金额为0
+            if($result['order_amount']-$cardUseAmount==0) {
+                //自动 支付
+                //调用支付接口
+                $payForm = new PayForm();
+                $payForm->orderId = $result['order_id'];
+                $payForm->coinType = $this->getCurrency();
+                $payForm->payType = PayEnum::PAY_TYPE_CARD;
+                $payForm->memberId = $this->member_id;
+
+                //验证支付订单数据
+                if (!$payForm->validate()) {
+                    throw new UnprocessableEntityHttpException($this->getError($payForm));
+                }
+
+                $pay = $payForm->getConfig();
+            }
+
             $trans->commit();
             //订单发送邮件
             \Yii::$app->services->order->sendOrderNotification($result['order_id']);
             return [
                 "coinType" => $result['currency'],
                 "orderAmount"=> $result['order_amount'],
+                "payAmount"=> bcsub($result['order_amount'], $cardUseAmount, 2),
                 "orderId" => $result['order_id'],
+                "payStatus" => $pay['payStatus']??0,
             ];            
         }catch(Exception $e) {            
             $trans->rollBack();
+            //记录日志
             \Yii::$app->services->actionLog->create('用户创建订单',$e->getMessage());
             throw $e;
         }
@@ -257,6 +303,22 @@ class OrderController extends UserAuthController
             $invoiceInfo = [];
         }
 
+        $cardsUseAmount = 0;
+        $cards = [];
+        if($order->cards) {
+            foreach ($order->cards as $card) {
+                if($card->type!=2) {
+                    continue;
+                }
+                $cards[] = [
+                    'sn' => $card->card['sn'],
+                    'useAmount' => $card['use_amount'],
+                    'status' => $card['status'],
+                ];
+                $cardsUseAmount = bcadd($cardsUseAmount, $card['use_amount'], 2);
+            }
+        }
+
         //快递信息
         if($order->order_status >= OrderStatusEnum::ORDER_SEND){
             $express = array();
@@ -281,15 +343,17 @@ class OrderController extends UserAuthController
             'payChannel' => $order->payment_type,
             'productCount' => count($orderDetails),
             'preferFee' => $order->account->discount_amount, //优惠金额
-            'productAmount' => $order->account->goods_amount,            
+            'productAmount' => $order->account->goods_amount,
             'logisticsFee' => $order->account->shipping_fee,
             'orderAmount' => $order->account->order_amount,
+            'payAmount' => bcadd($order->account->order_amount, $cardsUseAmount, 2) - $order->account->discount_amount,
             'otherFee' => $order->account->other_fee,
             'safeFee' => $order->account->safe_fee,
             'taxFee' => $order->account->tax_fee,
             'userId' => $order->member_id,
             'details' => $orderDetails,
             'invoice' => $invoiceInfo,
+            'cards' => $cards,
             'express'=>empty($express)? null : $express
         );
 
@@ -313,13 +377,24 @@ class OrderController extends UserAuthController
         if($order->order_status > OrderStatusEnum::ORDER_UNPAID){
             return ResultHelper::api(422, '此订单不是待付款状态，不能取消');
         }
-        $res = Order::updateAll(['order_status'=>OrderStatusEnum::ORDER_CANCEL],['id'=>$order_id,'order_status'=>OrderStatusEnum::ORDER_UNPAID]);
-        if($res){
+        try {
+
+            $trans = \Yii::$app->db->beginTransaction();
             \Yii::$app->services->order->changeOrderStatusCancel($order_id,"用户取消订单", 'buyer',$this->member_id);
-            return 'success';
-        }else{
+            $trans->commit();
+
+        } catch (\Exception $exception) {
+
+            $trans->rollBack();
+
             return ResultHelper::api(422, '取消订单失败');
         }
+//        $res = Order::updateAll(['order_status'=>OrderStatusEnum::ORDER_CANCEL],['id'=>$order_id,'order_status'=>OrderStatusEnum::ORDER_UNPAID]);
+//        if($res){
+            return 'success';
+//        }else{
+//            return ResultHelper::api(422, '取消订单失败');
+//        }
 
     }
 
@@ -359,22 +434,32 @@ class OrderController extends UserAuthController
         if(empty($cartIds)) {
             return ResultHelper::api(422,"cartIds不能为空");
         }
-        try{
-            $taxInfo = \Yii::$app->services->order->getOrderAccountTax($cartIds, $this->member_id, $addressId); 
-            return [
-                    'logisticsFee' => $taxInfo['shipping_fee'],
-                    'orderAmount'  => $taxInfo['order_amount'],
-                    'productAmount' => $taxInfo['goods_amount'],
-                    'safeFee'=> $taxInfo['safe_fee'],
-                    'taxFee'  => $taxInfo['tax_fee'],
-                    'planDays' => $taxInfo['plan_days'],
-                    'currency' => $taxInfo['currency'],
-                    'exchangeRate'=> $taxInfo['exchange_rate']
-            ];
-        }catch (\Exception $e) {
-            \Yii::$app->services->actionLog->create('用户订单金额汇总',$e->getMessage());
-            throw $e;
+        $cards = \Yii::$app->request->post('cards', []);
+        if(!empty($cards)) {
+            foreach ($cards as $card) {
+                $model = new CardForm();
+                $model->setAttributes($card);
+
+                if(!$model->validate()) {
+                    return ResultHelper::api(422, $this->getError($model));
+                }
+            }
         }
+
+        $taxInfo = \Yii::$app->services->order->getOrderAccountTax($cartIds, $this->member_id, $addressId, $cards);
+        return [
+            'logisticsFee' => $taxInfo['shipping_fee'],
+            'orderAmount'  => $taxInfo['order_amount'],
+            'productAmount' => $taxInfo['goods_amount'],
+            'safeFee'=> $taxInfo['safe_fee'],
+            'taxFee'  => $taxInfo['tax_fee'],
+            'planDays' => $taxInfo['plan_days'],
+            'currency' => $taxInfo['currency'],
+            'exchangeRate'=> $taxInfo['exchange_rate'],
+            'cards'=> $taxInfo['cards'],
+            'cardsUseAmount'=> $taxInfo['cards_use_amount'],
+            'payAmount'=> bcsub($taxInfo['order_amount'] ,$taxInfo['cards_use_amount'], 2) - $taxInfo['discount_amount']
+        ];
     }
     
 }

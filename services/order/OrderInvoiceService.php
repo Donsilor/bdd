@@ -9,6 +9,7 @@ use common\models\order\OrderCart;
 use common\models\order\OrderGoodsLang;
 use common\models\order\OrderInvoice;
 use common\models\order\OrderInvoiceEle;
+use services\market\CardService;
 use yii\web\UnprocessableEntityHttpException;
 use common\models\order\OrderGoods;
 use common\models\order\Order;
@@ -58,7 +59,9 @@ class OrderInvoiceService extends OrderBaseService
             'payment_status' => $order->payment_status,
             'order_status' => $order->order_status,
             'send_num' => $order->invoice->send_num,
+            'gift_card_amount' => CardService::getUseAmount($order_id),
         );
+        $result['order_paid_amount'] = bcsub($result['order_amount'],$result['gift_card_amount'],2);
 
 
         $order_invoice_exe_model = OrderInvoiceEle::find()

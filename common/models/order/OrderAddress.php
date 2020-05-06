@@ -44,9 +44,12 @@ class OrderAddress extends \common\models\base\BaseModel
         return [
             [['order_id'], 'required'],
             [['order_id', 'merchant_id', 'member_id', 'country_id', 'province_id', 'city_id',  'created_at', 'updated_at'], 'integer'],
-            [['realname','email'], 'string', 'max' => 60],
-            [['firstname', 'lastname','country_name', 'province_name', 'city_name'], 'string', 'max' => 30],
-            [['address_details'], 'string', 'max' => 200],
+            [['realname'], 'string', 'max' => 200],
+            [['email'], 'string', 'max' => 150],
+            [['firstname', 'lastname'], 'string', 'max' => 100],
+            [['country_name', 'province_name'], 'string', 'max' => 30],
+            [['city_name'], 'string', 'max' => 100],
+            [['address_details'], 'string', 'max' => 300],
             [['mobile'], 'string', 'max' => 20],
             [['zip_code'], 'string', 'max' => 20],
             [['mobile_code'], 'string', 'max' => 10],
@@ -80,5 +83,14 @@ class OrderAddress extends \common\models\base\BaseModel
             'created_at' => '创建时间',
             'updated_at' => '修改时间',
         ];
+    }
+
+    /**
+     * 订单
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrder()
+    {
+        return $this->hasOne(Order::class, ['id'=>'order_id']);
     }
 }

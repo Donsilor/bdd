@@ -2,8 +2,14 @@
 
 namespace services\order;
 
+
+use common\models\market\MarketCard;
+use common\models\market\MarketCardDetails;
 use common\models\order\OrderCart;
 use common\models\order\OrderInvoice;
+use services\goods\TypeService;
+use services\market\CardService;
+use yii\db\Expression;
 use yii\web\UnprocessableEntityHttpException;
 use common\models\order\OrderGoods;
 use common\models\order\Order;
@@ -14,6 +20,8 @@ use common\enums\PayStatusEnum;
 use common\models\member\Member;
 use common\enums\OrderStatusEnum;
 use common\enums\StatusEnum;
+use common\models\common\PayLog;
+use common\enums\PayEnum;
 
 /**
  * Class OrderService
@@ -154,7 +162,7 @@ class OrderService extends OrderBaseService
      * @throws UnprocessableEntityHttpException
      * @return array
      */
-    public function getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $promotion_id = 0)
+    public function getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $cards = [])
     {
         if($cart_ids && !is_array($cart_ids)) {
             $cart_ids = explode(',', $cart_ids);
@@ -166,6 +174,12 @@ class OrderService extends OrderBaseService
         $buyerAddress = Address::find()->where(['id'=>$buyer_address_id,'member_id'=>$buyer_id])->one();
         $orderGoodsList = [];
         $goods_amount = 0;
+
+        //产品线金额
+        $goodsTypeAmounts = [];
+        //所有卡共用了多少金额
+        $cardsUseAmount = 0;
+
         foreach ($cart_list as $cart) {
             
             $goods = \Yii::$app->services->goods->getGoodsInfo($cart->goods_id,$cart->goods_type,false);
@@ -173,6 +187,12 @@ class OrderService extends OrderBaseService
                 continue;
             }
             $sale_price = $this->exchangeAmount($goods['sale_price'],0);
+            if(!isset($goodsTypeAmounts[$goods['type_id']])) {
+                $goodsTypeAmounts[$goods['type_id']] = $sale_price;
+            }
+            else {
+                $goodsTypeAmounts[$goods['type_id']] = bcadd($goodsTypeAmounts[$goods['type_id']], $sale_price, 2);
+            }
             $goods_amount += $sale_price;
             $orderGoodsList[] = [
                     'goods_id' => $cart->goods_id,
@@ -190,6 +210,69 @@ class OrderService extends OrderBaseService
                     'goods_spec' =>$goods['goods_spec'],
             ];
         }
+
+        if(!empty($cards)) {
+            foreach ($cards as &$card) {
+
+                //状态，是否过期，是否有余额
+                $where = ['and'];
+                $where[] = [
+                    'sn' => $card['sn'],
+                    'status' => 1,
+                ];
+                $where[] = ['<=', 'start_time', time()];
+                $where[] = ['>', 'end_time', time()];
+
+                $cardInfo = MarketCard::find()->where($where)->one();
+
+                //验证状态
+                if(!$cardInfo || $cardInfo->balance==0) {
+                    continue;
+                }
+
+                //验证有效期
+
+                $balance = $this->exchangeAmount($cardInfo->balance);
+
+                if($balance==0) {
+                    continue;
+                }
+
+                $cardUseAmount = 0;
+
+                foreach ($goodsTypeAmounts as $goodsType => &$goodsTypeAmount) {
+                    if(!empty($cardInfo->goods_type_attach) && in_array($goodsType, $cardInfo->goods_type_attach) && $goodsTypeAmount > 0) {
+                        if($goodsTypeAmount >= $balance) {
+                            //购物卡余额不足时
+                            $cardUseAmount = bcadd($cardUseAmount, $balance, 2);
+                            $goodsTypeAmount = bcsub($goodsTypeAmount, $balance, 2);
+                            $balance = 0;
+                        }
+                        else {
+                            $cardUseAmount = bcadd($cardUseAmount, $goodsTypeAmount, 2);
+                            $balance = bcsub($balance, $goodsTypeAmount, 2);
+                            $goodsTypeAmount = 0;
+                        }
+                    }
+                }
+
+                $card['useAmount'] = $cardUseAmount;
+                $card['balanceCny'] = $cardInfo->balance;
+                $card['amountCny'] = $cardInfo->amount;
+                $card['goodsTypeAttach'] = $cardInfo->goods_type_attach;
+                $card['balance'] = $this->exchangeAmount($cardInfo->balance);
+                $card['amount'] = $this->exchangeAmount($cardInfo->amount);
+                $goodsTypes = [];
+                foreach (TypeService::getTypeList() as $key => $item) {
+                    if(in_array($key, $card['goodsTypeAttach'])) {
+                        $goodsTypes[$key] = $item;
+                    }
+                }
+                $card['goodsTypes'] = $goodsTypes;
+                $cardsUseAmount = bcadd($cardsUseAmount, $cardUseAmount, 2);
+            }
+        }
+
         //金额
         $discount_amount = 0;//优惠金额 
         $shipping_fee = 0;//运费 
@@ -200,17 +283,19 @@ class OrderService extends OrderBaseService
         $order_amount = $goods_amount + $shipping_fee + $tax_fee + $safe_fee + $other_fee;//订单总金额 
 
         return [
-                'shipping_fee' => $shipping_fee,
-                'order_amount'  => $order_amount,           
-                'goods_amount' => $goods_amount,
-                'safe_fee' => $safe_fee,
-                'tax_fee'  => $tax_fee,
-                'discount_amount'=>$discount_amount,                
-                'currency' => $this->getCurrency(),
-                'exchange_rate'=>$this->getExchangeRate(),
-                'plan_days' =>\Yii::$app->services->orderTourist->getDeliveryTimeByGoods($orderGoodsList),
-                'buyerAddress'=>$buyerAddress,
-                'orderGoodsList'=>$orderGoodsList,
+            'shipping_fee' => $shipping_fee,
+            'order_amount'  => $order_amount,
+            'goods_amount' => $goods_amount,
+            'safe_fee' => $safe_fee,
+            'tax_fee'  => $tax_fee,
+            'discount_amount'=>$discount_amount,
+            'cards_use_amount'=>$cardsUseAmount,
+            'currency' => $this->getCurrency(),
+            'exchange_rate'=>$this->getExchangeRate(),
+            'plan_days' =>'5-12',
+            'buyerAddress'=>$buyerAddress,
+            'orderGoodsList'=>$orderGoodsList,
+            'cards'=>$cards,
         ];
     }
     /**
@@ -251,9 +336,52 @@ class OrderService extends OrderBaseService
         $order->seller_remark = $remark;
         $order->order_status = OrderStatusEnum::ORDER_CANCEL;
         $order->save(false);
+        //解冻购物卡
+        CardService::deFrozen($order_id);
         //订单日志
         $this->addOrderLog($order_id, $remark, $log_role, $log_user,$order->order_status);
     }
-          
+    
+    /**
+     * 同步订单 手机号
+     * @param int $order_id 订单ID
+     * @throws \Exception
+     */
+    public function syncPayPalPhone($order_id)
+    {
+        $order = Order::find()->where(['id'=>$order_id])->one();
+        if(!$order) {
+            throw new \Exception('订单查询失败,order_id='.$order_id);
+        }
+        
+        $payLog = PayLog::find()->where(['order_sn'=>$order->order_sn,'pay_type'=>[PayEnum::PAY_TYPE_PAYPAL,PayEnum::PAY_TYPE_PAYPAL_1],'pay_status'=>PayStatusEnum::PAID])->one();
+        if(!$payLog) {
+            throw new \Exception('非PayPal支付');
+        }
+        
+        $pay = \Yii::$app->services->pay->getPayByType($payLog->pay_type);
+        /**
+         * @var $payment Payment
+         */
+        $payment = $pay->getPayment(['model'=>$payLog]);
+
+        $payer = $payment->getPayer()->getPayerInfo();
+        
+        $phone = $payer->getPhone();
+        $conuntryCode = $payer->getCountryCode();
+        $mobileCodeMap = ['HK'=>'+852','C2'=>'+86','MO'=>'+853','TW'=>'+886','CN'=>'+86','US'=>'+1'];
+        if($phone) {
+            $address = OrderAddress::findOne(['order_id'=>$order->id]);
+            $address->mobile = $phone;   
+            $address->mobile_code = $mobileCodeMap[$conuntryCode]??'';
+            if(!$address->save()) {
+                throw new \Exception($this->getError($address));
+            }
+        }
+        else {
+            throw new \Exception('PayPal手机号为空');
+        }
+    }
+
     
 }
