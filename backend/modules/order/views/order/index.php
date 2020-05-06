@@ -239,7 +239,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'header' => "操作",
                                 //'headerOptions' => ['class' => 'col-md-1'],
                                 'class' => 'yii\grid\ActionColumn',
-                                'template' => '{audit} {delivery} {follower}',
+                                'template' => '{audit} {delivery} {follower} {cancel}',
                                 'buttons' => [
                                     'follower' => function ($url, $model, $key) {
                                         return Html::edit(['edit-follower', 'id' => $model->id], '跟进', [
@@ -249,14 +249,13 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                         ]);                                        
                                     },
                                     'audit' => function ($url, $model, $key) {
-                    
                                         if($model->order_status == \common\enums\OrderStatusEnum::ORDER_PAID) {
                                             return Html::batchAudit(['ajax-batch-audit'], '审核', [
                                                 //'class'=>'label bg-green'
                                             ]);
-                                        }                                        
+                                        }
                                     },
-                                    'delivery' => function ($url, $model, $key) {                     
+                                    'delivery' => function ($url, $model, $key) {
                                         if($model->order_status == \common\enums\OrderStatusEnum::ORDER_CONFIRM) {
                                             return  Html::edit(['edit-delivery', 'id' => $model->id], '发货', [
                                                 'data-toggle' => 'modal',
@@ -264,6 +263,17 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                                 'class'=>'btn btn-success btn-sm'
                                             ]);
                                         }
+                                    },
+                                    'cancel' => function($url, $model, $key) {
+                                        if($model->order_status != \common\enums\OrderStatusEnum::ORDER_UNPAID) {
+                                            return null;
+                                        }
+                                        return Html::tag('span', '取消',
+                                            [
+                                                'class' => "btn btn-danger btn-sm jsBatchStatus",
+                                                "data-grid"=>"grid",
+                                                "data-url"=>Url::to(['cancel']),
+                                            ]);
                                     }
                                 ],
                             ],
