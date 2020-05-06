@@ -21,12 +21,12 @@ class OrderFromEnum extends BaseEnum
     public static function getMap(): array
     {
         return [
-                self::WEB_HK => '香港站PC端',
-                self::MOBILE_HK => '香港站移动端', 
-                self::WEB_CN => '大陆站PC端',
-                self::MOBILE_CN => '大陆站移动端', 
-                self::WEB_US => '美国站PC端',
-                self::MOBILE_US => '美国站移动端', 
+                self::WEB_HK => '香港PC端',
+                self::MOBILE_HK => '香港移动端', 
+                self::WEB_CN => '大陆PC端',
+                self::MOBILE_CN => '大陆移动端', 
+                self::WEB_US => '美国PC端',
+                self::MOBILE_US => '美国移动端', 
         ];
     }
 }
