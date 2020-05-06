@@ -9,19 +9,48 @@ use kartik\daterange\DateRangePicker;
 $this->title = Yii::t('order', '订单');
 $this->params['breadcrumbs'][] = ['label' => $this->title];
 
+$order_status_get = Yii::$app->request->get('order_status', -1);
+$payment_type = $searchModel['payment_type'];
+$language = $searchModel['language'];
+$order_from = $searchModel['order_from'];
+$created_at = $searchModel['created_at'];
+$order_sn = $searchModel['order_sn'];
+$realname = $searchModel['address.realname'];
+$mobile = $searchModel['address.mobile'];
+$order_amount = $searchModel['account.order_amount'];
+$ip_area_id = $searchModel['ip_area_id'];
+$payment_status = $searchModel['payment_status'];
+$order_status = $searchModel['order_status'] ;
+$username = $searchModel['follower.username'];
+$followed_status = $searchModel['followed_status'];
+$export_param = "order_status_get={$order_status_get}&payment_type={$payment_type}&language={$language}&order_from={$order_from}"
+                ."&created_at={$created_at}&order_sn={$order_sn}&realname={$realname}&mobile={$mobile}&order_amount={$order_amount}"
+                ."&ip_area_id={$ip_area_id}&payment_status={$payment_status}&order_status={$order_status}&username={$username}"
+                ."&followed_status={$followed_status}";
+
+
+
 ?>
 
 <div class="row">
     <div class="col-sm-12">
         <div class="nav-tabs-custom">
-            <ul class="nav nav-tabs">
-                <li<?php if (Yii::$app->request->get('order_status', -1) == -1) echo ' class="active"' ?>><a href="<?= Url::to(['order/index']) ?>"> 全部（<?= \common\models\order\Order::getCountByOrderStatus() ?>）</a></li>
-                <?php foreach (common\enums\OrderStatusEnum::getMap() as $statusValue => $statusName) { ?>
-                    <li<?php if (Yii::$app->request->get('order_status', -1) == $statusValue) echo ' class="active"' ?>>
-                        <a href="<?= Url::to(['order/index', 'order_status' => $statusValue]) ?>"><?= $statusName ?>（<?= \common\models\order\Order::getCountByOrderStatus($statusValue) ?>）</a>
-                    </li>
-                <?php } ?>
-            </ul>
+
+
+            <div class="box-header">
+                <ul class="nav nav-tabs">
+                    <li<?php if (Yii::$app->request->get('order_status', -1) == -1) echo ' class="active"' ?>><a href="<?= Url::to(['order/index']) ?>"> 全部（<?= \common\models\order\Order::getCountByOrderStatus() ?>）</a></li>
+                    <?php foreach (common\enums\OrderStatusEnum::getMap() as $statusValue => $statusName) { ?>
+                        <li<?php if (Yii::$app->request->get('order_status', -1) == $statusValue) echo ' class="active"' ?>>
+                            <a href="<?= Url::to(['order/index', 'order_status' => $statusValue]) ?>"><?= $statusName ?>（<?= \common\models\order\Order::getCountByOrderStatus($statusValue) ?>）</a>
+                        </li>
+                    <?php } ?>
+                </ul>
+                <div class="box-tools"  style="right: 100px;">
+                    <?= Html::a('导出Excel','export?'.$export_param) ?>
+                </div>
+
+            </div>
 
             <div class="tab-content">
                 <div class="box-body top-form">
@@ -91,7 +120,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                     'model' => $searchModel,
                                     'attribute' => 'created_at',
                                     'value' => '',
-                                    'options' => ['readonly' => true, 'class' => 'form-control',],
+                                    'options' => ['readonly' => false, 'class' => 'form-control',],
                                     'pluginOptions' => [
                                         'format' => 'yyyy-mm-dd',
                                         'locale' => [

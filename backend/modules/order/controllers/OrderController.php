@@ -8,8 +8,15 @@ use common\enums\InvoiceElectronicEnum;
 use common\enums\OrderStatusEnum;
 use common\enums\PayEnum;
 use common\enums\PayStatusEnum;
+use common\helpers\ExcelHelper;
 use common\helpers\ResultHelper;
 use common\models\common\EmailLog;
+use common\models\market\MarketCardDetails;
+use common\models\member\Address;
+use common\models\member\Member;
+use common\models\order\OrderAccount;
+use common\models\order\OrderAddress;
+use common\models\order\OrderCart;
 use common\models\order\OrderGoods;
 use common\models\order\OrderGoodsLang;
 use common\models\order\OrderInvoice;
@@ -416,6 +423,131 @@ class OrderController extends BaseController
         return ResultHelper::json(200,'发送成功',['send_num'=>$send_num]);
     }
 
+
+    /**
+     * 导出Excel
+     *
+     * @return bool
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    public function actionExport()
+    {
+        $searchModel = new SearchModel([
+            'model' => $this->modelClass,
+            'scenario' => 'default',
+            'partialMatchAttributes' => [], // 模糊查询
+            'defaultOrder' => [
+                'id' => SORT_DESC,
+            ],
+            'relations' => [
+                'account' => ['order_amount'],
+                'address' => ['country_name', 'city_name', 'country_id', 'city_id', 'realname', 'mobile', 'email'],
+                'member' => ['username', 'realname', 'mobile', 'email'],
+                'follower' => ['username']
+            ]
+        ]);
+        $param_get = Yii::$app->request->get();
+        $orderStatus = $param_get['order_status_get'];
+        unset($param_get['order_status_get']);
+        //print_r(array_filter($param_get));exit;
+        $param['SearchModel'] = array_filter($param_get);
+        $dataProvider = $searchModel->search($param , ['created_at', 'address.mobile', 'address.email']);
+        //订单状态
+        if ($orderStatus !== -1)
+            $dataProvider->query->andWhere(['=', 'order_status', $orderStatus]);
+
+        // 数据状态
+        $dataProvider->query->andWhere(['>=', 'order.status', StatusEnum::DISABLED]);
+
+        // 联系人搜索
+        if(!empty(Yii::$app->request->queryParams['SearchModel']['address.mobile'])) {
+            $where = [];
+            $where[] = 'or';
+            $where[] = ['like', 'order_address.mobile', Yii::$app->request->queryParams['SearchModel']['address.mobile']];
+            $where[] = ['like', 'order_address.email', Yii::$app->request->queryParams['SearchModel']['address.mobile']];
+
+            $dataProvider->query->andWhere($where);
+        }
+
+        //创建时间过滤
+        if (!empty(Yii::$app->request->queryParams['SearchModel']['created_at'])) {
+            list($start_date, $end_date) = explode('/', Yii::$app->request->queryParams['SearchModel']['created_at']);
+            $dataProvider->query->andFilterWhere(['between', 'order.created_at', strtotime($start_date), strtotime($end_date) + 86400]);
+        }
+
+        $dataProvider->setPagination(false);
+        $dataProvider->db->quoteSql();exit;
+        $list = $dataProvider->models;
+        // [名称, 字段名, 类型, 类型规则]
+        $header = [
+            ['下单时间', 'created_at' , 'date', 'Y-m-d'],
+            ['订单编号', 'order_sn', 'text'],
+            ['收货人', 'address.realname', 'text'],
+            ['联系方式', 'id', 'function', function($row){
+                $model = OrderAddress::find()->where(['order_id'=>$row->id])->one();
+                $html = '';
+                if($model->mobile) {
+                    $html .= $model->mobile_code.'-'.$model->mobile;
+                }
+                if($model->email) {
+                    if(!empty($html)) {
+                        $html .= '<br/>';
+                    }
+                    $html .= $model->email;
+                }
+                return $html;
+            }],
+            ['订单总金额', 'account.order_amount', 'text'],
+            ['实付金额', 'account.pay_amount', 'text'],
+            ['货币', 'account.currency', 'text'],
+            ['是否使用购物卡', 'id', 'function',function($row){
+                $model = MarketCardDetails::find()->where(['order_id'=>$row->id])->one();
+                return $model ? "是" : "否";
+            }],
+            ['归属地区', 'ip_area_id', 'function',function($row){
+                return \common\enums\AreaEnum::getValue($row->ip_area_id);
+
+            }],
+            ['支付状态', 'payment_status', 'function',function($row){
+               if($row->payment_status){
+                   return \common\enums\PayStatusEnum::getValue($row->payment_status);
+               }
+               return '';
+            }],
+            ['支付方式', 'payment_type', 'function',function($row){
+               if($row->payment_type){
+                   return \common\enums\PayEnum::getValue($row->payment_type);
+               }
+               return '';
+
+            }],
+            ['订单状态', 'order_status', 'function',function($row){
+                return \common\enums\OrderStatusEnum::getValue($row->order_status);
+            }],
+            ['退款状态', 'refund_status', 'function',function($row){
+                return '';
+            }],
+            ['跟进人', 'id', 'function',function($row){
+                if(!empty($row->follower_id)){
+                    $model = \common\models\backend\Member::find()->where(['id'=>$row->follower_id])->one();
+                    return $model->username;
+                }
+                return '';
+
+            }],
+            ['跟进状态', 'followed_status', 'function',function($row){
+                return \common\enums\FollowStatusEnum::getValue($row->followed_status);
+            }],
+            ['订单备注', 'seller_remark', 'text'],
+
+
+
+        ];
+
+
+        return ExcelHelper::exportData($list, $header, '订单数据导出_' . time());
+    }
 
 
 
