@@ -24,8 +24,16 @@ return [
     "退出成功"=>"Exit successfully",
     "退出失败"=>"Exit successfully",
     "原始密码错误"=>"Original password is wrong",
-    "两次输入密码不一致"=>"The two passwords are inconsistent",    
-	
+    "两次输入密码不一致"=>"The two passwords are inconsistent",
+
+
+    "登录帐号"=>"Login account",
+    "登录密码"=>"Login password",
+    "组别"=>"Group",
+    "原始密码"=>"Original password",
+    "新密码"=>"New password",
+    "确认新密码"=>"Confirm the new password",
+
 	
 	"裸钻信息不存在或者已下架" => "Naked drilling information does not exist or has been removed",
 	"最畅销订婚戒指" => "Best selling engagement ring",

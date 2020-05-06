@@ -68,7 +68,6 @@ class GoodsService extends Service
         Goods::updateAll(['status'=>StatusEnum::DELETE],['style_id'=>$style_id]);
         //商品更新
         $sale_prices= [];
-        $style_status = StatusEnum::DISABLED;
         foreach ($goods_list as $key=>$goods){
             //禁用没有填写商品编号的，过滤掉
             if(empty($goods['goods_sn']) && empty($goods['status'])){
@@ -98,17 +97,12 @@ class GoodsService extends Service
             $goodsModel->save(false);  
             $sale_prices[] = $goodsModel->sale_price;
 
-            #如果商品sku不全部是禁用，则这个款不是禁用状态
-            if($goods['status'] == StatusEnum::ENABLED){
-                $style_status = StatusEnum::ENABLED;
-            }
         }
         //更新最小价格
         $min_sale_price = min($sale_prices);
         if($min_sale_price > 1) {
             $styleModel->sale_price = $min_sale_price;
         }
-        $styleModel -> status = $style_status;
         $styleModel->save(false);
         //计算更新商品加价销售价
         \Yii::$app->services->salepolicy->syncGoodsMarkup($style_id);
