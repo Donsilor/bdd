@@ -31,7 +31,7 @@ trait BaseAction
     //当前货币符号
     protected $areaId;
     //平台类型
-    protected $platform = 1;//默认1:PC  2:mobile
+    protected $platform = 11;//默认11:移动-港澳台
     
     /**
      * 初始化通用参数
