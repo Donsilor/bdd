@@ -23,5 +23,18 @@ class PayStatusEnum extends BaseEnum
                 self::UNPAID => '未支付',
         ];
     }
+
+
+
+    /**
+     * @return array
+     */
+    public static function refund(): array
+    {
+        return [
+            0 => '已支付',
+            1 => '已退款',
+        ];
+    }
     
 }

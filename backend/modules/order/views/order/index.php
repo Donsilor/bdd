@@ -200,29 +200,29 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 },
                                 'format' => 'raw',
                             ],
-//                            [
-//                                'attribute' => 'status',
-//                                'headerOptions' => ['class' => 'col-md-1'],
-//                                'filter' => Html::activeDropDownList($searchModel, 'status', common\enums\AuditStatusEnum::getMap(), [
-//                                    'prompt' => '全部',
-//                                    'class' => 'form-control',
-//                                ]),
-//                                'value' => function ($model) {
-//                                    return common\enums\AuditStatusEnum::getValue($model->status);
-//                                },
-//                                'format' => 'raw',
-//                            ],
-                            
                             [
-                                'label' => '跟进人',
-                                'filter' => Html::activeTextInput($searchModel, 'follower.username', [
+                                'attribute' => 'refund_status',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'refund_status', \common\enums\PayStatusEnum::refund(), [
+                                    'prompt' => '全部',
                                     'class' => 'form-control',
                                 ]),
                                 'value' => function ($model) {
-                                    return $model->follower ? $model->follower->username : null;
+                                    return common\enums\PayStatusEnum::getValue($model->status, 'refund');
                                 },
                                 'format' => 'raw',
                             ],
+                            
+//                            [
+//                                'label' => '跟进人',
+//                                'filter' => Html::activeTextInput($searchModel, 'follower.username', [
+//                                    'class' => 'form-control',
+//                                ]),
+//                                'value' => function ($model) {
+//                                    return $model->follower ? $model->follower->username : null;
+//                                },
+//                                'format' => 'raw',
+//                            ],
                             [
                                 'label' => '跟进状态',
                                 'headerOptions' => ['class' => 'col-md-1'],
@@ -231,7 +231,9 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                         'class' => 'form-control',
                                 ]),
                                 'value' => function ($model) {
-                                     return common\enums\FollowStatusEnum::getValue($model->followed_status);
+                                    $value = common\enums\FollowStatusEnum::getValue($model->followed_status);
+                                    $value .= $model->follower ? "<br />" . $model->follower->username : '';
+                                    return $value;
                                 },
                                 'format' => 'raw',
                             ],
@@ -239,7 +241,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'header' => "操作",
                                 //'headerOptions' => ['class' => 'col-md-1'],
                                 'class' => 'yii\grid\ActionColumn',
-                                'template' => '{audit} {delivery} {follower} {cancel}',
+                                'template' => '{audit} {delivery} {follower} {cancel} {refund}',
                                 'buttons' => [
                                     'follower' => function ($url, $model, $key) {
                                         return Html::edit(['edit-follower', 'id' => $model->id], '跟进', [
@@ -273,6 +275,14 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                                 'class' => "btn btn-danger btn-sm jsBatchStatus",
                                                 "data-grid"=>"grid",
                                                 "data-url"=>Url::to(['cancel']),
+                                            ]);
+                                    },
+                                    'refund' => function($url, $model, $key) {
+                                        return Html::tag('span', '退款',
+                                            [
+                                                'class' => "btn btn-danger btn-sm jsBatchStatus",
+                                                "data-grid"=>"grid",
+                                                "data-url"=>Url::to(['retreat']),
                                             ]);
                                     }
                                 ],
