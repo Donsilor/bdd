@@ -134,6 +134,20 @@ class OrderController extends BaseController
     /**
      * 取消一个订单
      */
+    public function actionEditCancel()
+    {
+        $id = Yii::$app->request->get('id', null);
+
+        $model = $this->findModel($id);
+
+        // ajax 校验
+        $this->activeFormValidate($model);
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+        ]);
+    }
+
     public function actionCancel()
     {
         $ids = Yii::$app->request->post("ids", []);
@@ -189,12 +203,33 @@ class OrderController extends BaseController
 
         return ResultHelper::json(200, '取消成功', [], true);
 
+
+
     }
 
     public function actionRefund()
     {
 
     }
+
+    /**
+     * 取消一个订单
+     */
+    public function actionEditRefund()
+    {
+        $id = Yii::$app->request->get('id', null);
+
+        $model = $this->findModel($id);
+
+        // ajax 校验
+        $this->activeFormValidate($model);
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+        ]);
+    }
+
+
 
     /**
      * 跟进

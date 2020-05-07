@@ -212,17 +212,6 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 },
                                 'format' => 'raw',
                             ],
-                            
-//                            [
-//                                'label' => '跟进人',
-//                                'filter' => Html::activeTextInput($searchModel, 'follower.username', [
-//                                    'class' => 'form-control',
-//                                ]),
-//                                'value' => function ($model) {
-//                                    return $model->follower ? $model->follower->username : null;
-//                                },
-//                                'format' => 'raw',
-//                            ],
                             [
                                 'label' => '跟进状态',
                                 'headerOptions' => ['class' => 'col-md-1'],
@@ -270,20 +259,22 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                         if($model->order_status != \common\enums\OrderStatusEnum::ORDER_UNPAID) {
                                             return null;
                                         }
-                                        return Html::tag('span', '取消',
-                                            [
-                                                'class' => "btn btn-danger btn-sm jsBatchStatus",
-                                                "data-grid"=>"grid",
-                                                "data-url"=>Url::to(['cancel']),
-                                            ]);
+
+                                        return Html::edit(['edit-cancel', 'id' => $model->id], '取消', [
+                                            'data-toggle' => 'modal',
+                                            'data-target' => '#ajaxModal',
+                                            'class'=>'btn btn-danger btn-sm'
+                                        ]);
+
                                     },
                                     'refund' => function($url, $model, $key) {
-                                        return Html::tag('span', '退款',
-                                            [
-                                                'class' => "btn btn-danger btn-sm jsBatchStatus",
-                                                "data-grid"=>"grid",
-                                                "data-url"=>Url::to(['retreat']),
-                                            ]);
+
+                                        return Html::edit(['edit-refund', 'id' => $model->id], '退款', [
+                                            'data-toggle' => 'modal',
+                                            'data-target' => '#ajaxModal',
+                                            'class'=>'btn btn-danger btn-sm'
+                                        ]);
+
                                     }
                                 ],
                             ],

@@ -24,6 +24,8 @@ use Yii;
  * @property int $evaluation_again_status 追加评价状态 0未评价，1已评价，2已过期未评价
  * @property int $order_status 订单状态
  * @property int $refund_status 退款状态:0是无退款,1是部分退款,2是全部退款
+ * @property string $refund_remark 退款状态:0是无退款,1是部分退款,2是全部退款
+ * @property string $cancel_remark 退款状态:0是无退款,1是部分退款,2是全部退款
  * @property string $express_id 快递类型
  * @property string $express_no 快递单号
  * @property int $delivery_status 发货状态
@@ -86,6 +88,8 @@ class Order extends \common\models\base\BaseModel
             'evaluation_again_status' => '追加评价状态',
             'order_status' => '订单状态',
             'refund_status' => '退款状态',
+            'refund_remark' => '退款备注',
+            'cancel_remark' => '取消备注',
             'express_id' => '快递方式',
             'express_no' => '快递单号',
             'delivery_status' => '发货状态',
