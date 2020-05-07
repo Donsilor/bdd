@@ -6,10 +6,7 @@ namespace api\modules\web\controllers;
 
 use api\controllers\ActiveController;
 use common\enums\StatusEnum;
-use common\helpers\ArrayHelper;
 use common\helpers\ImageHelper;
-use common\helpers\ResultHelper;
-use common\models\goods\AttributeIndex;
 use common\models\goods\Style;
 use common\models\goods\StyleLang;
 use common\models\goods\StyleMarkup;
@@ -24,7 +21,7 @@ class MarketController extends ActiveController
      */
     public $modelClass = MarketSpecials::class;
 
-    protected $authOptional = [];
+    protected $authOptional = ['index'];
 
     public function actionIndex()
     {
