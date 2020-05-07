@@ -533,10 +533,10 @@ class OrderController extends BaseController
                 return '';
             }],
             ['跟进人', 'id', 'function',function($row){
-                if(!empty($row->follower_id)){
                     $model = \common\models\backend\Member::find()->where(['id'=>$row->follower_id])->one();
-                    return $model->username;
-                }
+                    if($model){
+                        return $model->username;
+                    }
                 return '';
 
             }],
