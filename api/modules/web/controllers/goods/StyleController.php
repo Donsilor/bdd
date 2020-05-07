@@ -53,7 +53,7 @@ class StyleController extends OnAuthController
 
 
         $area_id = $this->getAreaId(); 
-        $fields = ['m.id','lang.style_name','m.goods_images','IFNULL(markup.sale_price,m.sale_price) as sale_price'];
+        $fields = ['m.id','m.type_id','lang.style_name','m.goods_images','IFNULL(markup.sale_price,m.sale_price) as sale_price'];
         $query = Style::find()->alias('m')->select($fields)
             ->leftJoin(StyleLang::tableName().' lang',"m.id=lang.master_id and lang.language='".$this->language."'")
             ->leftJoin(StyleMarkup::tableName().' markup', 'm.id=markup.style_id and markup.area_id='.$area_id)
@@ -135,7 +135,7 @@ class StyleController extends OnAuthController
             $arr['specsModels'] = null;
 
             $arr['coupon'] = [
-                'type_id' => $type_id,//产品线ID
+                'type_id' => $val['type_id'],//产品线ID
                 'style_id' => $val['id'],//款式ID
                 'price' => $arr['salePrice'],//价格
                 'num' =>1,//数量
