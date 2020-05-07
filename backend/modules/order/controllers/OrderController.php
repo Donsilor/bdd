@@ -490,13 +490,13 @@ class OrderController extends BaseController
             ['收货人', 'address.realname', 'text'],
             ['联系方式', 'id', 'function', function($row){
                 $model = OrderAddress::find()->where(['order_id'=>$row->id])->one();
-                $html = '';
+                $html = "";
                 if($model->mobile) {
                     $html .= $model->mobile_code.'-'.$model->mobile;
                 }
                 if($model->email) {
                     if(!empty($html)) {
-                        $html .= ' ';
+                        $html .= "\r\n  ";
                     }
                     $html .= $model->email;
                 }
