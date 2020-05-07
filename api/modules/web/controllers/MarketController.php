@@ -53,7 +53,7 @@ class MarketController extends ActiveController
             ->andWhere(['m.id'=>$ids])
             ->andWhere(['or',['=','markup.status',1],['IS','markup.status',new \yii\db\Expression('NULL')]]);
 
-        $list = $query->all();
+        $list = $query->asArray()->all();
 
         $data = [];
 
