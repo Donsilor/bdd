@@ -22,9 +22,9 @@ class MarketController extends ActiveController
      */
     public $modelClass = MarketSpecials::class;
 
-    protected $authOptional = ['index'];
+    protected $authOptional = ['detail'];
 
-    public function actionIndex()
+    public function actionDetail()
     {
         $id = \Yii::$app->request->get('id', null);
 
