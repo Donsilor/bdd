@@ -34,12 +34,22 @@ class MarketController extends ActiveController
             return null;
         }
 
-        $result = ArrayHelper::toArray($model);
+        $result = [];
+        $result['title'] = $model->lang->title;
+        $result['describe'] = $model->lang->describe;
+        $result['type'] = $model->type;
+        $result['product_range'] = $model->product_range;
+        $result['start_time'] = $model->start_time;
+        $result['end_time'] = $model->end_time;
+        $result['status'] = $model->status;
+        $result['banner_image'] = $model->banner_image;
+
+//        $result = ArrayHelper::toArray($model);
 
         $ids = [];
 
-        if(!empty($result['recommend_attach']) && is_array($result['recommend_attach'])) {
-            foreach ($result['recommend_attach'] as $recommend_attach) {
+        if(!empty($model['recommend_attach']) && is_array($model['recommend_attach'])) {
+            foreach ($model['recommend_attach'] as $recommend_attach) {
                 $ids = array_merge($ids, $recommend_attach);
             }
         }
@@ -83,8 +93,8 @@ class MarketController extends ActiveController
 
         $recommends = [];
 
-        if(!empty($result['recommend_attach']) && is_array($result['recommend_attach'])) {
-            foreach ($result['recommend_attach'] as $key => $recommend_attach) {
+        if(!empty($model['recommend_attach']) && is_array($model['recommend_attach'])) {
+            foreach ($model['recommend_attach'] as $key => $recommend_attach) {
                 foreach ($recommend_attach as $style_id) {
                     if(isset($data[$style_id])) {
                         $recommends[$key][] = $data[$style_id];
