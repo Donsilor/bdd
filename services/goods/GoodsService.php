@@ -18,6 +18,7 @@ use common\models\goods\Diamond;
 use common\models\goods\DiamondLang;
 use common\enums\DiamondEnum;
 use common\models\goods\StyleMarkup;
+use services\market\CouponService;
 use function GuzzleHttp\json_encode;
 use yii\db\Expression;
 
@@ -592,6 +593,8 @@ class GoodsService extends Service
 
         $style['details'] = $details;
         $style['totalStock'] = $totalStock;
+
+        $style['coupon'] = CouponService::getCouponByStyleInfo($this->getAreaId(), $style['categoryId'], $style['id'], $style['salePrice']);
 
         return $style;
 
