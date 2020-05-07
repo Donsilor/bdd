@@ -447,15 +447,18 @@ class OrderController extends BaseController
                 'follower' => ['username']
             ]
         ]);
+
+
         $param_get = Yii::$app->request->get();
         $orderStatus = $param_get['order_status_get'];
         unset($param_get['order_status_get']);
         //print_r(array_filter($param_get));exit;
-        $param['SearchModel'] = array_filter($param_get);
+        $param['SearchModel'] = $param_get;
         $dataProvider = $searchModel->search($param , ['created_at', 'address.mobile', 'address.email']);
         //订单状态
-        if ($orderStatus !== -1)
+        if ($orderStatus != -1) {
             $dataProvider->query->andWhere(['=', 'order_status', $orderStatus]);
+        }
 
         // 数据状态
         $dataProvider->query->andWhere(['>=', 'order.status', StatusEnum::DISABLED]);
@@ -477,7 +480,8 @@ class OrderController extends BaseController
         }
 
         $dataProvider->setPagination(false);
-        $dataProvider->db->quoteSql();exit;
+//        $commandQuery = clone $dataProvider->query;
+//        echo $commandQuery->createCommand()->getRawSql();exit;
         $list = $dataProvider->models;
         // [名称, 字段名, 类型, 类型规则]
         $header = [
@@ -492,7 +496,7 @@ class OrderController extends BaseController
                 }
                 if($model->email) {
                     if(!empty($html)) {
-                        $html .= '<br/>';
+                        $html .= ' ';
                     }
                     $html .= $model->email;
                 }
