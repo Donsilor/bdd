@@ -87,7 +87,7 @@ class MarketController extends ActiveController
             foreach ($result['recommend_attach'] as $key => $recommend_attach) {
                 foreach ($recommend_attach as $style_id) {
                     if(isset($data[$style_id])) {
-                        $recommends[$key] = $data[$style_id];
+                        $recommends[$key][] = $data[$style_id];
                     }
                 }
             }
