@@ -44,8 +44,6 @@ class MarketController extends ActiveController
         $result['status'] = $model->status;
         $result['banner_image'] = $model->banner_image;
 
-//        $result = ArrayHelper::toArray($model);
-
         $ids = [];
 
         if(!empty($model['recommend_attach']) && is_array($model['recommend_attach'])) {
