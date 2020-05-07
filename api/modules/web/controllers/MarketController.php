@@ -12,6 +12,7 @@ use common\models\goods\StyleLang;
 use common\models\goods\StyleMarkup;
 use common\models\market\MarketSpecials;
 use services\market\CouponService;
+use yii\helpers\ArrayHelper;
 
 class MarketController extends ActiveController
 {
@@ -33,7 +34,7 @@ class MarketController extends ActiveController
             return null;
         }
 
-        $result = $model->toArray();
+        $result = ArrayHelper::toArray($model);
 
         $ids = [];
 
