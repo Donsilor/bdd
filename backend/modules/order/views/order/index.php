@@ -208,7 +208,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                     'class' => 'form-control',
                                 ]),
                                 'value' => function ($model) {
-                                    return common\enums\PayStatusEnum::getValue($model->status, 'refund');
+                                    return common\enums\PayStatusEnum::getValue($model->refund_status, 'refund');
                                 },
                                 'format' => 'raw',
                             ],

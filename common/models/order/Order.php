@@ -64,7 +64,7 @@ class Order extends \common\models\base\BaseModel
             [['order_sn','pay_sn'], 'string', 'max' => 20],
             [['express_no', 'trade_no'], 'string', 'max' => 50],
             [['ip', 'ip_location'], 'safe'],
-            [['buyer_remark', 'seller_remark'], 'string', 'max' => 500],
+            [['buyer_remark', 'seller_remark', 'refund_remark', 'cancel_remark'], 'string', 'max' => 500],
         ];
     }
 

@@ -137,11 +137,19 @@ class OrderController extends BaseController
     public function actionEditCancel()
     {
         $id = Yii::$app->request->get('id', null);
+        $order = Yii::$app->request->post('order', []);
 
         $model = $this->findModel($id);
 
         // ajax 校验
         $this->activeFormValidate($model);
+
+        if (Yii::$app->request->isPost) {
+
+            Yii::$app->services->order->changeOrderStatusCancel($id, '管理员取消订单:'.$order['cancel_remark']??'', 'admin', Yii::$app->getUser()->id);
+
+            return $this->redirect(['index']);
+        }
 
         return $this->renderAjax($this->action->id, [
             'model' => $model,
@@ -213,7 +221,7 @@ class OrderController extends BaseController
     }
 
     /**
-     * 取消一个订单
+     * 订单退款
      */
     public function actionEditRefund()
     {
@@ -223,6 +231,15 @@ class OrderController extends BaseController
 
         // ajax 校验
         $this->activeFormValidate($model);
+
+        if ($model->load(Yii::$app->request->post())) {
+
+            $model->refund_status = 1;
+
+            return $model->save()
+                ? $this->redirect(['index'])
+                : $this->message($this->getError($model), $this->redirect(['index']), 'error');
+        }
 
         return $this->renderAjax($this->action->id, [
             'model' => $model,
