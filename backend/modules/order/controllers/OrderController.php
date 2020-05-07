@@ -96,6 +96,14 @@ class OrderController extends BaseController
             $dataProvider->query->andFilterWhere(['between', 'order.created_at', strtotime($start_date), strtotime($end_date) + 86400]);
         }
 
+
+        //导出
+        if(Yii::$app->request->get('action') === 'export'){
+            $dataProvider->setPagination(false);
+            $list = $dataProvider->models;
+            $this->getExport($list);
+        }
+
         return $this->render($this->action->id, [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
@@ -424,6 +432,9 @@ class OrderController extends BaseController
     }
 
 
+
+
+
     /**
      * 导出Excel
      *
@@ -431,58 +442,8 @@ class OrderController extends BaseController
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function actionExport()
+    public function getExport($list)
     {
-        $searchModel = new SearchModel([
-            'model' => $this->modelClass,
-            'scenario' => 'default',
-            'partialMatchAttributes' => [], // 模糊查询
-            'defaultOrder' => [
-                'id' => SORT_DESC,
-            ],
-            'relations' => [
-                'account' => ['order_amount'],
-                'address' => ['country_name', 'city_name', 'country_id', 'city_id', 'realname', 'mobile', 'email'],
-                'member' => ['username', 'realname', 'mobile', 'email'],
-                'follower' => ['username']
-            ]
-        ]);
-
-
-        $param_get = Yii::$app->request->get();
-        $orderStatus = $param_get['order_status_get'];
-        unset($param_get['order_status_get']);
-        //print_r(array_filter($param_get));exit;
-        $param['SearchModel'] = $param_get;
-        $dataProvider = $searchModel->search($param , ['created_at', 'address.mobile', 'address.email']);
-        //订单状态
-        if ($orderStatus != -1) {
-            $dataProvider->query->andWhere(['=', 'order_status', $orderStatus]);
-        }
-
-        // 数据状态
-        $dataProvider->query->andWhere(['>=', 'order.status', StatusEnum::DISABLED]);
-
-        // 联系人搜索
-        if(!empty(Yii::$app->request->queryParams['SearchModel']['address.mobile'])) {
-            $where = [];
-            $where[] = 'or';
-            $where[] = ['like', 'order_address.mobile', Yii::$app->request->queryParams['SearchModel']['address.mobile']];
-            $where[] = ['like', 'order_address.email', Yii::$app->request->queryParams['SearchModel']['address.mobile']];
-
-            $dataProvider->query->andWhere($where);
-        }
-
-        //创建时间过滤
-        if (!empty(Yii::$app->request->queryParams['SearchModel']['created_at'])) {
-            list($start_date, $end_date) = explode('/', Yii::$app->request->queryParams['SearchModel']['created_at']);
-            $dataProvider->query->andFilterWhere(['between', 'order.created_at', strtotime($start_date), strtotime($end_date) + 86400]);
-        }
-
-        $dataProvider->setPagination(false);
-//        $commandQuery = clone $dataProvider->query;
-//        echo $commandQuery->createCommand()->getRawSql();exit;
-        $list = $dataProvider->models;
         // [名称, 字段名, 类型, 类型规则]
         $header = [
             ['下单时间', 'created_at' , 'date', 'Y-m-d'],
@@ -514,16 +475,16 @@ class OrderController extends BaseController
 
             }],
             ['支付状态', 'payment_status', 'function',function($row){
-               if($row->payment_status){
-                   return \common\enums\PayStatusEnum::getValue($row->payment_status);
-               }
-               return '';
+                if($row->payment_status){
+                    return \common\enums\PayStatusEnum::getValue($row->payment_status);
+                }
+                return '';
             }],
             ['支付方式', 'payment_type', 'function',function($row){
-               if($row->payment_type){
-                   return \common\enums\PayEnum::getValue($row->payment_type);
-               }
-               return '';
+                if($row->payment_type){
+                    return \common\enums\PayEnum::getValue($row->payment_type);
+                }
+                return '';
 
             }],
             ['订单状态', 'order_status', 'function',function($row){
@@ -533,10 +494,10 @@ class OrderController extends BaseController
                 return '';
             }],
             ['跟进人', 'id', 'function',function($row){
-                    $model = \common\models\backend\Member::find()->where(['id'=>$row->follower_id])->one();
-                    if($model){
-                        return $model->username;
-                    }
+                $model = \common\models\backend\Member::find()->where(['id'=>$row->follower_id])->one();
+                if($model){
+                    return $model->username;
+                }
                 return '';
 
             }],
@@ -552,6 +513,7 @@ class OrderController extends BaseController
 
         return ExcelHelper::exportData($list, $header, '订单数据导出_' . time());
     }
+
 
 
 
