@@ -226,19 +226,18 @@ class OrderController extends BaseController
     public function actionEditRefund()
     {
         $id = Yii::$app->request->get('id', null);
+        $order = Yii::$app->request->post('Order', []);
 
         $model = $this->findModel($id);
 
         // ajax 校验
         $this->activeFormValidate($model);
 
-        if ($model->load(Yii::$app->request->post())) {
+        if (Yii::$app->request->isPost) {
 
-            $model->refund_status = 1;
+            Yii::$app->services->order->changeOrderStatusRefund($id, '管理员订单退款：'.$order['refund_remark']??'', 'admin', Yii::$app->getUser()->id);
 
-            return $model->save()
-                ? $this->redirect(['index'])
-                : $this->message($this->getError($model), $this->redirect(['index']), 'error');
+            return $this->redirect(['index']);
         }
 
         return $this->renderAjax($this->action->id, [

@@ -270,9 +270,9 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 
                                     },
                                     'refund' => function($url, $model, $key) {
-                                        if($model->order_status <= \common\enums\OrderStatusEnum::ORDER_UNPAID) {
-                                            return null;
-                                        }
+//                                        if($model->order_status <= \common\enums\OrderStatusEnum::ORDER_UNPAID) {
+//                                            return null;
+//                                        }
                                         return Html::edit(['edit-refund', 'id' => $model->id], '退款', [
                                             'data-toggle' => 'modal',
                                             'data-target' => '#ajaxModal',

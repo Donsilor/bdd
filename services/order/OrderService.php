@@ -342,6 +342,29 @@ class OrderService extends OrderBaseService
         //订单日志
         $this->addOrderLog($order_id, $remark, $log_role, $log_user,$order->order_status);
     }
+
+    public function changeOrderStatusRefund($order_id,$remark, $log_role, $log_user)
+    {
+        $order = Order::find()->where(['id'=>$order_id])->one();
+        if($order->order_status <= OrderStatusEnum::ORDER_UNPAID) {
+            return true;
+        }
+        $order_goods_list = OrderGoods::find()->select(['id','goods_id','goods_type','goods_num'])->where(['order_id'=>$order_id])->all();
+        foreach ($order_goods_list as $goods) {
+            //\Yii::$app->services->goods->updateGoodsStorageForOrder($goods->goods_id, $goods->goods_num, $goods->goods_type);
+        }
+        //更改订单状态
+        $order->cancel_remark = $remark;
+//        $order->seller_remark = $remark;
+        $order->order_status = OrderStatusEnum::ORDER_CANCEL;
+        $order->refund_remark = $remark;
+        $order->refund_status = 1;
+        $order->save(false);
+        //解冻购物卡
+        CardService::deFrozen($order_id);
+        //订单日志
+        $this->addOrderLog($order_id, $remark, $log_role, $log_user,$order->order_status);
+    }
     
     /**
      * 同步订单 手机号
