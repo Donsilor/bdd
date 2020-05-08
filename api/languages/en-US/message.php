@@ -47,6 +47,10 @@ return [
         
     "您选购的商品不存在"=>'Your product does not exist',
     "订单中部分商品已下架,请重新下单"=>'Some of the product have been taken off the shelves,please re order!',
+    "此订单不存在"=>'The order does not exist',
+    "商品不是售卖状态"=>'The Product is sold out',
+    "此订单不是已发货状态"=>'The order is not shipped' ,  
+    "订单取消失败"=>'The Order cancellation failed',
         
     "系统繁忙,请稍后再试" =>'The system is busy. Please try again later',    
 ];
