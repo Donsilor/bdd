@@ -29,7 +29,10 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 					<div class="info">
 						<dl>
 							<dt>尊敬的顾客：</dt>
-							<?php if($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
+							<?php if(
+                                    $order->order_status == OrderStatusEnum::ORDER_UNPAID ||
+                                    $order->order_status == OrderStatusEnum::ORDER_CANCEL && $order->refund_status
+                            ) {?>
 							<dd>感谢选择BDD Co.。我们十分重视您的订单。请细心阅读所有有关订单的邮件，如数据有误，请立即联络我们发电邮至<a href="mailto:service@bddco.com" rel="noopener" target="_blank">service@bddco.com</a>。</dd>
 							<?php } elseif($order->order_status == OrderStatusEnum::ORDER_PAID){?>
 							<dd>您的订单已经支付成功！感谢选择BDD Co.。我们十分重视您的订单，已经尽快为您安排，产品检测无误第壹时间给您派送，如有任何疑问，请立即联络我们发电邮至<a href="mailto:service@bddco.com" rel="noopener" target="_blank">service@bddco.com</a>。</dd>
@@ -40,14 +43,16 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 						<dl>
 							<dt>订单详情</dt>
 							<dd>
-								<span>付款信息：</span><span>在线支付<i><?= OrderStatusEnum::getValue($order->order_status) ?></i></span>
+								<span>付款信息：</span><span>在线支付<i><?= $order->refund_status ? \common\enums\PayStatusEnum::getValue($order->refund_status,'refund') : OrderStatusEnum::getValue($order->order_status) ?></i></span>
 							</dd>
 							<dd><span>订单编号：</span><span class="orderno"><?= $order->order_sn ?></span></dd>							
 							<?php if($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
 							<dd><span>下单时间：</span><span><?= \Yii::$app->formatter->asDatetime($order->created_at); ?></span></dd>
 							<?php }elseif($order->order_status == OrderStatusEnum::ORDER_PAID) {?>
-							<dd><span>付款时间：</span><span><?= \Yii::$app->formatter->asDatetime($order->payment_time); ?></span></dd>
-							<?php }elseif($order->order_status == OrderStatusEnum::ORDER_SEND) {?>
+                                <dd><span>付款时间：</span><span><?= \Yii::$app->formatter->asDatetime($order->payment_time); ?></span></dd>
+                            <?php }elseif($order->order_status == OrderStatusEnum::ORDER_CANCEL) {?>
+                                <dd><span>订单状态：</span><span>已关闭</span></dd>
+                            <?php }elseif($order->order_status == OrderStatusEnum::ORDER_SEND) {?>
 							<dd><span>物流公司：</span><span><?= \Yii::$app->services->express->getExressName($order->express_id,$order->language);?></span></dd>
 							<dd><span>物流单号：</span><span><?= $order->express_no; ?></span></dd>
 							<dd><span>发货时间：</span><span><?= \Yii::$app->formatter->asDatetime($order->delivery_time); ?></span></dd>
@@ -109,7 +114,10 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 									<dt class="count"><span>实际支付：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
 								    <?php } elseif($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
                                     <dt class="count"><span>应支付：</span><em class="total"><?= AmountHelper::outputAmount(bcadd($order->account->order_amount, $cardUseAmount, 2),2,$currency)?></em></dt>
-                                    <?php }?>
+                                    <?php } ?>
+                                    <?php if($order->refund_status) { ?>
+                                        <dt class="count"><span>已退款：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
+                                    <?php } ?>
 								</dl>
 								<?php if($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
 								<a href="<?= \Yii::$app->params['frontBaseUrl']?>/payment-options?orderId=<?= $order->id?>&price=<?= sprintf("%.2f",$order->account->order_amount)?>&coinType=<?= $currency?>" style="text-decoration:none" target="_blank"><div class="btn">立即付款</div></a>

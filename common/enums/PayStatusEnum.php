@@ -19,8 +19,8 @@ class PayStatusEnum extends BaseEnum
     public static function getMap(): array
     {
         return [
-                self::PAID => '已支付',
-                self::UNPAID => '未支付',
+                self::PAID => \Yii::t('common','已支付'),
+                self::UNPAID => \Yii::t('common','未支付'),
         ];
     }
 
@@ -32,8 +32,8 @@ class PayStatusEnum extends BaseEnum
     public static function refund(): array
     {
         return [
-            0 => '已支付',
-            1 => '已退款',
+            0 => \Yii::t('common','已支付'),
+            1 => \Yii::t('common','已退款'),
         ];
     }
     

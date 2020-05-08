@@ -20,13 +20,13 @@ class OrderStatusEnum extends BaseEnum
      */
     public static function getMap(): array
     {
-        return [                
-                self::ORDER_UNPAID => '待付款',
-                self::ORDER_PAID => '已付款',
-                self::ORDER_CONFIRM => '待发货',
-                self::ORDER_SEND => '已发货',
-                self::ORDER_FINISH => '已完成',
-                self::ORDER_CANCEL => '已取消',
+        return [
+                self::ORDER_UNPAID => \Yii::t('common','待付款'),
+                self::ORDER_PAID => \Yii::t('common','已付款'),
+                self::ORDER_CONFIRM => \Yii::t('common','待发货'),
+                self::ORDER_SEND => \Yii::t('common','已发货'),
+                self::ORDER_FINISH => \Yii::t('common','已完成'),
+                self::ORDER_CANCEL => \Yii::t('common','已取消'),
         ];
     }   
     
