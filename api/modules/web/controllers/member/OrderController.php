@@ -135,6 +135,7 @@ class OrderController extends UserAuthController
             
             $model = new OrderCreateForm();
             $model->attributes = \Yii::$app->request->post();
+            $model->order_from = $this->platform;
             $invoiceInfo = \Yii::$app->request->post('invoice');
             if(!$model->validate()) {
                 throw new \Exception($this->getError($model),500);
