@@ -44,9 +44,9 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 						<dl>
 							<dt>Order details</dt>
 							<dd>
-								<span>Payment information：</span><span>Online payment<i><?= $order->refund_status ? \common\enums\PayStatusEnum::getValue($order->refund_status,'refund') : OrderStatusEnum::getValue($order->order_status) ?></i></span>
+                                <span>Payment information：</span><?php if($order->refund_status) { ?><span><i><?= \common\enums\PayStatusEnum::getValue($order->refund_status,'refund') ?></i></span>
+                                <?php } else { ?><span>Online payment<i><?= OrderStatusEnum::getValue($order->order_status) ?></i></span><?php } ?>
 							</dd>
-
 							<dd><span>Order NO：</span><span class="orderno"><?= $order->order_sn ?></span></dd>							
 							<?php if($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
 							<dd><span>Order Time：</span><span><?= \Yii::$app->formatter->asDatetime($order->created_at); ?></span></dd>
@@ -112,7 +112,7 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
                                             <dd class="num"><span>Gift Card (<?= $card->card->sn ?>)：</span><em>-<?= AmountHelper::outputAmount(abs($card->use_amount),2,$currency)?></em></dd>
                                         <?php }} ?>
 									<dt class="count"><span>Order Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->order_amount,2,$currency)?></em></dt>
-									<?php if($order->order_status == OrderStatusEnum::ORDER_PAID) {?>
+									<?php if($order->order_status == OrderStatusEnum::ORDER_PAID || $order->refund_status) {?>
 									<dt class="count"><span>Pay Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
                                     <?php } elseif($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
                                         <dt class="count"><span>Total Amount：</span><em class="total"><?= AmountHelper::outputAmount(bcadd($order->account->order_amount, $cardUseAmount, 2),2,$currency)?></em></dt>

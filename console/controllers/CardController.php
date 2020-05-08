@@ -21,9 +21,11 @@ class CardController extends Controller
 
     public function actionTest()
     {
-        $order_id = "BDD202004174185053";
-        $order = Order::find()->where(['or',['id'=>$order_id],['order_sn'=>$order_id]])->one();
-        var_dump($order);
+        echo \Yii::t('mail', '订单退款通知',[],'en-US');
+//        \Yii::$app->services->order->sendOrderNotification(788);
+//        $order_id = "BDD202004174185053";
+//        $order = Order::find()->where(['or',['id'=>$order_id],['order_sn'=>$order_id]])->one();
+//        var_dump($order);
 //        $order = Order::findOne('523');
 //        $usage = EmailLog::$orderStatusMap[$order->order_status] ?? '';
 //        \Yii::$app->services->mailer->queue(false)->send('zhufu.zheng@bddco.com',$usage,['code'=>$order->id],$order->language);

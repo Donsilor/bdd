@@ -43,7 +43,8 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 						<dl>
 							<dt>訂單詳情</dt>
 							<dd>
-								<span>付款訊息：</span><span>在線支付<i><?= $order->refund_status ? \common\enums\PayStatusEnum::getValue($order->refund_status,'refund') : OrderStatusEnum::getValue($order->order_status) ?></i></span>
+								<span>付款訊息：</span><?php if($order->refund_status) { ?><span><i><?= \common\enums\PayStatusEnum::getValue($order->refund_status,'refund') ?></i></span>
+                                <?php } else { ?><span>在線支付<i><?= OrderStatusEnum::getValue($order->order_status) ?></i></span><?php } ?>
 							</dd>
 							<dd><span>訂單編號：</span><span class="orderno"><?= $order->order_sn ?></span></dd>							
 							<?php if($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
@@ -110,7 +111,7 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
                                             <dd class="num"><span>购物卡 (<?= $card->card->sn ?>)：</span><em>-<?= AmountHelper::outputAmount(abs($card->use_amount),2,$currency)?></em></dd>
                                         <?php }} ?>
 									<dt class="count"><span>訂單總額：</span><em class="total"><?= AmountHelper::outputAmount($order->account->order_amount,2,$currency)?></em></dt>
-									<?php if($order->order_status == OrderStatusEnum::ORDER_PAID) {?>
+									<?php if($order->order_status == OrderStatusEnum::ORDER_PAID || $order->refund_status) {?>
 									<dt class="count"><span>實際支付：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
                                     <?php } elseif($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
                                         <dt class="count"><span>應支付：</span><em class="total"><?= AmountHelper::outputAmount(bcadd($order->account->order_amount, $cardUseAmount, 2),2,$currency)?></em></dt>
