@@ -364,6 +364,8 @@ class OrderService extends OrderBaseService
         CardService::deFrozen($order_id);
         //订单日志
         $this->addOrderLog($order_id, $remark, $log_role, $log_user,$order->order_status);
+        //退款通知
+        \Yii::$app->services->order->sendOrderNotification($order->id);
     }
     
     /**

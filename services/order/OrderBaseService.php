@@ -31,13 +31,25 @@ class OrderBaseService extends Service
 
         if($order->is_tourist) {
             if(RegularHelper::verify('email',$order->member->email)) {
-                $usage = EmailLog::$orderStatusMap[$order->order_status] ?? '';
+                if($order->refund_status) {
+                    //退款通知
+                    $usage = EmailLog::$orderStatusMap['refund'] ?? '';
+                }
+                else {
+                    $usage = EmailLog::$orderStatusMap[$order->order_status] ?? '';
+                }
                 if($usage && $order->address->email) {
                     \Yii::$app->services->mailer->queue(true)->send($order->address->email,$usage,['code'=>$order->id],$order->language);
                 }
             }
         }elseif(RegularHelper::verify('email',$order->member->username)) {
-            $usage = EmailLog::$orderStatusMap[$order->order_status] ?? '';
+            if($order->refund_status) {
+                //退款通知
+                $usage = EmailLog::$orderStatusMap['refund'] ?? '';
+            }
+            else {
+                $usage = EmailLog::$orderStatusMap[$order->order_status] ?? '';
+            }
             if($usage && $order->address->email) {
                 \Yii::$app->services->mailer->queue(true)->send($order->address->email,$usage,['code'=>$order->id],$order->language);
             }
@@ -50,7 +62,14 @@ class OrderBaseService extends Service
                     'company_name'=>'BDD Co.',
                     'company_email' => 'admin@bddco.com'
                 ];
-                \Yii::$app->services->sms->queue(true)->send($order->address->mobile,SmsLog::USAGE_ORDER_SEND,$params,$order->language);
+                if($order->refund_status) {
+                    //退款通知短信
+                    $usage = SmsLog::USAGE_ORDER_REFUND_NOTICE;
+                }
+                else {
+                    $usage = SmsLog::USAGE_ORDER_SEND;
+                }
+                \Yii::$app->services->sms->queue(true)->send($order->address->mobile,$usage,$params,$order->language);
             }
         }
     }
