@@ -245,6 +245,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                                 //'class'=>'label bg-green'
                                             ]);
                                         }
+                                        return null;
                                     },
                                     'delivery' => function ($url, $model, $key) {
                                         if($model->order_status == \common\enums\OrderStatusEnum::ORDER_CONFIRM) {
@@ -254,6 +255,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                                 'class'=>'btn btn-success btn-sm'
                                             ]);
                                         }
+                                        return null;
                                     },
                                     'cancel' => function($url, $model, $key) {
                                         if($model->order_status != \common\enums\OrderStatusEnum::ORDER_UNPAID) {
