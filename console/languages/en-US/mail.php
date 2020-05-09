@@ -7,5 +7,5 @@ return [
     '已付款订单通知' =>'Paid order notice',
     '已发货订单通知' =>'Shipped order notification',
     '订单电子凭证' =>'Order electronic voucher',
-    '订单退款通知' =>'test abc',
+    '订单退款通知' =>'Notice of Refund',
 ];
