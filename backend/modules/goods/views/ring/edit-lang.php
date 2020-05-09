@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ]]);
                     ?>
                     <div class="form-group field-ring-ring_style">
-                        <a class="btn btn-primary btn-xs openIframe1" href="/backend/index.php/goods/ring/select-style"><i class="icon ion-plus"></i> 添加商品</a>
+                        <a class="btn btn-primary btn-xs openIframe1" href="<?php echo Url::to(['select-style'])?>"><i class="icon ion-plus"></i> 添加商品</a>
                         <div class="help-block"></div>
 
                         <table class="table table-hover"><thead>
