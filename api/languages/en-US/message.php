@@ -4,7 +4,7 @@ return [
     "保存失败"=>"Save failed",
     "删除失败"=>"Delete failed",
     "删除成功"=>"Delete successfully",
-    "未知错误"=>"Unknown error",
+    "未知错误"=>"Unknown error",    
     
     "请输入正确的邮箱"=>"Please enter the correct email",
     "邮箱未注册"=>"Email not registered",
@@ -26,7 +26,7 @@ return [
     "原始密码错误"=>"Original password is wrong",
     "两次输入密码不一致"=>"The two passwords are inconsistent",
 
-
+    "账号未注册"=>"Account not registered",
     "登录帐号"=>"Login account",
     "登录密码"=>"Login password",
     "登录密码错误"=>"Incorrect password",
