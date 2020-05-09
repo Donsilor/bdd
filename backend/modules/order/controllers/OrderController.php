@@ -143,19 +143,22 @@ class OrderController extends BaseController
 
         $model = $this->findModel($id);
 
+        $sellerRemark = $model->seller_remark;
+
         // ajax 校验
         $this->activeFormValidate($model);
         if ($model->load(Yii::$app->request->post())) {
             
             $model->followed_status = $model->follower_id ? FollowStatusEnum::YES : FollowStatusEnum::NO;
 
+            OrderLogService::follower($model);
+
+            if(!empty($sellerRemark)) {
+                $model->seller_remark = $sellerRemark . "\r\n--------------------\r\n" . $model->seller_remark;
+            }
+
             $result = $model->save();
 
-            if($result) {
-                //日志
-                OrderLogService::follower($model);
-            }
-            
             return $result
                 ? $this->redirect(['index'])
                 : $this->message($this->getError($model), $this->redirect(['index']), 'error');

@@ -306,7 +306,9 @@ DOM;
                                 <div class="row">
                                     <div class="col-lg-3 text-right">
                                         <label><?= $model->getAttributeLabel('seller_remark') ?>：</label></div>
-                                    <div class="col-lg-9"><?= $model->seller_remark ?></div>
+                                    <div class="col-lg-9">
+                                        <pre><?= $model->seller_remark ?></pre>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
