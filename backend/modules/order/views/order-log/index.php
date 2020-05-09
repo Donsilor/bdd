@@ -69,12 +69,17 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 
                                             $fieldName = \common\enums\OrderLogEnum::getValue($field, 'fieldName')?:$field;
 
-                                            $value .= "\r\n";
                                             if(empty($model->data[1][$field])) {
+                                                $value .= "\r\n";
                                                 $value .= sprintf('[%s]：“%s”;', $fieldName, $datum);
                                             }
                                             else {
-                                                $value .= sprintf('[%s]：“%s”变更为“%s“;', $fieldName, $datum, $model->data[1][$field]??'');
+                                                $model->data[1][$field] = $model->data[1][$field]??'';
+                                                if($model->data[1][$field] == $datum) {
+                                                    continue;
+                                                }
+                                                $value .= "\r\n";
+                                                $value .= sprintf('[%s]：“%s”变更为“%s“;', $fieldName, $model->data[1][$field], $datum);
                                             }
                                         }
                                     }

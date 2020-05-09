@@ -22,6 +22,7 @@ use common\enums\StatusEnum;
 use common\models\base\SearchModel;
 use common\models\order\Order;
 use Exception;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use common\enums\FollowStatusEnum;
 use common\enums\AuditStatusEnum;
@@ -298,13 +299,25 @@ class OrderController extends BaseController
 
         $this->modelClass = OrderInvoiceEle::class;
         $model = $this->findModel($invoice_id);
+
+        $oldModelData = $model->getAttributes();
+
         $model->language = $model->language ? $model->language : $language ;
         $this->activeFormValidate($model);
         if ($model->load(Yii::$app->request->post())) {
+
+            $modelData = $model->getDirtyAttributes();//ArrayHelper::toArray($model);
+
             if(false === $model->save()){
                 throw new Exception($this->getError($model));
             }
          // return $this->redirect($returnUrl);
+
+            $invoice = OrderInvoice::findOne($model->invoice_id);
+            $order = Order::findOne($invoice->order_id);
+
+            OrderLogService::eleInvoiceEdit($order,[$modelData, $oldModelData]);
+
             return $this->message("保存成功", $this->redirect($returnUrl), 'success');
         }
         return $this->renderAjax($this->action->id, [
@@ -380,7 +393,6 @@ class OrderController extends BaseController
             return ResultHelper::json(422, '发送次数已经超过5次');
         }
 
-
         $content = $this->renderPartial($result['template'],['result'=>$result]);
 
         $pdf = new Pdf([
@@ -429,6 +441,11 @@ class OrderController extends BaseController
         $send_num = $invoice_model->send_num + 1;
         $invoice_model->send_num = $send_num;
         $invoice_model->save();
+
+        $order = Order::findOne($invoice_model->order_id);
+
+        OrderLogService::eleInvoiceSend($order);
+
         return ResultHelper::json(200,'发送成功',['send_num'=>$send_num]);
     }
 

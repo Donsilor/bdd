@@ -148,6 +148,34 @@ class OrderLogService extends Service
         return self::log($attr);
     }
 
+    static public function eleInvoiceSend($order, $attr=[])
+    {
+        $attr['action_name'] = strtoupper(__FUNCTION__);
+        $attr['order_sn'] = $order['order_sn'];
+
+        //状态变更
+        $attr['log_msg'] = '电子发票发送';
+        return self::log($attr);
+    }
+
+    static public function eleInvoiceEdit($order, $data=[])
+    {
+        $attr['action_name'] = strtoupper(__FUNCTION__);
+        $attr['order_sn'] = $order['order_sn'];
+
+        foreach ($data[1] as $field => &$value) {
+            if(strpos($field,'_date')!==false || strpos($field,'_time')!==false || strpos($field,'_at')!==false) {
+                $value = date('Y-m-d', $value);
+            }
+        }
+
+        $attr['data'] = $data;
+
+        //状态变更
+        $attr['log_msg'] = '电子发票编辑';
+        return self::log($attr);
+    }
+
     static public function log($attributes)
     {
         if(\Yii::$app->request instanceof Request) {
@@ -174,6 +202,7 @@ class OrderLogService extends Service
         }
 
         $attributes['log_time'] = time();
+
         $attributes['data'] = $attributes['data']?:[[]];
 
         $log = new OrderLog();

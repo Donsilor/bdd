@@ -7,6 +7,7 @@ use common\models\order\Order;
 use common\models\order\OrderAccount;
 use common\models\order\OrderAddress;
 use common\models\order\OrderInvoice;
+use common\models\order\OrderInvoiceEle;
 
 class OrderLogEnum extends BaseEnum
 {
@@ -30,6 +31,8 @@ class OrderLogEnum extends BaseEnum
             'FINISH' => '订单完成',
             'CANCEL' => '订单取消',
             'FOLLOWER' => '订单跟进',
+            'ELEINVOICEEDIT' => '电子发票编辑',
+            'ELEINVOICESEND' => '电子发票发送',
         ];
     }
 
@@ -43,7 +46,7 @@ class OrderLogEnum extends BaseEnum
             $orderFields += (new OrderAccount())->attributeLabels();
             $orderFields += (new OrderAddress())->attributeLabels();
             $orderFields += (new OrderInvoice())->attributeLabels();
-//            $orderFields += (new Order())->attributes();
+            $orderFields += (new OrderInvoiceEle())->attributeLabels();
         }
 
         return $orderFields;
