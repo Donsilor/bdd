@@ -29,7 +29,7 @@ return [
 
     "登录帐号"=>"Login account",
     "登录密码"=>"Login password",
-    "登录密码错误"=>"Login password error",
+    "登录密码错误"=>"Incorrect password",
     "组别"=>"Group",
     "原始密码"=>"Original password",
     "新密码"=>"New password",
