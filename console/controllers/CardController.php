@@ -21,8 +21,8 @@ class CardController extends Controller
 
     public function actionTest()
     {
-        echo \Yii::t('mail', '订单退款通知',[],'en-US');
-//        \Yii::$app->services->order->sendOrderNotification(788);
+//        echo \Yii::t('mail', '订单退款通知',[],'en-US');
+        \Yii::$app->services->order->sendOrderNotification(789);
 //        $order_id = "BDD202004174185053";
 //        $order = Order::find()->where(['or',['id'=>$order_id],['order_sn'=>$order_id]])->one();
 //        var_dump($order);

@@ -8,7 +8,7 @@ use common\helpers\AmountHelper;
 $order_id = $code;
 $order = Order::find()->where(['id'=>$order_id])->one();
 
-\Yii::$app->params['language'] = $order->language;
+\Yii::$app->language = $order->language;
 ?>
 <!DOCTYPE html>
 <html>
@@ -53,7 +53,7 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 							<?php }elseif($order->order_status == OrderStatusEnum::ORDER_PAID) {?>
 							<dd><span>Payment time：</span><span><?= \Yii::$app->formatter->asDatetime($order->payment_time); ?></span></dd>
                             <?php }elseif($order->order_status == OrderStatusEnum::ORDER_CANCEL) {?>
-                                <dd><span>订单状态：</span><span>已关闭</span></dd>
+                                <dd><span>Order Status：</span><span>Closed</span></dd>
 							<?php }elseif($order->order_status == OrderStatusEnum::ORDER_SEND) {?>
 							<dd><span>Logistics Company：</span><span><?= \Yii::$app->services->express->getExressName($order->express_id,$order->language);?></span></dd>
 							<dd><span>Logistics NO：</span><span><?= $order->express_no; ?></span></dd>
@@ -118,7 +118,7 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
                                         <dt class="count"><span>Total Amount：</span><em class="total"><?= AmountHelper::outputAmount(bcadd($order->account->order_amount, $cardUseAmount, 2),2,$currency)?></em></dt>
                                     <?php }?>
                                     <?php if($order->refund_status) { ?>
-                                        <dt class="count"><span>已退款：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
+                                        <dt class="count"><span>Refunded：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
                                     <?php } ?>
 								</dl>
 								<?php if($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
