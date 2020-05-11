@@ -41,6 +41,32 @@ class PayController extends OnAuthController
      */
     public $modelClass = PayForm::class;
 
+    public function actionCollectionAccountInfo()
+    {
+        $configJson = Yii::$app->debris->config('pay_collection_account_info');
+        $configs = \Qiniu\json_decode($configJson, true);
+
+        switch ($this->language) {
+            case 'en-US':
+                $bankNameKey = 'bank_name_en';
+                break;
+            case 'zh-TW':
+                $bankNameKey = 'bank_name_tw';
+                break;
+            default:
+                $bankNameKey = 'bank_name_cn';
+        }
+
+        foreach ($configs as &$config) {
+            $config['bank_name'] = $config[$bankNameKey]?:'';
+            unset($config['bank_name_en']);
+            unset($config['bank_name_tw']);
+            unset($config['bank_name_cn']);
+        }
+
+        return $configs;
+    }
+
     /**
      * 生成支付参数
      *
