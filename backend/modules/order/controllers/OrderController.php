@@ -11,6 +11,7 @@ use common\enums\PayStatusEnum;
 use common\helpers\ExcelHelper;
 use common\helpers\ResultHelper;
 use common\models\common\EmailLog;
+use common\models\market\MarketCard;
 use common\models\market\MarketCardDetails;
 use common\models\member\Address;
 use common\models\member\Member;
@@ -71,6 +72,7 @@ class OrderController extends BaseController
                 'follower' => ['username']
             ]
         ]);
+
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at', 'address.mobile', 'address.email']);
 
         //订单状态
@@ -99,6 +101,11 @@ class OrderController extends BaseController
 
         //导出
         if(Yii::$app->request->get('action') === 'export'){
+            $query = Yii::$app->request->queryParams;
+            unset($query['action']);
+            if(empty(array_filter($query))){
+                //return $this->message('导出条件不能为空', $this->redirect(['index']), 'warning');
+            }
             $dataProvider->setPagination(false);
             $list = $dataProvider->models;
             $this->getExport($list);
@@ -466,23 +473,43 @@ class OrderController extends BaseController
             ['订单总金额', 'account.order_amount', 'text'],
             ['实付金额', 'account.pay_amount', 'text'],
             ['货币', 'account.currency', 'text'],
-            ['是否使用购物卡', 'id', 'function',function($row){
-                $model = MarketCardDetails::find()->where(['order_id'=>$row->id])->one();
-                return $model ? "是" : "否";
+            ['是否使用购物卡', 'id', 'function',function($model){
+                $row = MarketCardDetails::find()->where(['order_id'=>$model->id])->one();
+                return $row ? "是" : "否";
             }],
-            ['归属地区', 'ip_area_id', 'function',function($row){
-                return \common\enums\AreaEnum::getValue($row->ip_area_id);
+            ['购物卡号', 'id', 'function',function($model){
 
-            }],
-            ['支付状态', 'payment_status', 'function',function($row){
-                if($row->payment_status){
-                    return \common\enums\PayStatusEnum::getValue($row->payment_status);
+                $rows = MarketCardDetails::find()->alias('card_detail')
+                    ->leftJoin(MarketCard::tableName()." card",'card.id=card_detail.card_id')
+                    ->where(['card_detail.order_id'=>$model->id])
+                    ->asArray()->select(['sn','batch'])->all();
+                if($rows){
+                    return join(';',array_column($rows,'sn'));
                 }
                 return '';
             }],
-            ['支付方式', 'payment_type', 'function',function($row){
-                if($row->payment_type){
-                    return \common\enums\PayEnum::getValue($row->payment_type);
+            ['批次名称', 'id', 'function',function($model){
+
+                $rows = MarketCardDetails::find()->alias('card_detail')
+                    ->leftJoin(MarketCard::tableName()." card",'card.id=card_detail.card_id')
+                    ->where(['card_detail.order_id'=>$model->id])
+                    ->asArray()->select(['sn','batch'])->all();
+                if($rows){
+                    return join(';',array_column($rows,'batch'));
+                }
+                return '';
+            }],
+
+            ['归属地区', 'ip_area_id', 'function',function($model){
+                return \common\enums\AreaEnum::getValue($model->ip_area_id);
+
+            }],
+            ['支付状态', 'payment_status', 'function',function($model){
+                return \common\enums\PayStatusEnum::getValue($model->payment_status);
+            }],
+            ['支付方式', 'payment_type', 'function',function($model){
+                if($model->payment_type){
+                    return \common\enums\PayEnum::getValue($model->payment_type);
                 }
                 return '';
 
@@ -490,19 +517,26 @@ class OrderController extends BaseController
             ['订单状态', 'order_status', 'function',function($row){
                 return \common\enums\OrderStatusEnum::getValue($row->order_status);
             }],
-            ['退款状态', 'refund_status', 'function',function($row){
-                return '';
-            }],
-            ['跟进人', 'id', 'function',function($row){
-                $model = \common\models\backend\Member::find()->where(['id'=>$row->follower_id])->one();
-                if($model){
-                    return $model->username;
+            ['订单来源', 'order_from', 'function',function($model){
+                if($model->order_from){
+                    return \common\enums\OrderFromEnum::getValue($model->order_from);
                 }
                 return '';
 
             }],
-            ['跟进状态', 'followed_status', 'function',function($row){
-                return \common\enums\FollowStatusEnum::getValue($row->followed_status);
+            ['退款状态', 'refund_status', 'function',function($row){
+                return '';
+            }],
+            ['跟进人', 'id', 'function',function($model){
+                $row = \common\models\backend\Member::find()->where(['id'=>$model->follower_id])->one();
+                if($row){
+                    return $row->username;
+                }
+                return '';
+
+            }],
+            ['跟进状态', 'followed_status', 'function',function($model){
+                return \common\enums\FollowStatusEnum::getValue($model->followed_status);
             }],
             ['订单备注', 'seller_remark', 'text'],
 
