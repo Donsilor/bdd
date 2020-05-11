@@ -5,6 +5,7 @@ namespace services\order;
 
 
 use common\components\Service;
+use common\enums\LanguageEnum;
 use common\enums\OrderStatusEnum;
 use common\enums\PayStatusEnum;
 use common\models\api\AccessToken;
@@ -165,9 +166,24 @@ class OrderLogService extends Service
         $attr['action_name'] = strtoupper(__FUNCTION__);
         $attr['order_sn'] = $order['order_sn'];
 
+        $express = \Yii::$app->services->express->getDropDown();
+
         foreach ($data[1] as $field => &$value) {
+            if($field=='express_id') {
+                if(!empty($data[0][$field])) {
+                    $data[0][$field] = $express[$data[0][$field]] ?? $data[0][$field];
+                }
+                $value = $express[$value]??$value;
+            }
+            else if($field=='language') {
+                if(!empty($data[0][$field])) {
+                    $data[0][$field] = LanguageEnum::getValue($data[0][$field]??'');
+                }
+                $value = LanguageEnum::getValue($value);
+            }
+
             if(strpos($field,'_date')!==false || strpos($field,'_time')!==false || strpos($field,'_at')!==false) {
-                $value = date('Y-m-d', $value);
+                $value = $value?date('Y-m-d', $value):'';
             }
         }
 

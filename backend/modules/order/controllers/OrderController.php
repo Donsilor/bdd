@@ -306,7 +306,16 @@ class OrderController extends BaseController
         $this->activeFormValidate($model);
         if ($model->load(Yii::$app->request->post())) {
 
-            $modelData = $model->getDirtyAttributes();//ArrayHelper::toArray($model);
+            $modelData = $model->getDirtyAttributes([
+                'language',
+                'invoice_date',
+                'sender_name',
+                'sender_address',
+                'express_id',
+                'express_no',
+                'delivery_time',
+                'email'
+            ]);
 
             if(false === $model->save()){
                 throw new Exception($this->getError($model));
