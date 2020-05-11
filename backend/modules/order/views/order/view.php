@@ -336,7 +336,7 @@ DOM;
                             ?>
                             <div class="row">
                                 <div class="col-lg-5 text-right"><label>购物卡<?= $n+1 ?>：</label></div>
-                                <div class="col-lg-7"><?= $card->currency ?>&nbsp;<?= $card->use_amount ?>&nbsp;（<?= $card->card->sn ?> <?= $card->status==0?'已解绑':'' ?>）</div>
+                                <div class="col-lg-7"><?= $card->currency ?>&nbsp;<?= $card->use_amount ?>&nbsp;（<?= $card->card->sn ?> <?= $card->card->batch ?> <?= $card->status==0?'已解绑':'' ?>）</div>
                             </div>
                             <?php
                             }
