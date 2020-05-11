@@ -480,7 +480,7 @@ class OrderController extends BaseController
             ['购物卡号', 'id', 'function',function($model){
                 $rows = MarketCardDetails::find()->alias('card_detail')
                     ->leftJoin(MarketCard::tableName()." card",'card.id=card_detail.card_id')
-                    ->where(['card_detail.order_id'=>$model->id])
+                    ->where(['card_detail.status'=>StatusEnum::ENABLED , 'card_detail.order_id'=>$model->id])
                     ->asArray()->select(['sn','batch'])->all();
                 if($rows){
                     return join(';',array_column($rows,'sn'));
@@ -490,7 +490,7 @@ class OrderController extends BaseController
             ['批次名称', 'id', 'function',function($model){
                 $rows = MarketCardDetails::find()->alias('card_detail')
                     ->leftJoin(MarketCard::tableName()." card",'card.id=card_detail.card_id')
-                    ->where(['card_detail.order_id'=>$model->id])
+                    ->where(['card_detail.status'=>StatusEnum::ENABLED ,'card_detail.order_id'=>$model->id])
                     ->asArray()->select(['sn','batch'])->all();
                 if($rows){
                     return join(';',array_column($rows,'batch'));
@@ -545,7 +545,7 @@ class OrderController extends BaseController
         ];
 
 
-        return ExcelHelper::exportData($list, $header, '订单数据导出_' . time());
+        return ExcelHelper::exportData($list, $header, '订单数据导出_' . date('YmdHis',time()));
     }
 
 
