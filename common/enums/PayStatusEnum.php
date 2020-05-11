@@ -32,7 +32,7 @@ class PayStatusEnum extends BaseEnum
     public static function refund(): array
     {
         return [
-            0 => \Yii::t('common','已支付'),
+            0 => \Yii::t('common','未退款'),
             1 => \Yii::t('common','已退款'),
         ];
     }
