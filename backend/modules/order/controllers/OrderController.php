@@ -104,7 +104,7 @@ class OrderController extends BaseController
             $query = Yii::$app->request->queryParams;
             unset($query['action']);
             if(empty(array_filter($query))){
-                //return $this->message('导出条件不能为空', $this->redirect(['index']), 'warning');
+                return $this->message('导出条件不能为空', $this->redirect(['index']), 'warning');
             }
             $dataProvider->setPagination(false);
             $list = $dataProvider->models;
@@ -478,7 +478,6 @@ class OrderController extends BaseController
                 return $row ? "是" : "否";
             }],
             ['购物卡号', 'id', 'function',function($model){
-
                 $rows = MarketCardDetails::find()->alias('card_detail')
                     ->leftJoin(MarketCard::tableName()." card",'card.id=card_detail.card_id')
                     ->where(['card_detail.order_id'=>$model->id])
@@ -489,7 +488,6 @@ class OrderController extends BaseController
                 return '';
             }],
             ['批次名称', 'id', 'function',function($model){
-
                 $rows = MarketCardDetails::find()->alias('card_detail')
                     ->leftJoin(MarketCard::tableName()." card",'card.id=card_detail.card_id')
                     ->where(['card_detail.order_id'=>$model->id])
@@ -499,7 +497,9 @@ class OrderController extends BaseController
                 }
                 return '';
             }],
-
+            ['是否游客订单', 'is_tourist', 'function',function($model){
+                return $model->is_tourist == 1 ? "是" : "否";
+            }],
             ['归属地区', 'ip_area_id', 'function',function($model){
                 return \common\enums\AreaEnum::getValue($model->ip_area_id);
 
