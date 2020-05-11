@@ -74,12 +74,12 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                                 $value .= sprintf('[%s]：“%s”;', $fieldName, $datum);
                                             }
                                             else {
-                                                $model->data[1][$field] = $model->data[1][$field]??'';
-                                                if($model->data[1][$field] == $datum) {
+                                                $val = $model->data[1][$field]??'';
+                                                if($val == $datum) {
                                                     continue;
                                                 }
                                                 $value .= "\r\n";
-                                                $value .= sprintf('[%s]：“%s”变更为“%s“;', $fieldName, $model->data[1][$field], $datum);
+                                                $value .= sprintf('[%s]：“%s”变更为“%s“;', $fieldName, $val, $datum);
                                             }
                                         }
                                     }
