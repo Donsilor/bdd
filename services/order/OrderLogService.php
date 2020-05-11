@@ -6,6 +6,7 @@ namespace services\order;
 
 use common\components\Service;
 use common\enums\OrderStatusEnum;
+use common\enums\PayStatusEnum;
 use common\models\api\AccessToken;
 use common\models\backend\Member;
 use common\models\order\OrderLog;
@@ -26,6 +27,7 @@ class OrderLogService extends Service
             'email' => $order->address->email,
             'ip_location' => $order['ip_location'],
             'buyer_remark' => $order['buyer_remark'],
+            'payment_status' => PayStatusEnum::getValue($order->payment_status),
         ];
 
         //状态变更
