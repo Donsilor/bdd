@@ -2,6 +2,7 @@
 
 namespace common\models\pay;
 
+use common\models\order\Order;
 use Yii;
 
 /**
@@ -75,5 +76,14 @@ class WireTransfer extends \common\models\base\BaseModel
             'created_at' => '添加时间',
             'updated_at' => '编辑时间',
         ];
+    }
+
+    /**
+     * 对应订单付款信息模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrder()
+    {
+        return $this->hasOne(Order::class, ['id'=>'order_id']);
     }
 }

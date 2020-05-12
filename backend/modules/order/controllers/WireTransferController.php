@@ -5,12 +5,15 @@ namespace backend\modules\order\controllers;
 
 
 use backend\controllers\BaseController;
+use common\enums\PayStatusEnum;
 use common\enums\StatusEnum;
 use common\enums\WireTransferEnum;
 use common\models\base\SearchModel;
+use common\models\common\PayLog;
 use common\models\order\Order;
 use common\models\pay\WireTransfer;
 use Yii;
+use yii\web\UnprocessableEntityHttpException;
 
 class WireTransferController extends BaseController
 {
@@ -66,13 +69,25 @@ class WireTransferController extends BaseController
                 }
 
                 if($model->collection_status==WireTransferEnum::CONFIRM) {
-                    //创建支付记录
-
-
                     //支付记录确认
-                }
+                    $payModel = PayLog::findOne(['out_trade_no'=>$model['out_trade_no']]);
 
-                //\Yii::$app->services->card->generateCards($model->toArray(), $model->count);
+                    $update = [
+                        'pay_fee' => $payModel->total_fee,
+                        'pay_status' => PayStatusEnum::PAID,
+                        'pay_time' => time(),
+                    ];
+
+                    $payModel->setAttributes($update);
+
+                    if(!$payModel->save()) {
+                        throw new \Exception($this->getError($payModel));
+                    }
+
+                    //更新订单状态
+                    Yii::$app->services->pay->notify($payModel, null);
+
+                }
 
                 $trans->commit();
             } catch (\Exception $exception) {
