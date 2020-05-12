@@ -2,6 +2,7 @@
 
 namespace api\modules\web\controllers;
 
+use api\modules\web\forms\WireTransferForm;
 use common\enums\OrderStatusEnum;
 use common\enums\OrderTouristStatusEnum;
 use common\enums\PayStatusEnum;
@@ -65,6 +66,17 @@ class PayController extends OnAuthController
         }
 
         return $configs;
+    }
+
+    public function actionWireTransfer()
+    {
+        $model = new WireTransferForm();
+        $model->setAttributes(\Yii::$app->request->post());
+        if(!$model->validate()) {
+            return ResultHelper::api(422, $this->getError($model));
+        }
+
+
     }
 
     /**
