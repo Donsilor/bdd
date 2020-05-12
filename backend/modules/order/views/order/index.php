@@ -9,11 +9,19 @@ use kartik\daterange\DateRangePicker;
 $this->title = Yii::t('order', '订单');
 $this->params['breadcrumbs'][] = ['label' => $this->title];
 
+$order_status = Yii::$app->request->get('order_status', -1);
+$params = Yii::$app->request->queryParams;
+$params = $params ? "&".http_build_query($params) : '';
+$export_param = http_build_query($searchModel)."&order_status={$order_status}";
+
+
+
 ?>
 
 <div class="row">
     <div class="col-sm-12">
         <div class="nav-tabs-custom">
+
             <ul class="nav nav-tabs">
                 <li<?php if (Yii::$app->request->get('order_status', -1) == -1) echo ' class="active"' ?>><a href="<?= Url::to(['order/index']) ?>"> 全部（<?= \common\models\order\Order::getCountByOrderStatus() ?>）</a></li>
                 <?php foreach (common\enums\OrderStatusEnum::getMap() as $statusValue => $statusName) { ?>
@@ -21,6 +29,12 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                         <a href="<?= Url::to(['order/index', 'order_status' => $statusValue]) ?>"><?= $statusName ?>（<?= \common\models\order\Order::getCountByOrderStatus($statusValue) ?>）</a>
                     </li>
                 <?php } ?>
+                <li class="pull-right">
+                    <div class="box-header box-tools">
+                        <?= Html::a('导出Excel','index?action=export'.$params) ?>
+                    </div>
+                </li>
+
             </ul>
 
             <div class="tab-content">
@@ -91,7 +105,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                     'model' => $searchModel,
                                     'attribute' => 'created_at',
                                     'value' => '',
-                                    'options' => ['readonly' => true, 'class' => 'form-control',],
+                                    'options' => ['readonly' => false, 'class' => 'form-control',],
                                     'pluginOptions' => [
                                         'format' => 'yyyy-mm-dd',
                                         'locale' => [
