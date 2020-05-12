@@ -6,6 +6,7 @@ namespace backend\modules\order\controllers;
 
 use backend\controllers\BaseController;
 use common\enums\StatusEnum;
+use common\enums\WireTransferEnum;
 use common\models\base\SearchModel;
 use common\models\order\Order;
 use common\models\pay\WireTransfer;
@@ -57,17 +58,23 @@ class WireTransferController extends BaseController
         $this->activeFormValidate($model);
         if ($model->load(\Yii::$app->request->post())) {
 
-            if(!$model->validate()) {
-                return $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
-            }
-
-            $trans = \Yii::$app->db->beginTransaction();
-
             try {
+                $trans = \Yii::$app->db->beginTransaction();
+
+                if(!$model->save()) {
+                    throw new \Exception($this->getError($model));
+                }
+
+                if($model->collection_status==WireTransferEnum::CONFIRM) {
+                    //创建支付记录
+
+
+                    //支付记录确认
+                }
+
                 //\Yii::$app->services->card->generateCards($model->toArray(), $model->count);
 
                 $trans->commit();
-
             } catch (\Exception $exception) {
 
                 $trans->rollBack();

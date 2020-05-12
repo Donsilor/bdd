@@ -2,7 +2,6 @@
 
 namespace common\models\pay;
 
-use common\models\order\Order;
 use Yii;
 
 /**
@@ -22,7 +21,7 @@ use Yii;
  * @property string $collection_amount 收款金额(出纳)
  * @property int $collection_status 收款确认(出纳)：0=待确认，1=确认，2=异常，10=关闭
  * @property int $status 收款审核(会计)：0=待确认，1=确认
- * @property int $pay_id 支付记录ID
+ * @property string $out_trade_no 商户订单号
  * @property int $created_at 添加时间
  * @property int $updated_at 编辑时间
  */
@@ -43,11 +42,12 @@ class WireTransfer extends \common\models\base\BaseModel
     {
         return [
             [['order_id', 'account', 'account_name', 'opening_bank', 'bank_name', 'payment_voucher'], 'required'],
-            [['order_id', 'member_id', 'collection_status', 'status', 'pay_id', 'created_at', 'updated_at'], 'integer'],
+            [['order_id', 'member_id', 'collection_status', 'status', 'created_at', 'updated_at'], 'integer'],
             [['payment_amount', 'collection_amount'], 'number'],
             [['account', 'account_name', 'payment_serial_number'], 'string', 'max' => 50],
             [['opening_bank', 'bank_name'], 'string', 'max' => 80],
             [['payment_voucher', 'collection_voucher'], 'string', 'max' => 255],
+            [['out_trade_no'], 'string', 'max' => 32],
         ];
     }
 
@@ -71,18 +71,9 @@ class WireTransfer extends \common\models\base\BaseModel
             'collection_amount' => '收款金额(出纳)',
             'collection_status' => '收款确认(出纳)：0=待确认，1=确认，2=异常，10=关闭',
             'status' => '收款审核(会计)：0=待确认，1=确认',
-            'pay_id' => '支付记录ID',
+            'out_trade_no' => '商户订单号',
             'created_at' => '添加时间',
             'updated_at' => '编辑时间',
         ];
-    }
-
-    /**
-     * 对应订单付款信息模型
-     * @return \yii\db\ActiveQuery
-     */
-    public function getOrder()
-    {
-        return $this->hasOne(Order::class, ['id'=>'order_id']);
     }
 }

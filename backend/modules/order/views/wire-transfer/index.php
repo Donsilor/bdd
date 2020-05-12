@@ -43,6 +43,15 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 }
                             ],
                             [
+                                'label' => '应支付金额',
+                                'attribute' => 'order.account.pay_amount',
+                                'value' => function($model) {
+                                    $cardUseAmount = \services\market\CardService::getUseAmount($model->order_id);
+                                    $receivable = bcsub(bcsub($model->order->account->order_amount, $cardUseAmount, 2), $model->order->account->discount_amount, 2);
+                                    return \common\helpers\AmountHelper::outputAmount($receivable, 2, $model->order->account->currency);
+                                }
+                            ],
+                            [
                                 'attribute' => 'order.order_status',
                                 'headerOptions' => ['class' => 'col-md-1'],
                                 'filter' => false,
@@ -55,20 +64,28 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 },
                                 'format' => 'raw',
                             ],
-//                            [
-//                                'label' => '应支付金额',
-//                                'attribute' => 'order.account.pay_amount'
-//                            ],
                             [
                                 'label' => '收款账号',
                                 'attribute' => 'account'
                             ],
                             [
-                                'label' => '出纳审核状态'
+                                'label' => '审核状态',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'collection_status',\common\enums\WireTransferEnum::getMap(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    return \common\enums\WireTransferEnum::getValue($model->collection_status);
+                                },
+                                'format' => 'raw',
                             ],
-                            [
-                                'label' => '会计审核状态'
-                            ],
+//                            [
+//                                'label' => '出纳审核状态'
+//                            ],
+//                            [
+//                                'label' => '会计审核状态'
+//                            ],
                             [
                                 'attribute' => 'created_at',
                                 'filter' => false,
@@ -110,7 +127,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                         }
                                         elseif (1) {
                                             //出纳审核
-                                            return Html::edit(['ajax-edit', 'id'=>$model->id], '出纳审核', [
+                                            return Html::edit(['ajax-edit', 'id'=>$model->id], '审核', [
                                                 'data-toggle' => 'modal',
                                                 'data-target' => '#ajaxModalLg',
                                             ]);

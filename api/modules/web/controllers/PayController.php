@@ -72,7 +72,39 @@ class PayController extends OnAuthController
     {
         $this->modelClass = WireTransferForm::class;
 
-        return $this->add();
+        try {
+            $trans = \Yii::$app->db->beginTransaction();
+
+            $result = $this->add();
+
+            $payForm = new PayForm();
+            $payForm->orderId = $result['order_id'];
+            $payForm->coinType = $this->getCurrency();
+            $payForm->payType = PayEnum::PAY_TYPE_WIRE_TRANSFER;
+            $payForm->memberId = $this->member_id;
+
+            //验证支付订单数据
+            if (!$payForm->validate()) {
+                throw new \Exception($this->getError($payForm), 500);
+            }
+
+            $pay = $payForm->getConfig();
+
+            $result->out_trade_no = $pay['out_trade_no'];
+
+            //验证支付订单数据
+            if (!$result->save(false)) {
+                throw new UnprocessableEntityHttpException($this->getError($result));
+            }
+
+            $trans->commit();
+        } catch (\Exception $exception) {
+            $trans->rollBack();
+
+            throw $exception;
+        }
+
+        return $result;
     }
 
     /**

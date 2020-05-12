@@ -22,6 +22,33 @@ $form = ActiveForm::begin([
     <div class="modal-body">
         <div class="form-group field-wiretransfer-collection_amount">
             <div class="col-sm-2 text-right">
+                <label class="control-label" for="wiretransfer-collection_amount">订单号</label>
+            </div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" value="<?= $model->order->order_sn; ?>" readonly="true">
+                <div class="help-block"></div>
+            </div>
+        </div>
+        <div class="form-group field-wiretransfer-collection_amount">
+            <div class="col-sm-2 text-right">
+                <label class="control-label" for="wiretransfer-collection_amount">订单金额</label>
+            </div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" value="<?= $model->order->account->order_amount; ?>" readonly="true">
+                <div class="help-block"></div>
+            </div>
+        </div>
+        <div class="form-group field-wiretransfer-collection_amount">
+            <div class="col-sm-2 text-right">
+                <label class="control-label" for="wiretransfer-collection_amount">应付金额</label>
+            </div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" value="<?= $model->order->account->order_amount; ?>" readonly="true">
+                <div class="help-block"></div>
+            </div>
+        </div>
+        <div class="form-group field-wiretransfer-collection_amount">
+            <div class="col-sm-2 text-right">
                 <label class="control-label" for="wiretransfer-collection_amount">付款凭证</label>
             </div>
             <div class="col-sm-10">
@@ -38,11 +65,26 @@ $form = ActiveForm::begin([
                 <div class="help-block"></div>
             </div>
         </div>
-        <?= $form->field($model, 'collection_amount')->textInput()->label('收款金额'); ?>
+        <?= $form->field($model, "collection_voucher")->widget(common\widgets\webuploader\Files::class, [
+            'config' => [
+                'pick' => [
+                    'multiple' => false,
+                ],
+                /* 'formData' => [
+                        'drive' => 'oss',// 默认本地 支持 qiniu/oss 上传
+                        'thumb' => [
+                                [
+                                        'width' => 800,
+                                        'height' => 800,
+                                ]
+                        ]
+                ], */
+            ]
+        ])->label('收款凭证'); ?>
+        <?= $form->field($model, 'collection_amount')->textInput()->label('收款金额')->hint('收款金额必需与应收款金额一至才能确认支付'); ?>
+        <?= $form->field($model, 'collection_status')->dropDownList(\common\enums\WireTransferEnum::getMap())->label('审核状态') ?>
     </div>
     </div>
-
-
 
     <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
