@@ -70,13 +70,9 @@ class PayController extends OnAuthController
 
     public function actionWireTransfer()
     {
-        $model = new WireTransferForm();
-        $model->setAttributes(\Yii::$app->request->post());
-        if(!$model->validate()) {
-            return ResultHelper::api(422, $this->getError($model));
-        }
+        $this->modelClass = WireTransferForm::class;
 
-
+        return $this->add();
     }
 
     /**

@@ -9,6 +9,7 @@ use Yii;
  *
  * @property int $id ID
  * @property int $order_id 订单ID
+ * @property int $member_id 买家id
  * @property string $account 收款账号
  * @property string $account_name 户名
  * @property string $opening_bank 开户行
@@ -41,7 +42,7 @@ class WireTransfer extends \common\models\base\BaseModel
     {
         return [
             [['order_id', 'account', 'account_name', 'opening_bank', 'bank_name', 'payment_voucher'], 'required'],
-            [['order_id', 'collection_status', 'status', 'pay_id', 'created_at', 'updated_at'], 'integer'],
+            [['order_id', 'member_id', 'collection_status', 'status', 'pay_id', 'created_at', 'updated_at'], 'integer'],
             [['payment_amount', 'collection_amount'], 'number'],
             [['account', 'account_name', 'payment_serial_number'], 'string', 'max' => 50],
             [['opening_bank', 'bank_name'], 'string', 'max' => 80],
@@ -57,6 +58,7 @@ class WireTransfer extends \common\models\base\BaseModel
         return [
             'id' => 'ID',
             'order_id' => '订单ID',
+            'member_id' => '买家id',
             'account' => '收款账号',
             'account_name' => '户名',
             'opening_bank' => '开户行',
