@@ -357,7 +357,7 @@ class OrderService extends OrderBaseService
             throw new \Exception('订单查询失败,order_id='.$order_id);
         }
         
-        $payLog = PayLog::find()->where(['order_sn'=>$order->order_sn,'pay_type'=>PayEnum::PAY_TYPE_PAYPAL,'pay_status'=>PayStatusEnum::PAID])->one();
+        $payLog = PayLog::find()->where(['order_sn'=>$order->order_sn,'pay_type'=>[PayEnum::PAY_TYPE_PAYPAL,PayEnum::PAY_TYPE_PAYPAL_1],'pay_status'=>PayStatusEnum::PAID])->one();
         if(!$payLog) {
             throw new \Exception('非PayPal支付');
         }

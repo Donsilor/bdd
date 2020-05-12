@@ -32,7 +32,7 @@ class OrderTouristService extends OrderBaseService
     /**
      * @param $cartList
      */
-    public function createOrder($cartList, $invoice_info)
+    public function createOrder($cartList, $invoice_info,$order_from)
     {
         //IP区域ID与地址
         list($ip_area_id, $ip_location) = \Yii::$app->ipLocation->getLocation(\Yii::$app->request->userIP);
@@ -85,7 +85,7 @@ class OrderTouristService extends OrderBaseService
 //        $order->merchant_id = null;//商铺ID
         $order->store_id = null;//店铺ID
         $order->tourist_key = null;//游客的KEY
-
+        $order->order_from = $order_from; 
         $order->order_amount = $order_amount;//订单金额
         $order->goods_amount = $goods_amount;//商品总金额
         $order->discount_amount = $discount_amount;//优惠金额
@@ -205,7 +205,7 @@ class OrderTouristService extends OrderBaseService
 //            'delivery_status' => '',
 //            'delivery_time' => '',
 //            'receive_type' => '',
-//            'order_from' => '',
+              'order_from' => $orderTourist->order_from,
 //            'order_type' => '',
             'is_tourist' => 1,//游客订单
             'is_invoice' => empty($orderTourist->invoice)?0:1,//是否开发票

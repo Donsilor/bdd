@@ -31,8 +31,13 @@ return [
             'routes'=>[
                     'member/order/create',
                     'member/order/tax',
+                    'member/order/cancel',
+                    'member/order/confirm-receipt',
                     'member/order-tourist/create',
                     'member/order-tourist/tax',
+                    'member/cart/index',
+                    'member/cart/add',
+                    'member/cart/local',
                     'pay/create',
             ]
     ],//错误日志短信提醒 
