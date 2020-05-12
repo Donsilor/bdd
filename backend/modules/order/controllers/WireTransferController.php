@@ -40,4 +40,47 @@ class WireTransferController extends BaseController
             'searchModel' => $searchModel,
         ]);
     }
+
+    /**
+     * ajax编辑/创建
+     *
+     * @return mixed|string|\yii\web\Response
+     * @throws \yii\base\ExitException
+     */
+    public function actionAjaxEdit()
+    {
+        $returnUrl = \Yii::$app->request->get('returnUrl',['index']);
+
+        $model = WireTransfer::findOne(Yii::$app->request->get('id', null));
+
+        // ajax 校验
+        $this->activeFormValidate($model);
+        if ($model->load(\Yii::$app->request->post())) {
+
+            if(!$model->validate()) {
+                return $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
+            }
+
+            $trans = \Yii::$app->db->beginTransaction();
+
+            try {
+                //\Yii::$app->services->card->generateCards($model->toArray(), $model->count);
+
+                $trans->commit();
+
+            } catch (\Exception $exception) {
+
+                $trans->rollBack();
+                return $this->message($exception->getMessage(), $this->redirect($returnUrl), 'error');
+            }
+
+            $this->redirect($returnUrl);
+        }
+
+        //\Yii::$app->cache->set('actionAjaxEdit-'.\Yii::$app->getUser()->id, true);
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+        ]);
+    }
 }

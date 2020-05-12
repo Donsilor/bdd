@@ -6,7 +6,7 @@ use yii\grid\GridView;
 use common\enums\OrderStatusEnum;
 use kartik\daterange\DateRangePicker;
 
-$this->title = Yii::t('order', '游客订单');
+$this->title = Yii::t('order', '电汇管理');
 $this->params['breadcrumbs'][] = ['label' => $this->title];
 
 ?>
@@ -32,28 +32,92 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'attribute' => 'id',
                             ],
                             [
+                                'attribute' => 'order.order_sn'
+                            ],
+                            [
+                                'label' => '订单金额',
+                                'attribute' => 'order.account.order_amount',
+                                'value' => function($model)
+                                {
+                                    return \common\helpers\AmountHelper::outputAmount($model->order->account->order_amount, 2, $model->order->account->currency);
+                                }
+                            ],
+                            [
+                                'attribute' => 'order.order_status',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => false,
+//                                'filter' => Html::activeDropDownList($searchModel, 'order_status', common\enums\OrderStatusEnum::getMap(), [
+//                                    'prompt' => '全部',
+//                                    'class' => 'form-control',
+//                                ]),
+                                'value' => function ($model) {
+                                    return common\enums\OrderStatusEnum::getValue($model->order->order_status);
+                                },
+                                'format' => 'raw',
+                            ],
+//                            [
+//                                'label' => '应支付金额',
+//                                'attribute' => 'order.account.pay_amount'
+//                            ],
+                            [
+                                'label' => '收款账号',
+                                'attribute' => 'account'
+                            ],
+                            [
+                                'label' => '出纳审核状态'
+                            ],
+                            [
+                                'label' => '会计审核状态'
+                            ],
+                            [
                                 'attribute' => 'created_at',
-                                'filter' => DateRangePicker::widget([    // 日期组件
-                                    'model' => $searchModel,
-                                    'attribute' => 'created_at',
-                                    'value' => '',
-                                    'options' => ['readonly' => true, 'class' => 'form-control',],
-                                    'pluginOptions' => [
-                                        'format' => 'yyyy-mm-dd',
-                                        'locale' => [
-                                            'separator' => '/',
-                                        ],
-                                        'endDate' => date('Y-m-d', time()),
-                                        'todayHighlight' => true,
-                                        'autoclose' => true,
-                                        'todayBtn' => 'linked',
-                                        'clearBtn' => true,
-                                    ],
-                                ]),
+                                'filter' => false,
+//                                'filter' => DateRangePicker::widget([    // 日期组件
+//                                    'model' => $searchModel,
+//                                    'attribute' => 'created_at',
+//                                    'value' => '',
+//                                    'options' => ['readonly' => true, 'class' => 'form-control',],
+//                                    'pluginOptions' => [
+//                                        'format' => 'yyyy-mm-dd',
+//                                        'locale' => [
+//                                            'separator' => '/',
+//                                        ],
+//                                        'endDate' => date('Y-m-d', time()),
+//                                        'todayHighlight' => true,
+//                                        'autoclose' => true,
+//                                        'todayBtn' => 'linked',
+//                                        'clearBtn' => true,
+//                                    ],
+//                                ]),
                                 'value' => function ($model) {
                                     return Yii::$app->formatter->asDatetime($model->created_at);
                                 },
                                 'format' => 'raw',
+                            ],
+                            [
+                                'header' => "操作",
+                                //'headerOptions' => ['class' => 'col-md-1'],
+                                'class' => 'yii\grid\ActionColumn',
+                                'template' => '{audit}',
+                                'buttons' => [
+                                    'audit' => function ($url, $model, $key) {
+                                        if($model->collection_status == 1) {
+                                            //会计审核
+                                            return Html::edit(['ajax-edit', '33id' => 123], '会计审核', [
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#ajaxModalLg',
+                                            ]);
+                                        }
+                                        elseif (1) {
+                                            //出纳审核
+                                            return Html::edit(['ajax-edit', 'id'=>$model->id], '出纳审核', [
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#ajaxModalLg',
+                                            ]);
+                                        }
+                                        return null;
+                                    },
+                                ],
                             ],
                         ],
                     ]);
