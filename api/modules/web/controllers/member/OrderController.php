@@ -11,6 +11,7 @@ use common\helpers\Url;
 use common\models\forms\PayForm;
 use common\models\member\Member;
 use services\market\CardService;
+use services\order\OrderLogService;
 use yii\base\Exception;
 use common\models\order\Order;
 use api\modules\web\forms\OrderCreateForm;
@@ -415,6 +416,8 @@ class OrderController extends UserAuthController
         }
         $res = Order::updateAll(['order_status'=>OrderStatusEnum::ORDER_FINISH],['id'=>$order_id,'order_status'=>OrderStatusEnum::ORDER_SEND]);
         if($res){
+            $order->refresh();
+            OrderLogService::finish($order);
             return 'success';
         }else{
             return ResultHelper::api(500, '确认收货失败');

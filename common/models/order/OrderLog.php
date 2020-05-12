@@ -11,11 +11,13 @@ use yii\db\ActiveRecord;
  * @property int $id 主键
  * @property int $merchant_id 商户ID
  * @property int $order_id 订单id
+ * @property string $order_sn 订单号
+ * @property int $order_status 订单状态
  * @property string $log_msg 文字描述
+ * @property array $log_data 文字描述
  * @property int $log_time 处理时间
  * @property string $log_role 操作角色
  * @property string $log_user 操作人
- * @property int $order_status 订单状态
  */
 class OrderLog extends ActiveRecord
 {
@@ -36,11 +38,13 @@ class OrderLog extends ActiveRecord
     public function rules()
     {
         return [
-            [['merchant_id', 'order_id', 'log_time', 'order_status'], 'integer'],
-            [['order_id', 'log_time', 'log_role'], 'required'],
+            [['action_name', 'order_sn', 'log_msg', 'data', 'log_role', 'log_user', 'log_time'], 'required'],
+            [['action_name'], 'string', 'max' => 50],
+            [['order_sn'], 'string', 'max' => 20],
             [['log_msg'], 'string', 'max' => 500],
             [['log_role'], 'string', 'max' => 10],
             [['log_user'], 'string', 'max' => 60],
+            [['log_time'], 'integer'],
         ];
     }
 
@@ -51,13 +55,12 @@ class OrderLog extends ActiveRecord
     {
         return [
             'id' => '主键',
-            'merchant_id' => '商户ID',
-            'order_id' => '订单id',
+            'order_sn' => '订单号',
             'log_msg' => '文字描述',
-            'log_time' => '处理时间',
+            'log_data' => '文字描述',
             'log_role' => '操作角色',
             'log_user' => '操作人',
-            'order_status' => '订单状态',
+            'log_time' => '处理时间',
         ];
     }
 }

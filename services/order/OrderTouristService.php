@@ -332,10 +332,11 @@ class OrderTouristService extends OrderBaseService
         }
 
         //订单日志
-        $log_msg = "创建订单,订单编号：".$order->order_sn;
-        $log_role = 'buyer';
-        $log_user = $member->username;
-        $this->addOrderLog($order->id, $log_msg, $log_role, $log_user,$order->order_status);
+//        $log_msg = "创建订单,订单编号：".$order->order_sn;
+//        $log_role = 'buyer';
+//        $log_user = $member->username;
+//        $this->addOrderLog($order->id, $log_msg, $log_role, $log_user,$order->order_status);
+        OrderLogService::create($order);
 
         //订单发送邮件
         $this->sendOrderNotification($order->id);
