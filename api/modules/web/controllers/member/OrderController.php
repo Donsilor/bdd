@@ -59,6 +59,8 @@ class OrderController extends UserAuthController
                 'id' =>$order->id,
                 'orderNO' =>$order->order_sn,
                 'orderStatus'=> $order->order_status,
+                'refundStatus'=> $order->refund_status,
+                'wireTransferStatus'=> $order->wireTransfer->collection_status,
                 'orderAmount'=> $order->account->order_amount,
                 'payAmount'=> bcsub($order->account->order_amount, CardService::getUseAmount($order->id), 2),
                 'productAmount'=> $order->account->goods_amount,
