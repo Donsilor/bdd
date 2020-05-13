@@ -24,6 +24,7 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
 
             <ul class="nav nav-tabs">
                 <li<?php if (Yii::$app->request->get('order_status', -1) == -1) echo ' class="active"' ?>><a href="<?= Url::to(['order/index']) ?>"> 全部（<?= \common\models\order\Order::getCountByOrderStatus() ?>）</a></li>
+                <li<?php if (Yii::$app->request->get('order_status', -1) == 11) echo ' class="active"' ?>><a href="<?= Url::to(['order/index', 'order_status'=>11]) ?>"> 电汇管理（<?= \common\models\order\Order::getCountByOrderStatus(11) ?>）</a></li>
                 <?php foreach (common\enums\OrderStatusEnum::getMap() as $statusValue => $statusName) { ?>
                     <li<?php if (Yii::$app->request->get('order_status', -1) == $statusValue) echo ' class="active"' ?>>
                         <a href="<?= Url::to(['order/index', 'order_status' => $statusValue]) ?>"><?= $statusName ?>（<?= \common\models\order\Order::getCountByOrderStatus($statusValue) ?>）</a>
@@ -67,7 +68,7 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                     </div>
                 </div>
                 <div class="active tab-pane">
-                    <?= GridView::widget([
+                    <?php $widgetData = [
                         'id'=>'grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
@@ -253,7 +254,7 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                 'header' => "操作",
                                 //'headerOptions' => ['class' => 'col-md-1'],
                                 'class' => 'yii\grid\ActionColumn',
-                                'template' => '{audit} {delivery} {follower}',
+                                'template' => Yii::$app->request->get('order_status')==11?'{wiretransfer}':'{audit} {delivery} {follower}',
                                 'buttons' => [
                                     'follower' => function ($url, $model, $key) {
                                         return Html::edit(['edit-follower', 'id' => $model->id], '跟进', [
@@ -263,7 +264,6 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                         ]);                                        
                                     },
                                     'audit' => function ($url, $model, $key) {
-                    
                                         if($model->order_status == \common\enums\OrderStatusEnum::ORDER_PAID) {
                                             return Html::batchAudit(['ajax-batch-audit'], '审核', [
                                                 //'class'=>'label bg-green'
@@ -278,12 +278,39 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                                 'class'=>'btn btn-success btn-sm'
                                             ]);
                                         }
+                                    },
+                                    'wiretransfer' => function($url, $model, $key) {
+                                        if(Yii::$app->request->get('order_status')!=11 || $model->wireTransfer->collection_status==1) {
+                                            return null;
+                                        }
+
+                                        //出纳审核
+                                        return Html::edit(['wire-transfer/ajax-edit', 'order_id'=>$model->id], '电汇审核', [
+                                            'data-toggle' => 'modal',
+                                            'data-target' => '#ajaxModalLg',
+                                        ]);
                                     }
                                 ],
                             ],
                         ],
-                    ]);
-                  ?>
+                    ];
+
+                    if(Yii::$app->request->get('order_status')==11) {
+                        array_splice($widgetData['columns'], 12, 0, [[
+                            'label' => '电汇审核状态',
+                            'headerOptions' => ['class' => 'col-md-1'],
+                            'filter' => Html::activeDropDownList($searchModel, 'wireTransfer.collection_status',\common\enums\WireTransferEnum::getMap(), [
+                                'prompt' => '全部',
+                                'class' => 'form-control',
+                            ]),
+                            'value' => function ($model) {
+                                return common\enums\WireTransferEnum::getValue($model->wireTransfer->collection_status);
+                            },
+                            'format' => 'raw',
+                        ]]);
+                    }
+                ?>
+                <?= GridView::widget($widgetData);?>
                 </div>
             </div>
         </div>

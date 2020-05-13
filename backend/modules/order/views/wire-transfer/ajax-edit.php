@@ -34,7 +34,7 @@ $form = ActiveForm::begin([
                 <label class="control-label" for="wiretransfer-collection_amount">订单金额</label>
             </div>
             <div class="col-sm-10">
-                <input type="text" class="form-control" value="<?= $model->order->account->order_amount; ?>" readonly="true">
+                <input type="text" class="form-control" value="<?= \common\helpers\AmountHelper::outputAmount($model->order->account->order_amount,2,$model->order->account->currency) ?>" readonly="true">
                 <div class="help-block"></div>
             </div>
         </div>
@@ -43,7 +43,7 @@ $form = ActiveForm::begin([
                 <label class="control-label" for="wiretransfer-collection_amount">应付金额</label>
             </div>
             <div class="col-sm-10">
-                <input type="text" class="form-control" value="<?= $model->order->account->order_amount; ?>" readonly="true">
+                <input type="text" class="form-control" value="<?= \common\helpers\AmountHelper::outputAmount($model->order->getAmountPayable(),2,$model->order->account->currency) ?>" readonly="true">
                 <div class="help-block"></div>
             </div>
         </div>
@@ -58,7 +58,7 @@ $form = ActiveForm::begin([
         </div>
         <div class="form-group field-wiretransfer-collection_amount">
             <div class="col-sm-2 text-right">
-                <label class="control-label" for="wiretransfer-collection_amount">付款流水号</label>
+                <label class="control-label" for="wiretransfer-collection_amount">交易号</label>
             </div>
             <div class="col-sm-10">
                 <input type="text" class="form-control" value="<?= $model->payment_serial_number; ?>" readonly="true">

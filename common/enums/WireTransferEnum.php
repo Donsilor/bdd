@@ -22,9 +22,9 @@ class WireTransferEnum extends BaseEnum
     {
         return [
             self::PENDING => '待审核',
-            self::CONFIRM => '成功付款',
+            self::CONFIRM => '审核通过',
             self::ABNORMAL => '异常',
-            self::CANCEL => '取消',
+            self::CANCEL => '审核不通过',
         ];
     }
 

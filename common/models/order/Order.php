@@ -5,6 +5,7 @@ namespace common\models\order;
 use common\models\common\PayLog;
 use common\models\market\MarketCardDetails;
 use common\models\member\Member;
+use common\models\pay\WireTransfer;
 use Yii;
 
 /**
@@ -117,12 +118,29 @@ class Order extends \common\models\base\BaseModel
      */
     static public function getCountByOrderStatus($orderStatus=null)
     {
-        $where = [];
+        $where = ['and'];
 
-        if(!is_null($orderStatus))
-            $where['order_status'] = $orderStatus;
+        if(!is_null($orderStatus)) {
+            if($orderStatus==11) {
+                $subQuery = WireTransfer::find()->where(['in', 'collection_status',['0','2']])->select(['order_id']);
+                $where[]['id'] = $subQuery;
+            }
+            else {
+                $where[]['order_status'] = $orderStatus;
+            }
+        }
 
-        return (int)self::find()->where($where)->count('id');
+        return (int)self::find()->where($where)->count('`order`.id');
+    }
+
+    /**
+     * 订单应付金额
+     * @return int
+     */
+    public function getAmountPayable()
+    {
+        $cardUseAmount = \services\market\CardService::getUseAmount($this->id);
+        return bcsub(bcsub($this->account->order_amount, $cardUseAmount, 2), $this->account->discount_amount, 2);;
     }
 
     /**
@@ -205,5 +223,13 @@ class Order extends \common\models\base\BaseModel
         return $this->hasMany(MarketCardDetails::class, ['order_id'=>'id']);
     }
 
+    /**
+     * 对应快递模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getWireTransfer()
+    {
+        return $this->hasOne(WireTransfer::class, ['order_id'=>'id']);
+    }
 
 }

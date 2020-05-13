@@ -5,6 +5,7 @@ namespace backend\modules\order\controllers;
 
 
 use backend\controllers\BaseController;
+use backend\modules\order\forms\WireTransferForm;
 use common\enums\PayStatusEnum;
 use common\enums\StatusEnum;
 use common\enums\WireTransferEnum;
@@ -53,9 +54,23 @@ class WireTransferController extends BaseController
      */
     public function actionAjaxEdit()
     {
-        $returnUrl = \Yii::$app->request->get('returnUrl',['index']);
+//        $returnUrl = \Yii::$app->request->get('returnUrl',['index']);
 
-        $model = WireTransfer::findOne(Yii::$app->request->get('id', null));
+        $returnUrl = \Yii::$app->getRequest()->getReferrer();
+
+        $where = [];
+
+        $id = Yii::$app->request->get('id', null);
+        $orderId = Yii::$app->request->get('order_id', null);
+
+        if($id) {
+            $where['id'] = $id;
+        }
+        if($orderId) {
+            $where['order_id'] = $orderId;
+        }
+
+        $model = WireTransferForm::findOne($where);
 
         // ajax 校验
         $this->activeFormValidate($model);

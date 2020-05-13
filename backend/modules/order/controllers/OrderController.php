@@ -22,6 +22,7 @@ use common\models\order\OrderGoods;
 use common\models\order\OrderGoodsLang;
 use common\models\order\OrderInvoice;
 use common\models\order\OrderInvoiceEle;
+use common\models\pay\WireTransfer;
 use Omnipay\Common\Message\AbstractResponse;
 use services\order\OrderLogService;
 use Yii;
@@ -71,15 +72,22 @@ class OrderController extends BaseController
                 'account' => ['order_amount'],
                 'address' => ['country_name', 'city_name', 'country_id', 'city_id', 'realname', 'mobile', 'email'],
                 'member' => ['username', 'realname', 'mobile', 'email'],
-                'follower' => ['username']
+                'follower' => ['username'],
+                'wireTransfer' => ['collection_status'],
             ]
         ]);
 
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at', 'address.mobile', 'address.email']);
 
         //订单状态
-        if ($orderStatus !== -1)
-            $dataProvider->query->andWhere(['=', 'order_status', $orderStatus]);
+        if ($orderStatus !== -1) {
+            if($orderStatus==11) {
+                $dataProvider->query->andWhere('common_pay_wire_transfer.id is not null');
+            }
+            else {
+                $dataProvider->query->andWhere(['=', 'order_status', $orderStatus]);
+            }
+        }
 
         // 数据状态
         $dataProvider->query->andWhere(['>=', 'order.status', StatusEnum::DISABLED]);
