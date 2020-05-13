@@ -98,7 +98,7 @@ class PayController extends OnAuthController
                 throw new UnprocessableEntityHttpException($this->getError($result));
             }
 
-            OrderLogService::wireTransfer($result);
+            OrderLogService::wireTransfer($result->order);
 
             $trans->commit();
         } catch (\Exception $exception) {
