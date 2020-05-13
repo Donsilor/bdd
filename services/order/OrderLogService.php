@@ -30,6 +30,7 @@ class OrderLogService extends Service
 
         //状态变更
         $attr['log_msg'] = '客户提交电汇支付';
+        $attr['log_msg'] .= "\r\n[订单状态]：“未支付”;";
         return self::log($attr);
     }
 
