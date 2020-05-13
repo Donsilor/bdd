@@ -13,6 +13,7 @@ use common\models\base\SearchModel;
 use common\models\common\PayLog;
 use common\models\order\Order;
 use common\models\pay\WireTransfer;
+use services\order\OrderLogService;
 use Yii;
 use yii\web\UnprocessableEntityHttpException;
 
@@ -82,6 +83,8 @@ class WireTransferController extends BaseController
                 if(!$model->save()) {
                     throw new \Exception($this->getError($model));
                 }
+
+                OrderLogService::wireTransferAudit($model->order);
 
                 if($model->collection_status==WireTransferEnum::CONFIRM) {
                     //支付记录确认

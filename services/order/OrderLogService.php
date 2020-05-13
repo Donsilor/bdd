@@ -8,6 +8,7 @@ use common\components\Service;
 use common\enums\LanguageEnum;
 use common\enums\OrderStatusEnum;
 use common\enums\PayStatusEnum;
+use common\enums\WireTransferEnum;
 use common\models\api\AccessToken;
 use common\models\backend\Member;
 use common\models\order\OrderLog;
@@ -16,6 +17,22 @@ use yii\console\Request;
 
 class OrderLogService extends Service
 {
+    //客户提交电汇支付
+    static public function wireTransferAudit($order, $data=[])
+    {
+        $attr['action_name'] = strtoupper(__FUNCTION__);
+        $attr['order_sn'] = $order['order_sn'];
+
+        $attr['data'][] = [
+            '收款金额' => $order->wireTransfer->collection_amount,
+            '收款凭证' => $order->wireTransfer->collection_voucher,
+            '收款状态' => WireTransferEnum::getValue($order->wireTransfer->collection_status),
+        ];
+
+        //状态变更
+        $attr['log_msg'] = '电汇审核';
+        return self::log($attr);
+    }
     //客户提交电汇支付
     static public function wireTransfer($order, $data=[])
     {
