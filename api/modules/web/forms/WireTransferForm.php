@@ -18,7 +18,7 @@ class WireTransferForm extends WireTransfer
             [['order_id', 'account', 'payment_voucher'], 'required'],
             [['order_id'], 'integer'],
             ['order_id', 'validateOrderId'],
-            [['account'], 'string', 'max' => 50],
+            [['account', 'payment_serial_number'], 'string', 'max' => 50],
             ['account', 'validateAccount'],
             [['payment_voucher'], 'string', 'max' => 255],
             ['payment_voucher', 'url'],
@@ -34,7 +34,7 @@ class WireTransferForm extends WireTransfer
             'order_id' => '订单ID',
             'member_id' => '订单ID',
             'account' => '收款账号',
-            'payment_serial_number' => '付款流水号',
+            'payment_serial_number' => '付款流水号',//payment_serial_number
             'payment_voucher' => '付款凭证图片',
         ];
     }
