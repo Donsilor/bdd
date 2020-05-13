@@ -52,32 +52,25 @@ class PayController extends OnAuthController
             case 'en-US':
                 $bankNameKey = 'bank_name_en';
                 $bankAddressKey = 'bank_address_en';
-                $swiftCodeKey = 'swift_code_en';
                 break;
             case 'zh-TW':
                 $bankNameKey = 'bank_name_tw';
-                $bankAddressKey = 'bank_address_en';
-                $swiftCodeKey = 'swift_code_en';
+                $bankAddressKey = 'bank_address_tw';
                 break;
             default:
                 $bankNameKey = 'bank_name_cn';
-                $bankAddressKey = 'bank_address_en';
-                $swiftCodeKey = 'swift_code_en';
+                $bankAddressKey = 'bank_address_cn';
         }
 
         foreach ($configs as &$config) {
             $config['bank_name'] = $config[$bankNameKey]?:'';
             $config['bank_address'] = $config[$bankAddressKey]?:'';
-            $config['swift_code'] = $config[$swiftCodeKey]?:'';
             unset($config['bank_name_en']);
             unset($config['bank_name_tw']);
             unset($config['bank_name_cn']);
             unset($config['bank_address_en']);
             unset($config['bank_address_tw']);
             unset($config['bank_address_cn']);
-            unset($config['swift_code_en']);
-            unset($config['swift_code_tw']);
-            unset($config['swift_code_cn']);
         }
 
         return $configs;
