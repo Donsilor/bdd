@@ -24,7 +24,7 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
 
             <ul class="nav nav-tabs">
                 <li<?php if (Yii::$app->request->get('order_status', -1) == -1) echo ' class="active"' ?>><a href="<?= Url::to(['order/index']) ?>"> 全部（<?= \common\models\order\Order::getCountByOrderStatus() ?>）</a></li>
-                <li<?php if (Yii::$app->request->get('order_status', -1) == 11) echo ' class="active"' ?>><a href="<?= Url::to(['order/index', 'order_status'=>11]) ?>"> 电汇管理（<?= \common\models\order\Order::getCountByOrderStatus(11) ?>）</a></li>
+                <li<?php if (Yii::$app->request->get('order_status', -1) == 11) echo ' class="active"' ?>><a href="<?= Url::to(['order/index', 'order_status'=>11]) ?>" class="red"> 电汇（<?= \common\models\order\Order::getCountByOrderStatus(11) ?>）</a></li>
                 <?php foreach (common\enums\OrderStatusEnum::getMap() as $statusValue => $statusName) { ?>
                     <li<?php if (Yii::$app->request->get('order_status', -1) == $statusValue) echo ' class="active"' ?>>
                         <a href="<?= Url::to(['order/index', 'order_status' => $statusValue]) ?>"><?= $statusName ?>（<?= \common\models\order\Order::getCountByOrderStatus($statusValue) ?>）</a>
@@ -196,8 +196,13 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                 ]),
                                 'value' => function ($model) {
                                     $str = \common\enums\PayStatusEnum::getValue($model->payment_status);
-                                    if($model->payment_type) {                                        
-                                        $str   .= '<br/>'.(\common\enums\PayEnum::getValue($model->payment_type));
+                                    if($model->payment_type) {
+                                        if($model->payment_type==11) {
+                                            $str   .= '<br/><span class="red">'.(\common\enums\PayEnum::getValue($model->payment_type)).'</span>';
+                                        }
+                                        else {
+                                            $str   .= '<br/>'.(\common\enums\PayEnum::getValue($model->payment_type));
+                                        }
                                     }
                                     return $str;                                   
                                 },
@@ -254,7 +259,7 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                 'header' => "操作",
                                 //'headerOptions' => ['class' => 'col-md-1'],
                                 'class' => 'yii\grid\ActionColumn',
-                                'template' => Yii::$app->request->get('order_status')==11?'{wiretransfer}':'{audit} {delivery} {follower}',
+                                'template' => '{audit} {delivery} {follower} {wiretransfer}',
                                 'buttons' => [
                                     'follower' => function ($url, $model, $key) {
                                         return Html::edit(['edit-follower', 'id' => $model->id], '跟进', [
@@ -280,7 +285,7 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                         }
                                     },
                                     'wiretransfer' => function($url, $model, $key) {
-                                        if(Yii::$app->request->get('order_status')!=11 || $model->wireTransfer->collection_status==1) {
+                                        if(!$model->wireTransfer || $model->wireTransfer->collection_status==1 || Yii::$app->request->get('order_status', -1)==10) {
                                             return null;
                                         }
 
