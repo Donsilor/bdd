@@ -14,6 +14,7 @@ use common\models\order\Order;
 use common\models\order\OrderTourist;
 use Omnipay\Common\Message\AbstractResponse;
 use Omnipay\Paydollar\Message\AuthorizeResponse;
+use services\order\OrderLogService;
 use Yii;
 use api\controllers\OnAuthController;
 use common\enums\PayEnum;
@@ -96,6 +97,8 @@ class PayController extends OnAuthController
             if (!$result->save(false)) {
                 throw new UnprocessableEntityHttpException($this->getError($result));
             }
+
+            OrderLogService::wireTransfer($result);
 
             $trans->commit();
         } catch (\Exception $exception) {

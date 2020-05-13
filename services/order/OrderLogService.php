@@ -16,6 +16,23 @@ use yii\console\Request;
 
 class OrderLogService extends Service
 {
+    //客户提交电汇支付
+    static public function wireTransfer($order, $data=[])
+    {
+        $attr['action_name'] = strtoupper(__FUNCTION__);
+        $attr['order_sn'] = $order['order_sn'];
+
+        $attr['data'][] = [
+            '收款账号' => $order->wireTransfer->account,
+            '支付交易号' => $order->wireTransfer->payment_serial_number,
+            '支付凭证' => $order->wireTransfer->payment_voucher,
+        ];
+
+        //状态变更
+        $attr['log_msg'] = '客户提交电汇支付';
+        return self::log($attr);
+    }
+
     //创建订单
     static public function create($order)
     {
