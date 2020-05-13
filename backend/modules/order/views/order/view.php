@@ -151,6 +151,49 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_2">
                     <ul class="nav nav-tabs pull-right">
+                        <li class="pull-left header"><i class="fa fa-th"></i> 电汇信息 </li>
+                    </ul>
+                    <div class="box-body col-lg-12" style="margin-left:9px">
+                        <?php if($model->wireTransfer) {?>
+                            <div class="row">
+
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-lg-5 text-right"><label><?= '付款凭证' ?>：</label></div>
+                                        <div class="col-lg-7"><?= common\helpers\ImageHelper::fancyBox($model->wireTransfer->payment_voucher); ?></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('wireTransfer.account') ?>：</label></div>
+                                        <div class="col-lg-7"><?= $model->wireTransfer->account ?></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-5 text-right"><label><?= '支付交易号' ?>：</label> </div>
+                                        <div class="col-lg-7"><?= $model->wireTransfer->payment_serial_number ?></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-lg-5 text-right"><label><?= '收款凭证' ?>：</label></div>
+                                        <div class="col-lg-7"><?= common\helpers\ImageHelper::fancyBox($model->wireTransfer->collection_voucher); ?></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-5 text-right"><label><?= '审核状态' ?>：</label></div>
+                                        <div class="col-lg-7"><?= common\enums\WireTransferEnum::getValue($model->wireTransfer->collection_status); ?></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-5 text-right"><label></label></div>
+                                        <div class="col-lg-7"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } else {?>
+                            不是电汇支付订单
+                        <?php }?>
+                    </div>
+                </div>
+                <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_2">
+                    <ul class="nav nav-tabs pull-right">
                         <li class="pull-left header"><i class="fa fa-th"></i> 发票/发货单信息 </li>
                     </ul>
                     <div class="box-body col-lg-12" style="margin-left:9px">
@@ -203,9 +246,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <div class="row" style="margin-top:15px; ">
                                         <?= Html::button('发送('.$model->invoice->send_num.')',['class'=>'btn btn-sm btn-success ele-invoice-send','url'=>Yii::$app->homeUrl."/order/order/ele-invoice-send",'style'=>'height:25px;font-size:10px;'])?>
                                     </div>
-        <!--                                <div class="row" style="margin-top:20px; ">-->
-        <!--                                    --><?//= Html::button('打印',['class'=>'btn btn-primary btn-sm','style'=>'height:25px;font-size:10px;'])?>
-        <!--                                </div>-->
+                                    <!--                                <div class="row" style="margin-top:20px; ">-->
+                                    <!--                                    --><?//= Html::button('打印',['class'=>'btn btn-primary btn-sm','style'=>'height:25px;font-size:10px;'])?>
+                                    <!--                                </div>-->
 
 
                                 </div>
