@@ -9,6 +9,7 @@ use common\enums\PayStatusEnum;
 use common\enums\StatusEnum;
 use common\helpers\ArrayHelper;
 use common\helpers\FileHelper;
+use common\models\common\EmailLog;
 use common\models\common\PayLog;
 use common\models\common\SmsLog;
 use common\models\order\Order;
@@ -110,7 +111,7 @@ class PayController extends OnAuthController
 
             $params = [
                 'order_sn' => (YII_ENV=='dev'?'test-':'') . $result->order->order_sn,
-                'code' => $result->order->order_sn,
+                'code' => $result->order->id,
             ];
 
             $smss = \Yii::$app->debris->config('wire_transfer_order_notice_sms');
@@ -120,6 +121,15 @@ class PayController extends OnAuthController
                     \Yii::$app->services->sms->queue(true)->send($sms,SmsLog::USAGE_WIRE_TRANSFER_ORDER_NOTICE, $params);
                 }
             }
+
+            $emails = \Yii::$app->debris->config('wire_transfer_order_notice_email');
+
+            if($emails && $emailArray = explode(',', $emails)) {
+                foreach ($emailArray as $email) {
+                    \Yii::$app->services->mailer->queue(true)->send($email, EmailLog::USAGE_WIRE_TRANSFER_ORDER_NOTICE, $params, $this->language);
+                }
+            }
+
 
             $trans->commit();
         } catch (\Exception $exception) {
