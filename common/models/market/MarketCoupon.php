@@ -6,6 +6,7 @@ use common\models\backend\Member;
 use common\models\goods\Goods;
 use common\models\goods\GoodsType;
 use common\models\goods\Style;
+use services\goods\TypeService;
 use Yii;
 use yii\base\Exception;
 
@@ -153,5 +154,21 @@ class MarketCoupon extends \common\models\base\BaseModel
     public function getReceiveCount()
     {
         return MarketCouponDetails::find()->where(['coupon_id'=>$this->id, 'coupon_status'=>0])->count('id');
+    }
+
+    public function getGoodsType()
+    {
+        static $goodsTypes = [];
+
+        if(!empty($goodsTypes[$this->id])) {
+            return $goodsTypes[$this->id];
+        }
+
+        foreach (TypeService::getTypeList() as $key => $item) {
+            if(in_array($key, $this->goods_type_attach)) {
+                $goodsTypes[$this->id][$key] = $item;
+            }
+        }
+        return $goodsTypes[$this->id];
     }
 }

@@ -512,7 +512,13 @@ class CouponService extends Service
                     'count' => $money->count,
                     'get_count' => $money->get_count,
                     'money' => self::_exchangeAmount($money->money),
+                    'money_cn' => $money->money,
                     'at_least' => self::_exchangeAmount($money->at_least),
+                    'at_least_cn' => $money->at_least,
+                    'start_time' => $money->specials->start_time,
+                    'end_time' => $money->specials->end_time,
+                    'goods_type' => $money->getGoodsType(),
+                    'is_goods' => !empty($money->goods_attach),
 //                    'price' => $style['price']-$price,//这里需要汇率转换
                 ];
 

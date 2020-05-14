@@ -115,9 +115,6 @@ class OrderBaseService extends Service
         //优惠券优惠金额
         $coupons_amount = 0;
 
-        //购物卡优惠金额
-        $cards_amount = 0;
-
         foreach ($cartList as $item) {
             $goods = \Yii::$app->services->goods->getGoodsInfo($item['goods_id'], $item['goods_type'], false);
             if(empty($goods) || $goods['status'] != StatusEnum::ENABLED) {
