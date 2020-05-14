@@ -31,8 +31,12 @@ class OrderLogService extends Service
 
         //状态变更
         $attr['log_msg'] = '电汇审核';
-        $attr['log_msg'] .= "\r\n[订单状态]：“待付款”变更为“待发货”;";
-        $attr['log_msg'] .= "\r\n[支付状态]：“未付款”变更为“已付款”;";
+
+        if($order->wireTransfer->collection_status==WireTransferEnum::CONFIRM) {
+            $attr['log_msg'] .= "\r\n[订单状态]：“待付款”变更为“待发货”;";
+            $attr['log_msg'] .= "\r\n[支付状态]：“未付款”变更为“已付款”;";
+        }
+
         return self::log($attr);
     }
     //客户提交电汇支付
