@@ -112,7 +112,7 @@ class WireTransferController extends BaseController
                     $model->order->status = AuditStatusEnum::PASS;
                     $model->order->order_status = OrderStatusEnum::ORDER_CONFIRM;//已审核，代发货
 
-                    if(false  === $model->save()) {
+                    if(false  === $model->order->save()) {
                         throw new \Exception($this->getError($model));
                     }
                 }

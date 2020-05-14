@@ -3,6 +3,7 @@
 namespace console\controllers;
 
 use common\models\common\EmailLog;
+use common\models\common\SmsLog;
 use common\models\market\MarketCard;
 use common\models\order\Order;
 use services\market\CardService;

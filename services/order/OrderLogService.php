@@ -26,7 +26,7 @@ class OrderLogService extends Service
         $attr['data'][] = [
             '收款金额' => $order->wireTransfer->collection_amount,
             '收款凭证' => $order->wireTransfer->collection_voucher,
-            '收款状态' => WireTransferEnum::getValue($order->wireTransfer->collection_status),
+            '审核状态' => WireTransferEnum::getValue($order->wireTransfer->collection_status),
         ];
 
         //状态变更
