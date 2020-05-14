@@ -112,7 +112,7 @@ class PayController extends OnAuthController
             $isDev = Yii::$app->debris->config('pay_wire_transfer_dev');
 
             $params = [
-                'order_sn' => (empty($isDev)?'t-':'') . $result->order->order_sn,
+                'order_sn' => (!empty($isDev)?'t-':'') . $result->order->order_sn,
                 'code' => $result->order->id,
             ];
 
