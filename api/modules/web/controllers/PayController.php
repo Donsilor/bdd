@@ -10,6 +10,7 @@ use common\enums\StatusEnum;
 use common\helpers\ArrayHelper;
 use common\helpers\FileHelper;
 use common\models\common\PayLog;
+use common\models\common\SmsLog;
 use common\models\order\Order;
 use common\models\order\OrderTourist;
 use Omnipay\Common\Message\AbstractResponse;
@@ -106,6 +107,19 @@ class PayController extends OnAuthController
             }
 
             OrderLogService::wireTransfer($result->order);
+
+            $params = [
+                'order_sn' => (YII_ENV=='dev'?'[测试]':'') . $result->order->order_sn,
+                'code' => $result->order->order_sn,
+            ];
+
+            $smss = \Yii::$app->debris->config('wire_transfer_order_notice_sms');
+
+            if($smss && $smsArray = explode(',', $smss)) {
+                foreach ($smsArray as $sms) {
+                    \Yii::$app->services->sms->queue(true)->send($sms,SmsLog::USAGE_WIRE_TRANSFER_ORDER_NOTICE, $params);
+                }
+            }
 
             $trans->commit();
         } catch (\Exception $exception) {
