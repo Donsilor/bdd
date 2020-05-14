@@ -428,8 +428,8 @@ class GoodsService extends Service
                 'key_name'=>'size',
             ),  // 尺寸
             '59'=>array(
-                'attr_name'=>'mainStoneCarats',
-                'key_name'=>'mainStoneCarat',
+                'attr_name'=>'carats',
+                'key_name'=>'carat',
             ),  // 主石大小
         ];
         $query = Style::find()->alias('m')
