@@ -290,7 +290,7 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                         }
 
                                         //出纳审核
-                                        return Html::edit(['wire-transfer/ajax-edit', 'order_id'=>$model->id], '电汇审核', [
+                                        return Html::edit(['wire-transfer/ajax-edit', 'order_id'=>$model->id], '审核', [
                                             'data-toggle' => 'modal',
                                             'data-target' => '#ajaxModalLg',
                                         ]);

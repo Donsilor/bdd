@@ -6,6 +6,8 @@ namespace backend\modules\order\controllers;
 
 use backend\controllers\BaseController;
 use backend\modules\order\forms\WireTransferForm;
+use common\enums\AuditStatusEnum;
+use common\enums\OrderStatusEnum;
 use common\enums\PayStatusEnum;
 use common\enums\StatusEnum;
 use common\enums\WireTransferEnum;
@@ -105,6 +107,14 @@ class WireTransferController extends BaseController
                     //更新订单状态
                     Yii::$app->services->pay->notify($payModel, null);
 
+
+                    //更新订单审核状态
+                    $model->order->status = AuditStatusEnum::PASS;
+                    $model->order->order_status = OrderStatusEnum::ORDER_CONFIRM;//已审核，代发货
+
+                    if(false  === $model->save()) {
+                        throw new \Exception($this->getError($model));
+                    }
                 }
 
                 $trans->commit();
