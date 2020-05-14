@@ -105,7 +105,18 @@ class OrderBaseService extends Service
 
         //产品线金额
         $goodsTypeAmounts = [];
+
+        //端口总价
         $goods_amount = 0;
+
+        //折扣优惠总金额
+        $discounts_amount = 0;
+
+        //优惠券优惠金额
+        $coupons_amount = 0;
+
+        //购物卡优惠金额
+        $cards_amount = 0;
 
         foreach ($cartList as $item) {
             $goods = \Yii::$app->services->goods->getGoodsInfo($item['goods_id'], $item['goods_type'], false);
@@ -114,7 +125,7 @@ class OrderBaseService extends Service
             }
 
             //商品价格
-            $sale_price = $this->exchangeAmount($goods['sale_price']);
+            $sale_price = (int)$this->exchangeAmount($goods['sale_price']);
 
             $orderGoods = [];
             $orderGoods['goods_id'] = $item['goods_id'];//商品ID
@@ -149,41 +160,30 @@ class OrderBaseService extends Service
         //执行优惠券接口。
         $coupons = CouponService::getCouponByList($this->getAreaId(), $orderGoodsList);
 
-
-
-        $goods_amount = 0;
-        $discount_amount = 0;//优惠金额
-
-//            foreach ($cart_list as $cart) {
-//
-
-//                $sale_price = $this->exchangeAmount($goods['sale_price'],0);
-//                if(!isset($goodsTypeAmounts[$goods['type_id']])) {
-//                    $goodsTypeAmounts[$goods['type_id']] = $sale_price;
-//                }
-//                else {
-//                    $goodsTypeAmounts[$goods['type_id']] = bcadd($goodsTypeAmounts[$goods['type_id']], $sale_price, 2);
-//                }
-//                $goods_amount += $sale_price;
-//
-//            }
-
+        //最终使用优惠券信息
+        $couponInfo = null;
 
         if($coupon_id) {
             if(!isset($coupons[$coupon_id])) {
                 throw new UnprocessableEntityHttpException("优惠券已失效");
             }
             else {
-                //优惠券优惠金额
-                $discount_amount += $coupons[$coupon_id]['money'];
+                //最终使用优惠券信息
+                $couponInfo = $coupons[$coupon_id];
+
+                //优惠商品价格总和
+                $couponInfo['price_sum'] = $couponInfo['price'];
+
+                //优惠端口优惠金额总和
+                $couponInfo['money_sum'] = $couponInfo['money'];
+
+                //优惠券优惠总金额
+                $coupons_amount = $couponInfo['money'];
             }
         }
 
         foreach ($orderGoodsList as &$orderGoods) {
-            $goodsPrice = floatval($orderGoods['goods_price']);
-
-            //商品总价计算
-            $goods_amount += ($goodsPrice * $orderGoods['goods_num']);
+            $goodsPrice = (int)$orderGoods['goods_price'];
 
             if($orderGoods['coupon_id']!=0) {
                 //如果使用折扣券
@@ -191,22 +191,46 @@ class OrderBaseService extends Service
                     throw new UnprocessableEntityHttpException("折扣已失效");
                 }
 
-                $coupon = $orderGoods['coupon']['discount'];
+                //最终使用折扣券信息
+                $discountInfo = $orderGoods['coupon']['discount'];
 
-                //支付折扣价
-                $orderGoods['goods_pay_price'] = $coupon['price'];
+                //商品支付的折扣后价格
+                $orderGoods['goods_pay_price'] = $discountInfo['price'];
 
-                //计算优惠金额
-                $discount_amount += ($goodsPrice - $orderGoods['goods_pay_price']);
+                //计算折扣优惠总金额
+                $discounts_amount = bcadd($discounts_amount, bcsub($goodsPrice, $orderGoods['goods_pay_price'], 2), 2);
             }
             elseif($coupon_id && isset($orderGoods['coupon']['money']) && isset($orderGoods['coupon']['money'][$coupon_id])) {
+                $couponInfo['price_sum'] = bcsub($couponInfo['price_sum'], $goodsPrice, 2);
+
+                if($couponInfo['price_sum']) {
+                    //商品优惠金额
+                    $coupon_money = bcmul($goodsPrice/$couponInfo['price'], $couponInfo['money'], 2);
+
+                    $couponInfo['money_sum'] = bcsub($couponInfo['money_sum'], $coupon_money, 2);
+                }
+                else {
+                    //商品优惠金额
+                    $coupon_money = $couponInfo['money_sum'];
+                }
+
+                //商品优惠券后金额
+                $orderGoods['goods_pay_price'] = bcsub($orderGoods['goods_pay_price'], $coupon_money, 2);
+
                 //此商品可以使用优惠券
                 $orderGoods['coupon_id'] = $coupon_id;
             }
+
+            //计算产品线金额
+            if(!isset($goodsTypeAmounts[$orderGoods['type_id']])) {
+                $goodsTypeAmounts[$orderGoods['type_id']] = $orderGoods['goods_pay_price'];
+            }
+            else {
+                $goodsTypeAmounts[$orderGoods['type_id']] = bcadd($goodsTypeAmounts[$orderGoods['type_id']], $orderGoods['goods_pay_price'], 2);
+            }
+            $goods_amount = bcadd($goods_amount, $goodsPrice, 2);
         }
 
-        //产品线金额
-        $goodsTypeAmounts = [];
         //所有卡共用了多少金额
         $cardsUseAmount = 0;
 
@@ -231,7 +255,7 @@ class OrderBaseService extends Service
 
                 //验证有效期
 
-                $balance = $this->exchangeAmount($cardInfo->balance);
+                $balance = $this->exchangeAmount($cardInfo->balance, 2);
 
                 if($balance==0) {
                     continue;
@@ -292,7 +316,9 @@ class OrderBaseService extends Service
         $result['goods_amount'] = $goods_amount;//商品总金额
         $result['safe_fee'] = $safe_fee;//保险费
         $result['tax_fee'] = $tax_fee;//税费
-        $result['discount_amount'] = $discount_amount;//优惠金额
+        $result['discount_amount'] = $discounts_amount;//折扣优惠总金额
+        $result['coupon_amount'] = $coupons_amount;//优惠券优惠总金额
+        $result['cards_use_amount'] = $cardsUseAmount;
         $result['currency'] = $this->getCurrency();//货币
         $result['exchange_rate'] = $this->getExchangeRate();//汇率
         $result['other_fee'] = $other_fee;//附加费
@@ -301,7 +327,6 @@ class OrderBaseService extends Service
         $result['orderGoodsList'] = $orderGoodsList;
         $result['coupons'] = $coupons;
         $result['coupon'] = $coupons[$coupon_id]??[];
-        $result['cards_use_amount'] = $cardsUseAmount;
         $result['cards'] = $cards;
 
         return $result;
