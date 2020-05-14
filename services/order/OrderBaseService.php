@@ -315,7 +315,9 @@ class OrderBaseService extends Service
         $result['tax_fee'] = $tax_fee;//税费
         $result['discount_amount'] = $discounts_amount;//折扣优惠总金额
         $result['coupon_amount'] = $coupons_amount;//优惠券优惠总金额
-        $result['cards_use_amount'] = $cardsUseAmount;
+        $result['card_amount'] = $cardsUseAmount;//购物卡使用金额
+        $result['cards_use_amount'] = $cardsUseAmount;//购物卡使用金额
+        $result['pay_amount'] = bcsub(bcsub(bcsub($result['order_amount'] ,$result['cards_use_amount'], 2), $result['discount_amount'], 2), $result['coupon_amount'], 2);
         $result['currency'] = $this->getCurrency();//货币
         $result['exchange_rate'] = $this->getExchangeRate();//汇率
         $result['other_fee'] = $other_fee;//附加费
