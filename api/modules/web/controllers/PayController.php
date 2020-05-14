@@ -110,7 +110,7 @@ class PayController extends OnAuthController
             OrderLogService::wireTransfer($result->order);
 
             $params = [
-                'order_sn' => (YII_ENV=='dev'?'test-':'') . $result->order->order_sn,
+                'order_sn' => (YII_ENV=='dev'?'t-':'') . $result->order->order_sn,
                 'code' => $result->order->id,
             ];
 
