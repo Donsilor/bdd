@@ -423,10 +423,14 @@ class GoodsService extends Service
                  'attr_name'=>'materials',
                  'key_name'=>'material',
              ),//成色
-             '38'=>array(
-                 'attr_name'=>'sizes',
-                 'key_name'=>'size',
-             ),  // 尺寸
+            '38'=>array(
+                'attr_name'=>'sizes',
+                'key_name'=>'size',
+            ),  // 尺寸
+            '59'=>array(
+                'attr_name'=>'mainStoneCarats',
+                'key_name'=>'mainStoneCarat',
+            ),  // 主石大小
         ];
         $query = Style::find()->alias('m')
             ->leftJoin(StyleLang::tableName().' lang',"m.id=lang.master_id and lang.language='".$language."'")
