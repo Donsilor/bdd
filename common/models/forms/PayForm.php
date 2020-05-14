@@ -154,6 +154,9 @@ class PayForm extends Model
                 throw new UnprocessableEntityHttpException(\Yii::t('payment', '请选择支付方式'));
             }
         }
+        if($this->payType == PayEnum::PAY_TYPE_WIRE_TRANSFER) {
+            return $baseOrder;
+        }
         $action = PayEnum::$payTypeAction[$this->payType];
         return Yii::$app->services->pay->$action($this, $baseOrder);
     }
@@ -255,7 +258,7 @@ class PayForm extends Model
         // 也可直接查数据库对应的关联ID，这样子一个订单只生成一个支付操作ID 增加下单率
         // Yii::$app->services->pay->findByOutTradeNo($order->out_trade_no);
 
-        $order['out_trade_no'] = Yii::$app->services->pay->getOutTradeNo(  
+        $order['out_trade_no'] = Yii::$app->services->pay->getOutTradeNo(
             $totalFee,
             $orderSn,
             $this->payType,

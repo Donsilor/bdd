@@ -8,6 +8,7 @@ use common\components\Service;
 use common\enums\LanguageEnum;
 use common\enums\OrderStatusEnum;
 use common\enums\PayStatusEnum;
+use common\enums\WireTransferEnum;
 use common\models\api\AccessToken;
 use common\models\backend\Member;
 use common\models\order\OrderLog;
@@ -16,6 +17,42 @@ use yii\console\Request;
 
 class OrderLogService extends Service
 {
+    //客户提交电汇支付
+    static public function wireTransferAudit($order, $data=[])
+    {
+        $attr['action_name'] = strtoupper(__FUNCTION__);
+        $attr['order_sn'] = $order['order_sn'];
+
+        $attr['data'][] = [
+            '收款金额' => $order->wireTransfer->collection_amount,
+            '收款凭证' => $order->wireTransfer->collection_voucher,
+            '审核状态' => WireTransferEnum::getValue($order->wireTransfer->collection_status),
+        ];
+
+        //状态变更
+        $attr['log_msg'] = '电汇审核';
+        $attr['log_msg'] .= "\r\n[订单状态]：“待付款”变更为“待发货”;";
+        $attr['log_msg'] .= "\r\n[支付状态]：“未付款”变更为“已付款”;";
+        return self::log($attr);
+    }
+    //客户提交电汇支付
+    static public function wireTransfer($order, $data=[])
+    {
+        $attr['action_name'] = strtoupper(__FUNCTION__);
+        $attr['order_sn'] = $order['order_sn'];
+
+        $attr['data'][] = [
+            '收款账号' => $order->wireTransfer->account,
+            '支付交易号' => $order->wireTransfer->payment_serial_number,
+            '支付凭证' => $order->wireTransfer->payment_voucher,
+        ];
+
+        //状态变更
+        $attr['log_msg'] = '客户提交电汇支付';
+        $attr['log_msg'] .= "\r\n[订单状态]：“未支付”;";
+        return self::log($attr);
+    }
+
     //创建订单
     static public function create($order)
     {
