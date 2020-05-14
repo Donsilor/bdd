@@ -473,7 +473,9 @@ class OrderController extends UserAuthController
             'logisticsFee' => $taxInfo['shipping_fee'],
             'orderAmount'  => $taxInfo['order_amount'],
             'productAmount' => $taxInfo['goods_amount'],
-            'preferFee' => $taxInfo['discount_amount'],
+            'discount_amount' => $taxInfo['discount_amount'],
+            'coupon_amount' => $taxInfo['coupon_amount'],
+            'cardsUseAmount'=> $taxInfo['cards_use_amount'],
             'safeFee'=> $taxInfo['safe_fee'],
             'taxFee'  => $taxInfo['tax_fee'],
             'planDays' => $taxInfo['plan_days'],
@@ -482,8 +484,7 @@ class OrderController extends UserAuthController
             'coupons' => $taxInfo['coupons'],
             'myCoupons' => $myCoupons,
             'cards'=> $taxInfo['cards'],
-            'cardsUseAmount'=> $taxInfo['cards_use_amount'],
-            'payAmount'=> bcsub($taxInfo['order_amount'] ,$taxInfo['cards_use_amount'], 2) - $taxInfo['discount_amount']
+            'payAmount'=> bcsub(bcsub(bcsub($taxInfo['order_amount'] ,$taxInfo['cards_use_amount'], 2), $taxInfo['discount_amount'], 2), $taxInfo['coupon_amount'], 2)
         ];
     }
     
