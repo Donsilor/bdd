@@ -2,6 +2,8 @@
 
 namespace api\modules\web\forms;
 
+use common\helpers\ResultHelper;
+use common\models\market\MarketCouponDetails;
 use yii\base\Model;
 
 /**
@@ -15,6 +17,8 @@ class OrderCreateForm extends Model
     public $buyer_address_id;
     public $buyer_remark;
     public $order_amount;
+    public $coupon_id;
+
     /**
      * @inheritdoc
      */
@@ -22,23 +26,38 @@ class OrderCreateForm extends Model
     {
         return [
             [['carts','buyer_address_id','order_amount'], 'required'],
-            [['buyer_address_id'], 'integer'],
+            [['buyer_address_id', 'coupon_id'], 'integer'],
             [['order_amount'], 'number'],
             [['buyer_remark'], 'string','max'=>500],
             [['buyer_address_id'], 'validateCurrency'],
             [['carts'], 'validateCarts'],
+            ['coupon_id', 'validateCouponId'],
         ];
     }
     
     public function attributeLabels()
     {
         return [
-                'carts' => 'carts',
-                'order_amount' => 'order_amount',
-                'buyer_address_id' => 'buyer_address_id',
-                'buyer_remark' => '订单备注',
+            'carts' => 'carts',
+            'coupon_id' => 'coupon_id',
+            'order_amount' => 'order_amount',
+            'buyer_address_id' => 'buyer_address_id',
+            'buyer_remark' => '订单备注',
         ];
     }
+
+    public function validateCouponId($attribute)
+    {
+        $where = [];
+        $where['member_id'] = \Yii::$app->getUser()->identity->member->id;
+        $where['coupon_status'] = 1;
+        $where['coupon_id'] = (int)$this->coupon_id;
+
+        if($this->coupon_id && !MarketCouponDetails::find()->where($where)->count()) {
+            $this->addError($attribute, $attribute.' 是无效的优惠券');
+        }
+    }
+
     /**
      * 校验购物车ID
      * @param unknown $attribute

@@ -140,7 +140,7 @@ class OrderController extends UserAuthController
             $model = new OrderCreateForm();
             $model->attributes = \Yii::$app->request->post();
             $invoiceInfo = \Yii::$app->request->post('invoice');
-            $coupon_id = \Yii::$app->request->post('coupon_id',0);
+            $coupon_id = (int)\Yii::$app->request->post('coupon_id',0);
             if(!$model->validate()) {
                 return ResultHelper::api(422,$this->getError($model));
             }
@@ -438,9 +438,18 @@ class OrderController extends UserAuthController
     {
         $carts = \Yii::$app->request->post("carts");
         $addressId = \Yii::$app->request->post("addressId");
-        $coupon_id = \Yii::$app->request->post("coupon_id");
+
+        $where = [];
+        $where['member_id'] = $this->member_id;
+        $where['coupon_status'] = 1;
+
         if(empty($carts)) {
             return ResultHelper::api(422,"carts不能为空");
+        }
+
+        $coupon_id = (int)\Yii::$app->request->post("coupon_id");
+        if($coupon_id && !MarketCouponDetails::find()->where(array_merge($where, ['coupon_id'=>$coupon_id]))->count()) {
+            return ResultHelper::api(422, '无效的优惠券');
         }
 
         $cards = \Yii::$app->request->post('cards', []);
