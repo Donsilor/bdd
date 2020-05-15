@@ -38,10 +38,14 @@ class CouponController extends UserAuthController
 
         $couponList = [];
         foreach ($result['data'] as $datum) {
+
             $couponList[] = [
                 'specialsName' => $datum->specials->lang->title,//活动名
                 'couponCode' => $datum->coupon_code,//券编码
-                'money' => $datum->coupon->money,//金额
+                'money' => $this->exchangeAmount($datum->coupon->money),//金额
+                'moneyCn' => $datum->coupon->money,//金额
+                'GoodsType' => $datum->coupon->getGoodsType(),//金额
+                'isGoods' => !empty($datum->coupon->goods_attach),
                 'couponStatus' => $datum->coupon_status,//状态
                 'orderSn' => $datum->order_sn,//订单编号
                 'atLeast' => $datum->coupon->at_least,//满多少钱使用
