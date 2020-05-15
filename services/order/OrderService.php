@@ -334,6 +334,9 @@ class OrderService extends OrderBaseService
         }
         //更改订单状态
         $order->cancel_remark = $remark;
+
+        if($log_role=='admin')
+            $order->cancel_status = OrderStatusEnum::ORDER_CANCEL_YES;
 //        $order->seller_remark = $remark;
         $order->order_status = OrderStatusEnum::ORDER_CANCEL;
         $order->save(false);

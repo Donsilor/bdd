@@ -218,11 +218,6 @@ class OrderController extends BaseController
 
     }
 
-    public function actionRefund()
-    {
-
-    }
-
     /**
      * 订单退款
      */
