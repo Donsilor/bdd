@@ -354,7 +354,7 @@ class OrderService extends OrderBaseService
             //\Yii::$app->services->goods->updateGoodsStorageForOrder($goods->goods_id, $goods->goods_num, $goods->goods_type);
         }
         //更改订单状态
-        $order->cancel_remark = $remark;
+//        $order->cancel_remark = $remark;
 //        $order->seller_remark = $remark;
         $order->order_status = OrderStatusEnum::ORDER_CANCEL;
         $order->refund_remark = $remark;

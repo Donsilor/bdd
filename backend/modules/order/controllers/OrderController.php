@@ -3,6 +3,8 @@
 namespace backend\modules\order\controllers;
 
 use backend\controllers\BaseController;
+use backend\modules\order\forms\OrderCancelForm;
+use backend\modules\order\forms\OrderRefundForm;
 use common\enums\CurrencyEnum;
 use common\enums\InvoiceElectronicEnum;
 use common\enums\OrderStatusEnum;
@@ -137,13 +139,14 @@ class OrderController extends BaseController
     public function actionEditCancel()
     {
         $id = Yii::$app->request->get('id', null);
-        $order = Yii::$app->request->post('Order', []);
+        $order = Yii::$app->request->post('OrderCancelForm', []);
+
+        $this->modelClass = OrderCancelForm::class;
 
         $model = $this->findModel($id);
 
         // ajax 校验
         $this->activeFormValidate($model);
-
         if (Yii::$app->request->isPost) {
 
             Yii::$app->services->order->changeOrderStatusCancel($id, '管理员取消订单：'.$order['cancel_remark']??'', 'admin', Yii::$app->getUser()->id);
@@ -226,7 +229,9 @@ class OrderController extends BaseController
     public function actionEditRefund()
     {
         $id = Yii::$app->request->get('id', null);
-        $order = Yii::$app->request->post('Order', []);
+        $order = Yii::$app->request->post('OrderRefundForm', []);
+
+        $this->modelClass = OrderRefundForm::class;
 
         $model = $this->findModel($id);
 
