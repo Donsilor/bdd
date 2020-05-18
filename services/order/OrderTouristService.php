@@ -177,6 +177,7 @@ class OrderTouristService extends OrderBaseService
                 'last_ip' => $orderTourist->ip,
                 'first_ip' => $orderTourist->ip,
                 'first_ip_location' => $ip_location,
+                'is_tourist' => 1,//标识为游客账号
 //            'mobile' => $payerInfo->getPhone()
             ];
             if(false === $member->save()) {

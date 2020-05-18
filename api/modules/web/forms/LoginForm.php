@@ -46,7 +46,7 @@ class LoginForm extends \common\models\forms\LoginForm
         if ($this->_user == false) {
             // email 登录
             if (strpos($this->username, "@")) {
-                $this->_user = Member::findOne(['email' => $this->username, 'status' => StatusEnum::ENABLED]);
+                $this->_user = Member::findOne(['email' => $this->username, 'status' => StatusEnum::ENABLED, 'is_tourist'=>0]);
             } else {
                 $this->_user = Member::findByUsername($this->username);
             }
