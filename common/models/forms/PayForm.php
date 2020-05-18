@@ -231,7 +231,7 @@ class PayForm extends Model
                 $this->returnUrl = str_replace('{order_sn}', $order->order_sn, $this->returnUrl);
 
                 $orderSn = $order->order_sn;
-                $totalFee = $order->order_amount - $order->discount_amount;
+                $totalFee = bcsub($order->order_amount, $order->discount_amount, 2);
                 $currency = $order->currency;
                 $exchangeRate = $order->exchange_rate;
                 $order = [
