@@ -45,6 +45,7 @@ class CouponController extends UserAuthController
                 'money' => $this->exchangeAmount($datum->coupon->money),//金额
                 'moneyCn' => $datum->coupon->money,//金额
                 'GoodsType' => $datum->coupon->getGoodsType(),//金额
+                'couponId' => $datum->coupon->id,//优惠券ID
                 'isGoods' => !empty($datum->coupon->goods_attach),
                 'couponStatus' => $datum->coupon_status,//状态
                 'orderSn' => $datum->order_sn,//订单编号
