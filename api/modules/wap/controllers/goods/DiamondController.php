@@ -147,7 +147,7 @@ class DiamondController extends OnAuthController
 
             $arr['coupon'] = [
                 'type_id' => $type_id,//产品线ID
-                'style_id' => $arr['style_id'],//款式ID
+                'style_id' => $arr['id'],//款式ID
                 'price' => $arr['salePrice'],//价格
                 'num' =>1,//数量
             ];
