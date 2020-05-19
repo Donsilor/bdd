@@ -444,13 +444,13 @@ class CouponService extends Service
         foreach ($couponGoods as $goods) {
             $coupun = $couponList[$goods->coupon_id];
 
-            //款式对应的活动
             $goodsCouponKey = $goods->goods_type . '-' . $goods->style_id;
+            $goodsKey = $goods->goods_type . '-' . $goods->style_id . '-goods';
+
+            //款式对应的活动
             $couponForGoods[$goodsCouponKey][$coupun->type][$coupun->id] = $coupun;
 
             //商品的活动信息
-            $goodsKey = $goods->goods_type . '-' . $goods->style_id . '-goods';
-//            $couponForGoods[$goodsKey][$coupun->type][$coupun->id] = $goods;
             $couponForGoods[$goodsKey][$coupun->id] = $goods;
         }
 
@@ -465,11 +465,11 @@ class CouponService extends Service
         foreach ($records as &$record) {
             $style = $record['coupon'];
 
-            $key = $style['type_id'] . '-' . $style['style_id'];
-            $goodsKey = $goods->goods_type . '-' . $goods->style_id . '-goods';
+            $goodsCouponKey = $style['type_id'] . '-' . $style['style_id'];
+            $goodsKey = $style['type_id'] . '-' . $style['style_id'] . '-goods';
 
             $goodsInfos = $couponForGoods[$goodsKey]??[];//商品信息
-            $goodsCoupon = $couponForGoods[$key]??[];//商品活动
+            $goodsCoupon = $couponForGoods[$goodsCouponKey]??[];//商品活动
             $goodsTypeCoupon = $couponForGoods[$style['type_id']]??[];//产品线活动列表
 
             //合并款式和产品线折扣活动列表
