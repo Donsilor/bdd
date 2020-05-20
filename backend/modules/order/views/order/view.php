@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="tab-content">
                 <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_1">
                     <ul class="nav nav-tabs pull-right">
-                        <li class="pull-left header"><i class="fa fa-th"></i> 详情信息&nbsp; <span class="label label-primary"><?= \common\enums\OrderStatusEnum::getValue($model->order_status) ?></span>
+                        <li class="pull-left header"><i class="fa fa-th"></i> 详情信息&nbsp; <span class="label label-primary"><?= $model->refund_status?'已关闭':\common\enums\OrderStatusEnum::getValue($model->order_status) ?></span>
                         </li>
                     </ul>
                     <div class="box-body col-lg-12" style="margin-left:9px">
@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             </div>
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4"><?= $model->getAttributeLabel('order_status') ?>：</label>
-                                <?= \common\enums\OrderStatusEnum::getValue($model->order_status) ?>
+                                <?= $model->refund_status?'已关闭':\common\enums\OrderStatusEnum::getValue($model->order_status) ?>
                             </div>
                         </div>
                         <div class="row">
