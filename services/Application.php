@@ -3,6 +3,8 @@
 namespace services;
 
 use common\components\Service;
+use common\queues\ServicesJob;
+use services\common\NotifyContactsService;
 
 /**
  * Class Application
@@ -63,6 +65,8 @@ use common\components\Service;
  * @property \services\common\ExpressService $express 快递
  * @property \services\order\OrderInvoiceService $orderInvoice 订单
  * @property \services\market\CardService $card 订单
+ * @property Application $job 任务
+ * @property NotifyContactsService $notifyContacts 通知联系人
  */
 class Application extends Service
 {
@@ -150,5 +154,7 @@ class Application extends Service
 
 
         'card' => 'services\market\CardService',
+        'job' => ServicesJob::class,
+        'notifyContacts' => NotifyContactsService::class,
     ];
 }
