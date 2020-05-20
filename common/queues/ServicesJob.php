@@ -12,6 +12,7 @@ use Yii;
  */
 class ServicesJob extends Job
 {
+    public $delay = 60;
 
     public $service;
     public $method;
@@ -34,7 +35,7 @@ class ServicesJob extends Job
         if($this->service) {
             $this->method = $method;
             $this->arguments = $arguments;
-            Yii::$app->queue->push($this);
+            Yii::$app->queue->delay($this->delay)->push($this);
         }
     }
 

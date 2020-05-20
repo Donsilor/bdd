@@ -20,6 +20,7 @@ $form = ActiveForm::begin([
     </div>
 
     <div class="modal-body">
+        <?= $form->field($model, 'area_attach')->checkboxList(\common\enums\AreaEnum::getMap()); ?>
         <?= $form->field($model, 'realname')->textInput()->label('被通知人'); ?>
         <?= $form->field($model, 'mobile')->textInput(); ?>
         <?= $form->field($model, 'mobile_switch')->dropDownList(StatusEnum::getMap())->label('启用短信通知') ?>

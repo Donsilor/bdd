@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = ['label' =>  $this->title];
     <div class="col-sm-12">
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
-                <?php foreach (\common\enums\NotifyContactsEnum::Type() as $key => $value){ ?>
+                <?php foreach (\common\enums\NotifyContactsEnum::type() as $key => $value){ ?>
                     <li class="<?php if ($key == $type_id ){ echo 'active' ;}?>"><a href="<?= Url::to(['index', 'SearchModel[type_id]' => $key]) ?>"> <?= $value ?></a></li>
                 <?php } ?>
                 <li class="pull-right">

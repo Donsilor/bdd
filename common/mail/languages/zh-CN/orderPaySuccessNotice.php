@@ -1,0 +1,1 @@
+地区：<?php echo $area; ?>，订单号：<?php echo $order_sn; ?>，客户已付款，请及时跟进！
