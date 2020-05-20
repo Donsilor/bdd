@@ -226,6 +226,8 @@ class PayForm extends Model
                     'currency' => $currency,
                     'exchange_rate'=>$exchangeRate
                 ];
+
+                Yii::$app->services->job->notifyContacts->createOrderPay($orderSn);
                 break;
             case PayEnum::ORDER_TOURIST :
                 // 游客订单支付
@@ -243,6 +245,8 @@ class PayForm extends Model
                     'currency' => $currency,
                     'exchange_rate' => $exchangeRate
                 ];
+
+                Yii::$app->services->job->notifyContacts->createTouristOrderPay($orderSn);
                 break;
             case PayEnum::ORDER_GROUP_GOODS :
                 // TODO 查询充值生成充值订单

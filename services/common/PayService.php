@@ -351,6 +351,9 @@ class PayService extends Service
 
                     //支付日志
                     OrderLogService::pay($order);
+
+                    //订单支付成功
+                    Yii::$app->services->job->notifyContacts->orderPaySuccess($order->order_sn);
                 }
                  else {
                     throw new \Exception('Order 无需更新'.$log->order_sn);
@@ -379,6 +382,9 @@ class PayService extends Service
                     else {
                         throw new \Exception('OrderTourist 更新失败'.$log->order_sn);
                     }
+
+                    //订单支付成功
+                    Yii::$app->services->job->notifyContacts->orderPaySuccess($orderTourist->order_sn);
                 }
                 else {
                     throw new \Exception('OrderTourist 无需更新'.$log->order_sn);
