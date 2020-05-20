@@ -151,7 +151,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'class' => 'yii\grid\ActionColumn',
                 'header' => '操作',
-                'template' => '{edit} {status} {view}',
+                'template' => '{edit} {status} {view} {show_log}',
                 'buttons' => [
                 'edit' => function($url, $model, $key){
                         return Html::edit(['edit-lang', 'id' => $model->id, 'returnUrl' => Url::getReturnUrl()]);
@@ -164,6 +164,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'view'=> function($url, $model, $key){
                     return Html::a('预览', \Yii::$app->params['frontBaseUrl'].'/diamond-details/'.$model->id.'?goodId='.$model->id.'&backend=1',['class'=>'btn btn-info btn-sm','target'=>'_blank']);
+                },
+                'show_log' => function($url, $model, $key){
+                    return Html::linkButton(['goods-log/index','id' => $model->id, 'type_id' => $model->type_id, 'returnUrl' => Url::getReturnUrl()], '日志');
                 },
                 ]
             ]
