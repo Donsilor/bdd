@@ -121,7 +121,7 @@ class OrderLogService extends Service
 
         //状态变更
         $attr['log_msg'] = '订单审核';
-        $attr['log_msg'] .= sprintf("\r\n[审核状态]：“未审核”变更为“已审核“;");
+        $attr['log_msg'] .= sprintf("\r\n[审核备注]：“%s“;", $order['audit_remark']);
 
         return self::log($attr);
     }

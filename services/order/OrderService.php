@@ -3,10 +3,12 @@
 namespace services\order;
 
 
+use common\enums\AuditStatusEnum;
 use common\models\market\MarketCard;
 use common\models\market\MarketCardDetails;
 use common\models\order\OrderCart;
 use common\models\order\OrderInvoice;
+use Omnipay\Common\Message\AbstractResponse;
 use services\goods\TypeService;
 use services\market\CardService;
 use yii\db\Expression;
@@ -374,6 +376,87 @@ class OrderService extends OrderBaseService
         //订单日志
         //$this->addOrderLog($order_id, $remark, $log_role, $log_user,$order->order_status);
         OrderLogService::cancel($order);
+
+    }
+
+    public function changeOrderStatusAudit($order_id, $status, $remark)
+    {
+        $model = Order::findOne($order_id);
+
+        if(!$model) {
+            throw new \Exception(sprintf('[%d]数据未找到', $order_id));
+        }
+
+        //判断订单是否已付款状态
+        if($model->order_status !== OrderStatusEnum::ORDER_PAID) {
+            throw new \Exception(sprintf('[%d]不是已付款状态', $order_id));
+        }
+
+        $audit_status = $model->audit_status;
+        if($status==OrderStatusEnum::ORDER_AUDIT_NO) {
+            //订单审核不通过
+            $model->audit_status = OrderStatusEnum::ORDER_AUDIT_NO;
+            $model->audit_remark = $remark;
+            //$model->status = AuditStatusEnum::UNPASS;
+            //$model->order_status = OrderStatusEnum::ORDER_CONFIRM;//已审核，代发货
+        }
+        else {
+            $isPay = false;
+
+            //查验订单是否有多笔支付
+            foreach ($model->paylogs as $paylog) {
+
+                //购物卡支付，电汇支付
+                if($paylog->pay_type==PayEnum::PAY_TYPE_CARD || $paylog->pay_type==PayEnum::PAY_TYPE_WIRE_TRANSFER && $paylog->pay_status == PayStatusEnum::PAID) {
+                    $isPay = true;
+                    continue;
+                }
+
+                //获取支付类
+                $pay = \Yii::$app->services->pay->getPayByType($paylog->pay_type);
+
+                /**
+                 * @var $state AbstractResponse
+                 */
+                $state = $pay->verify(['model'=>$paylog, 'isVerify'=>true]);
+
+                //当前这笔订单的付款
+                if($paylog->out_trade_no == $model->pay_sn) {
+                    $isPay = $state->isPaid();
+                    continue;
+                }
+                elseif(in_array($state->getCode(), ['null'])) {
+                    throw new \Exception(sprintf('[%d]订单支付[%s]验证出错，请重试', $order_id, $paylog->out_trade_no));
+                }
+                elseif(in_array($state->getCode(), ['completed','pending', 'payer']) || $paylog->pay_status==PayStatusEnum::PAID) {
+                    throw new \Exception(sprintf('[%d]订单存在多笔支付[%s]', $order_id, $paylog->out_trade_no));
+                }
+//                elseif($state->isPaid()) {
+//                    throw new \Exception(sprintf('[%d]订单存在多笔支付[%s]', $order_id, $paylog->out_trade_no));
+//                }
+            }
+
+            if(!$isPay) {
+                throw new \Exception(sprintf('[%d]订单支付状态验证失败', $order_id));
+            }
+
+            //更新订单审核状态
+            $model->status = AuditStatusEnum::PASS;
+            $model->order_status = OrderStatusEnum::ORDER_CONFIRM;//已审核，代发货
+            $model->audit_status = OrderStatusEnum::ORDER_AUDIT_YES;
+            $model->audit_remark = $remark;
+        }
+
+        if(false  === $model->save()) {
+            throw new \Exception($this->getError($model));
+        }
+
+        //订单日志
+        OrderLogService::audit($model, [[
+            'audit_status'=>OrderStatusEnum::getValue($model->audit_status, 'auditStatus')
+        ], [
+            'audit_status'=>OrderStatusEnum::getValue($audit_status, 'auditStatus')
+        ]]);
 
     }
     

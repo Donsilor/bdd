@@ -261,8 +261,13 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                     },
                                     'audit' => function ($url, $model, $key) {
                                         if($model->order_status == \common\enums\OrderStatusEnum::ORDER_PAID) {
-                                            return Html::batchAudit(['ajax-batch-audit'], '审核', [
+//                                            return Html::batchAudit(['ajax-batch-audit'], '审核', [
                                                 //'class'=>'label bg-green'
+//                                            ]);
+                                            return Html::edit(['edit-audit', 'id' => $model->id], '审核', [
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#ajaxModal',
+                                                'class'=>'btn bg-green btn-sm'
                                             ]);
                                         }
                                         return null;

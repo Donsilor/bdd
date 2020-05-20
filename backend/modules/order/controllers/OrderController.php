@@ -3,6 +3,7 @@
 namespace backend\modules\order\controllers;
 
 use backend\controllers\BaseController;
+use backend\modules\order\forms\OrderAuditForm;
 use backend\modules\order\forms\OrderCancelForm;
 use backend\modules\order\forms\OrderRefundForm;
 use common\enums\CurrencyEnum;
@@ -340,6 +341,34 @@ class OrderController extends BaseController
             //订单发送邮件
             \Yii::$app->services->order->sendOrderNotification($id);
             return $result ? $this->redirect(['index']):$this->message($this->getError($model), $this->redirect(['index']), 'error');
+        }
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionEditAudit()
+    {
+        $id = Yii::$app->request->get('id', null);
+        $order = Yii::$app->request->post('OrderAuditForm', []);
+
+        $this->modelClass = OrderAuditForm::class;
+
+        $model = $this->findModel($id);
+
+        // ajax 校验
+        $this->activeFormValidate($model);
+
+        if (Yii::$app->request->isPost) {
+
+            try {
+                Yii::$app->services->order->changeOrderStatusAudit($id, $order['audit_status'], $order['audit_remark']??'');
+            } catch (Exception $exception) {
+                $this->message($exception->getMessage(), $this->redirect(['index']), 'error');
+            }
+
+            return $this->redirect(['index']);
         }
 
         return $this->renderAjax($this->action->id, [

@@ -17,6 +17,11 @@ class OrderStatusEnum extends BaseEnum
     const ORDER_REFUND_YES = 1;
     const ORDER_REFUND_NO = 0;
 
+    //审核状态
+//    const ORDER_AUDIT = 0;
+    const ORDER_AUDIT_YES = 1;
+    const ORDER_AUDIT_NO = 2;
+
     //
     const ORDER_UNPAID = 10;
     const ORDER_PAID = 20;
@@ -55,6 +60,15 @@ class OrderStatusEnum extends BaseEnum
         return [
             self::ORDER_REFUND_YES => \Yii::t('common','已退款'),
             self::ORDER_REFUND_NO => \Yii::t('common','未退款'),
+        ];
+    }
+
+    public static function auditStatus()
+    {
+        return [
+//            self::ORDER_AUDIT => \Yii::t('common','待审核'),
+            self::ORDER_AUDIT_YES => \Yii::t('common','审核通过'),
+            self::ORDER_AUDIT_NO => \Yii::t('common','审核不通过'),
         ];
     }
     
