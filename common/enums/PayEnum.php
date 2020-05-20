@@ -40,6 +40,7 @@ class PayEnum extends BaseEnum
     const PAY_TYPE_PAYDOLLAR_2 = 82;
     const PAY_TYPE_PAYDOLLAR_3 = 83;
     const PAY_TYPE_CARD = 10;
+    const PAY_TYPE_WIRE_TRANSFER = 11;//WireTransfer
     const PAY_TYPE_OFFLINE = 100;
     
     /**
@@ -59,6 +60,7 @@ class PayEnum extends BaseEnum
             self::PAY_TYPE_PAYDOLLAR_2 => 'AliPay',
             self::PAY_TYPE_PAYDOLLAR_3 => 'Wechat',
             self::PAY_TYPE_CARD => 'Card',
+            self::PAY_TYPE_WIRE_TRANSFER => '电汇',
             //self::PAY_TYPE_MINI_PROGRAM => '小程序',
             // self::PAY_TYPE_USER_MONEY => '余额',
             //self::PAY_TYPE_OFFLINE => '线下',
@@ -82,6 +84,7 @@ class PayEnum extends BaseEnum
         self::PAY_TYPE_PAYDOLLAR_2 => 'Paydollar 支付宝',
         self::PAY_TYPE_PAYDOLLAR_3 => 'Paydollar 微信',
         self::PAY_TYPE_CARD => 'CARD',
+        self::PAY_TYPE_WIRE_TRANSFER => 'WireTransfer',
         self::PAY_TYPE_MINI_PROGRAM => '小程序',
         self::PAY_TYPE_USER_MONEY => '余额',
         self::PAY_TYPE_OFFLINE => '线下',

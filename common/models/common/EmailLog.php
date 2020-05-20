@@ -37,6 +37,7 @@ class EmailLog extends \common\models\base\BaseModel
     const USAGE_ORDER_SEND = 'order-send';
     const USAGE_ORDER_REFUND_NOTICE = 'order-refund-notice';
     const USAGE_ORDER_INVOICE = 'order-invoice';
+    const USAGE_WIRE_TRANSFER_ORDER_NOTICE = 'wire-transfer-order-notice';
     /**
      * @var array
      */
@@ -49,6 +50,7 @@ class EmailLog extends \common\models\base\BaseModel
             self::USAGE_ORDER_SEND => '已发货订单通知',
             self::USAGE_ORDER_REFUND_NOTICE => '订单退款通知',
             self::USAGE_ORDER_INVOICE => '订单电子凭证',
+        self::USAGE_WIRE_TRANSFER_ORDER_NOTICE => '电汇订单通知',
     ];
     public static $usageTemplates = [
             self::USAGE_LOGIN => 'loginCode',
@@ -59,7 +61,9 @@ class EmailLog extends \common\models\base\BaseModel
             self::USAGE_ORDER_SEND => 'orderNotification',
             self::USAGE_ORDER_REFUND_NOTICE => 'orderNotification',
             self::USAGE_ORDER_INVOICE => 'orderInvoice',
+        self::USAGE_WIRE_TRANSFER_ORDER_NOTICE => 'wireTransferOrderNotice',
     ];
+
     public static $orderStatusMap = [
             OrderStatusEnum::ORDER_UNPAID =>self::USAGE_ORDER_UNPAID,
             OrderStatusEnum::ORDER_PAID =>self::USAGE_ORDER_PAID,

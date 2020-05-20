@@ -486,7 +486,11 @@ class GoodsService extends Service
             foreach ($style_attr as $attr){
                 //对售後服務特殊处理
                 if($attr['id'] == 52){
-                    $style['goodsServices'] = join(',', $attr['value_id']);
+                    if(isset($attr['value_id']) && is_array($attr['value_id'])){
+                        $style['goodsServices'] = join(',', $attr['value_id']);
+                    }else{
+                        continue;
+                    }
                     $style['goodsServicesJsons'] = \Yii::$app->services->goodsAttribute->getAttrValuesByValueIds($attr['value_id']);
                     continue;
                 }

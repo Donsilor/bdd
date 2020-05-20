@@ -9,18 +9,33 @@ use kartik\daterange\DateRangePicker;
 $this->title = Yii::t('order', '订单');
 $this->params['breadcrumbs'][] = ['label' => $this->title];
 
+$order_status = Yii::$app->request->get('order_status', -1);
+$params = Yii::$app->request->queryParams;
+$params = $params ? "&".http_build_query($params) : '';
+$export_param = http_build_query($searchModel)."&order_status={$order_status}";
+
+
+
 ?>
 
 <div class="row">
     <div class="col-sm-12">
         <div class="nav-tabs-custom">
+
             <ul class="nav nav-tabs">
                 <li<?php if (Yii::$app->request->get('order_status', -1) == -1) echo ' class="active"' ?>><a href="<?= Url::to(['order/index']) ?>"> 全部（<?= \common\models\order\Order::getCountByOrderStatus() ?>）</a></li>
+                <li<?php if (Yii::$app->request->get('order_status', -1) == 11) echo ' class="active"' ?>><a href="<?= Url::to(['order/index', 'order_status'=>11]) ?>" class="red"> 电汇（<?= \common\models\order\Order::getCountByOrderStatus(11) ?>）</a></li>
                 <?php foreach (common\enums\OrderStatusEnum::getMap() as $statusValue => $statusName) { ?>
                     <li<?php if (Yii::$app->request->get('order_status', -1) == $statusValue) echo ' class="active"' ?>>
                         <a href="<?= Url::to(['order/index', 'order_status' => $statusValue]) ?>"><?= $statusName ?>（<?= \common\models\order\Order::getCountByOrderStatus($statusValue) ?>）</a>
                     </li>
                 <?php } ?>
+                <li class="pull-right">
+                    <div class="box-header box-tools">
+                        <?= Html::a('导出Excel','index?action=export'.$params) ?>
+                    </div>
+                </li>
+
             </ul>
 
             <div class="tab-content">
@@ -53,7 +68,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                     </div>
                 </div>
                 <div class="active tab-pane">
-                    <?= GridView::widget([
+                    <?php $widgetData = [
                         'id'=>'grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
@@ -91,7 +106,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                     'model' => $searchModel,
                                     'attribute' => 'created_at',
                                     'value' => '',
-                                    'options' => ['readonly' => true, 'class' => 'form-control',],
+                                    'options' => ['readonly' => false, 'class' => 'form-control',],
                                     'pluginOptions' => [
                                         'format' => 'yyyy-mm-dd',
                                         'locale' => [
@@ -181,8 +196,13 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 ]),
                                 'value' => function ($model) {
                                     $str = \common\enums\PayStatusEnum::getValue($model->payment_status);
-                                    if($model->payment_type) {                                        
-                                        $str   .= '<br/>'.(\common\enums\PayEnum::getValue($model->payment_type));
+                                    if($model->payment_type) {
+                                        if($model->payment_type==11) {
+                                            $str   .= '<br/><span class="red">'.(\common\enums\PayEnum::getValue($model->payment_type)).'</span>';
+                                        }
+                                        else {
+                                            $str   .= '<br/>'.(\common\enums\PayEnum::getValue($model->payment_type));
+                                        }
                                     }
                                     return $str;                                   
                                 },
@@ -230,7 +250,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'header' => "操作",
                                 //'headerOptions' => ['class' => 'col-md-1'],
                                 'class' => 'yii\grid\ActionColumn',
-                                'template' => '{audit} {delivery} {follower} {cancel} {refund}',
+                                'template' => '{audit} {delivery} {follower} {cancel} {refund} {wiretransfer}',
                                 'buttons' => [
                                     'follower' => function ($url, $model, $key) {
                                         return Html::edit(['edit-follower', 'id' => $model->id], '跟进', [
@@ -278,13 +298,39 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                             'data-target' => '#ajaxModal',
                                             'class'=>'btn btn-danger btn-sm'
                                         ]);
+                                    },
+                                    'wiretransfer' => function($url, $model, $key) {
+                                        if(!$model->wireTransfer || $model->wireTransfer->collection_status==1 || Yii::$app->request->get('order_status', -1)==10) {
+                                            return null;
+                                        }
 
+                                        //出纳审核
+                                        return Html::edit(['wire-transfer/ajax-edit', 'order_id'=>$model->id], '审核', [
+                                            'data-toggle' => 'modal',
+                                            'data-target' => '#ajaxModalLg',
+                                        ]);
                                     }
                                 ],
                             ],
                         ],
-                    ]);
-                  ?>
+                    ];
+
+                    if(Yii::$app->request->get('order_status')==11) {
+                        array_splice($widgetData['columns'], 12, 0, [[
+                            'label' => '电汇审核状态',
+                            'headerOptions' => ['class' => 'col-md-1'],
+                            'filter' => Html::activeDropDownList($searchModel, 'wireTransfer.collection_status',\common\enums\WireTransferEnum::getMap(), [
+                                'prompt' => '全部',
+                                'class' => 'form-control',
+                            ]),
+                            'value' => function ($model) {
+                                return common\enums\WireTransferEnum::getValue($model->wireTransfer->collection_status);
+                            },
+                            'format' => 'raw',
+                        ]]);
+                    }
+                ?>
+                <?= GridView::widget($widgetData);?>
                 </div>
             </div>
         </div>

@@ -33,13 +33,14 @@ class EmailRegisterForm extends Model
                 [['email', 'code', 'password', 'password_repetition'], 'required'],
                 [['realname'], 'string'],
                 [['password'], 'string', 'min' => 6],
-                [
-                        ['email'],
-                        'unique',
-                        'targetClass' => Member::class,
-                        'targetAttribute' => 'email',
-                        'message' => '邮箱已存在'
-                ],                
+//                [
+//                        ['email'],
+//                        'unique',
+//                        'targetClass' => Member::class,
+//                        'targetAttribute' => 'email',
+//                        'message' => '邮箱已存在'
+//                ],
+                ['email', 'validateEmail'],
                 ['email', 'match', 'pattern' => RegularHelper::email(), 'message' => '请输入正确的邮箱'],
                 ['code', EmailCodeValidator::class, 'usage' => EmailLog::USAGE_REGISTER],
                 [['password_repetition'], 'compare', 'compareAttribute' => 'password','message'=>'两次输入密码不一致'],// 验证新密码和重复密码是否相等
@@ -58,5 +59,19 @@ class EmailRegisterForm extends Model
                 'group' => '类型',
                 'code' => '验证码',
         ];
+    }
+
+    /**
+     * 验证手机号码
+     * @param unknown $attribute
+     * @return boolean
+     */
+    public function validateEmail($attribute)
+    {
+        $count = Member::find()->where(['email'=>$this->email, 'is_tourist'=>0])->count();
+        if($count) {
+            $this->addError($attribute,"邮箱已存在");
+            return false;
+        }
     }
 }

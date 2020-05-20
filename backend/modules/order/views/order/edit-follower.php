@@ -25,6 +25,7 @@ $form = ActiveForm::begin([
                 'allowClear' => true
             ],
         ]);?>
+        <?php $model->seller_remark = ''; ?>
         <?= $form->field($model, 'seller_remark')->textarea() ?>
     </div>
     <div class="modal-footer">

@@ -46,7 +46,7 @@ class EmailLoginForm extends Model
         if ($this->_user == false) {
             // email 登录
             if (strpos($this->username, "@")) {
-                $this->_user = Member::findOne(['email' => $this->username, 'status' => StatusEnum::ENABLED]);
+                $this->_user = Member::findOne(['email' => $this->username, 'status' => StatusEnum::ENABLED, 'is_tourist'=>0]);
             } else {
                 $this->_user = Member::findByUsername($this->username);
             }
@@ -62,7 +62,7 @@ class EmailLoginForm extends Model
      * @return mixed|null|static
      */
     public function login(){
-        $user = Member::findOne(['email' => $this->username]);
+        $user = Member::findOne(['email' => $this->username, 'is_tourist'=>0]);
         if(!$user){
             $user = new Member();
             $user->email = $this->username;

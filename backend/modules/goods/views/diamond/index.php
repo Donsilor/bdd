@@ -28,10 +28,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <h3 class="box-title"><?= Html::encode($this->title) ?></h3>
                 <div class="box-tools"  style="right: 100px;">
                     <?= Html::create(['edit-lang']) ?>
+                    <?= Html::a('导出Excel','export?goods_name='.$goods_name.'&id='.$id.'&goods_sn='.$goods_sn.'&cert_id='.$cert_id.'&sale_price='.$sale_price.'&carat='.$carat.'&status='.$status) ?>
                 </div>
-                <div class="box-tools" >
-                    <a href="<?= Url::to(['export?goods_name='.$goods_name.'&id='.$id.'&goods_sn='.$goods_sn.'&cert_id='.$cert_id.'&sale_price='.$sale_price.'&carat='.$carat.'&status='.$status])?>" class="blue">导出Excel</a>
-                </div>
+
             </div>
             <div class="box-body table-responsive">
     <?php echo Html::batchButtons(false)?>         

@@ -65,7 +65,7 @@ class MobileUpPwdForm extends \common\models\forms\LoginForm
     public function getUser()
     {
         if ($this->_user == false) {
-            $this->_user = Member::findOne(['mobile' => $this->mobile, 'status' => StatusEnum::ENABLED]);
+            $this->_user = Member::findOne(['mobile' => $this->mobile, 'status' => StatusEnum::ENABLED, 'is_tourist'=>0]);
         }
         
         return $this->_user;

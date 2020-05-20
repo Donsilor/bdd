@@ -6,6 +6,7 @@ use common\helpers\ImageHelper;
 use common\helpers\ResultHelper;
 use api\controllers\UserAuthController;
 use common\models\member\Member;
+use services\order\OrderLogService;
 use yii\base\Exception;
 use common\models\order\Order;
 use api\modules\wap\forms\OrderCreateForm;
@@ -317,6 +318,8 @@ class OrderController extends UserAuthController
         }
         $res = Order::updateAll(['order_status'=>OrderStatusEnum::ORDER_FINISH],['id'=>$order_id,'order_status'=>OrderStatusEnum::ORDER_SEND]);
         if($res){
+            $order->refresh();
+            OrderLogService::finish($order);
             return 'success';
         }else{
             return ResultHelper::api(422, '取消订单失败');

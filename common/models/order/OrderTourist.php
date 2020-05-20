@@ -25,6 +25,7 @@ use yii\db\ActiveRecord;
  * @property string $currency 货币
  * @property double $exchange_rate 汇率
  * @property string $ip 下单时IP
+ * @property int $order_from 订单来源
  * @property int $ip_area_id IP所在区域
  * @property string $ip_location IP位置
  * @property int $status 状态：0未支付，1已支付，2已同步到标准订单
@@ -62,7 +63,7 @@ class OrderTourist extends \common\models\base\BaseModel
     public function rules()
     {
         return [
-            [['merchant_id', 'store_id', 'tourist_key', 'status', 'created_at', 'updated_at', 'ip_area_id'], 'integer'],
+            [['merchant_id', 'store_id', 'tourist_key', 'status', 'created_at', 'updated_at', 'ip_area_id','order_from'], 'integer'],
             [['order_amount', 'goods_amount', 'discount_amount', 'pay_amount', 'refund_amount', 'shipping_fee', 'tax_fee', 'safe_fee', 'other_fee', 'exchange_rate'], 'number'],
             [['currency'], 'string', 'max' => 3],
             [['order_sn'], 'string', 'max' => 20],
@@ -98,6 +99,7 @@ class OrderTourist extends \common\models\base\BaseModel
             'ip_area_id' => Yii::t('app', '归属地区'),
             'ip_location' => Yii::t('app', 'IP位置'),
             'status' => Yii::t('app', '状态'),
+            'order_from' => "订单来源",
             'created_at' => Yii::t('app', '下单时间'),
             'updated_at' => Yii::t('app', '更新时间'),
         ];
