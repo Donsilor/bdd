@@ -57,6 +57,7 @@ class OrderBaseService extends Service
             if($order->order_status == OrderStatusEnum::ORDER_SEND) {
                 $params = [
                     'code' =>$order->id,
+                    'order_sn' =>$order->order_sn,
                     'express_name' => \Yii::$app->services->express->getExressName($order->express_id),
                     'express_no' =>$order->express_no,
                     'company_name'=>'BDD Co.',
