@@ -31,10 +31,10 @@ class NotifyContactsService extends Service
                 continue;
             }
 
-            if($datum['email_switch']) {
+            if($datum['email_switch'] && !empty($datum['email'])) {
                 $emails[] = $datum['email'];
             }
-            if($datum['mobile_switch']) {
+            if($datum['mobile_switch'] && !empty($datum['mobile'])) {
                 $mobiles[] = $datum['mobile'];
             }
         }
@@ -54,12 +54,12 @@ class NotifyContactsService extends Service
 
         $usage = NotifyContactsEnum::getValue($typeId, 'usageForEmail');
         foreach ($notifyContacts['emails'] as $email) {
-            \Yii::$app->services->mailer->queue(false)->send($email, $usage, $params, $this->language);
+            \Yii::$app->services->mailer->queue(true)->send($email, $usage, $params, $this->language);
         }
 
         $usage = NotifyContactsEnum::getValue($typeId, 'usageForMobile');
         foreach ($notifyContacts['mobiles'] as $mobile) {
-            \Yii::$app->services->sms->queue(false)->send($mobile, $usage, $params);
+            \Yii::$app->services->sms->queue(true)->send($mobile, $usage, $params);
         }
     }
 
