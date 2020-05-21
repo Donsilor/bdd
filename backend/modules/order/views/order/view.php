@@ -350,7 +350,23 @@ DOM;
                                     <div class="col-lg-3 text-right">
                                         <label><?= $model->getAttributeLabel('seller_remark') ?>：</label></div>
                                     <div class="col-lg-9">
-                                        <pre><?= $model->seller_remark ?></pre>
+
+                                            <?php
+                                            $remark = trim($model->seller_remark);
+                                            if($model->audit_remark) {
+                                                $remark && ($remark .= "\r\n--------------------\r\n");
+                                                $remark .= '[审核备注]：'.trim($model->audit_remark);
+                                            }
+                                            if($model->refund_remark) {
+                                                $remark && ($remark .= "\r\n--------------------\r\n");
+                                                $remark .= '[退款备注]：'.trim($model->refund_remark);
+                                            }
+                                            if($model->cancel_remark) {
+                                                $remark && ($remark .= "\r\n--------------------\r\n");
+                                                $remark .= '[取消备注]：'.trim($model->cancel_remark);
+                                            }
+                                            ?>
+                                        <pre><?= $remark ?></pre>
                                     </div>
                                 </div>
                             </div>
