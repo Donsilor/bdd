@@ -646,7 +646,7 @@ class GoodsService extends Service
                 }else {
                     $lab = isset($style_attrLab[$k])?$style_attrLab[$k]:"";
                 }
-                $old_val = $old_goods_info[$k];
+                $old_val = $old_goods_info[$k]??'';
                 if('status' == $k ){
                     $old_val = FrameEnum::getValue($old_val);
                     $new_val = FrameEnum::getValue($new_val);
