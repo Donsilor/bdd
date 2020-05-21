@@ -268,7 +268,7 @@ class OrderController extends BaseController
 
         if (Yii::$app->request->isPost) {
 
-            Yii::$app->services->order->changeOrderStatusRefund($id, '管理员订单退款：'.$order['refund_remark']??'', 'admin', Yii::$app->getUser()->id);
+            Yii::$app->services->order->changeOrderStatusRefund($id, $order['refund_remark']??'', 'admin', Yii::$app->getUser()->id);
 
             return $this->redirect(['index']);
         }

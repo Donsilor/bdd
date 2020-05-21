@@ -95,6 +95,23 @@ class OrderLogService extends Service
         return self::log($attr);
     }
 
+    //取消订单
+    static public function refund($order, $data=[])
+    {
+        $attr = [];
+        $attr['action_name'] = strtoupper(__FUNCTION__);
+        $attr['order_sn'] = $order['order_sn'];
+        $attr['data'] = $data;
+
+        //状态变更
+        $attr['log_msg'] = '订单取消';
+        $attr['log_msg'] .= sprintf("\r\n[订单状态]：“%s”;", OrderStatusEnum::getValue($order['order_status']));
+        $attr['log_msg'] .= sprintf("\r\n[退款状态]：“%s”变更为“%s“;", OrderStatusEnum::getValue(OrderStatusEnum::ORDER_REFUND_NO, 'refundStatus'), OrderStatusEnum::getValue(OrderStatusEnum::ORDER_REFUND_YES, 'refundStatus'));
+        $attr['log_msg'] .= sprintf("\r\n[订单备注]：“%s”;", $order['refund_remark']);
+
+        return self::log($attr);
+    }
+
     //订单支付
     static public function pay($order, $data=[])
     {

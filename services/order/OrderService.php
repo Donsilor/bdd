@@ -377,7 +377,7 @@ class OrderService extends OrderBaseService
 
         //订单日志
         //$this->addOrderLog($order_id, $remark, $log_role, $log_user,$order->order_status);
-        OrderLogService::cancel($order);
+        OrderLogService::refund($order);
 
     }
 
