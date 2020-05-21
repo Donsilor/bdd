@@ -79,8 +79,6 @@ class OrderLogService extends Service
         return self::log($attr);
     }
 
-
-
     //取消订单
     static public function cancel($order, $data=[])
     {
@@ -92,6 +90,7 @@ class OrderLogService extends Service
         //状态变更
         $attr['log_msg'] = '订单取消';
         $attr['log_msg'] .= sprintf("\r\n[订单状态]：“%s”变更为“%s“;", OrderStatusEnum::getValue(OrderStatusEnum::ORDER_UNPAID), OrderStatusEnum::getValue(OrderStatusEnum::ORDER_CANCEL));
+        $attr['log_msg'] .= sprintf("\r\n[订单备注]：“%s”;", $order['cancel_remark']);
 
         return self::log($attr);
     }

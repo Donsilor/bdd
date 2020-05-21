@@ -182,7 +182,7 @@ class OrderController extends BaseController
         $this->activeFormValidate($model);
         if (Yii::$app->request->isPost) {
 
-            Yii::$app->services->order->changeOrderStatusCancel($id, '管理员取消订单：'.$order['cancel_remark']??'', 'admin', Yii::$app->getUser()->id);
+            Yii::$app->services->order->changeOrderStatusCancel($id, $order['cancel_remark']??'', 'admin', Yii::$app->getUser()->id);
 
             return $this->redirect(['index']);
         }

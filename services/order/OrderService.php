@@ -344,10 +344,12 @@ class OrderService extends OrderBaseService
 //        $order->seller_remark = $remark;
         $order->order_status = OrderStatusEnum::ORDER_CANCEL;
         $order->save(false);
+
         //解冻购物卡
         CardService::deFrozen($order_id);
+
         //订单日志
-        $this->addOrderLog($order_id, $remark, $log_role, $log_user,$order->order_status);
+        OrderLogService::cancel($order);
     }
 
     public function changeOrderStatusRefund($order_id,$remark, $log_role, $log_user)
