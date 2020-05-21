@@ -132,7 +132,7 @@ $type_id = Yii::$app->request->get('type_id',0);
             [
                 'class' => 'yii\grid\ActionColumn',
                 'header' => '操作',
-                'template' => '   {edit} {view} {status}',
+                'template' => '{edit} {view} {status} {show_log}',
                 'buttons' => [
                 'edit' => function($url, $model, $key){
                     return Html::edit(['edit-lang','id' => $model->id,'type_id'=>Yii::$app->request->get('type_id'),'returnUrl' => Url::getReturnUrl()]);
@@ -162,7 +162,10 @@ $type_id = Yii::$app->request->get('type_id',0);
                        return Html::a('预览', \Yii::$app->params['frontBaseUrl'].'/jewellery/bracelet/'.$model->id.'?goodId='.$model->id.'&backend=1',['class'=>'btn btn-info btn-sm','target'=>'_blank']);
                    }
 
-                }
+                },
+                'show_log' => function($url, $model, $key){
+                    return Html::linkButton(['goods-log/index','id' => $model->id, 'type_id' => $model->type_id, 'returnUrl' => Url::getReturnUrl()], '日志');
+                },
                 ]
             ]
     ]

@@ -77,7 +77,8 @@ class StyleController extends BaseController
         $returnUrl = Yii::$app->request->get('returnUrl',['index','type_id'=>$type_id]);
         $model = $this->findModel($id);
         
-        $status = $model ? $model->status:0;        
+        $status = $model ? $model->status:0;
+        $old_style_info = $model->toArray();
         if ($model->load(Yii::$app->request->post())) {
             
             try{
@@ -97,6 +98,9 @@ class StyleController extends BaseController
                 \Yii::error($error);
                 return $this->message("保存失败:".$error, $this->redirect([$this->action->id,'id'=>$model->id,'type_id'=>$type_id]), 'error');
             }
+
+            //记录日志
+            \Yii::$app->services->goods->recordGoodsLog($model, $old_style_info);
             
             //商品更新
             \Yii::$app->services->goods->syncStyleToGoods($model->id);
@@ -127,6 +131,9 @@ class StyleController extends BaseController
         if (!$model->save(false)) {
             return ResultHelper::json(422, $this->getError($model));
         }
+
+        //记录日志
+        \Yii::$app->services->goods->recordGoodsStatus($model, Yii::$app->request->get('status'));
         return ResultHelper::json(200, '修改成功');
     }
     
