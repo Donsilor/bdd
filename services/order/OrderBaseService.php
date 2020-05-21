@@ -5,6 +5,7 @@ namespace services\order;
 
 
 use common\components\Service;
+use common\enums\CurrencyEnum;
 use common\enums\ExpressEnum;
 use common\enums\OrderStatusEnum;
 use common\enums\OrderTouristStatusEnum;
@@ -276,12 +277,22 @@ class OrderBaseService extends Service
                     }
                 }
 
-                $card['useAmount'] = $cardUseAmount;
-                $card['balanceCny'] = $cardInfo->balance;
-                $card['amountCny'] = $cardInfo->amount;
+                //转人民币,如果余额为0，直接使用人民币余额，避免小数出错
+                if($balance==0) {
+                    $cardUseAmountCny = $cardInfo->balance;
+                }
+                else {
+                    $cardUseAmountCny = \Yii::$app->services->currency->exchangeAmount($cardUseAmount,2, CurrencyEnum::CNY, \Yii::$app->params['currency']);
+                }
+
                 $card['goodsTypeAttach'] = $cardInfo->goods_type_attach;
+
+                $card['useAmount'] = $cardUseAmount;
+                $card['useAmountCny'] = $cardUseAmountCny;
                 $card['balance'] = $this->exchangeAmount($cardInfo->balance);
+                $card['balanceCny'] = $cardInfo->balance;
                 $card['amount'] = $this->exchangeAmount($cardInfo->amount);
+                $card['amountCny'] = $cardInfo->amount;
 
                 //产品线语言获取
                 $goodsTypes = [];

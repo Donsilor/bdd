@@ -159,7 +159,7 @@ class OrderController extends UserAuthController
                 }
             }
 
-            $result = \Yii::$app->services->order->createOrder($model->carts, $this->member_id, $model->buyer_address_id,$model->toArray(),$invoiceInfo,$coupon_id);
+            $result = \Yii::$app->services->order->createOrder($model->carts, $this->member_id, $model->buyer_address_id, $model->toArray(), $invoiceInfo, $coupon_id, $cards);
 
             //购物券消费
             CardService::consume($result['order_id'], $cards);

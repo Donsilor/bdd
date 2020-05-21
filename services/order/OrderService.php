@@ -39,7 +39,7 @@ class OrderService extends OrderBaseService
      * @param array $invoice_info
      * @param int $coupon_id
      */
-    public function createOrder($cart_ids,$buyer_id, $buyer_address_id, $order_info, $invoice_info, $coupon_id=0)
+    public function createOrder($cart_ids, $buyer_id, $buyer_address_id, $order_info, $invoice_info, $coupon_id=0, $cards=[])
     {
         if($coupon_id) {
             $where = [
@@ -52,9 +52,9 @@ class OrderService extends OrderBaseService
             }
         }
 
-        $buyer = Member::find()->where(['id'=>$buyer_id])->one();
+//        $buyer = Member::find()->where(['id'=>$buyer_id])->one();
 
-        $orderAccountTax = $this->getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $coupon_id, []);
+        $orderAccountTax = $this->getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $coupon_id, $cards);
 
         if(empty($orderAccountTax['buyerAddress'])) {
             throw new UnprocessableEntityHttpException("收货地址不能为空");
@@ -198,8 +198,8 @@ class OrderService extends OrderBaseService
     /**
      * 获取订单金额，税费信息
      * @param array $carts
-     * @param unknown $buyer_id
-     * @param unknown $buyer_address_id
+     * @param int $buyer_id
+     * @param int $buyer_address_id
      * @param int $coupon_id
      * @param array $cards
      * @throws UnprocessableEntityHttpException
