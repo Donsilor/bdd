@@ -101,7 +101,7 @@ class StyleController extends BaseController
 
             //记录日志
             \Yii::$app->services->goods->recordGoodsLog($model, $old_style_info);
-            
+
             //商品更新
             \Yii::$app->services->goods->syncStyleToGoods($model->id);
             return $this->message("保存成功", $this->redirect($returnUrl), 'success');

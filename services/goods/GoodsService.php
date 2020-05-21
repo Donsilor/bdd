@@ -636,7 +636,10 @@ class GoodsService extends Service
         $styleModel = new Style();
         $goodsLogModel = new GoodsLog();
         $log_msg = "";
-        if(!empty($diff_info)){
+        if($old_goods_info['goods_sn'] == ''){
+            $log_msg.="新增商品";
+        }
+        if(!empty($diff_info) && $old_goods_info['goods_sn'] != ''){
             $diamond_attrLab = $diamondModel->attributeLabels();
             $style_attrLab = $styleModel->attributeLabels();
             foreach ($diff_info as $k => $new_val) {
