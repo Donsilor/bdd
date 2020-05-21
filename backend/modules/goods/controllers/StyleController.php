@@ -99,7 +99,7 @@ class StyleController extends BaseController
                 return $this->message("保存失败:".$error, $this->redirect([$this->action->id,'id'=>$model->id,'type_id'=>$type_id]), 'error');
             }
 
-            if($id){
+            if(!empty($id)){
                 //记录日志
                 \Yii::$app->services->goods->recordGoodsLog($model, $old_style_info);
             }

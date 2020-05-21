@@ -87,7 +87,7 @@ class DiamondController extends BaseController
 
                 $this->editLang($model);
 
-                if($id){
+                if(!empty($id)){
                     //记录日志
                     \Yii::$app->services->goods->recordGoodsLog($model, $old_diamond_info);
                 }
