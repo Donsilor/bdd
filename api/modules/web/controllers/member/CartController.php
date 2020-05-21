@@ -44,6 +44,7 @@ class CartController extends UserAuthController
             
             $goods = \Yii::$app->services->goods->getGoodsInfo($model->goods_id,$model->goods_type);
             if(empty($goods)) {
+                \Yii::$app->services->actionLog->create('用户购物车列表',"商品查询失败",$model->toArray());
                 continue;
             }
 
@@ -145,12 +146,12 @@ class CartController extends UserAuthController
     public function actionAdd()
     {
         $addType = \Yii::$app->request->post("addType");
-        $goodsCartList = \Yii::$app->request->post('goodsCartList');
-        if(empty($goodsCartList)){
-            return ResultHelper::api(422,"goodsCartList不能为空");
-        }
+        $goodsCartList = \Yii::$app->request->post('goodsCartList');        
         try{
             $trans = \Yii::$app->db->beginTransaction();
+            if(empty($goodsCartList)){
+                throw new \Exception("goodsCartList不能为空",500);
+            }
             $cart_list = [];
             foreach ($goodsCartList as  $cartGoods){
                 $cartGoods['add_type'] = $addType;
@@ -158,7 +159,7 @@ class CartController extends UserAuthController
                 $model->attributes = $cartGoods;
                 if (!$model->validate()) {
                     // 返回数据验证失败
-                    throw new UnprocessableEntityHttpException($this->getError($model));
+                    throw new \Exception($this->getError($model),500);
                 }                
                 $goods = \Yii::$app->services->goods->getGoodsInfo($model->goods_id,$model->goods_type);
                 if(!$goods || $goods['status'] != 1) {
@@ -175,7 +176,7 @@ class CartController extends UserAuthController
                 $cart->goods_spec = json_encode($goods['goods_spec']);//商品规格
                 
                 if (!$cart->save()) {
-                    throw new UnprocessableEntityHttpException($this->getError($cart));
+                    throw new \Exception($this->getError($cart),500);
                 } 
                 $cart_list[] = $cart->toArray();
                 
@@ -186,6 +187,8 @@ class CartController extends UserAuthController
         } catch (Exception $e){
             
             $trans->rollBack();
+            
+            \Yii::$app->services->actionLog->create('用户添加购物车',"Exception:".$e->getMessage());
             
             throw $e;
         }
@@ -214,7 +217,7 @@ class CartController extends UserAuthController
     {
         $id = \Yii::$app->request->post("id");
         if(!$id) {
-            return ResultHelper::api(422, "id不能为空");
+            return ResultHelper::api(500, "id不能为空");
         }        
         if($id == -1) {
             //清空购物车
@@ -236,7 +239,8 @@ class CartController extends UserAuthController
         $addType = \Yii::$app->request->post("addType");
         $goodsCartList = \Yii::$app->request->post('goodsCartList');
         if(empty($goodsCartList)){
-            return ResultHelper::api(422,"goodsCartList不能为空");
+            \Yii::$app->services->actionLog->create('游客购物车列表',"goodsCartList参数错误");
+            return ResultHelper::api(500,"goodsCartList不能为空");
         }
 
         $cart_list = array();
@@ -246,13 +250,15 @@ class CartController extends UserAuthController
             $model->attributes = $cartGoods;
             if (!$model->validate()) {
                 // 返回数据验证失败
-                //throw new UnprocessableEntityHttpException($this->getError($model));
-                continue;
+                $error = $this->getError($model);
+                \Yii::$app->services->actionLog->create('游客购物车列表',$error);
+                return ResultHelper::api(500,$error);
             }
 
             $goods = \Yii::$app->services->goods->getGoodsInfo($model->goods_id,$model->goods_type);
             if(empty($goods)) {
-                continue;
+                \Yii::$app->services->actionLog->create('游客购物车列表',"查询商品失败",$model->toArray());
+                return ResultHelper::api(500,"查询商品失败");
             }
 
             $sale_price = $this->exchangeAmount($goods['sale_price'],0);

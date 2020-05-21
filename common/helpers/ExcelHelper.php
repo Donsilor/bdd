@@ -116,6 +116,7 @@ class ExcelHelper
         exit();
     }
 
+
     /**
      * 导出的另外一种形式(不建议使用)
      *

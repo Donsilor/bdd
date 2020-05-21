@@ -5,6 +5,7 @@ namespace services\common;
 use common\enums\OrderTouristStatusEnum;
 use common\models\order\OrderTourist;
 use services\market\CardService;
+use services\order\OrderLogService;
 use Yii;
 use common\enums\PayEnum;
 use common\components\Service;
@@ -152,6 +153,17 @@ class PayService extends Service
             'subject' => $baseOrder['body'],
             'currency' => $baseOrder['currency'],
         ];
+
+        //扩展支付
+        switch ($payForm->payType) {
+            case '61':
+                $order['payMethod'] = 'CARD';
+                break;
+            default:
+                $order['payMethod'] = 'ALL';
+                break;
+        }
+
         // 交易类型
         $tradeType = $payForm->tradeType;
         return [
@@ -336,6 +348,9 @@ class PayService extends Service
                     }
 
                     CardService::setSuccess($order->id);
+
+                    //支付日志
+                    OrderLogService::pay($order);
                 }
                  else {
                     throw new \Exception('Order 无需更新'.$log->order_sn);

@@ -12,6 +12,7 @@ use common\helpers\Url;
 use common\models\forms\PayForm;
 use common\models\member\Member;
 use services\market\CardService;
+use services\order\OrderLogService;
 use yii\base\Exception;
 use common\models\order\Order;
 use api\modules\web\forms\OrderCreateForm;
@@ -59,6 +60,8 @@ class OrderController extends UserAuthController
                 'id' =>$order->id,
                 'orderNO' =>$order->order_sn,
                 'orderStatus'=> $order->order_status,
+                'refundStatus'=> $order->refund_status,
+                'wireTransferStatus'=> !empty($order->wireTransfer)?$order->wireTransfer->collection_status:null,
                 'orderAmount'=> $order->account->order_amount,
                 'payAmount'=> bcsub($order->account->order_amount, CardService::getUseAmount($order->id), 2),
                 'productAmount'=> $order->account->goods_amount,
@@ -139,10 +142,11 @@ class OrderController extends UserAuthController
             
             $model = new OrderCreateForm();
             $model->attributes = \Yii::$app->request->post();
+            $model->order_from = $this->platform;
             $invoiceInfo = \Yii::$app->request->post('invoice');
             $coupon_id = (int)\Yii::$app->request->post('coupon_id',0);
             if(!$model->validate()) {
-                return ResultHelper::api(422,$this->getError($model));
+                throw new \Exception($this->getError($model),500);
             }
 
             $cards = \Yii::$app->request->post('card',[]);
@@ -151,7 +155,7 @@ class OrderController extends UserAuthController
                 $cardForm->setAttributes($card);
 
                 if(!$cardForm->validate()) {
-                    return ResultHelper::api(422, $this->getError($cardForm));
+                    throw new \Exception($this->getError($cardForm),500);
                 }
             }
 
@@ -175,7 +179,7 @@ class OrderController extends UserAuthController
 
                 //验证支付订单数据
                 if (!$payForm->validate()) {
-                    throw new UnprocessableEntityHttpException($this->getError($payForm));
+                    throw new \Exception($this->getError($payForm),500);
                 }
 
                 $pay = $payForm->getConfig();
@@ -211,7 +215,7 @@ class OrderController extends UserAuthController
     {
         $order_id = \Yii::$app->request->get('orderId');
         if(!$order_id) {
-            return ResultHelper::api(422, '参数错误:orderId不能为空');
+            return ResultHelper::api(500, '参数错误:orderId不能为空');
         }      
         $order = Order::find()->where(['id'=>$order_id,'member_id'=>$this->member_id])->one();
         if(!$order){
@@ -344,6 +348,7 @@ class OrderController extends UserAuthController
             'isInvoice'=> 2,            
             'orderNo' => $order->order_sn,
             'orderStatus' => $order->order_status,
+            'wireTransferStatus'=> !empty($order->wireTransfer)?$order->wireTransfer->collection_status:null,
             'orderTime' => $order->created_at,
             'orderType' => $order->order_type,            
             'payChannel' => $order->payment_type,
@@ -373,16 +378,17 @@ class OrderController extends UserAuthController
      * @return mixed|NULL|string
      */
     public function actionCancel(){
+        
         $order_id = \Yii::$app->request->post('orderId');
         if(!$order_id) {
-            return ResultHelper::api(422, '请参入正确的订单号');
+            return ResultHelper::api(500, '请参入正确的订单号');
         }
         $order = Order::find()->where(['id'=>$order_id,'member_id'=>$this->member_id])->one();
         if(!$order){
             return ResultHelper::api(422, '此订单不存在');
         }
         if($order->order_status > OrderStatusEnum::ORDER_UNPAID){
-            return ResultHelper::api(422, '此订单不是待付款状态，不能取消');
+            return ResultHelper::api(422, '订单取消失败');
         }
         try {
 
@@ -390,19 +396,13 @@ class OrderController extends UserAuthController
             \Yii::$app->services->order->changeOrderStatusCancel($order_id,"用户取消订单", 'buyer',$this->member_id);
             $trans->commit();
 
-        } catch (\Exception $exception) {
+        } catch (\Exception $e) {
 
             $trans->rollBack();
-
-            return ResultHelper::api(422, '取消订单失败');
+            \Yii::$app->services->actionLog->create('用户取消订单',"Exception:".$e->getMessage());
+            return ResultHelper::api(422, '订单取消失败');
         }
-//        $res = Order::updateAll(['order_status'=>OrderStatusEnum::ORDER_CANCEL],['id'=>$order_id,'order_status'=>OrderStatusEnum::ORDER_UNPAID]);
-//        if($res){
-            return 'success';
-//        }else{
-//            return ResultHelper::api(422, '取消订单失败');
-//        }
-
+        return 'success';
     }
 
 
@@ -411,9 +411,11 @@ class OrderController extends UserAuthController
      * @return mixed|NULL|string
      */
     public function actionConfirmReceipt(){
+        
         $order_id = \Yii::$app->request->post('orderId');
+        
         if(!$order_id) {
-            return ResultHelper::api(422, '请参入正确的订单号');
+            return ResultHelper::api(500, '请参入正确的订单号');
         }
         $order = Order::find()->where(['id'=>$order_id,'member_id'=>$this->member_id])->one();
         if(!$order){
@@ -424,9 +426,11 @@ class OrderController extends UserAuthController
         }
         $res = Order::updateAll(['order_status'=>OrderStatusEnum::ORDER_FINISH],['id'=>$order_id,'order_status'=>OrderStatusEnum::ORDER_SEND]);
         if($res){
+            $order->refresh();
+            OrderLogService::finish($order);
             return 'success';
         }else{
-            return ResultHelper::api(422, '取消订单失败');
+            return ResultHelper::api(500, '确认收货失败');
         }
 
     }    
@@ -458,12 +462,12 @@ class OrderController extends UserAuthController
                 $model = new CardForm();
                 $model->setAttributes($card);
 
-                if(!$model->validate()) {
+                if (!$model->validate()) {
                     return ResultHelper::api(422, $this->getError($model));
                 }
             }
         }
-		
+
         $taxInfo = \Yii::$app->services->order->getOrderAccountTax($carts, $this->member_id, $addressId, $coupon_id, $cards);
 
         $myCoupons = [];

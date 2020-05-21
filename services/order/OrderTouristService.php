@@ -38,7 +38,8 @@ class OrderTouristService extends OrderBaseService
      * @return int
      * @throws UnprocessableEntityHttpException
      */
-    public function createOrder($cartList, $invoice_info, $coupon_id=0)
+
+    public function createOrder($cartList, $invoice_info,$order_from, $coupon_id=0)
     {
         $orderAccountTax = $this->getCartAccountTax($cartList, $coupon_id);
 
@@ -68,6 +69,7 @@ class OrderTouristService extends OrderBaseService
 //        $order->merchant_id = null;//商铺ID
         $order->store_id = null;//店铺ID
         $order->tourist_key = null;//游客的KEY
+        $order->order_from = $order_from;
         $order->pay_amount = 0;//实际支付金额
         $order->refund_amount = 0;//退款金额
         $order->language   = $this->getLanguage();//语言
@@ -181,6 +183,7 @@ class OrderTouristService extends OrderBaseService
                 'last_ip' => $orderTourist->ip,
                 'first_ip' => $orderTourist->ip,
                 'first_ip_location' => $ip_location,
+                'is_tourist' => 1,//标识为游客账号
 //            'mobile' => $payerInfo->getPhone()
             ];
             if(false === $member->save()) {
@@ -209,7 +212,7 @@ class OrderTouristService extends OrderBaseService
 //            'delivery_status' => '',
 //            'delivery_time' => '',
 //            'receive_type' => '',
-//            'order_from' => '',
+              'order_from' => $orderTourist->order_from,
 //            'order_type' => '',
             'is_tourist' => 1,//游客订单
             'is_invoice' => empty($orderTourist->invoice)?0:1,//是否开发票
@@ -345,10 +348,11 @@ class OrderTouristService extends OrderBaseService
         }
 
         //订单日志
-        $log_msg = "创建订单,订单编号：".$order->order_sn;
-        $log_role = 'buyer';
-        $log_user = $member->username;
-        $this->addOrderLog($order->id, $log_msg, $log_role, $log_user,$order->order_status);
+//        $log_msg = "创建订单,订单编号：".$order->order_sn;
+//        $log_role = 'buyer';
+//        $log_user = $member->username;
+//        $this->addOrderLog($order->id, $log_msg, $log_role, $log_user,$order->order_status);
+        OrderLogService::create($order);
 
         //订单发送邮件
         $this->sendOrderNotification($order->id);

@@ -71,6 +71,7 @@ class DiamondController extends BaseController
         
         $model = $this->findModel($id);
         $status = $model ? $model->status:0;
+        $old_diamond_info = $model->toArray();
         if ($model->load(Yii::$app->request->post())) { 
             try{
                 $trans = Yii::$app->db->beginTransaction();
@@ -85,6 +86,10 @@ class DiamondController extends BaseController
                 Style::updateAll(['status'=>$model->status,'virtual_clicks'=>$model->virtual_clicks,'virtual_volume'=>$model->virtual_volume],['id'=>$model->style_id]);
 
                 $this->editLang($model);
+
+                //记录日志
+                \Yii::$app->services->goods->recordGoodsLog($model, $old_diamond_info);
+
                 //同步裸钻数据到goods
                 \Yii::$app->services->diamond->syncDiamondToGoods($model->id);
                 
@@ -163,6 +168,8 @@ class DiamondController extends BaseController
         }else{
             Style::updateAll(['status'=>$model->status],['id'=>$model->style_id]);
         }
+        //记录日志
+        \Yii::$app->services->goods->recordGoodsStatus($model, Yii::$app->request->get('status'));
         return ResultHelper::json(200, '修改成功');
     }
 

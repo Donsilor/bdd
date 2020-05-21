@@ -37,9 +37,9 @@ class UpPwdForm extends \common\models\forms\LoginForm
     {
         return [
             'member_id' => '会员ID',
-            'original_password' => '原始密码',
-            'password' => '新密码',
-            'password_repetition' => '确认新密码',
+            'original_password' => \Yii::t('member','原始密码'),
+            'password' => \Yii::t('member','新密码'),
+            'password_repetition' => \Yii::t('member','确认新密码'),
             'group' => '类型',
             'code' => '验证码',
         ];

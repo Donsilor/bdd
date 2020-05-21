@@ -55,7 +55,7 @@ class SmsCodeForm extends Model
      */
     public function validateMobile($attribute)
     {
-        $count = Member::find()->where(['mobile'=>$this->attributes])->count();
+        $count = Member::find()->where(['mobile'=>$this->attributes, 'is_tourist'=>0])->count();
         if($this->usage == SmsLog::USAGE_UP_PWD || $this->usage == SmsLog::USAGE_LOGIN) {
              if(!$count){
                  $this->addError($attribute,"手机号未绑定账号");

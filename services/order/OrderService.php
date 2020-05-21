@@ -180,10 +180,12 @@ class OrderService extends OrderBaseService
         }
 
         //订单日志
-        $log_msg = "创建订单,订单编号：".$order->order_sn;
-        $log_role = 'buyer';
-        $log_user = $buyer->username;
-        $this->addOrderLog($order->id, $log_msg, $log_role, $log_user,$order->order_status);
+//        $log_msg = "创建订单,订单编号：".$order->order_sn;
+//        $log_role = 'buyer';
+//        $log_user = $buyer->username;
+//        $this->addOrderLog($order->id, $log_msg, $log_role, $log_user,$order->order_status);
+        OrderLogService::create($order);
+
         //清空购物车
         OrderCart::deleteAll(['id'=>$cart_ids,'member_id'=>$buyer_id]);
         
@@ -282,7 +284,8 @@ class OrderService extends OrderBaseService
         //解冻购物卡
         CardService::deFrozen($order_id);
         //订单日志
-        $this->addOrderLog($order_id, $remark, $log_role, $log_user,$order->order_status);
+        //$this->addOrderLog($order_id, $remark, $log_role, $log_user,$order->order_status);
+        OrderLogService::cancel($order);
     }
     
     /**
@@ -297,7 +300,7 @@ class OrderService extends OrderBaseService
             throw new \Exception('订单查询失败,order_id='.$order_id);
         }
         
-        $payLog = PayLog::find()->where(['order_sn'=>$order->order_sn,'pay_type'=>PayEnum::PAY_TYPE_PAYPAL,'pay_status'=>PayStatusEnum::PAID])->one();
+        $payLog = PayLog::find()->where(['order_sn'=>$order->order_sn,'pay_type'=>[PayEnum::PAY_TYPE_PAYPAL,PayEnum::PAY_TYPE_PAYPAL_1],'pay_status'=>PayStatusEnum::PAID])->one();
         if(!$payLog) {
             throw new \Exception('非PayPal支付');
         }

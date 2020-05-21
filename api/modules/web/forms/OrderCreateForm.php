@@ -17,7 +17,10 @@ class OrderCreateForm extends Model
     public $buyer_address_id;
     public $buyer_remark;
     public $order_amount;
+
     public $coupon_id;
+
+    public $order_from;
 
     /**
      * @inheritdoc
@@ -25,24 +28,28 @@ class OrderCreateForm extends Model
     public function rules()
     {
         return [
+
             [['carts','buyer_address_id','order_amount'], 'required'],
-            [['buyer_address_id', 'coupon_id'], 'integer'],
+            [['buyer_address_id','order_from', 'coupon_id'], 'integer'],
             [['order_amount'], 'number'],
             [['buyer_remark'], 'string','max'=>500],
             [['buyer_address_id'], 'validateCurrency'],
             [['carts'], 'validateCarts'],
             ['coupon_id', 'validateCouponId'],
+
         ];
     }
     
     public function attributeLabels()
     {
         return [
+
             'carts' => 'carts',
             'coupon_id' => 'coupon_id',
             'order_amount' => 'order_amount',
             'buyer_address_id' => 'buyer_address_id',
             'buyer_remark' => '订单备注',
+            'order_from' => 'order_from',
         ];
     }
 

@@ -125,7 +125,7 @@ class StyleController extends OnAuthController
         foreach($result['data'] as & $val) {
             $arr = array();
             $arr['id'] = $val['id'];
-            $arr['categoryId'] = $type_id;
+            $arr['categoryId'] = $val['type_id'];
             $arr['coinType'] = $this->getCurrencySign();
             $arr['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'mid');
             $arr['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
