@@ -72,6 +72,19 @@ class OrderBaseService extends Service
                 }
                 \Yii::$app->services->sms->queue(true)->send($order->address->mobile,$usage,$params,$order->language);
             }
+            elseif($order->refund_status) {
+                $params = [
+                    'code' =>$order->id,
+                    'order_sn' =>$order->order_sn,
+                    'express_name' => \Yii::$app->services->express->getExressName($order->express_id),
+                    'express_no' =>$order->express_no,
+                    'company_name'=>'BDD Co.',
+                    'company_email' => 'admin@bddco.com'
+                ];
+                //退款通知短信
+                $usage = SmsLog::USAGE_ORDER_REFUND_NOTICE;
+                \Yii::$app->services->sms->queue(true)->send($order->address->mobile,$usage,$params);
+            }
         }
     }
 
