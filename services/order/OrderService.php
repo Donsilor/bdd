@@ -169,6 +169,9 @@ class OrderService extends OrderBaseService
             throw new UnprocessableEntityHttpException($this->getError($orderAddress));
         }
 
+        //购物券消费
+        CardService::consume($order->id, $orderAccountTax['cards']);
+
         //如果有发票信息
         if(!empty($invoice_info)) {
             $invoice = new OrderInvoice();
@@ -190,10 +193,10 @@ class OrderService extends OrderBaseService
         OrderCart::deleteAll(['id'=>$cart_ids,'member_id'=>$buyer_id]);
         
         return [
-                "currency" => $currency,
+            "currency" => $currency,
             "order_amount"=> $order_amount,
             "pay_amount"=> $orderAccountTax['pay_amount'],
-                "order_id" => $order->id,
+            "order_id" => $order->id,
         ];
     }
     /**

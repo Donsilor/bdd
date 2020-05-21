@@ -161,9 +161,6 @@ class OrderController extends UserAuthController
 
             $result = \Yii::$app->services->order->createOrder($model->carts, $this->member_id, $model->buyer_address_id, $model->toArray(), $invoiceInfo, $coupon_id, $cards);
 
-            //购物券消费
-            CardService::consume($result['order_id'], $result['cards']);
-
             //如果订单金额为0
             if($result['order_amount']==$result['card_amount']) {
                 //自动 支付
