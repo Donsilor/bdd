@@ -191,10 +191,10 @@ class OrderController extends UserAuthController
             return [
                 "coinType" => $result['currency'],
                 "orderAmount"=> $result['order_amount'],
-                "payAmount"=> bcsub($result['order_amount'], $cardUseAmount, 2),
+                "payAmount"=> $result['pay_amount'],
                 "orderId" => $result['order_id'],
                 "payStatus" => $pay['payStatus']??0,
-            ];            
+            ];
         }catch(Exception $e) {
             $trans->rollBack();
             //记录日志
