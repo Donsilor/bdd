@@ -236,13 +236,26 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                 'label' => '跟进状态',
                                 'headerOptions' => ['class' => 'col-md-1'],
                                 'filter' => Html::activeDropDownList($searchModel, 'followed_status',common\enums\FollowStatusEnum::getMap(), [
-                                        'prompt' => '全部',
-                                        'class' => 'form-control',
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
                                 ]),
                                 'value' => function ($model) {
                                     $value = common\enums\FollowStatusEnum::getValue($model->followed_status);
                                     $value .= $model->follower ? "<br />" . $model->follower->username : '';
                                     return $value;
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
+                                'label' => '审核状态',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'audit_status',common\enums\OrderStatusEnum::auditStatus(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    $value = common\enums\OrderStatusEnum::getValue($model->audit_status, 'auditStatus');
+                                    return $value?:'未审核';
                                 },
                                 'format' => 'raw',
                             ],
