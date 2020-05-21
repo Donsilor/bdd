@@ -285,6 +285,7 @@ class OrderBaseService extends Service
                     $cardUseAmountCny = \Yii::$app->services->currency->exchangeAmount($cardUseAmount,2, CurrencyEnum::CNY, \Yii::$app->params['currency']);
                 }
 
+                $card['id'] = $cardInfo->id;
                 $card['goodsTypeAttach'] = $cardInfo->goods_type_attach;
 
                 $card['useAmount'] = $cardUseAmount;

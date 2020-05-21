@@ -126,84 +126,18 @@ class CardService extends Service
             return;
         }
 
-        //已使用购物券的金额
-        $cardsUseAmount = self::getUseAmount($order->id);
-
-        //订单待支付金额=订单总额-优惠金额
-        $amount = $order->account->order_amount - $order->account->discount_amount - $cardsUseAmount;
-
-        //计算订单产品线金额
-        $goodsTypeAmounts = [];
-
-        //优惠券使用金额
-        $couponUseAmount = 0;
-
-        //订单折扣后金额
-        $goodsPayPrice = 0;
-        foreach ($order->goods as $goods) {
-            if(!isset($goodsTypeAmounts[$goods['goods_type']])) {
-                $goodsTypeAmounts[$goods['goods_type']] = $goods['goods_pay_price'];
-            }
-            else {
-                $goodsTypeAmounts[$goods['goods_type']] = bcadd($goodsTypeAmounts[$goods['goods_type']], $goods['goods_pay_price'], 2);
-            }
-            $goodsPayPrice = bcadd($goodsPayPrice, $goods['goods_pay_price'], 2);
-
-        }
-
         foreach ($cards as $card) {
-            //状态，是否过期，是否有余额
-            $where = ['and'];
-            $where[] = [
-                'sn' => $card['sn'],
-                'status' => 1,
-            ];
-            $where[] = ['<=', 'start_time', time()];
-            $where[] = ['>', 'end_time', time()];
-
-            if(!($cardInfo = MarketCard::find()->where($where)->one()) || $cardInfo->balance==0) {
+            if(!isset($card['useAmount'])) {
                 continue;
-            }
-
-            $balance = \Yii::$app->services->currency->exchangeAmount($cardInfo->balance);
-
-            $cardUseAmount = 0;
-
-            foreach ($goodsTypeAmounts as $goodsType => &$goodsTypeAmount) {
-                if(!empty($cardInfo->goods_type_attach) && in_array($goodsType, $cardInfo->goods_type_attach) && $goodsTypeAmount > 0) {
-                    if($goodsTypeAmount >= $balance) {
-                        //购物卡余额不足时
-                        $cardUseAmount = bcadd($balance, $cardUseAmount, 2);
-                        $goodsTypeAmount = bcsub($goodsTypeAmount, $balance, 2);
-                        $balance = 0;
-                    }
-                    else {
-                        $cardUseAmount = bcadd($cardUseAmount, $goodsTypeAmount, 2);
-                        $balance = bcsub($balance, $goodsTypeAmount, 2);
-                        $goodsTypeAmount = 0;
-                    }
-                }
-            }
-
-            if($cardUseAmount==0) {
-                continue;
-            }
-
-            //转人民币,如果余额为0，直接使用人民币余额，避免小数出错
-            if($balance==0) {
-                $cardUseAmountCny = $cardInfo->balance;
-            }
-            else {
-                $cardUseAmountCny = \Yii::$app->services->currency->exchangeAmount($cardUseAmount,2, CurrencyEnum::CNY, \Yii::$app->params['currency']);
             }
 
             //扣除购物卡余额
             $data = [];
-            $data['balance'] = new Expression("balance-{$cardUseAmountCny}");
+            $data['balance'] = new Expression("balance-{$card['useAmountCny']}");
 
             $where = ['and'];
-            $where[] = ['id'=>$cardInfo->id, 'status'=>1];
-            $where[] = ['>=', 'balance', $cardUseAmountCny];
+            $where[] = ['id'=>$card['id'], 'status'=>1];
+            $where[] = ['>=', 'balance', $card['useAmountCny']];
             if(!MarketCard::updateAll($data, $where)) {
                 throw new UnprocessableEntityHttpException("购物卡金额不正确");
             }
@@ -211,12 +145,12 @@ class CardService extends Service
             //冻结购物卡消费
             $cardDetail = new MarketCardDetails();
             $cardDetail->setAttributes([
-                'card_id' => $cardInfo->id,
+                'card_id' => $card['id'],
                 'order_id' => $order->id,
-                'balance' => bcsub($cardInfo->balance ,$cardUseAmountCny, 2),//余额
+                'balance' => bcsub($card['balanceCny'] ,$card['useAmountCny'], 2),//余额
                 'currency' => \Yii::$app->params['currency'],
-                'use_amount' => -$cardUseAmount,
-                'use_amount_cny' => -$cardUseAmountCny,
+                'use_amount' => -$card['useAmount'],
+                'use_amount_cny' => -$card['useAmountCny'],
                 'ip' => $order->ip,
                 'member_id' => $order->member_id,
                 'type' => 2,
@@ -225,7 +159,6 @@ class CardService extends Service
             if(!$cardDetail->save()) {
                 throw new UnprocessableEntityHttpException(\Yii::$app->debris->analyErr($cardDetail->getFirstErrors()));
             }
-
         }
     }
 
