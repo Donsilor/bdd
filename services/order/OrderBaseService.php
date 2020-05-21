@@ -220,11 +220,11 @@ class OrderBaseService extends Service
             }
 
             //计算产品线金额
-            if(!isset($goodsTypeAmounts[$orderGoods['type_id']])) {
-                $goodsTypeAmounts[$orderGoods['type_id']] = $orderGoods['goods_pay_price'];
+            if(!isset($goodsTypeAmounts[$orderGoods['goods_type']])) {
+                $goodsTypeAmounts[$orderGoods['goods_type']] = $orderGoods['goods_pay_price'];
             }
             else {
-                $goodsTypeAmounts[$orderGoods['type_id']] = bcadd($goodsTypeAmounts[$orderGoods['type_id']], $orderGoods['goods_pay_price'], 2);
+                $goodsTypeAmounts[$orderGoods['goods_type']] = bcadd($goodsTypeAmounts[$orderGoods['goods_type']], $orderGoods['goods_pay_price'], 2);
             }
             $goods_amount = bcadd($goods_amount, $goodsPrice, 2);
         }
