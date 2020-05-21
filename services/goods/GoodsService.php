@@ -705,8 +705,8 @@ class GoodsService extends Service
                     $new_val = ArrayHelper::toArray(\Qiniu\json_decode($new_val));
                     $area_arr = AreaEnum::getMap();
                     if('style_spec' == $k){
-                        $old_val = $old_val['c'];
-                        $new_val = $new_val['c'];
+                        $old_val = $old_val['c']??'';
+                        $new_val = $new_val['c']??'';
                     }
                     $old_arr = [];
                     if(!empty($old_val)){
