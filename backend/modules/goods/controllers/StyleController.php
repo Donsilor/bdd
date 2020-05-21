@@ -78,7 +78,7 @@ class StyleController extends BaseController
         $model = $this->findModel($id);
         
         $status = $model ? $model->status:0;
-        $old_style_info = ArrayHelper::toArray($model);
+        $old_style_info = $model->toArray();
         if ($model->load(Yii::$app->request->post())) {
             
             try{

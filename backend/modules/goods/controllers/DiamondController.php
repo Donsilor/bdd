@@ -71,7 +71,7 @@ class DiamondController extends BaseController
         
         $model = $this->findModel($id);
         $status = $model ? $model->status:0;
-        $old_diamond_info = ArrayHelper::toArray($model);
+        $old_diamond_info = $model->toArray();
         if ($model->load(Yii::$app->request->post())) { 
             try{
                 $trans = Yii::$app->db->beginTransaction();
