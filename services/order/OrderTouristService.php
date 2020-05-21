@@ -34,14 +34,13 @@ class OrderTouristService extends OrderBaseService
     /**
      * @param array $cartList
      * @param array $invoice_info
-     * @param int $coupon_id
      * @return int
      * @throws UnprocessableEntityHttpException
      */
 
-    public function createOrder($cartList, $invoice_info,$order_from, $coupon_id=0)
+    public function createOrder($cartList, $invoice_info, $order_from)
     {
-        $orderAccountTax = $this->getCartAccountTax($cartList, $coupon_id);
+        $orderAccountTax = $this->getCartAccountTax($cartList);
 
         //商品列表
         if(empty($orderAccountTax['orderGoodsList'])) {
@@ -83,27 +82,6 @@ class OrderTouristService extends OrderBaseService
         //保存订单
         if(false === $order->save()) {
             throw new UnprocessableEntityHttpException($this->getError($order));
-        }
-
-        if($coupon_id) {
-            //使用优惠券
-            //CouponService::incrMoneyUse($coupon_id, 1);
-
-            $couponDetails = new MarketCouponDetails();
-            $couponDetails->setAttributes([
-                'specials_id' => $orderAccountTax['coupon']['specials_id'],
-                'coupon_id' => $coupon_id,
-                'coupon_code' => CouponService::generatedCouponSn(),
-                'order_sn' => $order->order_sn,
-                'get_type' => 3,
-                'coupon_status' => 2,
-                'fetch_time' => time(),
-                'use_time' => time(),
-            ]);
-
-            if(false === $couponDetails->save()) {
-                throw new UnprocessableEntityHttpException($this->getError($couponDetails));
-            }
         }
 
         $orderGoodsList = $orderAccountTax['orderGoodsList'];

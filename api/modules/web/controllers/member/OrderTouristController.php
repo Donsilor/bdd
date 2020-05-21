@@ -39,7 +39,6 @@ class OrderTouristController extends OnAuthController
         $payType = \Yii::$app->request->post('payType', 6);
         $goodsCartList = \Yii::$app->request->post('goodsCartList');
         $invoiceInfo = \Yii::$app->request->post('invoice');
-        $coupon_id = \Yii::$app->request->post('coupon_id',0);
 
         if(empty($orderSn)) {
             if (empty($goodsCartList)) {
@@ -56,14 +55,13 @@ class OrderTouristController extends OnAuthController
                 }
                 $cart_list[] = $model->toArray();
             }
-            //$orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $invoiceInfo);
         }
         $order_from = $this->platform;
         try {            
             $trans = \Yii::$app->db->beginTransaction();
             if(empty($orderSn)) {
                 //创建订单
-                $orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $invoiceInfo,$order_from, $coupon_id);
+                $orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $invoiceInfo, $order_from);
 
             }
             else {
