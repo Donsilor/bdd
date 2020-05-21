@@ -117,13 +117,13 @@ class OrderBaseService extends Service
         $coupons_amount = 0;
 
         foreach ($cartList as $item) {
-            $goods = \Yii::$app->services->goods->getGoodsInfo($item['goods_id'], $item['goods_type'], false);
+            $goods = \Yii::$app->services->goods->getGoodsInfo($item['goods_id'], $item['goods_type']);
             if(empty($goods) || $goods['status'] != StatusEnum::ENABLED) {
                 continue;
             }
 
             //商品价格
-            $sale_price = (int)$this->exchangeAmount($goods['sale_price']);
+            $sale_price = (int)$this->exchangeAmount($goods['sale_price'],0);
 
             $orderGoods = [];
             $orderGoods['goods_id'] = $item['goods_id'];//商品ID
