@@ -87,8 +87,10 @@ class DiamondController extends BaseController
 
                 $this->editLang($model);
 
-                //记录日志
-                \Yii::$app->services->goods->recordGoodsLog($model, $old_diamond_info);
+                if(!empty($old_diamond_info)){
+                    //记录日志
+                    \Yii::$app->services->goods->recordGoodsLog($model, $old_diamond_info);
+                }
 
                 //同步裸钻数据到goods
                 \Yii::$app->services->diamond->syncDiamondToGoods($model->id);
