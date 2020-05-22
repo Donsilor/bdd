@@ -35,7 +35,7 @@ class NotifyContacts extends \common\models\base\BaseModel
     {
         return [
             [['email_switch', 'mobile_switch', 'type_id', 'created_at', 'updated_at'], 'integer'],
-            [['user_id', 'type_id', 'goods_type_attach', 'realname'], 'required'],
+            [['user_id', 'type_id', 'area_attach', 'realname'], 'required'],
             [['area_attach', 'goods_type_attach'], 'safe'],
             [['realname'], 'string', 'max' => 50],
             [['email'], 'string', 'max' => 60],
