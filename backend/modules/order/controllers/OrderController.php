@@ -93,7 +93,7 @@ class OrderController extends BaseController
         }
 
         //订单状态
-        $orderStatus2 = Yii::$app->request->queryParams['SearchModel']['order_status'];
+        $orderStatus2 = Yii::$app->request->queryParams['SearchModel']['order_status']??"";
         if($orderStatus2!="") {
             if($orderStatus2==1) {
                 $dataProvider->query->andWhere(['=', 'refund_status', $orderStatus2]);
