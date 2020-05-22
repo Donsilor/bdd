@@ -36,6 +36,22 @@ $this->params['breadcrumbs'][] = ['label' =>  $this->title];
                                 'filter' => false
                             ],
                             [
+                                'label' => '地区',
+                                'attribute' => 'area_attach',
+                                'value' => function($model) {
+                                    if(empty($model->area_attach)) {
+                                        return '';
+                                    }
+
+                                    $value = [];
+                                    foreach ($model->area_attach as $areaId) {
+                                        $value[] = \common\enums\AreaEnum::getValue($areaId);
+                                    }
+                                    return implode('/', $value);
+                                },
+                                'filter' => false,
+                            ],
+                            [
                                 'attribute' => 'realname',
                             ],
                             [
