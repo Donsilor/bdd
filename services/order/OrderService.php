@@ -196,6 +196,7 @@ class OrderService extends OrderBaseService
             "currency" => $currency,
             "order_amount"=> $order_amount,
             "pay_amount"=> $orderAccountTax['pay_amount'],
+            "card_amount"=> $orderAccountTax['card_amount'],
             "order_id" => $order->id,
         ];
     }

@@ -55,6 +55,7 @@ class OrderTouristService extends OrderBaseService
 
         $order->order_amount = $orderAccountTax['order_amount'];//订单金额
         $order->goods_amount = $orderAccountTax['goods_amount'];//商品总金额
+        $order->pay_amount = $orderAccountTax['pay_amount'];//商品总金额
         $order->discount_amount = $orderAccountTax['discount_amount'];//优惠金额
         $order->shipping_fee = $orderAccountTax['shipping_fee'];//运费
         $order->tax_fee = $orderAccountTax['tax_fee'];//税费
@@ -69,7 +70,7 @@ class OrderTouristService extends OrderBaseService
         $order->store_id = null;//店铺ID
         $order->tourist_key = null;//游客的KEY
         $order->order_from = $order_from;
-        $order->pay_amount = 0;//实际支付金额
+//        $order->pay_amount = 0;//实际支付金额
         $order->refund_amount = 0;//退款金额
         $order->language   = $this->getLanguage();//语言
 

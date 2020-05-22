@@ -214,7 +214,7 @@ class PayForm extends Model
 
                 // TODO 查询订单获取订单信息
                 $orderSn = $order->order_sn;
-                $totalFee = bcsub($order->account->order_amount - $order->account->discount_amount, $cardUseAmount, 2);
+                $totalFee = $order->account->pay_amount;//bcsub($order->account->order_amount - $order->account->discount_amount, $cardUseAmount, 2);
                 $currency = $order->account->currency;
                 $exchangeRate = $order->account->exchange_rate;
                 
@@ -234,7 +234,7 @@ class PayForm extends Model
                 $this->returnUrl = str_replace('{order_sn}', $order->order_sn, $this->returnUrl);
 
                 $orderSn = $order->order_sn;
-                $totalFee = bcsub($order->order_amount, $order->discount_amount, 2);
+                $totalFee = $order->pay_amount;//bcsub($order->order_amount, $order->discount_amount, 2);
                 $currency = $order->currency;
                 $exchangeRate = $order->exchange_rate;
                 $order = [

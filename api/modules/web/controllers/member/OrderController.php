@@ -162,7 +162,7 @@ class OrderController extends UserAuthController
             $result = \Yii::$app->services->order->createOrder($model->carts, $this->member_id, $model->buyer_address_id, $model->toArray(), $invoiceInfo, $coupon_id, $cards);
 
             //如果订单金额为0
-            if($result['order_amount']==$result['card_amount']) {
+            if($result['pay_amount']==0) {
                 //自动 支付
                 //调用支付接口
                 $payForm = new PayForm();
@@ -482,7 +482,7 @@ class OrderController extends UserAuthController
             'productAmount' => $taxInfo['goods_amount'],
             'discountAmount' => $taxInfo['discount_amount'],
             'couponAmount' => $taxInfo['coupon_amount'],
-            'cardsUseAmount'=> $taxInfo['cards_use_amount'],
+            'cardsUseAmount'=> $taxInfo['card_amount'],
             'payAmount'=> $taxInfo['pay_amount'],
             'safeFee'=> $taxInfo['safe_fee'],
             'taxFee'  => $taxInfo['tax_fee'],
