@@ -80,7 +80,7 @@ class OrderController extends BaseController
             ]
         ]);
 
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at', 'address.mobile', 'address.email']);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at', 'address.mobile', 'address.email', 'order_status']);
 
         //订单状态
         if ($orderStatus !== -1) {
@@ -89,6 +89,22 @@ class OrderController extends BaseController
             }
             else {
                 $dataProvider->query->andWhere(['=', 'order_status', $orderStatus]);
+            }
+        }
+
+        //订单状态
+        $orderStatus2 = Yii::$app->request->queryParams['SearchModel']['order_status'];
+        if($orderStatus2!="") {
+            if($orderStatus2==1) {
+                $dataProvider->query->andWhere(['=', 'refund_status', $orderStatus2]);
+                $dataProvider->query->andWhere(['=', 'order_status', 0]);
+            }
+            elseif($orderStatus2==0) {
+                $dataProvider->query->andWhere(['=', 'order_status', $orderStatus2]);
+                $dataProvider->query->andWhere(['=', 'refund_status', 0]);
+            }
+            else {
+                $dataProvider->query->andWhere(['=', 'order_status', $orderStatus2]);
             }
         }
 

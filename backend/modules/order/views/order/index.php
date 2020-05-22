@@ -211,7 +211,7 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                             [
                                 'attribute' => 'order_status',
                                 'headerOptions' => ['class' => 'col-md-1'],
-                                'filter' => Html::activeDropDownList($searchModel, 'order_status', common\enums\OrderStatusEnum::getMap(), [
+                                'filter' => Html::activeDropDownList($searchModel, 'order_status', (common\enums\OrderStatusEnum::getMap()+['1'=>'已关闭']), [
                                     'prompt' => '全部',
                                     'class' => 'form-control',
                                 ]),
