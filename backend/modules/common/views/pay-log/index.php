@@ -55,9 +55,9 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['index']];
                         [
                             'label' => '支付类型',
                             'value' => function ($model) {
-                                return PayEnum::$payTypeExplain[$model->pay_type];
+                                return PayEnum::getValue($model->pay_type);
                             },
-                            'filter' => Html::activeDropDownList($searchModel, 'pay_type', PayEnum::$payTypeExplain, [
+                            'filter' => Html::activeDropDownList($searchModel, 'pay_type', PayEnum::getMap(), [
                                     'prompt' => '全部',
                                     'class' => 'form-control'
                                 ]

@@ -3,9 +3,11 @@
 namespace console\controllers;
 
 use common\models\common\EmailLog;
+use common\models\common\SmsLog;
 use common\models\market\MarketCard;
 use common\models\order\Order;
 use services\market\CardService;
+use services\order\OrderLogService;
 use yii\console\Controller;
 use yii\helpers\BaseConsole;
 use yii\helpers\Console;
@@ -21,9 +23,14 @@ class CardController extends Controller
 
     public function actionTest()
     {
-        $order_id = "BDD202004174185053";
-        $order = Order::find()->where(['or',['id'=>$order_id],['order_sn'=>$order_id]])->one();
-        var_dump($order);
+        $order = Order::findOne(344);
+        var_dump(OrderLogService::create($order));
+        var_dump(OrderLogService::cancel($order));
+        var_dump(OrderLogService::pay($order));
+        var_dump(OrderLogService::audit($order));
+        var_dump(OrderLogService::finish($order));
+        var_dump(OrderLogService::deliver($order));
+        var_dump(OrderLogService::follower($order));
 //        $order = Order::findOne('523');
 //        $usage = EmailLog::$orderStatusMap[$order->order_status] ?? '';
 //        \Yii::$app->services->mailer->queue(false)->send('zhufu.zheng@bddco.com',$usage,['code'=>$order->id],$order->language);

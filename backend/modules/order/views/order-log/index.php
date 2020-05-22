@@ -3,10 +3,8 @@
 use common\helpers\Url;
 use common\helpers\Html;
 use yii\grid\GridView;
-use common\enums\OrderStatusEnum;
-use kartik\daterange\DateRangePicker;
 
-$this->title = Yii::t('order', '游客订单');
+$this->title = Yii::t('order', '客户订单');
 $this->params['breadcrumbs'][] = ['label' => $this->title];
 
 ?>
@@ -14,6 +12,14 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 <div class="row">
     <div class="col-sm-12">
         <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li>
+                    <a href="<?= Url::to(['order/view', 'id'=>$model->id]) ?>"> <?= Html::encode($this->title) ?></a>
+                </li>
+                <li class="active">
+                    <a href="<?= Url::to(['order-log/index', 'id'=>$model->id]) ?>"> <?= Html::encode('日志记录') ?></a>
+                </li>
+            </ul>
             <div class="tab-content">
                 <div class="active tab-pane">
                     <?= GridView::widget([
@@ -29,70 +35,84 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'headerOptions' => ['width'=>'30'],
                             ],
                             [
+                                'label'=>'序号',
+                                'filter' => false,
                                 'attribute' => 'id',
                             ],
                             [
-                                'attribute' => 'created_at',
-                                'filter' => DateRangePicker::widget([    // 日期组件
-                                    'model' => $searchModel,
-                                    'attribute' => 'created_at',
-                                    'value' => '',
-                                    'options' => ['readonly' => true, 'class' => 'form-control',],
-                                    'pluginOptions' => [
-                                        'format' => 'yyyy-mm-dd',
-                                        'locale' => [
-                                            'separator' => '/',
-                                        ],
-                                        'endDate' => date('Y-m-d', time()),
-                                        'todayHighlight' => true,
-                                        'autoclose' => true,
-                                        'todayBtn' => 'linked',
-                                        'clearBtn' => true,
-                                    ],
-                                ]),
-                                'value' => function ($model) {
-                                    return Yii::$app->formatter->asDatetime($model->created_at);
-                                },
-                                'format' => 'raw',
-                            ],
-                            [
-                                'attribute' => 'order_sn',
-                            ],
-                            [
-                                'attribute' => 'order_amount',
-                                'value' => function ($model) {
-                                    return sprintf('(%s)%s', $model->currency, $model->order_amount);
+                                'label'=>'操作时间',
+                                'filter' => false,
+                                'attribute'=>'log_time',
+                                'value'=>function($model){
+                                    return Yii::$app->formatter->asDatetime($model->log_time);
                                 }
                             ],
                             [
-                                'attribute' => 'ip',
-                                'value' => function ($model) {
-                                    return $model->ip."(".$model->ip_location.")";
-                                },
+                                'label'=>'动作名',
+                                'filter' => false,
+                                'attribute'=>'action_name',
+                                'value'=>function($model){
+                                    return \common\enums\OrderLogEnum::getValue($model->action_name, 'actionName')?:$model->action_name;
+                                }
                             ],
                             [
-                                'attribute' => 'ip_area_id',
-                                'headerOptions' => ['class' => 'col-md-1'],
-                                'filter' => Html::activeDropDownList($searchModel, 'ip_area_id', \common\enums\AreaEnum::getMap(), [
+                                'label'=>'操作内容',
+                                'filter' => false,
+                                'format' => 'raw',
+                                'attribute'=>'log_msg',
+                                'value'=>function($model) {
+                                    $value = '<pre>';
+                                    $value .= $model->log_msg;
+
+                                    if(!empty($model->data[0])) {
+                                        foreach ($model->data[0] as $field => $datum) {
+
+                                            $fieldName = \common\enums\OrderLogEnum::getValue($field, 'fieldName')?:$field;
+
+                                            if(empty($model->data[1][$field])) {
+                                                $value .= "\r\n";
+                                                $value .= sprintf('[%s]：“%s”;', $fieldName, $datum);
+                                            }
+                                            else {
+                                                $val = $model->data[1][$field]??'';
+                                                if($val == $datum) {
+                                                    continue;
+                                                }
+                                                $value .= "\r\n";
+                                                $value .= sprintf('[%s]：“%s”变更为“%s“;', $fieldName, $val, $datum);
+                                            }
+                                        }
+                                    }
+
+                                    $value .= '</pre>';
+                                    return $value;
+                                }
+                            ],
+                            [
+                                'label'=>'操作类型',
+                                'filter' => Html::activeDropDownList($searchModel, 'log_role', [
+                                    'system'=>'系统',
+                                    'admin'=>'管理员',
+                                    'buyer'=>'客户',
+                                    'tourist'=>'游客',
+                                ], [
                                     'prompt' => '全部',
                                     'class' => 'form-control',
                                 ]),
-                                'value' => function ($model) {
-                                    return \common\enums\AreaEnum::getValue($model->ip_area_id);
-                                },
-                                'format' => 'raw',
+                                'attribute'=>'log_role',
+                                'value'=>function($model) {
+                                    return array_get([
+                                        'system'=>'系统',
+                                        'admin'=>'管理员',
+                                        'buyer'=>'客户',
+                                        'tourist'=>'游客',
+                                    ], $model->log_role);
+                                }
                             ],
                             [
-                                'attribute' => 'status',
-                                'headerOptions' => ['class' => 'col-md-1'],
-                                'filter' => Html::activeDropDownList($searchModel, 'status', ['未支付', '已支付'], [
-                                    'prompt' => '全部',
-                                    'class' => 'form-control',
-                                ]),
-                                'value' => function ($model) {
-                                    return array_get(['未支付', '已支付'], $model->status);
-                                },
-                                'format' => 'raw',
+                                'label'=>'操作人',
+                                'filter' => false,
+                                'attribute'=>'log_user',
                             ],
                         ],
                     ]);

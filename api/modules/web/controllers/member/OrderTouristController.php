@@ -57,12 +57,12 @@ class OrderTouristController extends OnAuthController
             }
             //$orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $invoiceInfo);
         }
-        
-        try {
+        $order_from = $this->platform;
+        try {            
             $trans = \Yii::$app->db->beginTransaction();
             if(empty($orderSn)) {
                 //创建订单
-                $orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $invoiceInfo);
+                $orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $invoiceInfo,$order_from);
             }
             else {
                 //按单号支付

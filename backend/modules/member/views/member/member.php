@@ -119,6 +119,16 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'class' => 'form-control',
                             ]),
                         ],
+                        [
+                            'label'=>'游客',
+                            'value'=>function($model) {
+                                return \common\enums\MemberEnum::getValue($model->is_tourist, 'isTourist');
+                            },
+                            'filter' => Html::activeDropDownList($searchModel, 'is_tourist',\common\enums\MemberEnum::isTourist(), [
+                                'prompt' => '全部',
+                                'class' => 'form-control',
+                            ]),
+                        ],
                         /*
                         [
                             'header' => "操作",

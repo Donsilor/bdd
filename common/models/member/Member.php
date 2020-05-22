@@ -46,6 +46,7 @@ use common\helpers\RegularHelper;
  * @property int $status 状态[-1:删除;0:禁用;1启用]
  * @property string $created_at 创建时间
  * @property string $updated_at 修改时间
+ * @property string $is_tourist 是否游客
  */
 class Member extends User
 {
@@ -66,7 +67,7 @@ class Member extends User
             [['username', 'password_hash'], 'required', 'on' => ['backendCreate']],
             [['password_hash'], 'string', 'min' => 6, 'on' => ['backendCreate']],
             [['username'], 'unique', 'on' => ['backendCreate']],
-            [['marriage','merchant_id', 'type', 'gender','visit_count', 'role', 'last_time','country_id', 'province_id', 'city_id', 'area_id', 'pid', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['is_tourist', 'marriage','merchant_id', 'type', 'gender','visit_count', 'role', 'last_time','country_id', 'province_id', 'city_id', 'area_id', 'pid', 'status', 'created_at', 'updated_at'], 'integer'],
             [['birthday','created_at','is_book','is_buy'], 'safe'],
             [[ 'qq', 'home_phone', 'mobile'], 'string', 'max' => 20],
             [['password_hash', 'password_reset_token', 'head_portrait'], 'string', 'max' => 150],
@@ -123,6 +124,7 @@ class Member extends User
             'marriage' => '婚姻',
             'google_account' => 'Google账户',
             'facebook_account' => 'Facebook账户',
+            'is_tourist' => '是否游客'
         ];
     }
 

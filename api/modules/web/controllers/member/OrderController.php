@@ -11,6 +11,7 @@ use common\helpers\Url;
 use common\models\forms\PayForm;
 use common\models\member\Member;
 use services\market\CardService;
+use services\order\OrderLogService;
 use yii\base\Exception;
 use common\models\order\Order;
 use api\modules\web\forms\OrderCreateForm;
@@ -58,6 +59,8 @@ class OrderController extends UserAuthController
                 'id' =>$order->id,
                 'orderNO' =>$order->order_sn,
                 'orderStatus'=> $order->order_status,
+                'refundStatus'=> $order->refund_status,
+                'wireTransferStatus'=> !empty($order->wireTransfer)?$order->wireTransfer->collection_status:null,
                 'orderAmount'=> $order->account->order_amount,
                 'payAmount'=> bcsub($order->account->order_amount, CardService::getUseAmount($order->id), 2),
                 'productAmount'=> $order->account->goods_amount,
@@ -135,6 +138,7 @@ class OrderController extends UserAuthController
             
             $model = new OrderCreateForm();
             $model->attributes = \Yii::$app->request->post();
+            $model->order_from = $this->platform;
             $invoiceInfo = \Yii::$app->request->post('invoice');
             if(!$model->validate()) {
                 throw new \Exception($this->getError($model),500);
@@ -338,6 +342,7 @@ class OrderController extends UserAuthController
             'isInvoice'=> 2,            
             'orderNo' => $order->order_sn,
             'orderStatus' => $order->order_status,
+            'wireTransferStatus'=> !empty($order->wireTransfer)?$order->wireTransfer->collection_status:null,
             'orderTime' => $order->created_at,
             'orderType' => $order->order_type,            
             'payChannel' => $order->payment_type,
@@ -414,6 +419,8 @@ class OrderController extends UserAuthController
         }
         $res = Order::updateAll(['order_status'=>OrderStatusEnum::ORDER_FINISH],['id'=>$order_id,'order_status'=>OrderStatusEnum::ORDER_SEND]);
         if($res){
+            $order->refresh();
+            OrderLogService::finish($order);
             return 'success';
         }else{
             return ResultHelper::api(500, '确认收货失败');

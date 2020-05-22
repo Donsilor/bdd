@@ -1,8 +1,11 @@
 <?php
 
 namespace services\goods;
+use Yii;
 use common\components\Attr;
 use common\components\Service;
+use common\enums\AreaEnum;
+use common\enums\IsStockEnum;
 use common\models\goods\Attribute;
 use common\models\goods\GoodsMarkup;
 use common\models\goods\Style;
@@ -15,8 +18,10 @@ use common\models\goods\AttributeIndex;
 use common\enums\AttrTypeEnum;
 use common\models\goods\StyleLang;
 use common\models\goods\Diamond;
+use common\models\goods\GoodsLog;
 use common\models\goods\DiamondLang;
 use common\enums\DiamondEnum;
+use common\enums\FrameEnum;
 use common\models\goods\StyleMarkup;
 use function GuzzleHttp\json_encode;
 use yii\db\Expression;
@@ -423,10 +428,14 @@ class GoodsService extends Service
                  'attr_name'=>'materials',
                  'key_name'=>'material',
              ),//成色
-             '38'=>array(
-                 'attr_name'=>'sizes',
-                 'key_name'=>'size',
-             ),  // 尺寸
+            '38'=>array(
+                'attr_name'=>'sizes',
+                'key_name'=>'size',
+            ),  // 尺寸
+            '59'=>array(
+                'attr_name'=>'carats',
+                'key_name'=>'carat',
+            ),  // 主石大小
         ];
         $query = Style::find()->alias('m')
             ->leftJoin(StyleLang::tableName().' lang',"m.id=lang.master_id and lang.language='".$language."'")
@@ -614,7 +623,255 @@ class GoodsService extends Service
         }
     }
 
+    /**
+     * 操作日志
+     * @param unknown $old_goods_info  操作前数据
+     * @param unknown $new_goods_info  操作后数据
+     */
+    public function recordGoodsLog($new_goods_info, $old_goods_info){
+        $not_labdata = ['onsale_time','sale_services','goods_3ds','parame_images','goods_gia_image', 'updated_at', 'goods_storage', 'style_attr', 'goods_images'];
+        $new_goods = ArrayHelper::toArray($new_goods_info);
+        $diff_info = array_diff_assoc($new_goods, $old_goods_info);
+        $diamondModel = new Diamond();
+        $styleModel = new Style();
+        $goodsLogModel = new GoodsLog();
+        $log_msg = "";
+        if(!empty($diff_info)){
+            $diamond_attrLab = $diamondModel->attributeLabels();
+            $style_attrLab = $styleModel->attributeLabels();
+            foreach ($diff_info as $k => $new_val) {
+                if(in_array($k, $not_labdata)) continue;
+                if(isset($diamond_attrLab[$k])) {
+                    $lab = $diamond_attrLab[$k];
+                }else {
+                    $lab = isset($style_attrLab[$k])?$style_attrLab[$k]:"";
+                }
+                $old_val = $old_goods_info[$k]??'';
+                if('status' == $k ){
+                    $old_val = FrameEnum::getValue($old_val);
+                    $new_val = FrameEnum::getValue($new_val);
+                }
+                if('is_stock' == $k){
+                    $old_val = IsStockEnum::getValue($old_val);
+                    $new_val = isStockEnum::getValue($new_val);
+                }
+                if('cert_type' == $k){
+                    $cert_type = DiamondEnum::getCertTypeList();
+                    $old_val = isset($cert_type[$old_val])?$cert_type[$old_val]:'';
+                    $new_val = isset($cert_type[$new_val])?$cert_type[$new_val]:'';
+                }
+                if('shape' == $k){
+                    $shape = DiamondEnum::getshapeList();
+                    $old_val = isset($shape[$old_val])?$shape[$old_val]:'';
+                    $new_val = isset($shape[$new_val])?$shape[$new_val]:'';
+                }
+                if('color' == $k){
+                    $color = DiamondEnum::getcolorList();
+                    $old_val = isset($color[$old_val])?$color[$old_val]:'';
+                    $new_val = isset($color[$new_val])?$color[$new_val]:'';
+                }
+                if('clarity' == $k){
+                    $clarity = DiamondEnum::getclarityList();
+                    $old_val = isset($clarity[$old_val])?$clarity[$old_val]:'';
+                    $new_val = isset($clarity[$new_val])?$clarity[$new_val]:'';
+                }
+                if('cut' == $k){
+                    $cut = DiamondEnum::getcutList();
+                    $old_val = isset($cut[$old_val])?$cut[$old_val]:'';
+                    $new_val = isset($cut[$new_val])?$cut[$new_val]:'';
+                }
+                if('polish' == $k){
+                    $polish = DiamondEnum::getpolishList();
+                    $old_val = isset($polish[$old_val])?$polish[$old_val]:'';
+                    $new_val = isset($polish[$new_val])?$polish[$new_val]:'';
+                }
+                if('symmetry' == $k){
+                    $symmetry = DiamondEnum::getsymmetryList();
+                    $old_val = isset($symmetry[$old_val])?$symmetry[$old_val]:'';
+                    $new_val = isset($symmetry[$new_val])?$symmetry[$new_val]:'';
+                }
+                if('fluorescence' == $k){
+                    $fluorescence = DiamondEnum::getfluorescenceList();
+                    $old_val = isset($fluorescence[$old_val])?$fluorescence[$old_val]:'';
+                    $new_val = isset($fluorescence[$new_val])?$fluorescence[$new_val]:'';
+                }
+                if('stone_floor' == $k){
+                    $stone_floor = DiamondEnum::getstonefloorList();
+                    $old_val = isset($stone_floor[$old_val])?$stone_floor[$old_val]:'';
+                    $new_val = isset($stone_floor[$new_val])?$stone_floor[$new_val]:'';
+                }
+                if(in_array($k, array('style_spec', 'sale_policy', 'style_salepolicy', 'goods_salepolicy'))){
+                    $old_val = ArrayHelper::toArray(\Qiniu\json_decode($old_val));
+                    $new_val = ArrayHelper::toArray(\Qiniu\json_decode($new_val));
+                    $area_arr = AreaEnum::getMap();
+                    if('style_spec' == $k){
+                        $old_val = $old_val['c']??'';
+                        $new_val = $new_val['c']??'';
+                    }
+                    $old_arr = [];
+                    if(!empty($old_val)){
+                        foreach ($old_val as $i => $item) {
+                            unset($item['sale_price']);
+                            $old_arr[$i] = json_encode($item);
+                        }
+                    }
+                    $new_arr = [];
+                    if(!empty($new_val)){
+                        foreach ($new_val as $i => $item) {
+                            unset($item['sale_price']);
+                            $new_arr[$i] = json_encode($item);
+                        }
+                    }
+                    $diff_val = array_diff_assoc($new_arr, $old_arr);
+                    $diff_arr = ArrayHelper::toArray($diff_val);
+                    $diff_val_fan = array_diff_assoc($old_arr, $new_arr);
+                    $diff_arr_fan = ArrayHelper::toArray($diff_val_fan);
+                    $diff_arr_all = array_merge($diff_arr, $diff_arr_fan);
+                    if('goods_salepolicy' == $k){
+                        foreach ($diff_arr as $i => $item) {
+                            $old_item = ArrayHelper::toArray(\Qiniu\json_decode($old_arr[$i]));
+                            $new_item = ArrayHelper::toArray(\Qiniu\json_decode($new_arr[$i]));
+                            $oldinfo = [];
+                            if(!empty($old_item)){
+                                foreach ($old_item as $j => $info) {
+                                    unset($info['markup_rate'], $info['markup_value']);
+                                    $oldinfo[$j] = json_encode($info);
+                                }
+                            }
+                            $newinfo = [];
+                            if(!empty($new_item)){
+                                foreach ($new_item as $j => $info) {
+                                    unset($info['markup_rate'], $info['markup_value']);
+                                    $newinfo[$j] = json_encode($info);
+                                }
+                            }
 
+                            $diff_data = array_diff_assoc($newinfo, $oldinfo);
+                            $log_msg_goods = '';
+                            if(!empty($diff_data)){
+                                foreach ($diff_data as $goods_id => $josn_info) {
+                                    $area_status = \Qiniu\json_decode($josn_info);
+                                    $goods_sn = Goods::find()->select('goods_sn')->where(['id' => $goods_id])->asArray()->all();
+                                    if(empty($goods_sn)){
+                                        continue;
+                                    }
+                                    if(!isset($new_item[$goods_id]) && isset($old_item[$goods_id])){
+                                        $log_msg_goods .= $area_arr[$area_status->area_id] . "：货号" . $goods_sn[0]['goods_sn'] . " 删除,";
+                                        continue;
+                                    }
+                                    if(!isset($old_item[$goods_id]) && isset($new_item[$goods_id])){
+                                        $log_msg_goods .= $area_arr[$area_status->area_id] . "：货号" . $goods_sn[0]['goods_sn'] . " 新增,";
+                                        continue;
+                                    }
+                                    $new_stauts = isset($new_item[$goods_id]['status'])?$new_item[$goods_id]['status']:'';
+                                    $old_stauts = isset($old_item[$goods_id]['status'])?$old_item[$goods_id]['status']:'';
+                                    if ($new_stauts != $old_stauts) {
+                                        $log_msg_goods .= $area_arr[$area_status->area_id] . "：货号" . $goods_sn[0]['goods_sn'] . " 状态：\"" . StatusEnum::getValue($old_stauts) . "\" 变更为 " . StatusEnum::getValue($new_stauts) . ",";
+                                    }
+                                }
+                            }
+                            if($log_msg_goods != ''){
+                                $log_msg.="[商品地区价格]：".$log_msg_goods;
+                            }
+                        }
+                    }else{
+                        if(!empty($diff_arr_all)) $log_msg .= "[".$lab."]：";
+                        $log_goods_add= '';
+                        $log_goods_del= '';
+                        if(!empty($diff_arr_all)){
+                            foreach ($diff_arr_all as $i => $item) {
+                                $obj = \Qiniu\json_decode($item);
+                                if(!isset($old_val[$i]) && isset($new_val[$i])){
+                                    $log_goods_add.=$new_val[$i]['goods_sn'].",";
+                                    continue;
+                                }
+                                if(!isset($new_val[$i]) && isset($old_val[$i])){
+                                    $log_goods_del.=$old_val[$i]['goods_sn'].",";
+                                    continue;
+                                }
+                                $log_msg_lsit = '';
+                                $new_status = isset($new_val[$i]['status'])?$new_val[$i]['status']:'';
+                                $old_status = isset($old_val[$i]['status'])?$old_val[$i]['status']:'';
+                                if('sale_policy' == $k || 'style_salepolicy' == $k){
+                                    $new_markup_rate = isset($new_val[$i]['markup_rate'])?$new_val[$i]['markup_rate']:'';
+                                    $old_markup_rate = isset($old_val[$i]['markup_rate'])?$old_val[$i]['markup_rate']:'';
+                                    $new_markup_value = isset($new_val[$i]['markup_value'])?$new_val[$i]['markup_value']:'';
+                                    $old_markup_value = isset($old_val[$i]['markup_value'])?$old_val[$i]['markup_value']:'';
+                                    if($new_markup_rate != $old_markup_rate){
+                                        $log_msg_lsit.="加价率：\"".$old_markup_rate."\" 变更为 ".$new_markup_rate.",";
+                                    }
+                                    if($new_markup_value != $old_markup_value){
+                                        $log_msg_lsit.="固定值：\"".$old_markup_value."\" 变更为 ".$new_markup_value.",";
+                                    }
+                                    if($new_status != $old_status){
+                                        $log_msg_lsit.="状态：\"".StatusEnum::getValue($old_status)."\" 变更为 ".StatusEnum::getValue($new_status).",";
+                                    }
+                                    if($log_msg_lsit != ''){
+                                        $log_msg.= $k == 'sale_policy' ? $obj->area_name."：" : $area_arr[$obj->area_id]."：";
+                                        $log_msg.= '【'.rtrim($log_msg_lsit, ',');
+                                    }
+                                }else{
+                                    $new_sale_price = isset($new_val[$i]['sale_price'])?$new_val[$i]['sale_price']:'';
+                                    $old_sale_price = isset($old_val[$i]['sale_price'])?$old_val[$i]['sale_price']:'';
+                                    $new_goods_storage = isset($new_val[$i]['goods_storage'])?$new_val[$i]['goods_storage']:'';
+                                    $old_goods_storage = isset($old_val[$i]['goods_storage'])?$old_val[$i]['goods_storage']:'';
+                                    if($new_sale_price != $old_sale_price){
+                                        $log_msg_lsit.="销售价：\"".$old_sale_price."\" 变更为 ".$new_sale_price.",";
+                                    }
+                                    if($new_goods_storage != $old_goods_storage){
+                                        $log_msg_lsit.="库存：\"".$old_goods_storage."\" 变更为 ".$new_goods_storage.",";
+                                    }
+                                    if($new_status != $old_status){
+                                        $log_msg_lsit.="状态：\"".StatusEnum::getValue($old_status)."\" 变更为 ".StatusEnum::getValue($new_status).",";
+                                    }
+                                    if($log_msg_lsit != ''){
+                                        $log_msg.='【'.$obj->goods_sn."：".rtrim($log_msg_lsit, ',');
+                                    }
+                                }
+                            }
+                        }
+                        if($log_goods_add != ''){
+                            $log_msg.="新增库存编号：".rtrim($log_goods_add, ',')."；";
+                        }
+                        if($log_goods_del != ''){
+                            $log_msg.="删除库存编号：".rtrim($log_goods_del, ',')."；";
+                        }
+                    }
+                    if($log_msg != '') {
+                        $log_msg = rtrim($log_msg,',')."；";
+                        $log_msg = rtrim($log_msg,'；')."；";
+                    }
+                }else{
+                    $log_msg.="[".$lab."]：\"".$old_val."\" 变更为：".$new_val."；";
+                }
+            }
+        }
+        if(!empty($log_msg)){
+            $goodsLogModel->type_id = $new_goods_info->type_id;
+            $goodsLogModel->goods_id = $new_goods_info->id;
+            $goodsLogModel->log_msg = $log_msg;
+            $goodsLogModel->log_time = time();
+            $goodsLogModel->log_role = 'buyer';
+            $goodsLogModel->log_user = Yii::$app->user->identity->username;
+            $goodsLogModel->save();
+        }
+    }
 
+    /**
+     * 货品状态变更日志
+     * @param unknown $goods_info  商品信息
+     * @param unknown $new_status  变化状态
+     */
+    function recordGoodsStatus($goods_info, $new_status){
 
+        $log_msg = "[上架状态]：变更为 ".FrameEnum::getValue($new_status);
+        $goodsLogModel = new GoodsLog();
+        $goodsLogModel->type_id = $goods_info->type_id;
+        $goodsLogModel->goods_id = $goods_info->id;
+        $goodsLogModel->log_msg = $log_msg;
+        $goodsLogModel->log_time = time();
+        $goodsLogModel->log_role = 'buyer';
+        $goodsLogModel->log_user = Yii::$app->user->identity->username;
+        $goodsLogModel->save();
+    }
 }
