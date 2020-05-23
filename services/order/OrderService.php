@@ -108,7 +108,7 @@ class OrderService extends OrderBaseService
 
         //订单商品       
         foreach ($orderGoodsList as $goods) {
-            if($goods['coupon_id'] && $goods['coupon']['discount']) {
+            if(!empty($goods['coupon_id']) && !empty($goods['coupon']['discount'])) {
                 //使用折扣券
                 $coupon = $goods['coupon'];
                 CouponService::incrDiscountUse($goods['coupon_id'], $coupon['type_id'], $coupon['style_id'], $coupon['num']);
