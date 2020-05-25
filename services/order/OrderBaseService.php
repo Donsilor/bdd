@@ -147,6 +147,7 @@ class OrderBaseService extends Service
             if(!empty($item['group_type']) && (int)$item['group_type']===1) {
                 $goods['type_id'] = 0;
                 $goods['style_id'] = 0;
+                $orderGoods['coupon_id'] = 0;
             }
 
             //用于活动获取活动信息的接口
