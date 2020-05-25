@@ -144,6 +144,11 @@ class OrderBaseService extends Service
             $orderGoods['goods_attr'] = $goods['goods_attr'];//商品规格
             $orderGoods['goods_spec'] = $goods['goods_spec'];//商品规格
 
+            if(!empty($item['group_type']) && (int)$item['group_type']===1) {
+                $goods['type_id'] = 0;
+                $goods['style_id'] = 0;
+            }
+
             //用于活动获取活动信息的接口
             $orderGoods['coupon'] = [
                 'type_id' => $goods['type_id'],
