@@ -236,6 +236,9 @@ class DiamondController extends BaseController
             ['上架状态', 'status', 'selectd',\common\enums\StatusEnum::getMap()],
             ['创建时间', 'created_at', 'date', 'Y-m-d'],
             ['更新时间', 'updated_at', 'date', 'Y-m-d'],
+            ['前端地址','id','function',function($model){
+                return \Yii::$app->params['frontBaseUrl'].'/diamond-details/'.$model->id.'?goodId='.$model->id;
+            }]
 
         ];
 

@@ -11,6 +11,9 @@ $goods_title = Yii::t('goods', $typeModel['type_name'].'商品列表');
 $this->title = Yii::t('goods', $typeModel['type_name'].'管理');
 $this->params['breadcrumbs'][] = $this->title;
 $type_id = Yii::$app->request->get('type_id',0);
+$params = Yii::$app->request->queryParams;
+$params = $params ? "&".http_build_query($params) : '';
+$export_param = http_build_query($searchModel);
 ?>
 
 <div class="row">
@@ -20,10 +23,16 @@ $type_id = Yii::$app->request->get('type_id',0);
                 <li class="active"><a href="<?= Url::to(['style/index?type_id='.$type_id]) ?>"> <?= Html::encode($this->title) ?></a></li>
                 <li><a href="<?= Url::to(['goods/index?type_id='.$type_id]) ?>"> <?= Html::encode($goods_title) ?></a></li>
                 <li class="pull-right">
+                    <div class="box-header box-tools">
+                        <?= Html::a('导出Excel','index?action=export'.$params) ?>
+                    </div>
+                </li>
+                <li class="pull-right">
                 	<div class="box-header box-tools">
                     <?= Html::create(['edit-lang','type_id'=>$type_id]) ?>
                     </div>
                 </li>
+
             </ul>
             <div class="box-body table-responsive">
     <?php echo Html::batchButtons(false)?>         
