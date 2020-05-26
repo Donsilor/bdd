@@ -196,29 +196,29 @@ class StyleController extends BaseController
             ['商品名称', 'lang.style_name', 'text'],
             ['款式编号', 'style_sn', 'text'],
             ['产品线', 'type_id', 'function', function($model){
-                return $model->type->type_name;
+                return $model->type->type_name ?? '';
             }],
             ['销售价(CNY)', 'sale_price', 'text'],
             ['库存', 'goods_storage', 'text'],
             ['中国上架状态', 'status', 'function', function($model){
                 $styleMarkup = StyleMarkup::find()->where(['style_id'=>$model->id ,'area_id' => AreaEnum::China])->one();
-                return FrameEnum::getValue($styleMarkup->status);
+                return FrameEnum::getValue($styleMarkup->status ?? FrameEnum::DISABLED);
             }],
             ['香港上架状态', 'status', 'function', function($model){
                 $styleMarkup = StyleMarkup::find()->where(['style_id'=>$model->id ,'area_id' => AreaEnum::HongKong])->one();
-                return FrameEnum::getValue($styleMarkup->status);
+                return FrameEnum::getValue($styleMarkup->status ?? FrameEnum::DISABLED);
             }],
             ['澳门上架状态', 'status', 'function', function($model){
                 $styleMarkup = StyleMarkup::find()->where(['style_id'=>$model->id ,'area_id' => AreaEnum::MaCao])->one();
-                return FrameEnum::getValue($styleMarkup->status);
+                return FrameEnum::getValue($styleMarkup->status ?? FrameEnum::DISABLED);
             }],
             ['台湾上架状态', 'status', 'function', function($model){
                 $styleMarkup = StyleMarkup::find()->where(['style_id'=>$model->id ,'area_id' => AreaEnum::TaiWan])->one();
-                return FrameEnum::getValue($styleMarkup->status);
+                return FrameEnum::getValue($styleMarkup->status ?? FrameEnum::DISABLED);
             }],
             ['国外上架状态', 'status', 'function', function($model){
                 $styleMarkup = StyleMarkup::find()->where(['style_id'=>$model->id ,'area_id' => AreaEnum::Other])->one();
-                return FrameEnum::getValue($styleMarkup->status);
+                return FrameEnum::getValue($styleMarkup->status ?? FrameEnum::DISABLED);
             }],
 
             ['前端地址','id','function',function($model){
