@@ -2,11 +2,13 @@
 
 namespace backend\modules\goods\controllers;
 
+use common\enums\AreaEnum;
 use common\enums\FrameEnum;
 use common\enums\StatusEnum;
 use common\helpers\ExcelHelper;
 use common\helpers\Html;
 use common\helpers\ImageHelper;
+use common\models\goods\StyleMarkup;
 use Yii;
 use common\models\goods\Style;
 use common\components\Curd;
@@ -189,7 +191,6 @@ class StyleController extends BaseController
                 break;
             default:$name = "商品";
         }
-
         $header = [
             ['ID', 'id' , 'text'],
             ['商品名称', 'lang.style_name', 'text'],
@@ -199,7 +200,27 @@ class StyleController extends BaseController
             }],
             ['销售价(CNY)', 'sale_price', 'text'],
             ['库存', 'goods_storage', 'text'],
-            ['上架状态', 'status', 'selectd', FrameEnum::getMap()],
+            ['中国上架状态', 'status', 'function', function($model){
+                $styleMarkup = StyleMarkup::find()->where(['style_id'=>$model->id ,'area_id' => AreaEnum::China])->one();
+                return FrameEnum::getValue($styleMarkup->status);
+            }],
+            ['香港上架状态', 'status', 'function', function($model){
+                $styleMarkup = StyleMarkup::find()->where(['style_id'=>$model->id ,'area_id' => AreaEnum::HongKong])->one();
+                return FrameEnum::getValue($styleMarkup->status);
+            }],
+            ['澳门上架状态', 'status', 'function', function($model){
+                $styleMarkup = StyleMarkup::find()->where(['style_id'=>$model->id ,'area_id' => AreaEnum::MaCao])->one();
+                return FrameEnum::getValue($styleMarkup->status);
+            }],
+            ['台湾上架状态', 'status', 'function', function($model){
+                $styleMarkup = StyleMarkup::find()->where(['style_id'=>$model->id ,'area_id' => AreaEnum::TaiWan])->one();
+                return FrameEnum::getValue($styleMarkup->status);
+            }],
+            ['国外上架状态', 'status', 'function', function($model){
+                $styleMarkup = StyleMarkup::find()->where(['style_id'=>$model->id ,'area_id' => AreaEnum::Other])->one();
+                return FrameEnum::getValue($styleMarkup->status);
+            }],
+
             ['前端地址','id','function',function($model){
                 if($model->type_id == 2){
                     return \Yii::$app->params['frontBaseUrl'].'/ring/wedding-rings/'.$model->id.'?goodId='.$model->id.'&ringType=single';
