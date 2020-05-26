@@ -25,6 +25,11 @@ use Yii;
  * @property int $evaluation_again_status 追加评价状态 0未评价，1已评价，2已过期未评价
  * @property int $order_status 订单状态
  * @property int $refund_status 退款状态:0是无退款,1是部分退款,2是全部退款
+ * @property int $cancel_status 退款状态:0是无退款,1是部分退款,2是全部退款
+ * @property int $audit_status 退款状态:0是无退款,1是部分退款,2是全部退款
+ * @property string $refund_remark 退款状态:0是无退款,1是部分退款,2是全部退款
+ * @property string $cancel_remark 退款状态:0是无退款,1是部分退款,2是全部退款
+ * @property string $audit_remark 退款状态:0是无退款,1是部分退款,2是全部退款
  * @property string $express_id 快递类型
  * @property string $express_no 快递单号
  * @property int $delivery_status 发货状态
@@ -58,12 +63,12 @@ class Order extends \common\models\base\BaseModel
     public function rules()
     {
         return [
-            [['merchant_id','ip_area_id','payment_type','payment_status', 'payment_time', 'member_id', 'finished_time', 'evaluation_status', 'evaluation_again_status', 'order_status', 'refund_status', 'order_from', 'order_type', 'is_tourist', 'is_invoice','api_pay_time', 'status', 'created_at', 'updated_at', 'follower_id','followed_status' ,'followed_time', 'express_id','delivery_time','delivery_status'], 'integer'],
+            [['audit_status', 'merchant_id','ip_area_id','payment_type','payment_status', 'payment_time', 'member_id', 'finished_time', 'evaluation_status', 'evaluation_again_status', 'order_status', 'refund_status', 'cancel_status', 'order_from', 'order_type', 'is_tourist', 'is_invoice','api_pay_time', 'status', 'created_at', 'updated_at', 'follower_id','followed_status' ,'followed_time', 'express_id','delivery_time','delivery_status', 'refund_status'], 'integer'],
             [['language'], 'safe'],
             [['order_sn','pay_sn'], 'string', 'max' => 20],
             [['express_no', 'trade_no'], 'string', 'max' => 50],
             [['ip', 'ip_location'], 'safe'],
-            [['buyer_remark', 'seller_remark'], 'string', 'max' => 500],
+            [['buyer_remark', 'seller_remark', 'refund_remark', 'cancel_remark'], 'string', 'max' => 500],
         ];
     }
 
@@ -87,6 +92,11 @@ class Order extends \common\models\base\BaseModel
             'evaluation_again_status' => '追加评价状态',
             'order_status' => '订单状态',
             'refund_status' => '退款状态',
+            'audit_status' => '审核状态',
+            'refund_remark' => '退款备注',
+            'cancel_remark' => '取消备注',
+            'audit_remark' => '审核备注',
+            'cancel_status' => '退款状态',
             'express_id' => '快递方式',
             'express_no' => '快递单号',
             'delivery_status' => '发货状态',

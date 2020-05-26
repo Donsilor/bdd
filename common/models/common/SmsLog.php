@@ -33,6 +33,7 @@ class SmsLog extends \common\models\base\BaseModel
     const USAGE_UP_PWD = 'up-pwd';
     const USAGE_ORDER_SEND = 'order-send';
     const USAGE_ERROR_NOTICE = 'error-notice';
+    const USAGE_ORDER_REFUND_NOTICE = 'order-refund-notice';
     const USAGE_WIRE_TRANSFER_ORDER_NOTICE = 'wire-transfer-order-notice';
 
     /**
@@ -44,6 +45,7 @@ class SmsLog extends \common\models\base\BaseModel
         self::USAGE_UP_PWD => '修改密码验证码',
         self::USAGE_ORDER_SEND => '订单发货通知',
         self::USAGE_ERROR_NOTICE => '系统异常提醒',
+        self::USAGE_ORDER_REFUND_NOTICE => '订单退款通知',
         self::USAGE_WIRE_TRANSFER_ORDER_NOTICE => '电汇订单通知',
     ];   
     /**
