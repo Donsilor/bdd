@@ -7,6 +7,7 @@ namespace services\common;
 use common\components\Service;
 use common\enums\AreaEnum;
 use common\enums\NotifyContactsEnum;
+use common\enums\OrderFromEnum;
 use common\enums\OrderStatusEnum;
 use common\enums\PayStatusEnum;
 use common\helpers\AmountHelper;
@@ -45,12 +46,12 @@ class NotifyContactsService extends Service
     //提交发送
     public function submitSend($typeId, $params)
     {
-        $ipAreaId = null;
-        if(isset($params['ip_area_id'])) {
-            $ipAreaId = $params['ip_area_id'];
+        $orderFrom = null;
+        if(isset($params['order_from'])) {
+            $orderFrom = $params['order_from'];
         }
 
-        $notifyContacts = $this->getNotifyContactsInfo($typeId, $ipAreaId);
+        $notifyContacts = $this->getNotifyContactsInfo($typeId, $orderFrom);
 
         $usage = NotifyContactsEnum::getValue($typeId, 'usageForEmail');
         foreach ($notifyContacts['emails'] as $email) {
@@ -75,6 +76,8 @@ class NotifyContactsService extends Service
         $params = [];
         $params['code'] = $order->id;
         $params['order_sn'] = $order->order_sn;
+        $params['order_from'] = $order->order_from;
+        $params['order_from_name'] = OrderFromEnum::getValue($order->order_from);
         $params['create_date'] = date('Y-m-d H:i:s', $order->created_at);
         $params['order_status'] = OrderStatusEnum::getValue($order->order_status);
         $params['pay_status'] = PayStatusEnum::getValue($order->payment_status);
@@ -108,6 +111,8 @@ class NotifyContactsService extends Service
             $params = [];
             $params['code'] = $order->id;
             $params['order_sn'] = $order->order_sn;
+            $params['order_from'] = $order->order_from;
+            $params['order_from_name'] = OrderFromEnum::getValue($order->order_from);
             $params['create_date'] = date('Y-m-d H:i:s', $order->created_at);
             $params['order_status'] = OrderStatusEnum::getValue($order->order_status);
             $params['pay_status'] = PayStatusEnum::getValue($order->payment_status);
@@ -142,6 +147,8 @@ class NotifyContactsService extends Service
             $params = [];
             $params['code'] = $order->id;
             $params['order_sn'] = $order->order_sn;
+            $params['order_from'] = $order->order_from;
+            $params['order_from_name'] = OrderFromEnum::getValue($order->order_from);
             $params['create_date'] = date('Y-m-d H:i:s', $order->created_at);
             $params['order_status'] = OrderStatusEnum::getValue(OrderStatusEnum::ORDER_UNPAID);
             $params['pay_status'] = PayStatusEnum::getValue(PayStatusEnum::UNPAID);
@@ -177,6 +184,8 @@ class NotifyContactsService extends Service
             $params = [];
             $params['code'] = $order->id;
             $params['order_sn'] = $order->order_sn;
+            $params['order_from'] = $order->order_from;
+            $params['order_from_name'] = OrderFromEnum::getValue($order->order_from);
             $params['create_date'] = date('Y-m-d H:i:s', $order->created_at);
             $params['order_status'] = OrderStatusEnum::getValue($order->order_status);
             $params['pay_status'] = PayStatusEnum::getValue($order->payment_status);
@@ -211,6 +220,8 @@ class NotifyContactsService extends Service
             $params = [];
             $params['code'] = $order->id;
             $params['order_sn'] = $order->order_sn;
+            $params['order_from'] = $order->order_from;
+            $params['order_from_name'] = OrderFromEnum::getValue($order->order_from);
             $params['create_date'] = date('Y-m-d H:i:s', $order->created_at);
             $params['order_status'] = OrderStatusEnum::getValue(OrderStatusEnum::ORDER_UNPAID);
             $params['pay_status'] = PayStatusEnum::getValue(PayStatusEnum::UNPAID);

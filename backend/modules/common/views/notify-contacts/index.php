@@ -45,7 +45,7 @@ $this->params['breadcrumbs'][] = ['label' =>  $this->title];
 
                                     $value = [];
                                     foreach ($model->area_attach as $areaId) {
-                                        $value[] = \common\enums\AreaEnum::getValue($areaId);
+                                        $value[] = \common\enums\OrderFromEnum::getValue($areaId);
                                     }
                                     return implode('/', $value);
                                 },
