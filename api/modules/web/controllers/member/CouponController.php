@@ -49,7 +49,8 @@ class CouponController extends UserAuthController
                 'isGoods' => !empty($datum->coupon->goods_attach),
                 'couponStatus' => $datum->coupon_status,//状态
                 'orderSn' => $datum->order_sn,//订单编号
-                'atLeast' => $datum->coupon->at_least,//满多少钱使用
+                'atLeast' => $this->exchangeAmount($datum->coupon->at_least),//满多少钱使用
+                'atLeastCn' => $datum->coupon->at_least,//满多少钱使用
                 'startTime' => $datum->specials->start_time,//开始时间
                 'endTime' => $datum->specials->end_time,//结束时间
             ];
