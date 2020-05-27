@@ -258,7 +258,7 @@ class PayForm extends Model
         // 也可直接查数据库对应的关联ID，这样子一个订单只生成一个支付操作ID 增加下单率
         // Yii::$app->services->pay->findByOutTradeNo($order->out_trade_no);
 
-        $toCurrency = CurrencyEnum::USD;
+        $toCurrency = CurrencyEnum::HKD;
 
         if($order['currency'] == CurrencyEnum::CNY) {
             $order['total_fee'] = \Yii::$app->services->currency->exchangeAmount($totalFee, 2, $toCurrency, CurrencyEnum::CNY);
