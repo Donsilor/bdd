@@ -3,6 +3,7 @@
 namespace api\modules\web\controllers\member;
 
 use api\modules\web\forms\CardForm;
+use common\enums\CurrencyEnum;
 use common\enums\PayEnum;
 use common\helpers\ImageHelper;
 use common\helpers\ResultHelper;
@@ -183,10 +184,16 @@ class OrderController extends UserAuthController
             $trans->commit();
             //订单发送邮件
             \Yii::$app->services->order->sendOrderNotification($result['order_id']);
+
+            $payAmount = bcsub($result['order_amount'], $cardUseAmount, 2);
+
+            $payAmountHKD = \Yii::$app->services->currency->exchangeAmount($payAmount, 2, CurrencyEnum::HKD, $this->getCurrency());
+
             return [
                 "coinType" => $result['currency'],
                 "orderAmount"=> $result['order_amount'],
-                "payAmount"=> bcsub($result['order_amount'], $cardUseAmount, 2),
+                "payAmount"=> $payAmount,
+                "payAmountHKD"=> $payAmountHKD,
                 "orderId" => $result['order_id'],
                 "payStatus" => $pay['payStatus']??0,
             ];            
