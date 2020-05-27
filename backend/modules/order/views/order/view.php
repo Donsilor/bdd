@@ -317,7 +317,7 @@ DOM;
                                         'label' => '优惠金额',
                                         'attribute'=>'goods_price',
                                         'value' => function($model) {
-                                            return $model->currency ." "."0";
+                                            return $model->currency ." " . \common\helpers\AmountHelper::rateAmount($model->goods_price-$model->goods_pay_price, 1, 2, ',');
                                         }
                                     ],
                                     [
