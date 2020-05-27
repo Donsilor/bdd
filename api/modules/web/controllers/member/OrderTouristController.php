@@ -4,6 +4,7 @@ namespace api\modules\web\controllers\member;
 
 use api\controllers\OnAuthController;
 use api\modules\web\forms\CartForm;
+use common\enums\CurrencyEnum;
 use common\enums\OrderTouristStatusEnum;
 use common\enums\PayEnum;
 use common\helpers\ResultHelper;
@@ -252,6 +253,8 @@ class OrderTouristController extends OnAuthController
         
         try {
             $taxInfo = \Yii::$app->services->orderTourist->getCartAccountTax($cartList);
+
+            $taxInfo['order_amount_HKD'] = \Yii::$app->services->currency->exchangeAmount($taxInfo['order_amount'], 2, CurrencyEnum::HKD, $this->getCurrency());
         } catch (\Exception $e) {
             \Yii::$app->services->actionLog->create('游客订单金额汇总','Exception:'.$e->getMessage());
             throw $e;
