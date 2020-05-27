@@ -93,9 +93,9 @@ class PayForm extends Model
                 if (!in_array($this->tradeType, ['pc', 'wap'])) {
                     $this->addError($attribute, 'PayPal交易类型不符');
                 }
-                if($this->coinType == CurrencyEnum::CNY) {
-                    $this->addError($attribute, \Yii::t('payment', 'PAYPAL_NOT_SUPPORT_RMB'));
-                }
+//                if($this->coinType == CurrencyEnum::CNY) {
+//                    $this->addError($attribute, \Yii::t('payment', 'PAYPAL_NOT_SUPPORT_RMB'));
+//                }
                 break;
             case PayEnum::PAY_TYPE_GLOBAL_ALIPAY :
                 if (!in_array($this->tradeType, ['pc', 'wap'])) {
@@ -107,9 +107,9 @@ class PayForm extends Model
             case PayEnum::PAY_TYPE_PAYDOLLAR_2 :
             case PayEnum::PAY_TYPE_PAYDOLLAR_3 :
                 $name = \Yii::t('payment', PayEnum::getValue($this->payType));
-                if(in_array($this->coinType,[CurrencyEnum::CNY,CurrencyEnum::USD])) {
-                    $this->addError($attribute, sprintf(\Yii::t('payment', 'PAYDOLLAR_NOT_SUPPORT_RMB_AND_USD'), $name));
-                }
+//                if(in_array($this->coinType,[CurrencyEnum::CNY,CurrencyEnum::USD])) {
+//                    $this->addError($attribute, sprintf(\Yii::t('payment', 'PAYDOLLAR_NOT_SUPPORT_RMB_AND_USD'), $name));
+//                }
                 break;
                 
         }
@@ -257,6 +257,11 @@ class PayForm extends Model
 
         // 也可直接查数据库对应的关联ID，这样子一个订单只生成一个支付操作ID 增加下单率
         // Yii::$app->services->pay->findByOutTradeNo($order->out_trade_no);
+
+        if($currency == CurrencyEnum::CNY) {
+            $totalFee = \Yii::$app->services->currency->exchangeAmount($totalFee, 2, CurrencyEnum::HKD, CurrencyEnum::CNY);
+            $currency = CurrencyEnum::HKD;
+        }
 
         $order['out_trade_no'] = Yii::$app->services->pay->getOutTradeNo(
             $totalFee,
