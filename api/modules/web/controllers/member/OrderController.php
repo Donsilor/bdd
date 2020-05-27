@@ -234,6 +234,9 @@ class OrderController extends UserAuthController
                 'goodsName' => $orderGoods->lang ? $orderGoods->lang->goods_name : $orderGoods->goods_name,
                 'goodsPrice'=>$orderGoods->goods_price,
                 'goodsPayPrice'=>$orderGoods->goods_pay_price,
+                'couponInfo' => [
+                    'type' => $orderGoods->coupon->type
+                ],
                 'detailType'=>1,
                 'detailSpecs'=>null,
                 'deliveryCount'=>1,
@@ -349,7 +352,8 @@ class OrderController extends UserAuthController
             'productCount' => count($orderDetails),
             'productAmount' => $order->account->goods_amount,            
             'logisticsFee' => $order->account->shipping_fee,
-            'preferFee' => $order->account->discount_amount, //优惠金额
+            'discountAmount' => $order->account->discount_amount, //优惠金额
+            'couponAmount' => $order->account->coupon_amount, //优惠金额
             'orderAmount' => $order->account->order_amount,
             'payAmount' => $order->account->pay_amount,//支付金额
             //'payAmount' => bcadd($order->account->order_amount, $cardsUseAmount, 2) - $order->account->discount_amount,
