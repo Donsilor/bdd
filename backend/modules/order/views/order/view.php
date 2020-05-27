@@ -356,14 +356,14 @@ DOM;
                             </div>
                             <div class="col-lg-6">
                                 <div class="row">
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.goods_amount') ?>
+                                            ：</label></div>
+                                    <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->goods_amount, 1, 2, ',') ?></div>
+                                </div>
+                                <div class="row">
                                     <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.shipping_fee') ?>
                                             ：</label></div>
                                     <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->shipping_fee, 1, 2, ',') ?></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.discount_amount') ?>
-                                            ：</label></div>
-                                    <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->discount_amount, 1, 2, ',') ?></div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.tax_fee') ?>
@@ -379,6 +379,16 @@ DOM;
                                     <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.order_amount') ?>
                                             ：</label></div>
                                     <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->order_amount, 1, 2, ',') ?></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.coupon_amount') ?>
+                                            ：</label></div>
+                                    <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount(-$model->account->coupon_amount, 1, 2, ',') ?></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.discount_amount') ?>
+                                            ：</label></div>
+                                    <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount(-$model->account->discount_amount, 1, 2, ',') ?></div>
                                 </div>
                                 <?php
                                 $cardUseAmount = 0;

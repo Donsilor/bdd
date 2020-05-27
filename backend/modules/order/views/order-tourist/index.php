@@ -65,6 +65,12 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 }
                             ],
                             [
+                                'label' => '优惠后金额',
+                                'value' => function ($model) {
+                                    return sprintf('(%s)%s', $model->currency, bcsub($model->order_amount, $model->discount_amount, 2));
+                                }
+                            ],
+                            [
                                 'attribute' => 'ip',
                                 'value' => function ($model) {
                                     return $model->ip."(".$model->ip_location.")";
