@@ -56,6 +56,8 @@ class OrderController extends UserAuthController
         foreach ($result['data'] as $order) {
             $exchange_rate = $order->account->exchange_rate;
             $currency = $order->account->currency;
+
+            $payAmount = bcsub($order->account->order_amount, CardService::getUseAmount($order->id), 2);
             $orderInfo = [
                 'id' =>$order->id,
                 'orderNO' =>$order->order_sn,
@@ -63,7 +65,8 @@ class OrderController extends UserAuthController
                 'refundStatus'=> $order->refund_status,
                 'wireTransferStatus'=> !empty($order->wireTransfer)?$order->wireTransfer->collection_status:null,
                 'orderAmount'=> $order->account->order_amount,
-                'payAmount'=> bcsub($order->account->order_amount, CardService::getUseAmount($order->id), 2),
+                'payAmount'=> $payAmount,
+                'payAmountHKD'=> \Yii::$app->services->currency->exchangeAmount($payAmount, 2, CurrencyEnum::HKD, $order->account->currency),
                 'productAmount'=> $order->account->goods_amount,
                 'coinCode'=> $currency,
                 'payChannel'=>$order->payment_type,
