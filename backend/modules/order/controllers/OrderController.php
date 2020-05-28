@@ -5,6 +5,7 @@ namespace backend\modules\order\controllers;
 use backend\controllers\BaseController;
 use backend\modules\order\forms\OrderAuditForm;
 use backend\modules\order\forms\OrderCancelForm;
+use backend\modules\order\forms\OrderFollowerForm;
 use backend\modules\order\forms\OrderRefundForm;
 use common\enums\CurrencyEnum;
 use common\enums\InvoiceElectronicEnum;
@@ -303,6 +304,8 @@ class OrderController extends BaseController
      */
     public function actionEditFollower()
     {
+        $this->modelClass = OrderFollowerForm::class;
+
         $id = Yii::$app->request->get('id', null);
 
         $model = $this->findModel($id);
