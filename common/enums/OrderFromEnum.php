@@ -15,6 +15,11 @@ class OrderFromEnum extends BaseEnum
     const MOBILE_CN = 21;
     const WEB_US = 30;
     const MOBILE_US = 31;
+
+    const GROUP_HK = 'HK';
+    const GROUP_CN = 'CN';
+    const GROUP_US = 'US';
+
     /**
      * @return array
      */
@@ -28,5 +33,34 @@ class OrderFromEnum extends BaseEnum
                 self::WEB_US => '美国PC端',
                 self::MOBILE_US => '美国移动端', 
         ];
+    }
+
+    public static function groups()
+    {
+        return [
+            self::GROUP_HK => '香港',
+            self::GROUP_CN => '大陆',
+            self::GROUP_US => '美国',
+        ];
+    }
+
+    public static function platformsForGroup($group)
+    {
+        $groups = [
+            self::GROUP_HK => [
+                self::WEB_HK,
+                self::MOBILE_HK
+            ],
+            self::GROUP_CN => [
+                self::WEB_CN,
+                self::MOBILE_CN
+            ],
+            self::GROUP_US => [
+                self::WEB_US,
+                self::MOBILE_US
+            ],
+        ];
+
+        return $groups[$group]??[];
     }
 }

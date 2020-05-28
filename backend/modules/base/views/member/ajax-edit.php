@@ -24,6 +24,9 @@ $form = ActiveForm::begin([
         <?php if ($model->id != Yii::$app->params['adminAccount']) { ?>
             <?= $form->field($model, 'role_id')->dropDownList($roles) ?>
         <?php } ?>
+
+        <?php $model->sites_attach=!is_null($model->sites_attach)?$model->sites_attach:array_keys(\common\enums\OrderFromEnum::groups()); ?>
+        <?= $form->field($model, 'sites_attach')->checkboxList(\common\enums\OrderFromEnum::groups()) ?>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>

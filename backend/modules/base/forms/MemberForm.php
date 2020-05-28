@@ -19,6 +19,7 @@ class MemberForm extends Model
     public $password;
     public $username;
     public $role_id;
+    public $sites_attach;
 
     /**
      * @var \common\models\backend\Member
@@ -47,6 +48,7 @@ class MemberForm extends Model
             ],
             [['username'], 'isUnique'],
             [['role_id'], 'required'],
+            [['sites_attach'], 'safe'],
         ];
     }
 
@@ -59,6 +61,7 @@ class MemberForm extends Model
             'password' => '登录密码',
             'username' => '登录名',
             'role_id' => '角色',
+            'sites_attach' => '站点地区',
         ];
     }
 
