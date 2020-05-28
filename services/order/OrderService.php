@@ -148,6 +148,9 @@ class OrderService extends OrderBaseService
 //        $this->addOrderLog($order->id, $log_msg, $log_role, $log_user,$order->order_status);
         OrderLogService::create($order);
 
+        //创建订单
+        \Yii::$app->services->job->notifyContacts->createOrder($order->order_sn);
+
         //清空购物车
         OrderCart::deleteAll(['id'=>$cart_ids,'member_id'=>$buyer_id]);
         
