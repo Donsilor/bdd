@@ -22,7 +22,7 @@ class CardFrom extends MarketCard
             [['batch'], 'validateBatch'],
             [['batch'], 'safe'],
             [['start_time','end_time'], 'date'],
-            ['max_use_time', 'required', 'when' => function($model) { return $model->show_max_use_time;}]
+            [['show_max_use_time'], 'validateMaxUseTime'],
         ];
     }
 
@@ -46,6 +46,13 @@ class CardFrom extends MarketCard
     {
         if(MarketCard::findOne(['batch'=>$this->batch])) {
             $this->addError($attribute, \Yii::t('card','批次已生成'));
+        }
+    }
+
+    public function validateMaxUseTime($attribute)
+    {
+        if($this->show_max_use_time && empty($this->max_use_time)) {
+            $this->addError('max_use_time', '不能为空');
         }
     }
 
