@@ -153,7 +153,7 @@ class MarketCoupon extends \common\models\base\BaseModel
      */
     public function getReceiveCount()
     {
-        return MarketCouponDetails::find()->where(['coupon_id'=>$this->id, 'coupon_status'=>0])->count('id');
+        return MarketCouponDetails::find()->where(['coupon_id'=>$this->id, 'coupon_status'=>1])->count('id');
     }
 
     public function getGoodsType()
