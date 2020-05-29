@@ -176,6 +176,12 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                 }
                             ],
                             [
+                                'label' => '优惠后金额',
+                                'value' => function ($model) {
+                                    return sprintf('(%s)%s', $model->account->currency, bcsub($model->account->order_amount-$model->account->coupon_amount-$model->account->card_amount, $model->account->discount_amount, 2));
+                                }
+                            ],
+                            [
                                 'attribute' => 'ip_area_id',
                                 'headerOptions' => ['class' => 'col-md-1'],
                                 'filter' => Html::activeDropDownList($searchModel, 'ip_area_id', \common\enums\AreaEnum::getMap(), [
