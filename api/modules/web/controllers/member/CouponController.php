@@ -34,7 +34,7 @@ class CouponController extends UserAuthController
 
         $query->leftJoin('market_coupon', 'market_coupon.id=market_card_details.coupon_id');
 
-        $query->andWhere(['market_coupon.status='=>1]);
+        $query->andWhere(['market_coupon.status'=>1]);
 
         $query->orderBy('id DESC');
 

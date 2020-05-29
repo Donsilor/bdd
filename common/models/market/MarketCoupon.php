@@ -169,6 +169,6 @@ class MarketCoupon extends \common\models\base\BaseModel
                 $goodsTypes[$this->id][$key] = $item;
             }
         }
-        return $goodsTypes[$this->id];
+        return $goodsTypes[$this->id]??[];
     }
 }
