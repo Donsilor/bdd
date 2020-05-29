@@ -10,7 +10,7 @@ use yii\base\Model;
  * Class CardForm
  * @package api\modules\web\forms
  */
-class CardForm extends Model
+class CardValidateForm extends Model
 {
     public $sn;//卡号
     public $pw;//卡密码
@@ -30,8 +30,8 @@ class CardForm extends Model
     public function attributeLabels()
     {
         return [
-            'sn' => '购物卡',
-            'pw' => '购物卡',
+            'sn' => 'sn',
+            'pw' => 'pw',
         ];
     }
 
@@ -42,21 +42,6 @@ class CardForm extends Model
             $card = $this->getCard();
             if (!$card || !$card->validatePassword($this->pw)) {
                 $this->addError($attribute, '验证错误');
-                return;
-            }
-
-            $time = time();
-
-            //验证开始时间 || 验证结束时间
-            if($card->start_time > $time || $card->end_time < $time) {
-                $this->addError($attribute, '超出使用时间限制');
-                return;
-            }
-
-            //验证使用期限
-            if($card->max_use_time && $card->first_use_time && ($card->first_use_time+$card->max_use_time) < $time) {
-                $this->addError($attribute, '超出使用时间限制');
-                return;
             }
         }
     }

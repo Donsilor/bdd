@@ -3,6 +3,7 @@
 namespace api\modules\web\controllers\member;
 
 use api\modules\web\forms\CardForm;
+use api\modules\web\forms\CardValidateForm;
 use common\helpers\ImageHelper;
 use common\models\forms\PayForm;
 use common\models\goods\Ring;
@@ -61,7 +62,7 @@ class CardController extends UserAuthController
 
         $post = \Yii::$app->request->post();
 
-        $model = new CardForm();
+        $model = new CardValidateForm();
         $model->setAttributes($post);
 
         if(!$model->validate()) {
