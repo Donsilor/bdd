@@ -97,7 +97,10 @@ class CardController extends UserAuthController
             'balance' => $this->exchangeAmount($model->getCard()->balance),
             'startTime' => $model->getCard()->start_time,
             'endTime' => $model->getCard()->end_time,
-            'status' => $model->getCard()->status
+            'firstUseTime' => $model->getCard()->first_use_time,
+            'maxUseTime' => $model->getCard()->max_use_time,
+            'maxUseDay' => round($model->getCard()->max_use_time/86400),
+            'limitedUseTime' => $model->getCard()->max_use_time && $model->getCard()->first_use_time ? $model->getCard()->max_use_time+$model->getCard()->first_use_time:null,
         ];
 
         $goodsTypes = [];
