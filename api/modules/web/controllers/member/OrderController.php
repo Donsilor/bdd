@@ -63,7 +63,7 @@ class OrderController extends UserAuthController
                 'refundStatus'=> $order->refund_status,
                 'wireTransferStatus'=> !empty($order->wireTransfer)?$order->wireTransfer->collection_status:null,
                 'orderAmount'=> $order->account->order_amount,
-                'payAmount'=> bcsub($order->account->order_amount, CardService::getUseAmount($order->id), 2),
+//                'payAmount'=> bcsub($order->account->order_amount, CardService::getUseAmount($order->id), 2),
                 'productAmount'=> $order->account->goods_amount,
                 'preferFee' => $order->account->discount_amount, //优惠金额
                 'payAmount' => $order->account->pay_amount,//支付金额
