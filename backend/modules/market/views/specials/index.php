@@ -110,8 +110,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'label' => '活动产品',
                             'value' => function($model) {
+                                $_value = '';
+
                                 if($model->product_range==1) {
-                                    return '特定产品';
+                                    $_value .= '特定产品';
                                 }
 
                                 $value = [];
@@ -128,7 +130,34 @@ $this->params['breadcrumbs'][] = $this->title;
                                         $html[] = $item;
                                 }
 
-                                return implode('/', $html);
+                                return $_value . ($_value&&$html?'/':'') . implode('/', $html);
+                            }
+                        ],
+                        [
+                            'label' => '折扣率',
+//                            'attribute' => 'specials.lang.title',
+                            'value' => function($model) {
+                                $value = [];
+                                foreach ($model->coupons as $conpon) {
+                                    if($conpon->type!=2) {
+                                        continue;
+                                    }
+                                    $value[] = $conpon->discount;
+                                }
+                                return implode('/', $value);
+                            }
+                        ],
+                        [
+                            'label' => '优惠券',
+                            'value' => function($model) {
+                                $value = [];
+                                foreach ($model->coupons as $conpon) {
+                                    if($conpon->type!=1) {
+                                        continue;
+                                    }
+                                    $value[] = $conpon->money."(满{$conpon->at_least})";
+                                }
+                                return implode('/', $value);
                             }
                         ],
                         [

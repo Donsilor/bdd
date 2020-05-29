@@ -56,19 +56,24 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'label' => '活动产品',
                             'value' => function($model) {
+                                $value = '';
+
                                 if($model->specials->product_range==1) {
-                                    return '特定产品';
+                                    $value .= '特定产品';
                                 }
 
-                                //产品线列表
-                                $typeList = \services\goods\TypeService::getTypeList();
+                                if(is_array($model->goods_type_attach)) {
+                                    //产品线列表
+                                    $typeList = \services\goods\TypeService::getTypeList();
 
-                                $html = [];
-                                foreach ($model->goods_type_attach as $item) {
-                                    $html[$item] = $typeList[$item];
+                                    $html = [];
+                                    foreach ($model->goods_type_attach as $item) {
+                                        $html[$item] = $typeList[$item];
+                                    }
+                                    $value .= ($value?'/':'') . implode('/', $html);
                                 }
 
-                                return implode('/', $html);
+                                return $value;
                             }
                         ],
                         [
