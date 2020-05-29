@@ -605,6 +605,11 @@ class CouponService extends Service
                     'count' => $discount->count,
                     'get_count' => $getCount,
                     'discount' => $discount->discount,
+
+                    'start_time' => $discount->specials->start_time,
+                    'end_time' => $discount->specials->end_time,
+                    'goods_type' => $discount->getGoodsType(),
+                    'is_goods' => !empty($discount->goods_attach),
                 ];
             }
         }
