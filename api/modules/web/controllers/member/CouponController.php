@@ -32,6 +32,10 @@ class CouponController extends UserAuthController
             $query->andWhere(['coupon_status'=>$couponStatus]);
         }
 
+        $query->leftJoin('market_coupon', 'market_coupon.id=market_card_details.coupon_id');
+
+        $query->andWhere(['market_coupon.status='=>1]);
+
         $query->orderBy('id DESC');
 
         $result = $this->pagination($query, $this->page, $this->pageSize,false);
