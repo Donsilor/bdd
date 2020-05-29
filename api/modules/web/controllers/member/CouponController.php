@@ -32,9 +32,11 @@ class CouponController extends UserAuthController
             $query->andWhere(['coupon_status'=>$couponStatus]);
         }
 
-        $query->leftJoin('market_coupon', 'market_coupon.id=market_card_details.coupon_id');
+        $query->leftJoin('market_coupon', 'market_coupon.id=market_coupon_details.coupon_id');
+        $query->leftJoin('market_specials', 'market_specials.id=market_coupon_details.specials_id');
 
         $query->andWhere(['market_coupon.status'=>1]);
+        $query->andWhere(['>', 'market_specials.end_time', time()]);
 
         $query->orderBy('id DESC');
 
