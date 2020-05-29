@@ -2,6 +2,7 @@
 
 namespace common\models\order;
 
+use common\enums\OrderFromEnum;
 use common\models\common\PayLog;
 use common\models\market\MarketCardDetails;
 use common\models\member\Member;
@@ -138,6 +139,18 @@ class Order extends \common\models\base\BaseModel
             else {
                 $where[]['order_status'] = $orderStatus;
             }
+        }
+
+        //站点地区
+        $sitesAttach = \Yii::$app->getUser()->identity->sites_attach;
+        if(is_array($sitesAttach)) {
+            $orderFroms = [];
+
+            foreach ($sitesAttach as $site) {
+                $orderFroms = array_merge($orderFroms, OrderFromEnum::platformsForGroup($site));
+            }
+
+            $where[] = ['in', 'order.order_from', $orderFroms];
         }
 
         return (int)self::find()->where($where)->count('`order`.id');

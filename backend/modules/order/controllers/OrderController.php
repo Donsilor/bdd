@@ -9,6 +9,7 @@ use backend\modules\order\forms\OrderFollowerForm;
 use backend\modules\order\forms\OrderRefundForm;
 use common\enums\CurrencyEnum;
 use common\enums\InvoiceElectronicEnum;
+use common\enums\OrderFromEnum;
 use common\enums\OrderStatusEnum;
 use common\enums\PayEnum;
 use common\enums\PayStatusEnum;
@@ -107,6 +108,18 @@ class OrderController extends BaseController
             else {
                 $dataProvider->query->andWhere(['=', 'order_status', $orderStatus2]);
             }
+        }
+
+        //站点地区
+        $sitesAttach = \Yii::$app->getUser()->identity->sites_attach;
+        if(is_array($sitesAttach)) {
+            $orderFroms = [];
+
+            foreach ($sitesAttach as $site) {
+                $orderFroms = array_merge($orderFroms, OrderFromEnum::platformsForGroup($site));
+            }
+
+            $dataProvider->query->andWhere(['in', 'order.order_from', $orderFroms]);
         }
 
         // 数据状态

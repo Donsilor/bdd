@@ -5,7 +5,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 
 ?>
 
-<?= $this->render('_form', [
+<?= $this->render('_edit', [
     'model' => $model,
     'backBtn' => '<span class="btn btn-white" onclick="history.go(-1)">返回</span>',
 ]) ?>
