@@ -82,7 +82,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="row">
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4"><?= $model->getAttributeLabel('member.username') ?>：</label>
-                                <?= $model->member->username ?>
+                                <?= $model->member->username ?? '' ?>
                             </div>
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4"><?= $model->getAttributeLabel('order_from') ?>：</label>
@@ -250,11 +250,22 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <!--                                    --><?//= Html::button('打印',['class'=>'btn btn-primary btn-sm','style'=>'height:25px;font-size:10px;'])?>
                                     <!--                                </div>-->
 
-
                                 </div>
                             </div>
                         <?php } else {?>
-                            不开发票
+                        <div class="col-lg-6">
+                                <div class="row">
+                                    不开发票
+                                </div>
+                                <br/>
+                                <div class="row">
+                                    <?= Html::a('预览',['ele-invoice-pdf?order_id='.$model->id],  [
+                                        'class' => 'btn btn-info btn-sm','target'=>'blank',
+                                    ])?>
+
+                                </div>
+                        </div>
+
                         <?php }?>
                     </div>
                 </div>
