@@ -237,7 +237,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         ])?>
                                     </div>
                                     <div class="row" style="margin-top:15px; ">
-                                        <?= Html::a('预览',['ele-invoice-pdf?order_id='.$model->id],  [
+                                        <?= Html::a('预览',['ele-invoice-pdf','order_id'=>$model->id],  [
                                             'class' => 'btn btn-info btn-sm','target'=>'blank',
                                             'style'=>'height:25px;font-size:10px;'
                                         ])?>
@@ -259,7 +259,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </div>
                                 <br/>
                                 <div class="row">
-                                    <?= Html::a('预览',['ele-invoice-pdf?order_id='.$model->id],  [
+                                    <?= Html::a('预览',['ele-invoice-pdf','order_id'=>$model->id],  [
+
                                         'class' => 'btn btn-info btn-sm','target'=>'blank',
                                     ])?>
 
