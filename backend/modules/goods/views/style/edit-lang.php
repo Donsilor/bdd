@@ -137,14 +137,35 @@ $model->style_spec = $style_spec;
                             </div> 
                           <?php 
                           $data = [];                          
-                          foreach ($attr_list as $k=>$attr){   
-                              $values = Yii::$app->services->goodsAttribute->getValuesByAttrId($attr['id']);
-                              $data[] = [
-                                  'id'=>$attr['id'],
-                                  'name'=>$attr['attr_name'],
-                                  'value'=>Yii::$app->services->goodsAttribute->getValuesByAttrId($attr['id']),
-                                  'current'=>$model->style_spec['a'][$attr['id']]??[]
-                              ];   
+                          foreach ($attr_list as $k=>$attr){
+                              if($attr['input_type']==\common\enums\InputTypeEnum::INPUT_STYLE_GOODS_LIST) {
+
+                                  $goodsIds = $model->style_spec['a'][$attr['id']]??[];
+
+                                  $goodsInfo = Goods::findOne($goodsIds[0]??null);
+
+                                  $values = [];
+                                  $styleInfo = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id']??array_pop($attrStyleIds));
+                                  foreach ($styleInfo['details'] as $detail) {
+                                      $values[$detail['id']] = $detail['goodsDetailsCode'];
+                                  }
+
+                                  $data[] = [
+                                      'id'=>$attr['id'],
+                                      'name'=>$attr['attr_name'],
+                                      'value'=>$values,
+                                      'current'=>$model->style_spec['a'][$attr['id']]??[]
+                                  ];
+                              }
+                              else {
+                                  $values = Yii::$app->services->goodsAttribute->getValuesByAttrId($attr['id']);
+                                  $data[] = [
+                                      'id'=>$attr['id'],
+                                      'name'=>$attr['attr_name'],
+                                      'value'=>$values,
+                                      'current'=>$model->style_spec['a'][$attr['id']]??[]
+                                  ];
+                              }
                           }
                          
                           if(!empty($data)){

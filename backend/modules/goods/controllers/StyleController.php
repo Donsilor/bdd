@@ -2,6 +2,7 @@
 
 namespace backend\modules\goods\controllers;
 
+use common\models\goods\Goods;
 use Yii;
 use common\models\goods\Style;
 use common\components\Curd;
@@ -108,8 +109,21 @@ class StyleController extends BaseController
             \Yii::$app->services->goods->syncStyleToGoods($model->id);
             return $this->message("保存成功", $this->redirect($returnUrl), 'success');
         }
+
+        $attrStyleIds = [];
+        if($type_id==19) {
+            $attrStyleIds = Yii::$app->request->get('attr_style_ids', '');
+
+            $attrStyleIds = explode('|', $attrStyleIds);
+
+            if(empty($id) && count($attrStyleIds)!=2) {
+                return;
+            }
+        }
+
         return $this->render($this->action->id, [
                 'model' => $model,
+            'attrStyleIds' => $attrStyleIds
         ]);
     }
     
