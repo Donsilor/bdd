@@ -157,8 +157,33 @@ class GoodsService extends Service
                     $attr['all'] = [];
                     if(!$is_text){
                         $attr['value_id'] = $spec[$attr_id];//属性值ID列表
-                        $attr['value'] = \Yii::$app->services->goodsAttribute->getValuesByValueIds($attr['value_id'],$language);
-                        $attr['all'] = \Yii::$app->services->goodsAttribute->getValuesByAttrId($attr_id,StatusEnum::ENABLED,$language);
+                        if($attr['input_type']==InputTypeEnum::INPUT_STYLE_GOODS_LIST) {
+                            $goodsId = $attr['value_id'][0];
+
+                            $goodsInfo = Goods::findOne($goodsId);
+
+                            $all = [];
+                            $styleInfo = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id']);
+                            foreach ($styleInfo['details'] as $detail) {
+                                $all[$detail['id']] = $detail['goodsDetailsCode'];
+                            }
+                            $attr['all'] = $all;
+
+                            $values = [];
+                            foreach ($all as $key => $item) {
+                                if(in_array($key, $attr['value_id'])) {
+                                    $values[$key] = $item;
+                                }
+                            }
+
+                            $attr['value'] = $values;
+
+                            $d = 1;
+                        }
+                        else {
+                            $attr['value'] = \Yii::$app->services->goodsAttribute->getValuesByValueIds($attr['value_id'],$language);
+                            $attr['all'] = \Yii::$app->services->goodsAttribute->getValuesByAttrId($attr_id,StatusEnum::ENABLED,$language);
+                        }
                     }
                     $format_data[$key][$attr['id']] = $attr;
                 }
@@ -436,6 +461,14 @@ class GoodsService extends Service
                 'attr_name'=>'carats',
                 'key_name'=>'carat',
             ),  // 主石大小
+            '61'=>array(
+                'attr_name'=>'menRing',
+                'key_name'=>'menRing',
+            ),  // 男戒
+            '62'=>array(
+                'attr_name'=>'ladyRing',
+                'key_name'=>'ladyRing',
+            ),  // 女戒
         ];
         $query = Style::find()->alias('m')
             ->leftJoin(StyleLang::tableName().' lang',"m.id=lang.master_id and lang.language='".$language."'")
@@ -555,8 +588,12 @@ class GoodsService extends Service
                         $check_goods_spec_ids[] = $goods_spec_id;
                         $attr = array();
                         $attr['id'] = $goods_spec_id;
-                        $attr['image'] = \Yii::$app->services->goodsAttribute->getAttrImageByValueId($goods_spec_id);
-                        $attr['name'] = \Yii::$app->attr->valueName($goods_spec_id);
+                        $attr['image'] = '';
+                        $attr['name'] = '';
+                        if(!in_array($k, [61, 62])) {
+                            $attr['image'] = \Yii::$app->services->goodsAttribute->getAttrImageByValueId($goods_spec_id);
+                            $attr['name'] = \Yii::$app->attr->valueName($goods_spec_id);
+                        }
                         $style[$v['attr_name']][] = $attr;
                     }
 
