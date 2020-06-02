@@ -438,7 +438,7 @@ class GoodsService extends Service
      * @param unknown $language
      * @return 
      */
-    public function formatStyleGoodsById($style_id, $language = null, $area_id=null){
+    public function formatStyleGoodsById($style_id, $language = null, $area_id=null, $goods_ids=[]){
 
         $ip = \Yii::$app->request->userIP;
         if(empty($area_id)){
@@ -569,8 +569,12 @@ class GoodsService extends Service
         $goods_array = Goods::find()->alias('g')
             ->leftJoin(GoodsMarkup::tableName().' markup', 'g.id=markup.goods_id and markup.area_id='.$area_id)
             ->where(['g.style_id'=>$style_id ,'g.status'=>StatusEnum::ENABLED])
-            ->andWhere(['or',['=','markup.status',1],['IS','markup.status',new \yii\db\Expression('NULL')]])
-            ->select(['g.id','type_id','goods_sn','IFNULL(markup.sale_price,g.sale_price) as sale_price','goods_storage','warehouse','goods_spec'])
+            ->andWhere(['or',['=','markup.status',1],['IS','markup.status',new \yii\db\Expression('NULL')]]);
+
+        if(!empty($goods_ids))
+            $goods_array = $goods_array->andWhere(['in', 'g.id', $goods_ids]);
+
+        $goods_array = $goods_array->select(['g.id','type_id','goods_sn','IFNULL(markup.sale_price,g.sale_price) as sale_price','goods_storage','warehouse','goods_spec'])
             ->asArray()
             ->all();
         $details = array();
@@ -631,11 +635,26 @@ class GoodsService extends Service
             array_multisort($names,SORT_ASC,$style['sizes']);
         }
 
-
-
-
         $style['details'] = $details;
         $style['totalStock'] = $totalStock;
+
+        $styleSpec = json_decode($style_model->style_spec,true);
+        $spec = $styleSpec['a'];
+
+        $ring = [];
+        foreach ($spec as $key => $item) {
+            if(in_array($key, [61, 62])) {
+
+                $goodsId = $item[0];
+
+                $goodsInfo = Goods::findOne($goodsId);
+
+                $ring[] = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id'], null, null, $item);
+
+            }
+        }
+
+        $style['ring'] = $ring;
 
         return $style;
 
