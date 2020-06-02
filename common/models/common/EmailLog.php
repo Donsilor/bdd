@@ -35,8 +35,11 @@ class EmailLog extends \common\models\base\BaseModel
     const USAGE_ORDER_UNPAID = 'order-unpaid';
     const USAGE_ORDER_PAID = 'order-paid';
     const USAGE_ORDER_SEND = 'order-send';
+    const USAGE_ORDER_REFUND_NOTICE = 'order-refund-notice';
     const USAGE_ORDER_INVOICE = 'order-invoice';
     const USAGE_WIRE_TRANSFER_ORDER_NOTICE = 'wire-transfer-order-notice';
+    const USAGE_ORDER_PAY_SUCCESS = 'order-pay-success-notice';
+    const USAGE_ORDER_ABNORMAL_NOTICE = 'order-abnormal-notice';
     /**
      * @var array
      */
@@ -47,8 +50,11 @@ class EmailLog extends \common\models\base\BaseModel
             self::USAGE_ORDER_UNPAID => '待付款订单通知',
             self::USAGE_ORDER_PAID => '已付款订单通知',
             self::USAGE_ORDER_SEND => '已发货订单通知',
+            self::USAGE_ORDER_REFUND_NOTICE => '订单退款通知',
             self::USAGE_ORDER_INVOICE => '订单电子凭证',
         self::USAGE_WIRE_TRANSFER_ORDER_NOTICE => '电汇订单通知',
+        self::USAGE_ORDER_PAY_SUCCESS => '付款成功通知',
+        self::USAGE_ORDER_ABNORMAL_NOTICE => '订单异常通知',
     ];
     public static $usageTemplates = [
             self::USAGE_LOGIN => 'loginCode',
@@ -57,13 +63,17 @@ class EmailLog extends \common\models\base\BaseModel
             self::USAGE_ORDER_UNPAID => 'orderNotification',
             self::USAGE_ORDER_PAID => 'orderNotification',
             self::USAGE_ORDER_SEND => 'orderNotification',
+            self::USAGE_ORDER_REFUND_NOTICE => 'orderNotification',
             self::USAGE_ORDER_INVOICE => 'orderInvoice',
         self::USAGE_WIRE_TRANSFER_ORDER_NOTICE => 'wireTransferOrderNotice',
+        self::USAGE_ORDER_PAY_SUCCESS => 'orderPaySuccessNotice',
+        self::USAGE_ORDER_ABNORMAL_NOTICE => 'OrderAbnormalNotice',
     ];    
     public static $orderStatusMap = [
             OrderStatusEnum::ORDER_UNPAID =>self::USAGE_ORDER_UNPAID,
             OrderStatusEnum::ORDER_PAID =>self::USAGE_ORDER_PAID,
             OrderStatusEnum::ORDER_SEND =>self::USAGE_ORDER_SEND,
+            'refund' =>self::USAGE_ORDER_REFUND_NOTICE,
     ];
     /**
      * {@inheritdoc}

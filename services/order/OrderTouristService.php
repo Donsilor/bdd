@@ -131,6 +131,9 @@ class OrderTouristService extends OrderBaseService
             }
         }
 
+        //游客创建订单
+        \Yii::$app->services->job->notifyContacts->touristCreateOrder($order->order_sn);
+
         return $order->id;
     }
 

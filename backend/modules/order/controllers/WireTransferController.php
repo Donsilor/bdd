@@ -77,6 +77,9 @@ class WireTransferController extends BaseController
 
         // ajax 校验
         $this->activeFormValidate($model);
+
+        $audit_status = $model->order->audit_status;
+
         if ($model->load(\Yii::$app->request->post())) {
 
             try {
@@ -86,7 +89,6 @@ class WireTransferController extends BaseController
                     throw new \Exception($this->getError($model));
                 }
 
-                OrderLogService::wireTransferAudit($model->order);
 
                 if($model->collection_status==WireTransferEnum::CONFIRM) {
                     //支付记录确认
@@ -110,12 +112,19 @@ class WireTransferController extends BaseController
 
                     //更新订单审核状态
                     $model->order->status = AuditStatusEnum::PASS;
+                    $model->order->audit_status = OrderStatusEnum::ORDER_AUDIT_YES;
                     $model->order->order_status = OrderStatusEnum::ORDER_CONFIRM;//已审核，代发货
 
                     if(false  === $model->order->save()) {
                         throw new \Exception($this->getError($model));
                     }
                 }
+
+                OrderLogService::audit($model->order, [[
+                    'audit_status'=>OrderStatusEnum::getValue($model->order->audit_status, 'auditStatus')
+                ], [
+                    'audit_status'=>OrderStatusEnum::getValue($audit_status, 'auditStatus')
+                ]]);
 
                 $trans->commit();
             } catch (\Exception $exception) {

@@ -442,4 +442,18 @@ class StringHelper extends BaseStringHelper
         $str = preg_replace('#[^\x{4e00}-\x{9fa5}A-Za-z0-9\-\$]#u','',$str);
         return $str;
     }
+    
+    /**
+     * 
+     * @param unknown $string
+     * @param string $delimiter
+     * @param string $trim
+     * @param string $skipEmpty
+     * @return array
+     */
+    public static function explode($string, $delimiter = ',', $trim = true, $skipEmpty = false)
+    {
+        $string = preg_replace("/\s+/is", $delimiter, $string);
+        return parent::explode($string, $delimiter, $trim , $skipEmpty);
+    }
 }

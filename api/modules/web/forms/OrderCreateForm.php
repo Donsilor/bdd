@@ -65,11 +65,11 @@ class OrderCreateForm extends Model
 
     public function validateCurrency($attribute)
     {
-        $currency = strtoupper(\Yii::$app->params['currency']);
-        if(in_array($currency, ['CNY'])) {
-            $this->addError($attribute, \Yii::t('payment','PAYMENT_NOT_SUPPORT_RMB'));
-            return false;
-        }
+//        $currency = strtoupper(\Yii::$app->params['currency']);
+//        if(in_array($currency, ['CNY'])) {
+//            $this->addError($attribute, \Yii::t('payment','PAYMENT_NOT_SUPPORT_RMB'));
+//            return false;
+//        }
         return true;
     }
 

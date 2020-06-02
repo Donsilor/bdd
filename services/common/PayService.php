@@ -2,6 +2,7 @@
 
 namespace services\common;
 
+use common\enums\CurrencyEnum;
 use common\enums\OrderTouristStatusEnum;
 use common\models\order\OrderTourist;
 use services\market\CardService;
@@ -321,7 +322,8 @@ class PayService extends Service
             case PayEnum::ORDER_GROUP :   
                 if($log->pay_status == 1 && ($order = Order::find()->where(['order_sn'=>$log->order_sn, 'order_status'=>OrderStatusEnum::ORDER_UNPAID])->one())) {
                     $time = time();
-                    $pay_amount = $log->total_fee;
+
+                    $pay_amount = \Yii::$app->services->currency->exchangeAmount($log->total_fee, 2, $order->account->currency, $log->currency);
 
                     $update = [
                         'pay_sn'=>$log->out_trade_no,
@@ -351,6 +353,9 @@ class PayService extends Service
 
                     //支付日志
                     OrderLogService::pay($order);
+
+                    //订单支付成功
+                    Yii::$app->services->job->notifyContacts->orderPaySuccess($order->order_sn);
                 }
                  else {
                     throw new \Exception('Order 无需更新'.$log->order_sn);
@@ -363,7 +368,8 @@ class PayService extends Service
 
                     //保存游客支付订单状态
                     $orderTourist->status = OrderTouristStatusEnum::ORDER_PAID;
-                    $orderTourist->pay_amount = $log->total_fee;
+
+                    $orderTourist->pay_amount = \Yii::$app->services->currency->exchangeAmount($log->total_fee, 2, $orderTourist->currency, $log->currency);
 
                     $update = [
                         'status' => OrderTouristStatusEnum::ORDER_PAID,
@@ -379,6 +385,9 @@ class PayService extends Service
                     else {
                         throw new \Exception('OrderTourist 更新失败'.$log->order_sn);
                     }
+
+                    //订单支付成功
+                    Yii::$app->services->job->notifyContacts->orderPaySuccess($orderTourist->order_sn);
                 }
                 else {
                     throw new \Exception('OrderTourist 无需更新'.$log->order_sn);

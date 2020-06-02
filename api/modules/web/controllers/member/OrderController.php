@@ -3,6 +3,7 @@
 namespace api\modules\web\controllers\member;
 
 use api\modules\web\forms\CardForm;
+use common\enums\CurrencyEnum;
 use common\enums\PayEnum;
 use common\helpers\ImageHelper;
 use common\helpers\ResultHelper;
@@ -55,6 +56,8 @@ class OrderController extends UserAuthController
         foreach ($result['data'] as $order) {
             $exchange_rate = $order->account->exchange_rate;
             $currency = $order->account->currency;
+
+            $payAmount = bcsub($order->account->order_amount, CardService::getUseAmount($order->id), 2);
             $orderInfo = [
                 'id' =>$order->id,
                 'orderNO' =>$order->order_sn,
@@ -62,7 +65,8 @@ class OrderController extends UserAuthController
                 'refundStatus'=> $order->refund_status,
                 'wireTransferStatus'=> !empty($order->wireTransfer)?$order->wireTransfer->collection_status:null,
                 'orderAmount'=> $order->account->order_amount,
-                'payAmount'=> bcsub($order->account->order_amount, CardService::getUseAmount($order->id), 2),
+                'payAmount'=> $payAmount,
+                'payAmountHKD'=> \Yii::$app->services->currency->exchangeAmount($payAmount, 2, CurrencyEnum::HKD, $order->account->currency),
                 'productAmount'=> $order->account->goods_amount,
                 'coinCode'=> $currency,
                 'payChannel'=>$order->payment_type,
@@ -183,10 +187,16 @@ class OrderController extends UserAuthController
             $trans->commit();
             //订单发送邮件
             \Yii::$app->services->order->sendOrderNotification($result['order_id']);
+
+            $payAmount = bcsub($result['order_amount'], $cardUseAmount, 2);
+
+            $payAmountHKD = \Yii::$app->services->currency->exchangeAmount($payAmount, 2, CurrencyEnum::HKD, $this->getCurrency());
+
             return [
                 "coinType" => $result['currency'],
                 "orderAmount"=> $result['order_amount'],
-                "payAmount"=> bcsub($result['order_amount'], $cardUseAmount, 2),
+                "payAmount"=> $payAmount,
+                "payAmountHKD"=> $payAmountHKD,
                 "orderId" => $result['order_id'],
                 "payStatus" => $pay['payStatus']??0,
             ];            
@@ -342,6 +352,7 @@ class OrderController extends UserAuthController
             'isInvoice'=> 2,            
             'orderNo' => $order->order_sn,
             'orderStatus' => $order->order_status,
+            'refundStatus'=> $order->refund_status,
             'wireTransferStatus'=> !empty($order->wireTransfer)?$order->wireTransfer->collection_status:null,
             'orderTime' => $order->created_at,
             'orderType' => $order->order_type,            

@@ -23,6 +23,7 @@ class CardController extends Controller
 
     public function actionTest()
     {
+
         $order = Order::findOne(344);
         var_dump(OrderLogService::create($order));
         var_dump(OrderLogService::cancel($order));
@@ -31,6 +32,7 @@ class CardController extends Controller
         var_dump(OrderLogService::finish($order));
         var_dump(OrderLogService::deliver($order));
         var_dump(OrderLogService::follower($order));
+
 //        $order = Order::findOne('523');
 //        $usage = EmailLog::$orderStatusMap[$order->order_status] ?? '';
 //        \Yii::$app->services->mailer->queue(false)->send('zhufu.zheng@bddco.com',$usage,['code'=>$order->id],$order->language);

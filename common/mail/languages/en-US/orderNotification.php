@@ -8,7 +8,7 @@ use common\helpers\AmountHelper;
 $order_id = $code;
 $order = Order::find()->where(['id'=>$order_id])->one();
 
-\Yii::$app->params['language'] = $order->language;
+\Yii::$app->language = $order->language;
 ?>
 <!DOCTYPE html>
 <html>
@@ -30,7 +30,10 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 					<div class="info">
 						<dl>
 							<dt>Dear customers：</dt>
-							<?php if($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
+							<?php if(
+							        $order->order_status == OrderStatusEnum::ORDER_UNPAID ||
+                                    $order->order_status == OrderStatusEnum::ORDER_CANCEL && $order->refund_status
+                            ) {?>
 							<dd>Thank you for choosing BDD Co. We attach great importance to your order. Please read all the email about the order carefully. If the data is wrong, please contact us immediately by email <a href="mailto:service@bddco.com" rel="noopener" target="_blank">service@bddco.com</a>。</dd>
 							<?php } elseif($order->order_status == OrderStatusEnum::ORDER_PAID){?>
 							<dd>Your order has been paid successfully! Thank you for choosing BDD Co. We attach great importance to your order, we have arranged for you as soon as possible, and we will send it to you at the first time when the product test is correct. If you have any questions, please contact us immediately by email to <a href="mailto:service@bddco.com" rel="noopener" target="_blank">service@bddco.com</a>。</dd>
@@ -41,13 +44,16 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 						<dl>
 							<dt>Order details</dt>
 							<dd>
-								<span>Payment information：</span><span>Online payment<i><?= OrderStatusEnum::getValue($order->order_status) ?></i></span>
+                                <span>Payment information：</span><?php if($order->refund_status) { ?><span><i><?= \common\enums\PayStatusEnum::getValue($order->refund_status,'refund') ?></i></span>
+                                <?php } else { ?><span>Online payment<i><?= OrderStatusEnum::getValue($order->order_status) ?></i></span><?php } ?>
 							</dd>
 							<dd><span>Order NO：</span><span class="orderno"><?= $order->order_sn ?></span></dd>							
 							<?php if($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
 							<dd><span>Order Time：</span><span><?= \Yii::$app->formatter->asDatetime($order->created_at); ?></span></dd>
 							<?php }elseif($order->order_status == OrderStatusEnum::ORDER_PAID) {?>
 							<dd><span>Payment time：</span><span><?= \Yii::$app->formatter->asDatetime($order->payment_time); ?></span></dd>
+                            <?php }elseif($order->order_status == OrderStatusEnum::ORDER_CANCEL) {?>
+                                <dd><span>Order Status：</span><span>Closed</span></dd>
 							<?php }elseif($order->order_status == OrderStatusEnum::ORDER_SEND) {?>
 							<dd><span>Logistics Company：</span><span><?= \Yii::$app->services->express->getExressName($order->express_id,$order->language);?></span></dd>
 							<dd><span>Logistics NO：</span><span><?= $order->express_no; ?></span></dd>
@@ -56,7 +62,7 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 						</dl>
 					</div>
 					<div class="list">
-					  <?php 
+					  <?php
 					  $currency = $order->account->currency;
 					  $exchange_rate = $order->account->exchange_rate;
 
@@ -106,11 +112,14 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
                                             <dd class="num"><span>Gift Card (<?= $card->card->sn ?>)：</span><em>-<?= AmountHelper::outputAmount(abs($card->use_amount),2,$currency)?></em></dd>
                                         <?php }} ?>
 									<dt class="count"><span>Order Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->order_amount,2,$currency)?></em></dt>
-									<?php if($order->order_status == OrderStatusEnum::ORDER_PAID) {?>
+									<?php if($order->order_status == OrderStatusEnum::ORDER_PAID || $order->refund_status) {?>
 									<dt class="count"><span>Pay Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
                                     <?php } elseif($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
                                         <dt class="count"><span>Total Amount：</span><em class="total"><?= AmountHelper::outputAmount(bcadd($order->account->order_amount, $cardUseAmount, 2),2,$currency)?></em></dt>
                                     <?php }?>
+                                    <?php if($order->refund_status) { ?>
+                                        <dt class="count"><span>Refunded：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
+                                    <?php } ?>
 								</dl>
 								<?php if($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
 								<a href="<?= \Yii::$app->params['frontBaseUrl']?>/payment-options?orderId=<?= $order->id?>&price=<?= sprintf("%.2f",$order->account->order_amount)?>&coinType=<?= $currency?>" style="text-decoration:none" target="_blank"><div class="btn">Pay</div></a>

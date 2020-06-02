@@ -211,35 +211,24 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                             [
                                 'attribute' => 'order_status',
                                 'headerOptions' => ['class' => 'col-md-1'],
-                                'filter' => Html::activeDropDownList($searchModel, 'order_status', common\enums\OrderStatusEnum::getMap(), [
+                                'filter' => Html::activeDropDownList($searchModel, 'order_status', (common\enums\OrderStatusEnum::getMap()+['1'=>'已关闭']), [
                                     'prompt' => '全部',
                                     'class' => 'form-control',
                                 ]),
                                 'value' => function ($model) {
-                                    return common\enums\OrderStatusEnum::getValue($model->order_status);
+                                    return $model->refund_status?'已关闭':common\enums\OrderStatusEnum::getValue($model->order_status);
                                 },
                                 'format' => 'raw',
                             ],
-//                            [
-//                                'attribute' => 'status',
-//                                'headerOptions' => ['class' => 'col-md-1'],
-//                                'filter' => Html::activeDropDownList($searchModel, 'status', common\enums\AuditStatusEnum::getMap(), [
-//                                    'prompt' => '全部',
-//                                    'class' => 'form-control',
-//                                ]),
-//                                'value' => function ($model) {
-//                                    return common\enums\AuditStatusEnum::getValue($model->status);
-//                                },
-//                                'format' => 'raw',
-//                            ],
-                            
                             [
-                                'label' => '跟进人',
-                                'filter' => Html::activeTextInput($searchModel, 'follower.username', [
+                                'attribute' => 'refund_status',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'refund_status', \common\enums\PayStatusEnum::refund(), [
+                                    'prompt' => '全部',
                                     'class' => 'form-control',
                                 ]),
                                 'value' => function ($model) {
-                                    return $model->follower ? $model->follower->username : null;
+                                    return common\enums\PayStatusEnum::getValue($model->refund_status, 'refund');
                                 },
                                 'format' => 'raw',
                             ],
@@ -247,11 +236,26 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                 'label' => '跟进状态',
                                 'headerOptions' => ['class' => 'col-md-1'],
                                 'filter' => Html::activeDropDownList($searchModel, 'followed_status',common\enums\FollowStatusEnum::getMap(), [
-                                        'prompt' => '全部',
-                                        'class' => 'form-control',
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
                                 ]),
                                 'value' => function ($model) {
-                                     return common\enums\FollowStatusEnum::getValue($model->followed_status);
+                                    $value = common\enums\FollowStatusEnum::getValue($model->followed_status);
+                                    $value .= $model->follower ? "<br />" . $model->follower->username : '';
+                                    return $value;
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
+                                'label' => '审核状态',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'audit_status',common\enums\OrderStatusEnum::auditStatus(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    $value = common\enums\OrderStatusEnum::getValue($model->audit_status, 'auditStatus');
+                                    return $value?:'未审核';
                                 },
                                 'format' => 'raw',
                             ],
@@ -259,7 +263,7 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                 'header' => "操作",
                                 //'headerOptions' => ['class' => 'col-md-1'],
                                 'class' => 'yii\grid\ActionColumn',
-                                'template' => '{audit} {delivery} {follower} {wiretransfer}',
+                                'template' => '{audit} {delivery} {follower} {cancel} {refund} {wiretransfer}',
                                 'buttons' => [
                                     'follower' => function ($url, $model, $key) {
                                         return Html::edit(['edit-follower', 'id' => $model->id], '跟进', [
@@ -270,12 +274,18 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                     },
                                     'audit' => function ($url, $model, $key) {
                                         if($model->order_status == \common\enums\OrderStatusEnum::ORDER_PAID) {
-                                            return Html::batchAudit(['ajax-batch-audit'], '审核', [
+//                                            return Html::batchAudit(['ajax-batch-audit'], '审核', [
                                                 //'class'=>'label bg-green'
+//                                            ]);
+                                            return Html::edit(['edit-audit', 'id' => $model->id], '审核', [
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#ajaxModal',
+                                                'class'=>'btn bg-green btn-sm'
                                             ]);
-                                        }                                        
+                                        }
+                                        return null;
                                     },
-                                    'delivery' => function ($url, $model, $key) {                     
+                                    'delivery' => function ($url, $model, $key) {
                                         if($model->order_status == \common\enums\OrderStatusEnum::ORDER_CONFIRM) {
                                             return  Html::edit(['edit-delivery', 'id' => $model->id], '发货', [
                                                 'data-toggle' => 'modal',
@@ -283,6 +293,29 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                                 'class'=>'btn btn-success btn-sm'
                                             ]);
                                         }
+                                        return null;
+                                    },
+                                    'cancel' => function($url, $model, $key) {
+                                        if($model->order_status != \common\enums\OrderStatusEnum::ORDER_UNPAID) {
+                                            return null;
+                                        }
+
+                                        return Html::edit(['edit-cancel', 'id' => $model->id], '取消', [
+                                            'data-toggle' => 'modal',
+                                            'data-target' => '#ajaxModal',
+                                            'class'=>'btn btn-danger btn-sm'
+                                        ]);
+
+                                    },
+                                    'refund' => function($url, $model, $key) {
+                                        if($model->order_status <= \common\enums\OrderStatusEnum::ORDER_UNPAID) {
+                                            return null;
+                                        }
+                                        return Html::edit(['edit-refund', 'id' => $model->id], '退款', [
+                                            'data-toggle' => 'modal',
+                                            'data-target' => '#ajaxModal',
+                                            'class'=>'btn btn-danger btn-sm'
+                                        ]);
                                     },
                                     'wiretransfer' => function($url, $model, $key) {
                                         if(!$model->wireTransfer || $model->wireTransfer->collection_status==1 || Yii::$app->request->get('order_status', -1)==10) {

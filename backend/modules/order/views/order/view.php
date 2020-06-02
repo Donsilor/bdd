@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="tab-content">
                 <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_1">
                     <ul class="nav nav-tabs pull-right">
-                        <li class="pull-left header"><i class="fa fa-th"></i> 详情信息&nbsp; <span class="label label-primary"><?= \common\enums\OrderStatusEnum::getValue($model->order_status) ?></span>
+                        <li class="pull-left header"><i class="fa fa-th"></i> 详情信息&nbsp; <span class="label label-primary"><?= $model->refund_status?'已关闭':\common\enums\OrderStatusEnum::getValue($model->order_status) ?></span>
                         </li>
                     </ul>
                     <div class="box-body col-lg-12" style="margin-left:9px">
@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             </div>
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4"><?= $model->getAttributeLabel('order_status') ?>：</label>
-                                <?= \common\enums\OrderStatusEnum::getValue($model->order_status) ?>
+                                <?= $model->refund_status?'已关闭':\common\enums\OrderStatusEnum::getValue($model->order_status) ?>
                             </div>
                         </div>
                         <div class="row">
@@ -350,7 +350,23 @@ DOM;
                                     <div class="col-lg-3 text-right">
                                         <label><?= $model->getAttributeLabel('seller_remark') ?>：</label></div>
                                     <div class="col-lg-9">
-                                        <pre><?= $model->seller_remark ?></pre>
+
+                                            <?php
+                                            $remark = trim($model->seller_remark);
+                                            if($model->audit_remark) {
+                                                $remark && ($remark .= "\r\n--------------------\r\n");
+                                                $remark .= '[审核备注]：'.trim($model->audit_remark);
+                                            }
+                                            if($model->refund_remark) {
+                                                $remark && ($remark .= "\r\n--------------------\r\n");
+                                                $remark .= '[退款备注]：'.trim($model->refund_remark);
+                                            }
+                                            if($model->cancel_remark) {
+                                                $remark && ($remark .= "\r\n--------------------\r\n");
+                                                $remark .= '[取消备注]：'.trim($model->cancel_remark);
+                                            }
+                                            ?>
+                                        <pre><?= $remark ?></pre>
                                     </div>
                                 </div>
                             </div>
