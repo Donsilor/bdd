@@ -102,7 +102,7 @@ class StyleController extends BaseController
 
             if(!empty($id)){
                 //记录日志
-                \Yii::$app->services->goods->recordGoodsLog($model, $old_style_info);
+//                \Yii::$app->services->goods->recordGoodsLog($model, $old_style_info);
             }
 
             //商品更新

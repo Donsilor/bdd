@@ -170,15 +170,14 @@ class GoodsService extends Service
                             $attr['all'] = $all;
 
                             $values = [];
-                            foreach ($all as $key => $item) {
-                                if(in_array($key, $attr['value_id'])) {
-                                    $values[$key] = $item;
+                            foreach ($all as $k => $item) {
+                                if(in_array($k, $attr['value_id'])) {
+                                    $values[$k] = $item;
                                 }
                             }
 
                             $attr['value'] = $values;
 
-                            $d = 1;
                         }
                         else {
                             $attr['value'] = \Yii::$app->services->goodsAttribute->getValuesByValueIds($attr['value_id'],$language);
