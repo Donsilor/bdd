@@ -230,7 +230,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="col-lg-6">
 
                                     <div class="row" style="margin-top:0px; ">
-                                        <?= Html::edit(['ele-invoice-ajax-edit', 'invoice_id' => $model->invoice->id, 'language'=>$model->language,'returnUrl' => Url::getReturnUrl()],'编辑', [
+                                        <?= Html::edit(['ele-invoice-ajax-edit', 'order_id' => $model->id, 'language'=>$model->language,'returnUrl' => Url::getReturnUrl()],'编辑', [
                                             'data-toggle' => 'modal',
                                             'data-target' => '#ajaxModalLg',
                                             'style'=>'height:25px;font-size:10px;'
@@ -258,13 +258,20 @@ $this->params['breadcrumbs'][] = $this->title;
                                     不开发票
                                 </div>
                                 <br/>
+
                                 <div class="row">
                                     <?= Html::a('预览',['ele-invoice-pdf','order_id'=>$model->id],  [
-
                                         'class' => 'btn btn-info btn-sm','target'=>'blank',
+                                    ])?>
+                                    <?= Html::edit(['ele-invoice-ajax-edit', 'order_id' => $model->id, 'language'=>$model->language,'returnUrl' => Url::getReturnUrl()],'编辑', [
+                                        'data-toggle' => 'modal',
+                                        'data-target' => '#ajaxModalLg',
+
                                     ])?>
 
                                 </div>
+
+
                         </div>
 
                         <?php }?>

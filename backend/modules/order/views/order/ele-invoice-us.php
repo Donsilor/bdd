@@ -15,6 +15,7 @@
 
     <div class="template">
         <div class="clf">
+            <div class="invoice-data-img fl"></div>
             <div class="invoice-data fr">
                 <div class="invoice-data-topcolor">Invoice</div>
                 <div class="invoice-data-b clf">
@@ -31,11 +32,17 @@
         </div>
 
         <div class="site-type clf">
-            <div class="list clf">
+            <div class="list fl clf">
                 <div class="list-tit fl">Shipper:</div>
                 <div class="list-details fl">
                     <div class="child-name"><?php echo $result['sender_name']?$result['sender_name']:'BDD Co.';?></div>
                     <div class="child-addr"><?php echo $result['sender_address']?$result['sender_address']: 'Rm4, 23/F,Universal Trade Centre 3 Arbuthnot Road Central';?></div>
+                </div>
+            </div>
+            <div class="list fl clf">
+                <div class="list-tit fl">INVOICE NO:</div>
+                <div class="list-details fl">
+                    <div class="child-name"><?php echo $result['order_sn'];?></div>
                 </div>
             </div>
         </div>
@@ -111,7 +118,7 @@
 
         <div class="signature clf">
             <div class="signature-name fl">
-                <div class="signature-t"><?php echo $result['sender_name']?$result['sender_name']:'BDD Co.';?></div>
+                <div class="signature-t"><div class="signature-t-img"></div></div>
                 <div class="text">Signature of shipper/Exporter</div>
             </div>
             <div class="signature-date fl">

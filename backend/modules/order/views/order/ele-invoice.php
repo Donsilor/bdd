@@ -15,6 +15,7 @@
 
     <div class="template">
         <div class="clf">
+            <div class="invoice-data-img fl"></div>
             <div class="invoice-data fr">
                 <div class="invoice-data-topcolor">發票</div>
                 <div class="invoice-data-b clf">
@@ -28,14 +29,21 @@
                     </div>
                 </div>
             </div>
+
         </div>
 
         <div class="site-type clf">
-            <div class="list clf">
+            <div class="list fl clf">
                 <div class="list-tit fl">托運人:</div>
                 <div class="list-details fl">
                     <div class="child-name"><?php echo $result['sender_name']?$result['sender_name']:'BDD Co.Ltd';?></div>
                     <div class="child-addr"><?php echo $result['sender_address']?$result['sender_address']: '中環亞畢諾道3號環球貿易中心23樓04室';?></div>
+                </div>
+            </div>
+            <div class="list fl clf">
+                <div class="list-tit fl">發票號碼:</div>
+                <div class="list-details fl">
+                    <div class="child-name"><?php echo $result['order_sn'];?></div>
                 </div>
             </div>
         </div>
@@ -111,7 +119,7 @@
 
         <div class="signature clf">
             <div class="signature-name fl">
-                <div class="signature-t"><?php echo $result['sender_name']?$result['sender_name']:'BDD Co.';?></div>
+                <div class="signature-t"><div class="signature-t-img"></div></div>
                 <div class="text">出口商簽字</div>
             </div>
             <div class="signature-date fl">
