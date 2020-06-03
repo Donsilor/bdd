@@ -22,6 +22,7 @@ class CardFrom extends MarketCard
             [['batch'], 'validateBatch'],
             [['batch'], 'safe'],
             [['start_time','end_time'], 'date'],
+            [['start_time', 'end_time'], 'validateEndTime'],
             [['show_max_use_time'], 'validateMaxUseTime'],
         ];
     }
@@ -40,6 +41,13 @@ class CardFrom extends MarketCard
             'end_time' => '结束时间',
             'max_use_time' => '最长使用时间',
         ];
+    }
+
+    public function validateEndTime($attribute)
+    {
+        if($this->end_time <= $this->start_time) {
+            $this->addError($attribute, '结束时间必需大于开始时间');
+        }
     }
 
     public function validateBatch($attribute)
