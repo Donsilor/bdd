@@ -333,6 +333,22 @@ class GoodsService extends Service
                  'goods_spec' => $this->formatGoodsSpec($goods['goods_spec'], $language)
            ];
        }
+
+        $ring = [];
+        if($goods['type_id']==19) {
+            $goods_spec = $goods['goods_spec'];
+            if(!is_array($goods['goods_spec'])) {
+                $goods_spec = json_decode($goods['goods_spec'],true);
+            }
+            foreach ($goods_spec as $key => $spec) {
+                if(!in_array($key, ['61', 62])) {
+                    continue;
+                }
+                $ring[] = $this->getGoodsInfo($spec);
+            }
+        }
+        $goods['ring'] = $ring;
+
        return $goods;
     }
     /**

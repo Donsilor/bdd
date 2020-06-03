@@ -61,6 +61,7 @@ class CartController extends UserAuthController
             $cart['groupType'] = $model->group_type;
             $cart['goodsType'] = $model->goods_type;
             $cart['groupId'] = $model->group_id;
+            $cart['ring'] = $goods['ring'];
             $simpleGoodsEntity = [
                     "goodId"=>$goods['style_id'],
                     "goodsDetailsId"=>$model->goods_id,
@@ -266,6 +267,7 @@ class CartController extends UserAuthController
             $cart['groupType'] = $model->group_type;
             $cart['goodsType'] = $model->goods_type;
             $cart['groupId'] = $model->group_id;
+            $cart['ring'] = $goods['ring'];
             $simpleGoodsEntity = [
                 "goodId"=>$goods['style_id'],
                 "goodsDetailsId"=>$model->goods_id,
