@@ -122,6 +122,17 @@ $type_id = Yii::$app->request->get('type_id', 0);
                             }
                         ],
                         [
+                            'label' => "最大使用时长（天）",
+                            'filter' => Html::activeDropDownList($searchModel, 'max_use_time', ['1'=>'是', '0'=>'否'], [
+                                'prompt' => '全部',
+                                'class' => 'form-control',
+                            ]),
+                            'value' => function($model) {
+                                $day = intval($model->max_use_time/86400);
+                                return $day?:'';
+                            }
+                        ],
+                        [
                             'label' => '使用范围',
                             'filter' => Html::activeDropDownList($searchModel, 'goods_type_attach', \services\goods\TypeService::getTypeList(), [
                                 'prompt' => '全部',
