@@ -575,19 +575,29 @@ class GoodsService extends Service
 //                }
 //            }
 
+            $retailMallPrice = (float)$this->exchangeAmount($val['sale_price'],0);
+
             $details[$key]['barCode'] = null;
             $details[$key]['productNumber'] = null;
             $details[$key]['stock'] = $val['goods_storage'];
             $details[$key]['warehouse'] = $val['warehouse'];
             $details[$key]['categoryId'] = $model['type_id'];
             $details[$key]['goodsDetailsCode'] = $val['goods_sn'];
-            $details[$key]['retailMallPrice'] = (float)$this->exchangeAmount($val['sale_price'],0);
+            $details[$key]['retailMallPrice'] = $retailMallPrice;
             $details[$key]['retailPrice'] = null;
             $details[$key]['goodsId'] = $style_id;
             $details[$key]['id'] = $val['id'];
             $totalStock += $val['goods_storage'];
 
+            $details[$key]['coupon'] = [
+                'type_id' => $model['type_id'],//产品线ID
+                'style_id' => $style_id,//款式ID
+                'price' => $retailMallPrice,//价格
+                'num' =>1,//数量
+            ];
         }
+
+        CouponService::getCouponByList($this->getAreaId(), $details);
 
         //对尺寸进行排序
         if(isset($style['sizes'])){
