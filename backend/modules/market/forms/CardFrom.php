@@ -45,7 +45,7 @@ class CardFrom extends MarketCard
 
     public function validateEndTime($attribute)
     {
-        if($this->end_time <= $this->start_time) {
+        if(!empty($this->end_time) && !empty($this->start_time) && $this->end_time <= $this->start_time) {
             $this->addError($attribute, '结束时间必需大于开始时间');
         }
     }
@@ -59,8 +59,20 @@ class CardFrom extends MarketCard
 
     public function validateMaxUseTime($attribute)
     {
-        if($this->show_max_use_time && empty($this->max_use_time)) {
-            $this->addError('max_use_time', '不能为空');
+        if($this->show_max_use_time) {
+            if(empty($this->max_use_time)) {
+                $this->addError('max_use_time', '不能为空');
+                return;
+            }
+
+            if(!empty($this->start_time) && !empty($this->end_time)) {
+                $start_time = strtotime($this->start_time);
+                $end_time = strtotime($this->end_time);
+
+                if(($end_time-$start_time) <= ($this->max_use_time*86400)) {
+                    $this->addError('max_use_time', '不能大于开始和结束时间的差');
+                }
+            }
         }
     }
 
