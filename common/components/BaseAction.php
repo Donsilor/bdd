@@ -2,6 +2,7 @@
 
 namespace common\components;
 
+use common\enums\OrderFromEnum;
 use Yii;
 use yii\base\Model;
 use common\enums\AppEnum;
@@ -61,18 +62,24 @@ trait BaseAction
             \Yii::$app->params['currencySign'] = \Yii::$app->services->currency->getSign();
         }
         $this->currencySign = \Yii::$app->params['currencySign'];
-
-        //默认地区
-        $areaId = \Yii::$app->request->headers->get("x-api-area");
-        if($areaId) {
-            \Yii::$app->params['areaId'] = $areaId;
-        }
-        $this->areaId = \Yii::$app->params['areaId'];
         
         $platform = \Yii::$app->request->headers->get("x-api-platform");
         if($platform) {
            $this->platform = $platform;
         }
+
+        $areaIdNew = OrderFromEnum::platformToAreaId($this->platform);
+        if($areaIdNew) {
+            \Yii::$app->params['areaId'] = $areaIdNew;
+        }
+
+        //默认地区
+        $areaId = \Yii::$app->request->headers->get("x-api-area");
+        if(!$areaIdNew && $areaId) {
+            \Yii::$app->params['areaId'] = $areaId;
+        }
+
+        $this->areaId = \Yii::$app->params['areaId'];
     }
     /**
      * 默认地区
