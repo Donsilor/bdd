@@ -3,6 +3,7 @@
 use yii\grid\GridView;
 use yii\widgets\ActiveForm;
 use common\helpers\Html;
+use common\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -12,6 +13,27 @@ use common\helpers\Html;
 ?>
 <div class="row">
     <div class="col-xs-12">
+
+        <?php $form = ActiveForm::begin([]); ?>
+        <div class="form-group field-ring-ring_style">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>商品名称</th>
+                        <th>款式编号</th>
+
+                        <th>销售价</th>
+                        <th>商品库存</th>
+
+                        <th class="action-column">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="style_table">
+                </tbody>
+            </table>
+        </div>
+        <?php ActiveForm::end(); ?>
+
         <div class="box">
             <div class="box-body table-responsive">
                 <?= GridView::widget([
@@ -26,14 +48,17 @@ use common\helpers\Html;
                             'visible' => false,
                         ],
                         [
-                            'class'=>'yii\grid\RadioButtonColumn',
+                            'header' => '',
+                            'class'=>yii\grid\CheckboxColumn::class,
                             'name'=>'id',  //设置每行数据的复选框属性
                             'headerOptions' => ['width'=>'30'],
 
                         ],
                         [
                             'attribute' => 'id',
-                            'filter' => true,
+                            'filter' => Html::activeTextInput($searchModel, 'id', [
+                                'class' => 'hide',
+                            ]),
                             'format' => 'raw',
                             'headerOptions' => ['width'=>'50'],
                         ],
@@ -91,22 +116,122 @@ use common\helpers\Html;
                     ]
                 ]); ?>
             </div>
-            <?php $form = ActiveForm::begin([]); ?>
-            <input type="hidden" id="style_id" name="style_id" value=""/>
-            <?php ActiveForm::end(); ?>
         </div>
     </div>
 </div>
 
 
 <script>
-    $(function(){
+    $(function() {
 
         $(".content-header").hide();
 
-        $("#grid").find('input[name="id"]').change(function(){
-            $("#style_id").val($(this).val());
+        var $input = $("input[name='SearchModel[id]']");
+
+        $.each($input.val().split('|'), function (i, v) {
+            if(v!="") {
+                showStyle(v);
+            }
         });
+
+        $('input[name="id[]"]').change(function() {
+            // $("#style_id").val($(this).val());
+            // alert($(this).val());
+            if(($(this)[0]).checked) {
+                addStyle($(this).eq(0).val());
+            }
+            else {
+                delStyle($(this).val());
+            }
+        });
+
+        function addStyle(style_id) {
+
+            var hav = true;
+
+            var styleIds = $input.val().split('|');
+
+            $.each(styleIds, function(i, v) {
+                if(v == style_id) {
+                    hav = false;
+                }
+                if(v=="") {
+                    styleIds.pop(i);
+                }
+            });
+
+            if(hav === false) {
+                //delStyle(style_id);
+                layer.msg("此商品已经添加");
+                return false;
+            }
+
+            if(styleIds.length > 1) {
+                //delStyle(style_id);
+                layer.msg("最多只能选两个商品");
+                return false;
+            }
+
+            styleIds.push(style_id);
+            $input.val(styleIds.join("|"));
+
+            showStyle(style_id);
+        }
+
+        function showStyle(style_id) {
+            $.ajax({
+                type: "post",
+                url: '../ring/get-style',
+                dataType: "json",
+                data: {style_id:style_id},
+                success: function (data) {
+                    if (parseInt(data.code) !== 200) {
+                        rfMsg(data.message);
+                    } else {
+
+                        var data = data.data
+
+                        var tr = $("<tr>"
+                            +"<td>" + data.style_name + "</td>"
+                            +"<td>" + data.style_sn + "</td>"
+                            +"<td>" + data.sale_price + "</td>"
+                            +"<td>" + data.goods_storage + "</td>"
+                            +'<td><a class="btn btn-danger btn-sm deltr" href="#" data-styleId="'+data.id+'">删除</a></td>'
+                            + "</tr>");
+
+                        tr.find(".deltr").click(function() {
+                            delStyle($(this).attr("data-styleId"));
+                        });
+
+                        $("#style_table").append(tr);
+
+                    }
+                }
+            });
+        }
+
+        function delStyle(style_id) {
+            //取消数据保存
+            var styleIds = $input.val().split('|');
+
+            $.each(styleIds, function(i, v) {
+                if(v == style_id) {
+                    styleIds.pop(i);
+                }
+            });
+
+            $input.val(styleIds.join("|"));
+
+            //取消选中
+            $('input[name="id[]"]:checked').each(function(i, va) {
+                if($(this).val()==style_id) {
+                    $(this).prop("checked", false);
+                }
+            });
+
+            //删除显示
+            $("#style_table").find("a[data-styleId='"+style_id+"']").parents("tr").remove();
+        }
     });
 
 </script>

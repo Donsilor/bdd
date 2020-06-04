@@ -189,20 +189,10 @@ $export_param = http_build_query($searchModel);
 </div>
 
 <script>
-    //var style_ids=<?php //echo json_encode($style_ids);?>//;
-    // var style_arr=eval(style_ids);
-    // console.log(style_arr);
-    // getStyles(style_ids);
-
 
     /* 打一个新窗口 */
     $(document).on("click", ".openIframe1", function (e) {
 
-        // var tr_length = $("#style_table").children('tr').length;
-        // if(tr_length >1){
-        //     layer.msg("商品已满两件，不可再添加");
-        //     return false;
-        // }
         var title = $(this).data('title');
         var width = $(this).data('width');
         var height = $(this).data('height');
@@ -237,12 +227,19 @@ $export_param = http_build_query($searchModel);
             shade: 0.3,
             offset: offset,
             shadeClose: true,
-            btn: ['保存', '关闭'],
+            btn: ['确定', '关闭'],
             yes: function (index, layero) {
-                // var body = layer.getChildFrame('body', index);
-                // var form = body.find('#w0');
-                // var postUrl = form.attr('action');
-                console.log(postUrl);
+                var body = layer.getChildFrame('body', index);
+                var stylesIdsStr = body.find("input[name='SearchModel[id]']").val();
+
+                if(stylesIdsStr.split("|").length!==2) {
+                    rfMsg("必需选择两款商品");
+                    return false;
+                }
+
+                location.href = './edit-lang?type_id=19&attr_style_ids='+stylesIdsStr;
+
+                return true;
                 // $.ajax({
                 //     type: "post",
                 //     url: postUrl,
@@ -262,7 +259,6 @@ $export_param = http_build_query($searchModel);
                 // });
             },
             btn2: function () {
-                layer.closeAll();
             },
             area: [width, height],
             content: content
@@ -278,51 +274,7 @@ $export_param = http_build_query($searchModel);
 
     }
 
-    function getStyle(style_id) {
-        // $.ajax({
-        //     type: "post",
-        //     url: 'get-style',
-        //     dataType: "json",
-        //     data: {style_id:style_id},
-        //     success: function (data) {
-        //         if (parseInt(data.code) !== 200) {
-        //             rfMsg(data.message);
-        //         } else {
-        //
-        //             console.log(data.data);
-        //             var data = data.data
-        //
-        //             var hav = true;
-        //
-        //             $("input[name*='RingRelation[style_id][]']").each(function(){
-        //                 if($(this).val() == data.id){
-        //                     hav = false;
-        //                 }
-        //             });
-        //             if(hav == false){
-        //                 layer.msg("此商品已经添加");
-        //                 return false;
-        //             }
-        //
-        //             var tr = "<tr><input type='hidden' name='RingRelation[style_id][]' value='" + data.id + "'/>"
-        //                 +"<td>" + data.style_name + "</td>"
-        //                 +"<td>" + data.style_sn + "</td>"
-        //                 +"<td>" + data.sale_price + "</td>"
-        //                 +"<td>" + data.goods_storage + "</td>"
-        //                 +'<td><a class="btn btn-danger btn-sm deltr" href="#" >删除</a></td>'
-        //                 + "</tr>";
-        //             $("#style_table").append(tr);
-        //
-        //             $(document).on('click','.deltr',function(){
-        //                 //当前元素的父级的父级的元素（一行，移除
-        //                 $(this).parents("tr").remove();
-        //             })
-        //
-        //         }
-        //     }
-        // });
 
-    }
 
 
 

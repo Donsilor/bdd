@@ -158,7 +158,7 @@ class StyleController extends BaseController
         if($request->isPost)
         {
             $post = Yii::$app->request->post();
-            if(!isset($post['style_id']) || empty($post['style_id'])){
+            if(!isset($post['style_id']) || empty($post['style_id'])) {
                 return ResultHelper::json(422, '请选择商品');
             }else{
                 $style_id = $post['style_id'];
@@ -173,10 +173,10 @@ class StyleController extends BaseController
             'defaultOrder' => [
                 'id' => SORT_DESC
             ],
-            'pageSize' => $this->pageSize
+            'pageSize' => 5
         ]);
 
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,['style_name']);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,['style_name','id']);
         $dataProvider->query->andWhere(['>=', 'status', StatusEnum::DISABLED]);
         //戒指分类
         $dataProvider->query->andFilterWhere(['=', 'type_id',2]);
