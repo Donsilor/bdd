@@ -29,7 +29,11 @@ $export_param = http_build_query($searchModel);
                 </li>
                 <li class="pull-right">
                 	<div class="box-header box-tools">
-                    <?= Html::create(['edit-lang','type_id'=>$type_id]) ?>
+                        <?php if($type_id==19) { ?>
+                            <a class="btn btn-primary btn-xs openIframe1" href="<?php echo Url::to(['select-style'])?>"><i class="icon ion-plus"></i>创建</a>
+                        <?php } else { ?>
+                            <?= Html::create(['edit-lang','type_id'=>$type_id]) ?>
+                        <?php } ?>
                     </div>
                 </li>
 
@@ -183,3 +187,143 @@ $export_param = http_build_query($searchModel);
         </div>
     </div>
 </div>
+
+<script>
+    //var style_ids=<?php //echo json_encode($style_ids);?>//;
+    // var style_arr=eval(style_ids);
+    // console.log(style_arr);
+    // getStyles(style_ids);
+
+
+    /* 打一个新窗口 */
+    $(document).on("click", ".openIframe1", function (e) {
+
+        // var tr_length = $("#style_table").children('tr').length;
+        // if(tr_length >1){
+        //     layer.msg("商品已满两件，不可再添加");
+        //     return false;
+        // }
+        var title = $(this).data('title');
+        var width = $(this).data('width');
+        var height = $(this).data('height');
+        var offset = $(this).data('offset');
+        var href = $(this).attr('href');
+
+        if (title == undefined) {
+            title = '基本信息';
+        }
+
+        if (width == undefined) {
+            width = '80%';
+        }
+
+        if (height == undefined) {
+            height = '80%';
+        }
+
+        if (offset == undefined) {
+            offset = "10%";
+        }
+
+        openIframe1(title, width, height, href, offset);
+        e.preventDefault();
+        return false;
+    });
+    // 打一个新窗口
+    function openIframe1(title, width, height, content, offset) {
+        layer.open({
+            type: 2,
+            title: title,
+            shade: 0.3,
+            offset: offset,
+            shadeClose: true,
+            btn: ['保存', '关闭'],
+            yes: function (index, layero) {
+                // var body = layer.getChildFrame('body', index);
+                // var form = body.find('#w0');
+                // var postUrl = form.attr('action');
+                console.log(postUrl);
+                // $.ajax({
+                //     type: "post",
+                //     url: postUrl,
+                //     dataType: "json",
+                //     data: form.serialize(),
+                //     success: function (data) {
+                //         if (parseInt(data.code) !== 200) {
+                //             rfMsg(data.message);
+                //         } else {
+                //             console.log(data.data.style_id);
+                //             getStyle(data.data.style_id);
+                //
+                //             layer.close(index);
+                //
+                //         }
+                //     }
+                // });
+            },
+            btn2: function () {
+                layer.closeAll();
+            },
+            area: [width, height],
+            content: content
+        });
+
+        return false;
+    }
+
+    function getStyles(style_ids) {
+        // for(var i = 0; i < style_ids.length; i++){
+        //     getStyle(style_ids[i]);
+        // }
+
+    }
+
+    function getStyle(style_id) {
+        // $.ajax({
+        //     type: "post",
+        //     url: 'get-style',
+        //     dataType: "json",
+        //     data: {style_id:style_id},
+        //     success: function (data) {
+        //         if (parseInt(data.code) !== 200) {
+        //             rfMsg(data.message);
+        //         } else {
+        //
+        //             console.log(data.data);
+        //             var data = data.data
+        //
+        //             var hav = true;
+        //
+        //             $("input[name*='RingRelation[style_id][]']").each(function(){
+        //                 if($(this).val() == data.id){
+        //                     hav = false;
+        //                 }
+        //             });
+        //             if(hav == false){
+        //                 layer.msg("此商品已经添加");
+        //                 return false;
+        //             }
+        //
+        //             var tr = "<tr><input type='hidden' name='RingRelation[style_id][]' value='" + data.id + "'/>"
+        //                 +"<td>" + data.style_name + "</td>"
+        //                 +"<td>" + data.style_sn + "</td>"
+        //                 +"<td>" + data.sale_price + "</td>"
+        //                 +"<td>" + data.goods_storage + "</td>"
+        //                 +'<td><a class="btn btn-danger btn-sm deltr" href="#" >删除</a></td>'
+        //                 + "</tr>";
+        //             $("#style_table").append(tr);
+        //
+        //             $(document).on('click','.deltr',function(){
+        //                 //当前元素的父级的父级的元素（一行，移除
+        //                 $(this).parents("tr").remove();
+        //             })
+        //
+        //         }
+        //     }
+        // });
+
+    }
+
+
+
+</script>

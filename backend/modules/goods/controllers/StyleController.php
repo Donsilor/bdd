@@ -146,6 +146,50 @@ class StyleController extends BaseController
             'attrStyleIds' => $attrStyleIds
         ]);
     }
+
+    /**
+     * 添加商品时查询戒指数据
+     * @return string[]|array[]|string
+     */
+    public function actionSelectStyle()
+    {
+
+        $request = Yii::$app->request;
+        if($request->isPost)
+        {
+            $post = Yii::$app->request->post();
+            if(!isset($post['style_id']) || empty($post['style_id'])){
+                return ResultHelper::json(422, '请选择商品');
+            }else{
+                $style_id = $post['style_id'];
+            }
+            return ResultHelper::json(200, '保存成功',['style_id'=>$style_id]);
+        }
+
+        $searchModel = new SearchModel([
+            'model' => Style::class,
+            'scenario' => 'default',
+            'partialMatchAttributes' => [], // 模糊查询
+            'defaultOrder' => [
+                'id' => SORT_DESC
+            ],
+            'pageSize' => $this->pageSize
+        ]);
+
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,['style_name']);
+        $dataProvider->query->andWhere(['>=', 'status', StatusEnum::DISABLED]);
+        //戒指分类
+        $dataProvider->query->andFilterWhere(['=', 'type_id',2]);
+        $dataProvider->query->andFilterWhere(['=', 'ring_id',0]);
+
+        $dataProvider->query->joinWith(['lang']);
+
+        $dataProvider->query->andFilterWhere(['like', 'lang.style_name',$searchModel->style_name]);
+        return $this->render('select-style', [
+            'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+        ]);
+    }
     
     /**
      * ajax更新排序/状态
