@@ -246,18 +246,25 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                 },
                                 'format' => 'raw',
                             ],
+//                            [
+//                                'label' => '审核状态',
+//                                'headerOptions' => ['class' => 'col-md-1'],
+//                                'filter' => Html::activeDropDownList($searchModel, 'audit_status',common\enums\OrderStatusEnum::auditStatus(), [
+//                                    'prompt' => '全部',
+//                                    'class' => 'form-control',
+//                                ]),
+//                                'value' => function ($model) {
+//                                    $value = common\enums\OrderStatusEnum::getValue($model->audit_status, 'auditStatus');
+//                                    return $value?:'未审核';
+//                                },
+//                                'format' => 'raw',
+//                            ],
                             [
-                                'label' => '审核状态',
-                                'headerOptions' => ['class' => 'col-md-1'],
-                                'filter' => Html::activeDropDownList($searchModel, 'audit_status',common\enums\OrderStatusEnum::auditStatus(), [
-                                    'prompt' => '全部',
-                                    'class' => 'form-control',
-                                ]),
-                                'value' => function ($model) {
-                                    $value = common\enums\OrderStatusEnum::getValue($model->audit_status, 'auditStatus');
-                                    return $value?:'未审核';
-                                },
-                                'format' => 'raw',
+                                'label' => '客户备注',
+                                'filter' => false,
+                                'value' => function($model) {
+                                    return \common\helpers\StringHelper::truncate($model->buyer_remark, 15);
+                                }
                             ],
                             [
                                 'header' => "操作",
