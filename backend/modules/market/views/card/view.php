@@ -75,6 +75,14 @@ $type_id = Yii::$app->request->get('type_id', 0);
                             <?= $val; ?>
                         </td>
                     </tr>
+                    <tr>
+                        <td align="center"> </td>
+                        <td> </td>
+                        <td align="center">最大可用时长：</td>
+                        <td>
+                            <?= intval($cardModel->max_use_time/86400); ?>（天）
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
