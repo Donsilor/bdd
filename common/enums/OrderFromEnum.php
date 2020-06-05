@@ -2,6 +2,8 @@
 
 namespace common\enums;
 
+use services\goods\GoodsService;
+
 /**
  * Class AppEnum
  * @package common\enums
@@ -62,5 +64,34 @@ class OrderFromEnum extends BaseEnum
         ];
 
         return $groups[$group]??[];
+    }
+
+
+    public static function groupsToAreaId($groupId)
+    {
+        $groups = [
+            self::GROUP_HK => AreaEnum::HongKong,
+            self::GROUP_CN => AreaEnum::China,
+            self::GROUP_US => AreaEnum::Other,
+        ];
+
+        return $groups[$groupId]??null;
+    }
+
+    //平台到地区ID
+    public static function platformToAreaId($platform)
+    {
+        $platforms = [
+            self::WEB_HK => self::GROUP_HK,
+            self::MOBILE_HK => self::GROUP_HK,
+            self::WEB_CN => self::GROUP_CN,
+            self::MOBILE_CN => self::GROUP_CN,
+            self::WEB_US => self::GROUP_US,
+            self::MOBILE_US => self::GROUP_US,
+        ];
+
+        $group = $platforms[$platform]??null;
+
+        return self::groupsToAreaId($group);
     }
 }
