@@ -76,6 +76,6 @@ class OrderInvoice extends \common\models\base\BaseModel
      */
     public function getInvoiceEle()
     {
-        return $this->hasOne(OrderInvoiceEle::class, ['invoice_id'=>'id']);
+        return $this->hasOne(OrderInvoiceEle::class, ['order_id'=>'order_id']);
     }
 }
