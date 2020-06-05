@@ -3,6 +3,7 @@
 namespace api\modules\web\controllers\member;
 
 use api\controllers\UserAuthController;
+use common\enums\OrderFromEnum;
 use common\models\member\Address;
 
 /**
@@ -48,6 +49,7 @@ class AddressController extends UserAuthController
             $model['country_name'] = \Yii::$app->services->area->getAreaName($model['country_id']);
             $model['province_name'] = \Yii::$app->services->area->getAreaName($model['province_id']);
             $model['city_name'] = \Yii::$app->services->area->getAreaName($model['city_id']);
+            $model['platforms'] = OrderFromEnum::countryIdToPlatforms($models['country_id']);
         }
 
         return $models;
