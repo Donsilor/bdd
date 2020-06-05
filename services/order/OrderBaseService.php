@@ -123,7 +123,7 @@ class OrderBaseService extends Service
             }
 
             //商品价格
-            $sale_price = (int)$this->exchangeAmount($goods['sale_price'],0);
+            $sale_price = intval($this->exchangeAmount($goods['sale_price'],0));
 
             $orderGoods = [];
             $orderGoods['goods_id'] = $item['goods_id'];//商品ID
@@ -187,7 +187,7 @@ class OrderBaseService extends Service
         }
 
         foreach ($orderGoodsList as &$orderGoods) {
-            $goodsPrice = (int)$orderGoods['goods_price'];
+            $goodsPrice = intval($orderGoods['goods_price']);
 
             if($orderGoods['coupon_id']!=0) {
                 //如果使用折扣券
@@ -205,9 +205,9 @@ class OrderBaseService extends Service
                 $discounts_amount = bcadd($discounts_amount, bcsub($goodsPrice, $orderGoods['goods_pay_price'], 2), 2);
             }
             elseif($coupon_id && isset($orderGoods['coupon']['money']) && isset($orderGoods['coupon']['money'][$coupon_id])) {
-                $couponInfo['price_sum'] = bcsub($couponInfo['price_sum'], $goodsPrice, 2);
+                $couponInfo['price_sum'] = intval($couponInfo['price_sum'] - $goodsPrice);
 
-                if($couponInfo['price_sum']) {
+                if($couponInfo['price_sum'] > 0.01) {
                     //商品优惠金额
                     $coupon_money = bcmul($goodsPrice/$couponInfo['price'], $couponInfo['money'], 2);
 

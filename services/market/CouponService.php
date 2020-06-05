@@ -532,7 +532,7 @@ class CouponService extends Service
                 }
                 else {
                     //累加金额
-                    $couponsList[$money->id]['price'] = bcadd($couponsList[$money->id]['price'], $style['price'], 2);
+                    $couponsList[$money->id]['price'] = intval($couponsList[$money->id]['price'] + $style['price']);
                 }
             }
 
