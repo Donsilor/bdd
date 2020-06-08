@@ -116,6 +116,11 @@ class StyleController extends OnAuthController
             }
 //            echo $subQuery->createCommand()->getSql();exit;
 //            return $subQuery->asArray()->all();
+
+            if($type_id==19) {
+                $subQuery = AttributeIndex::find()->andWhere(['in','attr_value_id',$subQuery])->andWhere(['in','attr_id',[61,62]])->select(['a.style_id'])->distinct("a.style_id");
+            }
+
             $query->andWhere(['in','m.id',$subQuery]);
 
         }
