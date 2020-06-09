@@ -174,7 +174,7 @@ class CartController extends UserAuthController
                 $cart->style_id = $goods['style_id'];
 
                 //平台组
-                $cart->platform_group = OrderFromEnum::getValue($this->platform, 'platformToGroup');
+                $cart->platform_group = OrderFromEnum::platformToGroup($this->platform);
 
                 if (!$cart->save()) {
                     throw new \Exception($this->getError($cart),500);
