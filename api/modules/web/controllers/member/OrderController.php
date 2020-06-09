@@ -75,6 +75,13 @@ class OrderController extends UserAuthController
             ];
            $orderGoodsList = OrderGoods::find()->where(['order_id'=>$order->id])->all();
            foreach ($orderGoodsList as $key =>$orderGoods) {
+
+               $couponInfo = [];
+
+               if($_couponInfo = $orderGoods->coupon) {
+                   $couponInfo['type'] = $_couponInfo['type'];
+               }
+
                $orderDetail = [
                    'id' => $orderGoods->id,
                    'orderId'=>$order->id,
@@ -87,6 +94,7 @@ class OrderController extends UserAuthController
                    'goodsName' => $orderGoods->lang ? $orderGoods->lang->goods_name: $orderGoods->goods_name,
                    'goodsPrice'=>$orderGoods->goods_price,
                    'goodsPayPrice'=>$orderGoods->goods_pay_price,
+                   'couponInfo' => $couponInfo,
                    'detailType'=>1,
                    'detailSpecs'=>null,
                    'deliveryCount'=>1,
