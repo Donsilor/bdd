@@ -21,7 +21,10 @@ use yii\web\UnprocessableEntityHttpException;
  */
 class CartController extends UserAuthController
 {
-    
+
+    /**
+     * @var OrderCart
+     */
     public $modelClass = OrderCart::class;
     
     protected $authOptional = ['local'];
@@ -219,12 +222,12 @@ class CartController extends UserAuthController
         }        
         if($id == -1) {
             //清空购物车
-            $num = $this->modelClass::deleteAll(['member_id'=>$this->member_id]);
-        }else {  
+            $num = $this->modelClass::updateAll(['status'=>0], ['member_id'=>$this->member_id]);
+        }else {
             if(!is_array($id)) {
                 $id = explode(',', $id);
             }
-            $num = $this->modelClass::deleteAll(['member_id'=>$this->member_id,'id'=>$id]);
+            $num = $this->modelClass::updateAll(['status'=>0], ['member_id'=>$this->member_id,'id'=>$id]);
         }
         return ['num'=>$num];
     }
