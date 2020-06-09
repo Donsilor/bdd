@@ -262,6 +262,31 @@ class CartController extends UserAuthController
                 return ResultHelper::api(500,"查询商品失败");
             }
 
+            $sign = $model->getSign();
+            if(!OrderCart::find()->where(['sign'=>$sign])->count('id')) {
+                $_cart = new OrderCart();
+                $_cart->attributes = $model->toArray();
+                $_cart->merchant_id = $this->merchant_id;
+                $_cart->member_id = $this->member_id;
+
+                $_cart->goods_type = $goods['type_id'];
+                $_cart->goods_price = $goods['sale_price'];
+                $_cart->goods_spec = json_encode($goods['goods_spec']);//商品规格
+
+                //款式
+                $_cart->style_id = $goods['style_id'];
+
+                //平台组
+                $_cart->platform_group = OrderFromEnum::platformToGroup($this->platform);
+                $_cart->sign = $sign;
+
+                try {
+                    $_cart->save(false);
+                } catch (\Exception $exception) {
+                    // TODO
+                }
+            }
+
             $sale_price = $this->exchangeAmount($goods['sale_price'],0);
             $cart = array();
             //$cart['id'] = $model->id;
