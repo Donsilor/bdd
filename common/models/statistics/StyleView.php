@@ -17,7 +17,6 @@ use Yii;
  */
 class StyleView extends \common\models\base\BaseModel
 {
-    public $d;
 
     /**
      * {@inheritdoc}
@@ -58,14 +57,14 @@ class StyleView extends \common\models\base\BaseModel
         return ['style_id','platform_group'];
     }
 
-    public function getOg()
-    {
-        $order = <<<DOM
-(SELECT `og`.`style_id`,COUNT(`og`.`style_id`) AS count,`o`.`order_from`
-FROM `order` `o`
-RIGHT JOIN `order_goods` AS `og` ON  `o`.`id`=`og`.`order_id`
-WHERE 1 GROUP BY `og`.`style_id`,`o`.`order_from`) AS og
-DOM;
-        return $this->hasOne($order, ['order_id'=>'id']);
-    }
+//    public function getOg()
+//    {
+//        $order = <<<DOM
+//(SELECT `og`.`style_id`,COUNT(`og`.`style_id`) AS count,`o`.`order_from`
+//FROM `order` `o`
+//RIGHT JOIN `order_goods` AS `og` ON  `o`.`id`=`og`.`order_id`
+//WHERE 1 GROUP BY `og`.`style_id`,`o`.`order_from`) AS og
+//DOM;
+//        return $this->hasOne($order, ['order_id'=>'id']);
+//    }
 }

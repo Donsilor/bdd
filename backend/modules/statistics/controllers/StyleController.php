@@ -23,26 +23,26 @@ class StyleController extends BaseController
      */
     public $modelClass = StyleView::class;
 
-    public function _actionInde() {
-
-        $order = <<<DOM
-(SELECT `og`.`style_id`,COUNT(`og`.`style_id`) AS count,`o`.`order_from`
-FROM `order` `o`
-RIGHT JOIN `order_goods` AS `og` ON  `o`.`id`=`og`.`order_id`
-WHERE 1 GROUP BY `og`.`style_id`,`o`.`order_from`) AS og
-DOM;
-
-        $list = StyleView::find()->alias('ssv')
-            ->select(['ssv.style_id','ssv.type_id','ssv.platform','ssv.platform_group','ssv.name','og.count'])
-            ->leftJoin($order, 'ssv.platform=og.order_from AND ssv.style_id=og.style_id')
-            ->asArray()
-            ->orderBy(' og.count desc')
-
-            ->all();
-        foreach ($list as $item) {
-            var_dump($item);
-        }
-    }
+//    public function _actionInde() {
+//
+//        $order = <<<DOM
+//(SELECT `og`.`style_id`,COUNT(`og`.`style_id`) AS count,`o`.`order_from`
+//FROM `order` `o`
+//RIGHT JOIN `order_goods` AS `og` ON  `o`.`id`=`og`.`order_id`
+//WHERE 1 GROUP BY `og`.`style_id`,`o`.`order_from`) AS og
+//DOM;
+//
+//        $list = StyleView::find()->alias('ssv')
+//            ->select(['ssv.style_id','ssv.type_id','ssv.platform','ssv.platform_group','ssv.name','og.count'])
+//            ->leftJoin($order, 'ssv.platform=og.order_from AND ssv.style_id=og.style_id')
+//            ->asArray()
+//            ->orderBy(' og.count desc')
+//
+//            ->all();
+//        foreach ($list as $item) {
+//            var_dump($item);
+//        }
+//    }
 
 
     /**
@@ -92,6 +92,7 @@ DOM;
         $dataProvider->setSort([
             'attributes' => [
                 'count',
+                'cart_count',
                 'style_id',
                 'type_id',
                 'style_name',

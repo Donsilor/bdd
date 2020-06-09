@@ -52,10 +52,16 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             [
                                 'label' => '销量',
                                 'attribute' => 'count',
+                                'value' => function($model) {
+                                    return $model['count']?:0;
+                                }
                             ],
                             [
                                 'label' => '加购物车量',
-//                                'attribute' => 'cart_count',
+                                'attribute' => 'cart_count',
+                                'value' => function($model) {
+                                    return $model['cart_count']?:0;
+                                }
                             ],
                         ],
                     ]);
