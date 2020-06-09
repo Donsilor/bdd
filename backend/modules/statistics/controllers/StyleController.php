@@ -5,9 +5,14 @@ namespace backend\modules\statistics\controllers;
 
 use backend\controllers\BaseController;
 use common\enums\OrderFromEnum;
+use common\enums\StatusEnum;
+use common\helpers\ExcelHelper;
 use common\models\base\SearchModel;
 use common\models\goods\AttributeSpec;
 use common\models\goods\Style;
+use common\models\market\MarketCard;
+use common\models\market\MarketCardDetails;
+use common\models\order\OrderAddress;
 use common\models\order\OrderTourist;
 use common\models\statistics\StyleView;
 use yii\db\Query;
@@ -125,9 +130,53 @@ DOM;
 
         $searchModel->platform_group = Yii::$app->request->queryParams['SearchModel']['platform_group']??[];
 
+        //导出
+        if(Yii::$app->request->get('action') === 'export'){
+            $query = Yii::$app->request->queryParams;
+            unset($query['action']);
+            if(empty(array_filter($query))){
+                return $this->message('导出条件不能为空', $this->redirect(['index']), 'warning');
+            }
+            $dataProvider->setPagination(false);
+            $list = $dataProvider->models;
+            $this->getExport($list);
+        }
+
         return $this->render($this->action->id, [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
         ]);
+    }
+
+
+    /**
+     * 导出Excel
+     *
+     * @return bool
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    private function getExport($list)
+    {
+        // [名称, 字段名, 类型, 类型规则]
+        $header = [
+            ['款号', 'style_sn', 'text'],
+            ['商品名称', 'style_sn', 'text'],
+            ['产品线', 'type_id', 'function', function($row) {
+                $list = Yii::$app->services->goodsType->getTypeList();
+                return $list[$row['type_id']]??'';
+            }],
+            ['站点地区', 'platform_group', 'function', function($row) {
+                return \common\enums\OrderFromEnum::getValue($row['platform_group'], 'groups');
+            }],
+            ['销量', 'count', 'function', function($row) {
+                return $row['count']?:0;
+            }],
+            ['加购物车量', 'cart_count', 'function', function($row) {
+                return $row['cart_count']?:0;
+            }]
+        ];
+
+        return ExcelHelper::exportData($list, $header, '产品销量统计导出_' . date('YmdHis',time()));
     }
 }
