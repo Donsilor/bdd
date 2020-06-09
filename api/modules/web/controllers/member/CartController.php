@@ -2,6 +2,7 @@
 
 namespace api\modules\web\controllers\member;
 
+use common\enums\OrderFromEnum;
 use common\helpers\ImageHelper;
 use common\models\goods\Ring;
 use common\models\goods\RingLang;
@@ -32,7 +33,7 @@ class CartController extends UserAuthController
     {
         $id = \Yii::$app->request->get('id');
         
-        $query = $this->modelClass::find()->where(['member_id'=>$this->member_id]);
+        $query = $this->modelClass::find()->where(['member_id'=>$this->member_id,'status'=>1]);
 
         if(!empty($id) && $id = explode(',',$id)) {
             $query->andWhere(['id'=>$id]);
@@ -165,7 +166,13 @@ class CartController extends UserAuthController
                 $cart->goods_type = $goods['type_id'];
                 $cart->goods_price = $goods['sale_price'];
                 $cart->goods_spec = json_encode($goods['goods_spec']);//商品规格
-                
+
+                //款式
+                $cart->style_id = $goods['style_id'];
+
+                //平台组
+                $cart->platform_group = OrderFromEnum::getValue($this->platform, 'platformToGroup');
+
                 if (!$cart->save()) {
                     throw new \Exception($this->getError($cart),500);
                 } 
@@ -190,7 +197,7 @@ class CartController extends UserAuthController
      */
     public function actionCount()
     {
-        return $this->modelClass::find()->where(['member_id'=>$this->member_id])->count();
+        return $this->modelClass::find()->where(['member_id'=>$this->member_id,'status'=>1])->count();
     }
     /**
      * 编辑购物车

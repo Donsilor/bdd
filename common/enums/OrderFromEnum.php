@@ -75,11 +75,19 @@ class OrderFromEnum extends BaseEnum
             self::GROUP_US => AreaEnum::Other,
         ];
 
-        return $groups[$groupId]??null;
+        return $groups[$groupId]??'';
     }
 
     //平台到地区ID
     public static function platformToAreaId($platform)
+    {
+        $group = self::platformToGroup($platform);
+
+        return self::groupsToAreaId($group);
+    }
+
+    //平台到组
+    public static function platformToGroup($platform)
     {
         $platforms = [
             self::WEB_HK => self::GROUP_HK,
@@ -90,8 +98,6 @@ class OrderFromEnum extends BaseEnum
             self::MOBILE_US => self::GROUP_US,
         ];
 
-        $group = $platforms[$platform]??null;
-
-        return self::groupsToAreaId($group);
+        return $platforms[$platform]??'';
     }
 }

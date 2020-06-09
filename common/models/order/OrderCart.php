@@ -19,6 +19,8 @@ use common\models\base\BaseModel;
  * @property int $group_id 分组ID
  * @property int $group_type 分组类型
  * @property string $goods_spec 商品规格
+ * @property int $style_id 款式ID
+ * @property string $platform_group 订单来源
  * @property int $created_at 创建时间
  * @property int $updated_at 更新时间
  */
@@ -38,9 +40,9 @@ class OrderCart extends BaseModel
     public function rules()
     {
         return [
-            [['merchant_id', 'member_id', 'store_id', 'goods_id', 'goods_type', 'goods_num', 'group_id', 'group_type', 'created_at', 'updated_at'], 'integer'],
+            [['merchant_id', 'member_id', 'store_id', 'goods_id', 'goods_type', 'goods_num', 'group_id', 'group_type', 'style_id', 'created_at', 'updated_at'], 'integer'],
             [['goods_price'], 'number'],
-            [['goods_spec'], 'string'],
+            [['goods_spec', 'platform_group'], 'string'],
         ];
     }
 
@@ -61,6 +63,8 @@ class OrderCart extends BaseModel
             'group_id' => '分组ID',
             'group_type' => '分组类型',
             'goods_spec' => '商品规格',
+            'style_id' => '款式ID',
+            'platform_group' => '订单来源',
             'created_at' => '创建时间',
             'updated_at' => '更新时间',
         ];
