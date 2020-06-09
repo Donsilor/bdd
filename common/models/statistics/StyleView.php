@@ -18,6 +18,8 @@ use Yii;
 class StyleView extends \common\models\base\BaseModel
 {
 
+    public $datetime;
+
     /**
      * {@inheritdoc}
      */
@@ -33,8 +35,8 @@ class StyleView extends \common\models\base\BaseModel
     {
         return [
             [['style_id', 'type_id'], 'integer'],
-            [['style_name'], 'string', 'max' => 300],
-            [['platform_group', 'name'], 'string', 'max' => 2],
+            [['style_name', 'datetime','style_sn', 'name'], 'string', 'max' => 300],
+            [['platform_group'], 'string', 'max' => 2],
         ];
     }
 
@@ -45,10 +47,12 @@ class StyleView extends \common\models\base\BaseModel
     {
         return [
             'style_id' => '款式ID',
+            'style_sn' => '款号',
             'type_id' => '产品线',
             'style_name' => '款式名称',
-            'platform_group' => 'Platform Group',
+            'platform_group' => '站点地区',
             'name' => 'Name',
+            'datetime' => 'datetime'
         ];
     }
 

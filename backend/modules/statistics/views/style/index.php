@@ -13,8 +13,43 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 
 <div class="row">
     <div class="col-sm-12">
+
         <div class="nav-tabs-custom">
             <div class="tab-content">
+                <div class="box-body top-form">
+                    <div class="row col-sm-12">
+                        <div class="col-sm-3">
+                            时间：<br/>
+                            <?= DateRangePicker::widget([    // 日期组件
+                                'model' => $searchModel,
+                                'attribute' => 'datetime',
+                                'value' => '',
+                                'options' => ['readonly' => false, 'class' => 'form-control',],
+                                'pluginOptions' => [
+                                    'format' => 'yyyy-mm-dd',
+                                    'locale' => [
+                                        'separator' => '/',
+                                    ],
+                                    'endDate' => date('Y-m-d', time()),
+                                    'todayHighlight' => true,
+                                    'autoclose' => true,
+                                    'todayBtn' => 'linked',
+                                    'clearBtn' => true,
+                                ],
+                            ]);
+                            ?>
+                        </div>
+                        <div class="col-sm-3">
+                            <?= $searchModel->model->getAttributeLabel('platform_group') ?>：<br/>
+                            <?= Html::activeCheckboxList($searchModel, 'platform_group', \common\enums\OrderFromEnum::groups(), [
+                                'prompt' => '全部',
+                                'class' => 'form-control',
+//                                'value' => Yii::$app->request->get("s")
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+                </div>
                 <div class="active tab-pane">
                     <?= GridView::widget([
                         'id'=>'grid',
@@ -32,7 +67,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             ],
                             [
                                 'label' => '款号',
-                                'attribute' => 'style_id',
+                                'attribute' => 'style_sn',
                             ],
                             [
                                 'label' => '商品名称',
@@ -41,13 +76,28 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             [
                                 'label' => '产品线',
                                 'attribute' => 'type_id',
+                                'filter' => Html::activeDropDownList($searchModel, 'type_id', Yii::$app->services->goodsType->getTypeList(), [
+                                        'prompt' => '全部',
+                                        'class' => 'form-control',
+                                    ]),
+                                'value' => function($model) {
+                                    $list = Yii::$app->services->goodsType->getTypeList();
+                                    return $list[$model['type_id']]??'';
+                                }
                             ],
                             [
                                 'label' => '站点地区',
                                 'attribute' => 'platform_group',
                                 'value' => function($model) {
                                     return \common\enums\OrderFromEnum::getValue($model['platform_group'], 'groups');
-                                }
+                                },
+                                'filter' =>
+                                    Html::activeCheckboxList($searchModel, 'platform_group', \common\enums\OrderFromEnum::groups(),[
+                                        'class' => 'hidden',
+                                    ]) .
+                                    Html::activeTextInput($searchModel, 'datetime', [
+                                        'class' => 'hidden',
+                                    ])
                             ],
                             [
                                 'label' => '销量',
@@ -73,22 +123,27 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 </div>
 
 <script>
-    function audit(id) {
-        let _id = [];
-        if(id===undefined) {
-            _id= []
-        }
-        else {
-            _id.push(id)
-        }
-    }
 
     (function ($) {
         /**
          * 头部文本框触发列表过滤事件
          */
         $(".top-form input,select").change(function () {
-            $(".filters input[name='" + $(this).attr('name') + "']").val($(this).val()).trigger('change');
+            var $input = $(".top-form input[name='" + $(this).attr('name') + "']");
+
+            let type = $input.attr('type');
+
+            if(type==='checkbox') {
+                $input.each(function (i, v) {
+                    let checkbox = $(".filters input[name='" + $(this).attr('name') + "']").eq(i).attr("checked", $(this).prop("checked"));
+                    if($input.length===i+1) {
+                        checkbox.trigger('change');
+                    }
+                });
+            }
+            else {
+                $(".filters input[name='" + $(this).attr('name') + "']").val($(this).val()).trigger('change');
+            }
         });
 
 
