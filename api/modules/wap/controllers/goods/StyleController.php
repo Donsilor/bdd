@@ -167,8 +167,6 @@ class StyleController extends OnAuthController
                 $query->andWhere(['in','m.id',$subQuery]);
             }
 
-            $query->andWhere(['in','m.id',$subQuery]);
-
         }
 //        echo $query->createCommand()->getSql();exit;
         $result = $this->pagination($query,$this->page, $this->pageSize);
