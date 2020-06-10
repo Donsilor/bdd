@@ -13,11 +13,14 @@ use Yii;
  * @property string $goods_amount 商品总金额
  * @property string $discount_amount 优惠金额
  * @property string $pay_amount 实付款
+ * @property string $paid_amount 实付款
  * @property string $refund_amount 退款金额
  * @property string $shipping_fee 运费
  * @property string $tax_fee 税费
  * @property string $safe_fee 保险费
  * @property string $other_fee 附加费
+ * @property string $currency 附加费
+ * @property string $paid_currency 实际支付货币
  */
 class OrderAccount extends \common\models\base\BaseModel
 {
@@ -42,9 +45,9 @@ class OrderAccount extends \common\models\base\BaseModel
         return [
             [['order_id'], 'required'],
             [['order_id', 'merchant_id'], 'integer'],
-            [['order_amount', 'goods_amount', 'discount_amount', 'pay_amount', 'refund_amount', 'shipping_fee', 'tax_fee', 'safe_fee', 'other_fee','exchange_rate'], 'number'],
+            [['order_amount', 'goods_amount', 'discount_amount', 'paid_amount', 'pay_amount', 'refund_amount', 'shipping_fee', 'tax_fee', 'safe_fee', 'other_fee','exchange_rate'], 'number'],
             [['order_id'], 'unique'],
-            [['currency'], 'string','max'=>5],
+            [['currency', 'paid_currency'], 'string','max'=>5],
         ];
     }
 
@@ -60,6 +63,7 @@ class OrderAccount extends \common\models\base\BaseModel
             'goods_amount' => \Yii::t('order','商品总金额'),
             'discount_amount' => \Yii::t('order','优惠金额'),
             'pay_amount' => \Yii::t('order','实付款'),
+            'paid_amount' => \Yii::t('order','实际付款'),
             'refund_amount' => \Yii::t('order','退款金额'),
             'shipping_fee' => \Yii::t('order','运费'),
             'tax_fee' => \Yii::t('order','税费'),
@@ -67,6 +71,7 @@ class OrderAccount extends \common\models\base\BaseModel
             'other_fee' => \Yii::t('order','附加费'),
             'exchange_rate'=> \Yii::t('common','汇率'),
             'currency'=> \Yii::t('common','订单货币'),
+            'paid_currency'=> \Yii::t('common','实际支付货币'),
         ];
     }
 }
