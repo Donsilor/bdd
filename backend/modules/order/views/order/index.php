@@ -14,6 +14,11 @@ $params = Yii::$app->request->queryParams;
 $params = $params ? "&".http_build_query($params) : '';
 $export_param = http_build_query($searchModel)."&order_status={$order_status}";
 
+$OrderStatusEnum = common\enums\OrderStatusEnum::getMap();
+
+unset($OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_FINISH]);
+
+$OrderStatusEnum['1'] = '已退款';
 
 
 ?>
@@ -25,7 +30,7 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
             <ul class="nav nav-tabs">
                 <li<?php if (Yii::$app->request->get('order_status', -1) == -1) echo ' class="active"' ?>><a href="<?= Url::to(['order/index']) ?>"> 全部（<?= \common\models\order\Order::getCountByOrderStatus() ?>）</a></li>
                 <li<?php if (Yii::$app->request->get('order_status', -1) == 11) echo ' class="active"' ?>><a href="<?= Url::to(['order/index', 'order_status'=>11]) ?>" class="red"> 电汇（<?= \common\models\order\Order::getCountByOrderStatus(11) ?>）</a></li>
-                <?php foreach (common\enums\OrderStatusEnum::getMap() as $statusValue => $statusName) { ?>
+                <?php foreach ($OrderStatusEnum as $statusValue => $statusName) { ?>
                     <li<?php if (Yii::$app->request->get('order_status', -1) == $statusValue) echo ' class="active"' ?>>
                         <a href="<?= Url::to(['order/index', 'order_status' => $statusValue]) ?>"><?= $statusName ?>（<?= \common\models\order\Order::getCountByOrderStatus($statusValue) ?>）</a>
                     </li>
@@ -58,8 +63,18 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                             ?>
                         </div>
                         <div class="col-sm-3">
-                            <?= $searchModel->model->getAttributeLabel('order_from') ?>：<br/>
-                            <?= Html::activeDropDownList($searchModel, 'order_from', \common\enums\OrderFromEnum::getMap(), [
+                            <?= $searchModel->model->getAttributeLabel('ip_area_id') ?>：<br/>
+                            <?= Html::activeDropDownList($searchModel, 'ip_area_id', \common\enums\AreaEnum::getMap(), [
+                                'prompt' => '全部',
+                                'class' => 'form-control',
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+                    <div class="row col-sm-12">
+                        <div class="col-sm-3">
+                            <?= $searchModel->model->getAttributeLabel('refund_status') ?>：<br/>
+                            <?= Html::activeDropDownList($searchModel, 'refund_status', \common\enums\PayStatusEnum::refund(), [
                                 'prompt' => '全部',
                                 'class' => 'form-control',
                             ]);
@@ -67,6 +82,7 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                         </div>
                     </div>
                 </div>
+            </div>
                 <div class="active tab-pane">
                     <?php $widgetData = [
                         'id'=>'grid',
@@ -96,7 +112,10 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                     Html::activeTextInput($searchModel, 'language', [
                                         'class' => 'hidden',
                                     ]) .
-                                    Html::activeTextInput($searchModel, 'order_from', [
+                                    Html::activeTextInput($searchModel, 'ip_area_id', [
+                                        'class' => 'hidden',
+                                    ]) .
+                                    Html::activeTextInput($searchModel, 'refund_status', [
                                         'class' => 'hidden',
                                     ])
                             ],
@@ -180,15 +199,27 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                     }
                                 }
                             ],
+//                            [
+//                                'attribute' => 'ip_area_id',
+//                                'headerOptions' => ['class' => 'col-md-1'],
+//                                'filter' => Html::activeDropDownList($searchModel, 'ip_area_id', \common\enums\AreaEnum::getMap(), [
+//                                    'prompt' => '全部',
+//                                    'class' => 'form-control',
+//                                ]),
+//                                'value' => function ($model) {
+//                                    return \common\enums\AreaEnum::getValue($model->ip_area_id);
+//                                },
+//                                'format' => 'raw',
+//                            ],
                             [
-                                'attribute' => 'ip_area_id',
+                                'attribute' => 'order_from',
                                 'headerOptions' => ['class' => 'col-md-1'],
-                                'filter' => Html::activeDropDownList($searchModel, 'ip_area_id', \common\enums\AreaEnum::getMap(), [
+                                'filter' => Html::activeDropDownList($searchModel, 'order_from', \common\enums\OrderFromEnum::getMap(), [
                                     'prompt' => '全部',
                                     'class' => 'form-control',
                                 ]),
                                 'value' => function ($model) {
-                                    return \common\enums\AreaEnum::getValue($model->ip_area_id);
+                                    return \common\enums\OrderFromEnum::getValue($model->order_from);
                                 },
                                 'format' => 'raw',
                             ],
@@ -225,18 +256,18 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                 },
                                 'format' => 'raw',
                             ],
-                            [
-                                'attribute' => 'refund_status',
-                                'headerOptions' => ['class' => 'col-md-1'],
-                                'filter' => Html::activeDropDownList($searchModel, 'refund_status', \common\enums\PayStatusEnum::refund(), [
-                                    'prompt' => '全部',
-                                    'class' => 'form-control',
-                                ]),
-                                'value' => function ($model) {
-                                    return common\enums\PayStatusEnum::getValue($model->refund_status, 'refund');
-                                },
-                                'format' => 'raw',
-                            ],
+//                            [
+//                                'attribute' => 'refund_status',
+//                                'headerOptions' => ['class' => 'col-md-1'],
+//                                'filter' => Html::activeDropDownList($searchModel, 'refund_status', \common\enums\PayStatusEnum::refund(), [
+//                                    'prompt' => '全部',
+//                                    'class' => 'form-control',
+//                                ]),
+//                                'value' => function ($model) {
+//                                    return common\enums\PayStatusEnum::getValue($model->refund_status, 'refund');
+//                                },
+//                                'format' => 'raw',
+//                            ],
                             [
                                 'label' => '跟进状态',
                                 'headerOptions' => ['class' => 'col-md-1'],

@@ -64,6 +64,7 @@ class OrderController extends BaseController
     public function actionIndex()
     {
         $orderStatus = Yii::$app->request->get('order_status', -1);
+        $orderStatus2 = Yii::$app->request->queryParams['SearchModel']['order_status']??"";
 
         $searchModel = new SearchModel([
             'model' => $this->modelClass,
@@ -89,13 +90,15 @@ class OrderController extends BaseController
             if($orderStatus==11) {
                 $dataProvider->query->andWhere('common_pay_wire_transfer.id is not null');
             }
+            elseif($orderStatus==1) {
+                $orderStatus2 = $orderStatus;
+            }
             else {
                 $dataProvider->query->andWhere(['=', 'order_status', $orderStatus]);
             }
         }
 
         //订单状态
-        $orderStatus2 = Yii::$app->request->queryParams['SearchModel']['order_status']??"";
         if($orderStatus2!="") {
             if($orderStatus2==1) {
                 $dataProvider->query->andWhere(['=', 'refund_status', $orderStatus2]);
