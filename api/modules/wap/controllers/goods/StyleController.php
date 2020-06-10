@@ -5,6 +5,7 @@ namespace api\modules\wap\controllers\goods;
 use common\enums\StatusEnum;
 use api\controllers\OnAuthController;
 use common\helpers\ImageHelper;
+use common\models\goods\Goods;
 use common\models\goods\Style;
 use common\helpers\ResultHelper;
 use common\models\goods\StyleLang;
@@ -151,7 +152,19 @@ class StyleController extends OnAuthController
 //            return $subQuery->asArray()->all();
 
             if($type_id==19) {
-                $subQuery = AttributeIndex::find()->andWhere(['in','attr_value_id',$subQuery])->andWhere(['in','attr_id',[61,62]])->select(['a.style_id'])->distinct("a.style_id");
+                $subQuery2 = Goods::find()
+                    ->alias('goods')
+                    ->rightJoin(AttributeIndex::tableName().' as ai', 'ai.attr_value_id=goods.id')
+                    ->andWhere(['in','goods.style_id', $subQuery])
+                    ->andWhere(['in','ai.attr_id',[61,62]])
+                    ->select(['ai.style_id'])
+                    ->distinct("ai.style_id");
+
+                $query->andWhere(['in','m.id',$subQuery2]);
+
+            }
+            else {
+                $query->andWhere(['in','m.id',$subQuery]);
             }
 
             $query->andWhere(['in','m.id',$subQuery]);
