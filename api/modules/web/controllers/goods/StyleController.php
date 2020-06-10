@@ -72,6 +72,7 @@ class StyleController extends OnAuthController
 
         if(!empty($params)){
 
+            $ringStyleQuery = null;
             $subQuery = AttributeIndex::find()->alias('a')->select(['a.style_id'])->distinct("a.style_id");
 
             $k = 0;
@@ -108,7 +109,16 @@ class StyleController extends OnAuthController
                     $config_values = array_merge(array_diff($config_values, array(-1)));
                     if(empty($config_values)) continue;
                     $config_values_str = join(',',$config_values);
-                    $subQuery->innerJoin(AttributeIndex::tableName().' '.$alias, $on." and {$alias}.attr_value_id in ({$config_values_str})");
+
+                    if($param_name == "ring_style") {
+                        $where = [];
+                        $where['attr_id'] = $attr_id;
+                        $where['attr_value_id'] = $config_values;
+                        $ringStyleQuery = AttributeIndex::find()->alias($alias)->select(['style_id'])->where($where)->distinct("style_id");
+                    }
+                    else {
+                        $subQuery->innerJoin(AttributeIndex::tableName().' '.$alias, $on." and {$alias}.attr_value_id in ({$config_values_str})");
+                    }
                 }else if($value_type == 2){
                     $begin_value = $param['beginValue'];
                     $end_value = $param['endValue'];
@@ -129,6 +139,9 @@ class StyleController extends OnAuthController
 
                 $query->andWhere(['in','m.id',$subQuery2]);
 
+                if($ringStyleQuery) {
+                    $query->andWhere(['in','m.id',$ringStyleQuery]);
+                }
             }
             else {
                 $query->andWhere(['in','m.id',$subQuery]);

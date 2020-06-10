@@ -73,6 +73,7 @@ class StyleController extends OnAuthController
         $params = array_filter($params);//删除空成员
 
         if(!(empty($params))){
+            $ringStyleQuery = null;
             $subQuery = AttributeIndex::find()->alias('a')->select(['a.style_id'])->distinct("a.style_id");
             $k = 0;
             foreach ($params as $param){
@@ -133,7 +134,14 @@ class StyleController extends OnAuthController
                         $param_value = array_column($marry_style_man_attr,'id');
                     }
 
-                }else{
+                }
+                elseif($param_name == 'ring_style'){
+                    $attr_id = 39;
+                    if($param_value == -1){
+                        continue;
+                    }
+                }
+                else{
                     continue;
                 }
                 if(!is_array($param_value)){
@@ -145,7 +153,16 @@ class StyleController extends OnAuthController
                 $config_values = array_merge(array_diff($param_value, array(-1)));
                 if(empty($config_values)) continue;
                 $config_values_str = join(',',$config_values);
-                $subQuery->innerJoin(AttributeIndex::tableName().' '.$alias, $on." and {$alias}.attr_value_id in ({$config_values_str})");
+
+                if($param_name == 'ring_style') {
+                    $where = [];
+                    $where['attr_id'] = $attr_id;
+                    $where['attr_value_id'] = $config_values;
+                    $ringStyleQuery = AttributeIndex::find()->alias($alias)->select(['style_id'])->where($where)->distinct("style_id");
+                }
+                else {
+                    $subQuery->innerJoin(AttributeIndex::tableName().' '.$alias, $on." and {$alias}.attr_value_id in ({$config_values_str})");
+                }
 
             }
 //            echo $subQuery->createCommand()->getSql();exit;
@@ -162,6 +179,9 @@ class StyleController extends OnAuthController
 
                 $query->andWhere(['in','m.id',$subQuery2]);
 
+                if($ringStyleQuery) {
+                    $query->andWhere(['in','m.id',$ringStyleQuery]);
+                }
             }
             else {
                 $query->andWhere(['in','m.id',$subQuery]);
