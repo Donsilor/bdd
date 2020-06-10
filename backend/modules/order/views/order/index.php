@@ -172,7 +172,12 @@ $export_param = http_build_query($searchModel)."&order_status={$order_status}";
                                 ]),
                                 'format' => 'raw',
                                 'value' => function ($model) {
-                                    return sprintf('(%s)%s', $model->account->currency, $model->account->order_amount);
+                                    if($model->account->paid_currency) {
+                                        return sprintf('(%s)%s', $model->account->paid_currency, $model->account->paid_amount);
+                                    }
+                                    else {
+                                        return sprintf('(%s)%s', $model->account->currency, $model->account->order_amount);
+                                    }
                                 }
                             ],
                             [
