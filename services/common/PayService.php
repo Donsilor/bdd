@@ -338,7 +338,9 @@ class PayService extends Service
 
                     if($result) {
                         $accountUpdata = [
-                             'pay_amount'=> $pay_amount,                            
+                            'pay_amount'=> $pay_amount,
+                            'paid_amount'=> $log->total_fee,
+                            'paid_currency'=> $log->currency,
                         ];
                         OrderAccount::updateAll($accountUpdata,['order_id'=>$order->id]);
                         
