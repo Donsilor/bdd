@@ -19,7 +19,7 @@ $OrderStatusEnum = common\enums\OrderStatusEnum::getMap();
 unset($OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_FINISH]);
 
 $OrderStatusEnum['1'] = '已退款';
-
+$OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_CONFIRM] = '已付款/待审核';
 
 ?>
 
@@ -63,7 +63,7 @@ $OrderStatusEnum['1'] = '已退款';
                             ?>
                         </div>
                         <div class="col-sm-3">
-                            <?= $searchModel->model->getAttributeLabel('ip_area_id') ?>：<br/>
+                            ip归属地区：<br/>
                             <?= Html::activeDropDownList($searchModel, 'ip_area_id', \common\enums\AreaEnum::getMap(), [
                                 'prompt' => '全部',
                                 'class' => 'form-control',
