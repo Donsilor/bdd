@@ -289,18 +289,47 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col-lg-8">%s<br/>SKU：%s&nbsp;%s</div>
         </div>
 DOM;
-                                            $goods_spec = '';
-                                            if($model->goods_spec){
-                                                $model->goods_spec = \Yii::$app->services->goods->formatGoodsSpec($model->goods_spec);
-                                                foreach ($model->goods_spec as $vo){
-                                                    $goods_spec .= $vo['attr_name'].":".$vo['attr_value']."&nbsp;";
+                                            $value = '';
+                                            if($model->goods_type==19) {
+                                                $goods_spec = '';
+                                                if($model->goods_spec) {
+                                                    $model->goods_spec = \Yii::$app->services->goods->formatGoodsSpec($model->goods_spec);
+                                                    foreach ($model->goods_spec as $vo){
+                                                        $goods_spec .= $vo['attr_name'].":".$vo['attr_value']."&nbsp;";
+                                                    }
                                                 }
+                                                $value .= sprintf($html,
+                                                    '' . $model->goods_name,
+                                                    $model->goods_sn,
+                                                    $goods_spec
+                                                );
+                                                $value .= sprintf($html,
+                                                    $model->goods_name,
+                                                    $model->goods_sn,
+                                                    $goods_spec
+                                                );
+                                                $value .= sprintf($html,
+                                                    $model->goods_name,
+                                                    $model->goods_sn,
+                                                    $goods_spec
+                                                );
                                             }
-                                            return sprintf($html,
-                                                $model->goods_name,
-                                                $model->goods_sn,
-                                                $goods_spec
-                                            );
+                                            else {
+                                                $goods_spec = '';
+                                                if($model->goods_spec){
+                                                    $model->goods_spec = \Yii::$app->services->goods->formatGoodsSpec($model->goods_spec);
+                                                    foreach ($model->goods_spec as $vo){
+                                                        $goods_spec .= $vo['attr_name'].":".$vo['attr_value']."&nbsp;";
+                                                    }
+                                                }
+                                                $value .= sprintf($html,
+                                                    $model->goods_name,
+                                                    $model->goods_sn,
+                                                    $goods_spec
+                                                );
+                                            }
+
+                                            return $value;
                                         },
                                         'filter' => false,
                                         'format' => 'html',
