@@ -20,7 +20,7 @@
                 <div class="invoice-data-topcolor">Invoice</div>
                 <div class="invoice-data-b clf">
                     <div class="invoice-data-l fl">
-                        <div class="invoice-data-type">invoice Data</div>
+                        <div class="invoice-data-type">發貨日期</div>
                         <div class="invoice-data-val"><?php echo $result['invoice_date'];?></div>
                     </div>
                     <div class="invoice-data-r fl">
@@ -28,27 +28,18 @@
                         <div class="invoice-data-val">1 of 1</div>
                     </div>
                 </div>
+                <div class="invoice-data-b clf">
+                    <div class="invoice-data-l fl">
+                        <div class="invoice-data-type">发票号码</div>
+                        <div class="invoice-data-val"><?php echo $result['order_sn'];?></div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="site-type clf">
             <div class="list fl clf">
-                <div class="list-tit fl">Shipper:</div>
-                <div class="list-details fl">
-                    <div class="child-name"><?php echo $result['sender_name']?$result['sender_name']:'BDD Co.';?></div>
-                    <div class="child-addr"><?php echo $result['sender_address']?$result['sender_address']: 'Rm4, 23/F,Universal Trade Centre 3 Arbuthnot Road Central';?></div>
-                </div>
-            </div>
-            <div class="list fl clf">
-                <div class="list-tit fl">INVOICE NO:</div>
-                <div class="list-details fl">
-                    <div class="child-name"><?php echo $result['order_sn'];?></div>
-                </div>
-            </div>
-        </div>
-        <div class="site-type clf">
-            <div class="list fl clf">
-                <div class="list-tit fl">Importer:</div>
+                <div class="list-tit fl">銷售商:</div>
                 <div class="list-details fl">
                     <div class="child-name"><?php echo $result['realname'];?></div>
                     <div class="child-addr"><?php echo $result['address_details'];?></div>
@@ -56,7 +47,7 @@
             </div>
 
             <div class="list fl clf">
-                <div class="list-tit fl">Consingee:</div>
+                <div class="list-tit fl">客戶地址:</div>
                 <div class="list-details fl">
                     <div class="child-name"><?php echo $result['realname'];?></div>
                     <div class="child-addr"><?php echo $result['address_details'];?></div>
@@ -65,7 +56,7 @@
         </div>
 
         <div class="package-information">
-            <div class="package-tit">Package Information</div>
+            <div class="package-tit">Order Information</div>
             <div class="package-info clf">
                 <div class="package-child fl">
                     <div class="package-child-v">International Air Waybill No.</div>
@@ -76,7 +67,7 @@
                     <div class="package-child-val"><?php echo $result['express_company_name'];?></div>
                 </div>
                 <div class="package-child fl">
-                    <div class="package-child-v">Data of Exportation</div>
+                    <div class="package-child-v">Payment method</div>
                     <div class="package-child-val"><?php echo $result['delivery_time'];?></div>
                 </div>
             </div>
@@ -100,6 +91,7 @@
             <tr>
                 <th width="32%">Item Description</th>
                 <th width="16%">Country</th>
+                <th width="10%">Stock No.</th>
                 <th width="10%">Qty</th>
                 <th width="15%">Unit Price</th>
                 <th width="27%">Total Amt.</th>
@@ -108,6 +100,7 @@
             <tr>
                 <td><?php echo $val['goods_name'];?></td>
                 <td>CHINA</td>
+                <td><?php echo $val['goods_sn'];?></td>
                 <td><?php echo $val['goods_num'];?></td>
                 <td><?php echo $val['goods_pay_price']. " ".$val['currency']; ?></td>
                 <td><?php echo $val['goods_pay_price']*$val['goods_num'] . " ".$val['currency']; ?></td>
@@ -136,6 +129,13 @@
 
         <div class="total clf">
             <div class="fr clf">
+                <div class="fr total-val"> - <?php echo $result['currency'] .' '.'0'; ?></div>
+                <div class="fr total-bg">优惠劵抵扣</div>
+            </div>
+        </div>
+
+        <div class="total clf">
+            <div class="fr clf">
                 <div class="fr total-val"> - <?php echo $result['currency'] .' '.$result['gift_card_amount']; ?></div>
                 <div class="fr total-bg">Gift Card</div>
             </div>
@@ -147,6 +147,11 @@
                 <div class="fr total-bg">Amount  Paid</div>
             </div>
         </div>
+
+        <div class="total clf">
+            If you have any questions, please contact our Customer Service Associate by sending e-mail to service@bddco.com
+        </div>
+
     </div>
     <!--打印内容结束-->
 

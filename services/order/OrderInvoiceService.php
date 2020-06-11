@@ -4,6 +4,7 @@ namespace services\order;
 
 use common\components\Service;
 use common\enums\CurrencyEnum;
+use common\enums\OrderFromEnum;
 use common\helpers\ResultHelper;
 use common\models\order\OrderCart;
 use common\models\order\OrderGoodsLang;
@@ -32,6 +33,51 @@ use common\models\order\OrderLog;
  */
 class OrderInvoiceService extends OrderBaseService
 {
+
+//大陆：网址：https://wap.bddco.cn/
+//https://www.bddco.cn/  [0755 25169121 / e-service@bddco.com
+//
+//
+//香港：https://wap.bddco.com/
+//https://www.bddco.com/     [+852 21653905 / service@bddco.com
+//
+//
+//美国：https://us.bddco.com/
+//https://wap-us.bddco.com/   [+852 21653905 / service@bddco.com
+
+    private $siteInfo = [
+        OrderFromEnum::WEB_HK => [
+            'webSite' => 'https://www.bddco.com/',
+            'tel' => '+852 21653905',
+            'email' => 'service@bddco.com',
+        ],
+        OrderFromEnum::MOBILE_HK => [
+            'webSite' => 'https://wap.bddco.com/',
+            'tel' => '+852 21653905',
+            'email' => 'service@bddco.com',
+        ],
+        OrderFromEnum::WEB_CN => [
+            'webSite' => 'https://www.bddco.cn/',
+            'tel' => '0755 25169121',
+            'email' => 'e-service@bddco.com',
+        ],
+        OrderFromEnum::MOBILE_CN => [
+            'webSite' => 'https://wap.bddco.cn/',
+            'tel' => '0755 25169121',
+            'email' => 'e-service@bddco.com',
+        ],
+        OrderFromEnum::WEB_US => [
+            'webSite' => 'https://us.bddco.com/',
+            'tel' => '+852 21653905',
+            'email' => 'service@bddco.com',
+        ],
+        OrderFromEnum::MOBILE_US => [
+            'webSite' => 'https://wap-us.bddco.com/',
+            'tel' => '+852 21653905',
+            'email' => 'service@bddco.com',
+        ],
+    ];
+
     public function getEleInvoiceInfo($order_id){
         $order = Order::find()
             ->where(['id'=>$order_id])
@@ -63,7 +109,6 @@ class OrderInvoiceService extends OrderBaseService
             'gift_card_amount' => CardService::getUseAmount($order_id),
         );
         $result['order_paid_amount'] = bcsub($result['order_amount'],$result['gift_card_amount'],2);
-
 
         $order_invoice_exe_model = OrderInvoiceEle::find()
             ->where(['order_id'=>$order->id])
@@ -97,7 +142,7 @@ class OrderInvoiceService extends OrderBaseService
         $order_goods = OrderGoods::find()->alias('m')
             ->leftJoin(OrderGoodsLang::tableName().'lang','m.id=lang.master_id and lang.language="'.$language.'"')
             ->where(['order_id'=>$order_id])
-            ->select(['lang.goods_name','m.goods_num','m.goods_pay_price','m.currency'])
+            ->select(['lang.goods_name','m.goods_sn','m.goods_num','m.goods_pay_price','m.currency'])
             ->asArray()
             ->all();
         $result['order_goods'] = $order_goods;
@@ -114,7 +159,7 @@ class OrderInvoiceService extends OrderBaseService
             $country_name = $order->address->country_name ? ','.$order->address->country_name : '';
             $result['address_details'] = $order->address->address_details .$city_name.$province_name.$country_name ;
         }else{
-            $result['invoice_date'] = $result['invoice_date'] ? date('Y-m-d',$result['invoice_date']):date('Y-m-d',time());
+            $result['invoice_date'] = $result['invoice_date'] ? date('d-M-Y',$result['invoice_date']):date('d-M-Y',time());
             $result['delivery_time'] = $result['delivery_time'] ? date('Y-m-d',$result['delivery_time']):'';
 
             $city_name = $order->address->city_name ? $order->address->city_name . ' ' : '';
@@ -133,6 +178,10 @@ class OrderInvoiceService extends OrderBaseService
             default: $result['template'] = 'ele-invoice.php';
 
         }
+
+        //站点信息
+        $result['siteInfo'] = $this->siteInfo[$order[$order->order_from]]??[];
+
         return $result;
     }
     
