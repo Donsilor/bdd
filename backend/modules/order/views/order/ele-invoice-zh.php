@@ -33,6 +33,12 @@
             </div>
         </div>
 
+        <div>
+            <div>网址：<?php echo $result['siteInfo']['webSite']??'';?></div>
+            <div>邮箱：<?php echo $result['siteInfo']['email']??'';?></div>
+            <div>电话：<?php echo $result['siteInfo']['tel']??'';?></div>
+        </div>
+
         <div class="site-type clf">
             <div class="list fl clf">
                 <div class="list-tit fl">销售商:</div>

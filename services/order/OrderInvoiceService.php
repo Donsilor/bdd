@@ -180,7 +180,7 @@ class OrderInvoiceService extends OrderBaseService
         }
 
         //站点信息
-        $result['siteInfo'] = $this->siteInfo[$order[$order->order_from]]??[];
+        $result['siteInfo'] = $this->siteInfo[$order->order_from]??[];
 
         return $result;
     }
