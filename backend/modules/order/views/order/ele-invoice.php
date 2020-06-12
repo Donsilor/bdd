@@ -28,20 +28,16 @@
                         <div class="invoice-data-val">1 of 1</div>
                     </div>
                 </div>
-                <div class="invoice-data-b clf">
-                    <div class="invoice-data-l fl">
-                        <div class="invoice-data-type">发票号码:</div>
-                        <div class="invoice-data-val"><?php echo $result['order_sn'];?></div>
-                    </div>
+                <div class="invoice-data-b clf" style="border-top: 1px solid #333;padding: 10px;">发票号码:<?php echo $result['order_sn'];?>
                 </div>
+            </div>
+            <div class="fl" style="margin: 20px 0px;width: 300px;">
+                <div>网址:<?php echo $result['siteInfo']['webSite']??'';?></div>
+                <div>邮箱:<?php echo $result['siteInfo']['email']??'';?></div>
+                <div>电话:<?php echo $result['siteInfo']['tel']??'';?></div>
             </div>
         </div>
 
-        <div>
-            <div>网址:<?php echo $result['siteInfo']['webSite']??'';?></div>
-            <div>邮箱:<?php echo $result['siteInfo']['email']??'';?></div>
-            <div>电话:<?php echo $result['siteInfo']['tel']??'';?></div>
-        </div>
 
         <div class="site-type clf">
             <div class="list fl clf">
@@ -131,8 +127,8 @@
                 <div class="total clf" style="text-align: left;word-break:break-all;">如果您有任何問題, 請發送郵件至我們的客服郵箱: service@bddco.com ; 我們將竭誠為您服務! 感謝選擇BDD Co.
                 </div>
             </div>
-            <div>
-                <div style="width: 350px;" class="fr">
+            <div style="width: 350px;" class="fr">
+                <div class="total clf">
                     <div class="fr clf">
                         <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_amount']; ?> </div>
                         <div class="fr total-bg">小計</div>
