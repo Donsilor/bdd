@@ -127,8 +127,12 @@
         </div>
 
         <div>
+            <div style="width: 280px;" class="fl">
+                <div class="total clf" style="text-align: left;word-break:break-all;">如果您有任何問題, 請發送郵件至我們的客服郵箱: service@bddco.com ; 我們將竭誠為您服務! 感謝選擇BDD Co.
+                </div>
+            </div>
             <div>
-                <div class="total clf">
+                <div style="width: 350px;" class="fr">
                     <div class="fr clf">
                         <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_amount']; ?> </div>
                         <div class="fr total-bg">小計</div>
@@ -154,10 +158,6 @@
                         <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_paid_amount']; ?></div>
                         <div class="fr total-bg">訂單總計</div>
                     </div>
-                </div>
-            </div>
-            <div>
-                <div class="total clf">如果您有任何問題, 請發送郵件至我們的客服郵箱: service@bddco.com ; 我們將竭誠為您服務! 感謝選擇BDD Co.
                 </div>
             </div>
         </div>
