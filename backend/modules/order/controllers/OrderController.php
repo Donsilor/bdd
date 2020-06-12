@@ -553,7 +553,7 @@ class OrderController extends BaseController
         }
         $result = Yii::$app->services->orderInvoice->getEleInvoiceInfo($order_id);
         $content = $this->renderPartial($result['template'],['result'=>$result]);
-        return $content;
+        if(!Yii::$app->request->get('is_pdf', true)) return $content;
         $usage = 'order-invoice';
         $usageExplains = EmailLog::$usageExplain;
         $subject  = $usageExplains[$usage]??'';

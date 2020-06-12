@@ -122,37 +122,45 @@
             </div>
         </div>
 
-        <div class="total clf">
-            <div class="fr clf">
-                <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_amount']; ?> </div>
-                <div class="fr total-bg">小计</div>
+        <div>
+            <div style="width: 350px;" class="fr">
+                <div class="total clf">
+                    <div class="fr clf">
+                        <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_amount']; ?> </div>
+                        <div class="fr total-bg">小计</div>
+                    </div>
+                </div>
+
+                <div class="total clf">
+                    <div class="fr clf">
+                        <div class="fr total-val"> - <?php echo $result['currency'] .' '.'0'; ?></div>
+                        <div class="fr total-bg">优惠劵抵扣</div>
+                    </div>
+                </div>
+
+                <div class="total clf">
+                    <div class="fr clf">
+                        <div class="fr total-val"> - <?php echo $result['currency'] .' '.$result['gift_card_amount']; ?></div>
+                        <div class="fr total-bg">购物卡抵扣</div>
+                    </div>
+                </div>
+
+                <div class="total clf">
+                    <div class="fr clf">
+                        <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_paid_amount']; ?></div>
+                        <div class="fr total-bg">订单总计</div>
+                    </div>
+                </div>
+            </div>
+            <div style="width: 440px;" class="fl">
+                <div class="total clf" style="text-align: left;">如果您有任何問題,請發送郵件至我們的客服郵箱:service@bddco.com;我們將竭誠為您服務!感謝選擇BDD Co.
+                </div>
             </div>
         </div>
 
-        <div class="total clf">
-            <div class="fr clf">
-                <div class="fr total-val"> - <?php echo $result['currency'] .' '.'0'; ?></div>
-                <div class="fr total-bg">优惠劵抵扣</div>
-            </div>
-        </div>
 
-        <div class="total clf">
-            <div class="fr clf">
-                <div class="fr total-val"> - <?php echo $result['currency'] .' '.$result['gift_card_amount']; ?></div>
-                <div class="fr total-bg">购物卡抵扣</div>
-            </div>
-        </div>
 
-        <div class="total clf">
-            <div class="fr clf">
-                <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_paid_amount']; ?></div>
-                <div class="fr total-bg">订单总计</div>
-            </div>
-        </div>
 
-        <div class="total clf">
-            如果您有任何問題, 請發送郵件至我們的客服郵箱: service@bddco.com ; 我們將竭誠為您服務! 感謝選擇BDD Co.
-        </div>
 
 
     </div>

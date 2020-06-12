@@ -241,7 +241,7 @@ td:first-child{
 }
 
 .total-bg {
-    width: 240px;
+    width: 140px;
     height: 30px;
     border: 1px solid #333;
     background-color: #333 !important;
@@ -252,7 +252,7 @@ td:first-child{
 }
 
 .total-val {
-    width: 180px;
+    width: 150px;
     height: 30px;
     border: 1px solid #333;
     color: #333;
