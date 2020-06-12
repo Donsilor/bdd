@@ -28,20 +28,17 @@
                         <div class="invoice-data-val">1 of 1</div>
                     </div>
                 </div>
-                <div class="invoice-data-b clf">
-                    <div class="invoice-data-l fl">
-                        <div class="invoice-data-type">Invoice No.:</div>
-                        <div class="invoice-data-val"><?php echo $result['order_sn'];?></div>
-                    </div>
+                <div class="invoice-data-b clf" style="border-top: 1px solid #333;padding: 10px;">
+                    Invoice No.:<?php echo $result['order_sn'];?>
                 </div>
+            </div>
+            <div class="fl" style="margin: 20px 0px;width: 300px;">
+                <div>Website:<?php echo $result['siteInfo']['webSite']??'';?></div>
+                <div>Email:<?php echo $result['siteInfo']['email']??'';?></div>
+                <div>Tel:<?php echo $result['siteInfo']['tel']??'';?></div>
             </div>
         </div>
 
-        <div>
-            <div>Website:<?php echo $result['siteInfo']['webSite']??'';?></div>
-            <div>Email:<?php echo $result['siteInfo']['email']??'';?></div>
-            <div>Tel:<?php echo $result['siteInfo']['tel']??'';?></div>
-        </div>
 
         <div class="site-type clf">
             <div class="list fl clf">
@@ -127,7 +124,12 @@
         </div>
 
         <div>
-            <div>
+            <div style="width: 280px;" class="fl">
+                <div class="total clf" style="text-align: left;word-break:break-all;">
+                    If you have any questions, please contact our Customer Service Associate by sending e-mail to service@bddco.com
+                </div>
+            </div>
+            <div style="width: 350px;" class="fr">
                 <div class="total clf">
                     <div class="fr clf">
                         <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_amount']; ?> </div>
@@ -154,11 +156,6 @@
                         <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_paid_amount']; ?></div>
                         <div class="fr total-bg">Amount  Paid</div>
                     </div>
-                </div>
-            </div>
-            <div>
-                <div class="total clf">
-                    If you have any questions, please contact our Customer Service Associate by sending e-mail to service@bddco.com
                 </div>
             </div>
         </div>
