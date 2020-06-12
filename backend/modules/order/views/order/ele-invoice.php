@@ -30,7 +30,7 @@
                 </div>
                 <div class="invoice-data-b clf">
                     <div class="invoice-data-l fl">
-                        <div class="invoice-data-type">发票号码</div>
+                        <div class="invoice-data-type">发票号码:</div>
                         <div class="invoice-data-val"><?php echo $result['order_sn'];?></div>
                     </div>
                 </div>
@@ -38,9 +38,9 @@
         </div>
 
         <div>
-            <div>网址：<?php echo $result['siteInfo']['webSite']??'';?></div>
-            <div>邮箱：<?php echo $result['siteInfo']['email']??'';?></div>
-            <div>电话：<?php echo $result['siteInfo']['tel']??'';?></div>
+            <div>网址:<?php echo $result['siteInfo']['webSite']??'';?></div>
+            <div>邮箱:<?php echo $result['siteInfo']['email']??'';?></div>
+            <div>电话:<?php echo $result['siteInfo']['tel']??'';?></div>
         </div>
 
         <div class="site-type clf">
@@ -97,10 +97,10 @@
             <tr>
                 <th width="32%">商品描述</th>
                 <th width="16%">國家</th>
-                <th width="10%">款號</th>
+                <th width="20%">款號</th>
                 <th width="10%">數量</th>
                 <th width="15%">單價</th>
-                <th width="27%">總金額</th>
+                <th width="15%">總金額</th>
             </tr>
             <?php foreach ($result['order_goods'] as $val){ ?>
             <tr>
@@ -126,37 +126,42 @@
             </div>
         </div>
 
-        <div class="total clf">
-            <div class="fr clf">
-                <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_amount']; ?> </div>
-                <div class="fr total-bg">小計</div>
+        <div>
+            <div>
+                <div class="total clf">
+                    <div class="fr clf">
+                        <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_amount']; ?> </div>
+                        <div class="fr total-bg">小計</div>
+                    </div>
+                </div>
+
+                <div class="total clf">
+                    <div class="fr clf">
+                        <div class="fr total-val"> - <?php echo $result['currency'] .' '.'0'; ?></div>
+                        <div class="fr total-bg">優惠劵抵扣</div>
+                    </div>
+                </div>
+
+                <div class="total clf">
+                    <div class="fr clf">
+                        <div class="fr total-val"> - <?php echo $result['currency'] .' '.$result['gift_card_amount']; ?></div>
+                        <div class="fr total-bg">購物卡抵扣</div>
+                    </div>
+                </div>
+
+                <div class="total clf">
+                    <div class="fr clf">
+                        <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_paid_amount']; ?></div>
+                        <div class="fr total-bg">訂單總計</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="total clf">如果您有任何問題, 請發送郵件至我們的客服郵箱: service@bddco.com ; 我們將竭誠為您服務! 感謝選擇BDD Co.
+                </div>
             </div>
         </div>
 
-        <div class="total clf">
-            <div class="fr clf">
-                <div class="fr total-val"> - <?php echo $result['currency'] .' '.'0'; ?></div>
-                <div class="fr total-bg">優惠劵抵扣</div>
-            </div>
-        </div>
-
-        <div class="total clf">
-            <div class="fr clf">
-                <div class="fr total-val"> - <?php echo $result['currency'] .' '.$result['gift_card_amount']; ?></div>
-                <div class="fr total-bg">購物卡抵扣</div>
-            </div>
-        </div>
-
-        <div class="total clf">
-            <div class="fr clf">
-                <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_paid_amount']; ?></div>
-                <div class="fr total-bg">訂單總計</div>
-            </div>
-        </div>
-
-        <div class="total clf">
-            如果您有任何問題, 請發送郵件至我們的客服郵箱: service@bddco.com ; 我們將竭誠為您服務! 感謝選擇BDD Co.
-        </div>
 
     </div>
     <!--打印内容结束-->

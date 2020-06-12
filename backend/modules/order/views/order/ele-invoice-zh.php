@@ -15,6 +15,7 @@
     <div class="template">
         <div class="clf">
             <div class="invoice-data-img fl"></div>
+
             <div class="invoice-data fr">
                 <div class="invoice-data-topcolor">发票</div>
                 <div class="invoice-data-b clf">
@@ -28,15 +29,15 @@
                     </div>
                 </div>
                 <div class="invoice-data-b clf" style="border-top: 1px solid #333;padding: 10px;">
-                    发票号码：<?php echo $result['order_sn'];?>
+                    发票号码:<?php echo $result['order_sn'];?>
                 </div>
             </div>
-        </div>
 
-        <div>
-            <div>网址：<?php echo $result['siteInfo']['webSite']??'';?></div>
-            <div>邮箱：<?php echo $result['siteInfo']['email']??'';?></div>
-            <div>电话：<?php echo $result['siteInfo']['tel']??'';?></div>
+            <div class="fl" style="margin: 20px 0px;width: 300px;">
+                <div>网址:<?php echo $result['siteInfo']['webSite']??'';?></div>
+                <div>邮箱:<?php echo $result['siteInfo']['email']??'';?></div>
+                <div>电话:<?php echo $result['siteInfo']['tel']??'';?></div>
+            </div>
         </div>
 
         <div class="site-type clf">
@@ -93,10 +94,10 @@
             <tr>
                 <th width="">商品描述</th>
                 <th width="13%">国家</th>
-                <th width="8%">款号</th>
+                <th width="20%">款号</th>
                 <th width="8%">数量</th>
-                <th width="22%">单价</th>
-                <th width="22%">总金额</th>
+                <th width="15%">单价</th>
+                <th width="15%">总金额</th>
             </tr>
             <?php foreach ($result['order_goods'] as $val){ ?>
             <tr>
@@ -123,6 +124,9 @@
         </div>
 
         <div>
+            <div style="width: 280px;" class="fl">
+                <div class="total clf" style="text-align: left;word-break:break-all;">&nbsp;&nbsp;&nbsp;&nbsp;如果您有任何問題,請發送郵件至我們的客服郵箱:service@bddco.com;我們將竭誠為您服務!感謝選擇BDD Co.</div>
+            </div>
             <div style="width: 350px;" class="fr">
                 <div class="total clf">
                     <div class="fr clf">
@@ -152,16 +156,7 @@
                     </div>
                 </div>
             </div>
-            <div style="width: 440px;" class="fl">
-                <div class="total clf" style="text-align: left;">如果您有任何問題,請發送郵件至我們的客服郵箱:service@bddco.com;我們將竭誠為您服務!感謝選擇BDD Co.
-                </div>
-            </div>
         </div>
-
-
-
-
-
 
     </div>
     <!--打印内容结束-->

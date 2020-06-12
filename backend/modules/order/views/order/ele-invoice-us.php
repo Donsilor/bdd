@@ -20,7 +20,7 @@
                 <div class="invoice-data-topcolor">Invoice</div>
                 <div class="invoice-data-b clf">
                     <div class="invoice-data-l fl">
-                        <div class="invoice-data-type">發貨日期</div>
+                        <div class="invoice-data-type">Dispatch date</div>
                         <div class="invoice-data-val"><?php echo $result['invoice_date'];?></div>
                     </div>
                     <div class="invoice-data-r fl">
@@ -30,7 +30,7 @@
                 </div>
                 <div class="invoice-data-b clf">
                     <div class="invoice-data-l fl">
-                        <div class="invoice-data-type">发票号码</div>
+                        <div class="invoice-data-type">Invoice No.:</div>
                         <div class="invoice-data-val"><?php echo $result['order_sn'];?></div>
                     </div>
                 </div>
@@ -38,14 +38,14 @@
         </div>
 
         <div>
-            <div>网址：<?php echo $result['siteInfo']['webSite']??'';?></div>
-            <div>邮箱：<?php echo $result['siteInfo']['email']??'';?></div>
-            <div>电话：<?php echo $result['siteInfo']['tel']??'';?></div>
+            <div>Website:<?php echo $result['siteInfo']['webSite']??'';?></div>
+            <div>Email:<?php echo $result['siteInfo']['email']??'';?></div>
+            <div>Tel:<?php echo $result['siteInfo']['tel']??'';?></div>
         </div>
 
         <div class="site-type clf">
             <div class="list fl clf">
-                <div class="list-tit fl">銷售商:</div>
+                <div class="list-tit fl">Retailer:</div>
                 <div class="list-details fl">
                     <div class="child-name"><?php echo $result['realname'];?></div>
                     <div class="child-addr"><?php echo $result['address_details'];?></div>
@@ -53,7 +53,7 @@
             </div>
 
             <div class="list fl clf">
-                <div class="list-tit fl">客戶地址:</div>
+                <div class="list-tit fl">Shipping address:</div>
                 <div class="list-details fl">
                     <div class="child-name"><?php echo $result['realname'];?></div>
                     <div class="child-addr"><?php echo $result['address_details'];?></div>
@@ -97,10 +97,10 @@
             <tr>
                 <th width="32%">Item Description</th>
                 <th width="16%">Country</th>
-                <th width="10%">Stock No.</th>
+                <th width="20%">Stock No.</th>
                 <th width="10%">Qty</th>
                 <th width="15%">Unit Price</th>
-                <th width="27%">Total Amt.</th>
+                <th width="15%">Total Amt.</th>
             </tr>
             <?php foreach ($result['order_goods'] as $val){ ?>
             <tr>
@@ -126,38 +126,42 @@
             </div>
         </div>
 
-        <div class="total clf">
-            <div class="fr clf">
-                <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_amount']; ?> </div>
-                <div class="fr total-bg">Total</div>
+        <div>
+            <div>
+                <div class="total clf">
+                    <div class="fr clf">
+                        <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_amount']; ?> </div>
+                        <div class="fr total-bg">Total</div>
+                    </div>
+                </div>
+
+                <!--        <div class="total clf">-->
+                <!--            <div class="fr clf">-->
+                <!--                <div class="fr total-val"> - --><?php //echo $result['currency'] .' '.'0'; ?><!--</div>-->
+                <!--                <div class="fr total-bg">优惠劵抵扣</div>-->
+                <!--            </div>-->
+                <!--        </div>-->
+
+                <div class="total clf">
+                    <div class="fr clf">
+                        <div class="fr total-val"> - <?php echo $result['currency'] .' '.$result['gift_card_amount']; ?></div>
+                        <div class="fr total-bg">Gift Card</div>
+                    </div>
+                </div>
+
+                <div class="total clf">
+                    <div class="fr clf">
+                        <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_paid_amount']; ?></div>
+                        <div class="fr total-bg">Amount  Paid</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="total clf">
+                    If you have any questions, please contact our Customer Service Associate by sending e-mail to service@bddco.com
+                </div>
             </div>
         </div>
-
-        <div class="total clf">
-            <div class="fr clf">
-                <div class="fr total-val"> - <?php echo $result['currency'] .' '.'0'; ?></div>
-                <div class="fr total-bg">优惠劵抵扣</div>
-            </div>
-        </div>
-
-        <div class="total clf">
-            <div class="fr clf">
-                <div class="fr total-val"> - <?php echo $result['currency'] .' '.$result['gift_card_amount']; ?></div>
-                <div class="fr total-bg">Gift Card</div>
-            </div>
-        </div>
-
-        <div class="total clf">
-            <div class="fr clf">
-                <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_paid_amount']; ?></div>
-                <div class="fr total-bg">Amount  Paid</div>
-            </div>
-        </div>
-
-        <div class="total clf">
-            If you have any questions, please contact our Customer Service Associate by sending e-mail to service@bddco.com
-        </div>
-
     </div>
     <!--打印内容结束-->
 
