@@ -16,10 +16,16 @@ class OrderAddressForm extends \common\models\order\Order
     public function rules()
     {
         return [
-            [['id','refund_status', 'refund_remark'], 'required'],
-            [['id','refund_status'], 'integer'],
-            [['refund_remark'], 'string', 'max' => 500],
-            ['refund_status', 'validateRefundStatus']
+            [['order_id'], 'required'],
+            [['order_id', 'merchant_id', 'member_id', 'country_id', 'province_id', 'city_id',  'created_at', 'updated_at'], 'integer'],
+            [['realname'], 'string', 'max' => 200],
+            [['email'], 'string', 'max' => 150],
+            [['country_name', 'province_name'], 'string', 'max' => 30],
+            [['city_name'], 'string', 'max' => 100],
+            [['address_details'], 'string', 'max' => 300],
+            [['zip_code'], 'string', 'max' => 20],
+            [['mobile'], 'string', 'max' => 20],
+            [['mobile_code'], 'string', 'max' => 10],
         ];
     }
 
