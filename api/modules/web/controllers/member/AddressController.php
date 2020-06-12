@@ -3,6 +3,7 @@
 namespace api\modules\web\controllers\member;
 
 use api\controllers\UserAuthController;
+use common\enums\OrderFromEnum;
 use common\models\member\Address;
 
 /**
@@ -43,11 +44,12 @@ class AddressController extends UserAuthController
             "zip_code",
             "is_default",
         ];
-        $models = $this->modelClass::find()->select($fields)->where(['member_id'=>$this->member_id])->orderBy('is_default desc, id desc')->all();
+        $models = $this->modelClass::find()->select($fields)->where(['member_id'=>$this->member_id])->orderBy('is_default desc, id desc')->asArray()->all();
         foreach ($models as &$model){
             $model['country_name'] = \Yii::$app->services->area->getAreaName($model['country_id']);
             $model['province_name'] = \Yii::$app->services->area->getAreaName($model['province_id']);
             $model['city_name'] = \Yii::$app->services->area->getAreaName($model['city_id']);
+            $model['platforms'] = OrderFromEnum::countryIdToPlatforms($model['country_id']);
         }
 
         return $models;
