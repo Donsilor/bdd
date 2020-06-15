@@ -270,6 +270,8 @@ class OrderTouristService extends OrderBaseService
             'other_fee' => $orderTourist->other_fee,
             'exchange_rate' => $orderTourist->exchange_rate,
             'currency' => $orderTourist->currency,
+            'paid_amount' => $orderTourist->paid_amount,
+            'paid_currency' => $orderTourist->paid_currency,
         ];
         if(false === $orderAccount->save()) {
             throw new UnprocessableEntityHttpException($this->getError($orderAccount));
