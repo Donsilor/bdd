@@ -375,7 +375,9 @@ class PayService extends Service
 
                     $update = [
                         'status' => OrderTouristStatusEnum::ORDER_PAID,
-                        'pay_amount' => $log->total_fee
+                        'pay_amount'=> $orderTourist->pay_amount,
+                        'paid_amount'=> $log->total_fee,
+                        'paid_currency'=> $log->currency,
                     ];
 
                     $result = OrderTourist::updateAll($update, ['id' => $orderTourist->id, 'status'=>OrderTouristStatusEnum::ORDER_UNPAID]);
