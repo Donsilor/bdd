@@ -39,6 +39,11 @@ class CardService extends Service
         }
 
         foreach ($cards as $card) {
+            if(empty($card->card->first_use_time)) {
+                $card->card->first_use_time = time();
+                $card->card->save();
+            }
+
             $card->status=1;
             $card->save();
         }

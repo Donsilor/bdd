@@ -49,6 +49,8 @@ $form = ActiveForm::begin([
                 'class' => 'form-control no_bor',
             ]
         ]); ?>
+        <?= $form->field($model, 'show_max_use_time')->checkbox([], false)->label('最大使用时长'); ?>
+        <?= $form->field($model, 'max_use_time')->textInput([])->label('')->hint('单位：（天）；从首次使用时间按天算起，最大使用时间限制，不超过结束时间。'); ?>
         <?= $form->field($model, 'goods_type_attach')->checkboxList(\services\goods\TypeService::getTypeList())->label('使用范围'); ?>
     </div>
     </div>
@@ -60,3 +62,21 @@ $form = ActiveForm::begin([
         <button class="btn btn-primary" type="submit">保存</button>
     </div>
 <?php ActiveForm::end(); ?>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".field-cardfrom-max_use_time").hide();
+
+        let m = $("#cardfrom-max_use_time");
+        let show_max_use_time = $("#cardfrom-show_max_use_time");
+
+        show_max_use_time.change(function(e) {
+            if(show_max_use_time.is(":checked")) {
+                $(".field-cardfrom-max_use_time").show();
+            }
+            else {
+                $(".field-cardfrom-max_use_time").hide();
+            }
+        });
+    });
+</script>

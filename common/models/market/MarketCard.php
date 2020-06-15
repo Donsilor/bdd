@@ -42,7 +42,7 @@ class MarketCard extends \common\models\base\BaseModel
         return [
             [['start_time', 'end_time', 'goods_type_attach','batch','user_id'], 'required'],
             [['balance', 'amount'], 'number'],
-            [['status', 'created_at', 'updated_at','user_id'], 'integer'],
+            [['status', 'created_at', 'updated_at','user_id', 'first_use_time','max_use_time'], 'integer'],
             [['sn', 'password'], 'string', 'max' => 255],
             [['batch'], 'string', 'max' => 50],
         ];
@@ -63,6 +63,8 @@ class MarketCard extends \common\models\base\BaseModel
             'goods_type_attach' => '产品线',
             'start_time' => '开始时间',
             'end_time' => '结束时间',
+            'first_use_time' => '首次使用时间',
+            'max_use_time' => '最长使用时间',
             'status' => '状态',
             'user_id' => '操作人',
             'created_at' => '创建时间',
