@@ -67,6 +67,24 @@ class PayEnum extends BaseEnum
             self::PAY_TYPE => '待支付',
         ];
     }
+
+    /**
+     * 获取用于向客户展示的支付类型名称
+     */
+    public static function payTypeName()
+    {
+        return [
+            self::PAY_TYPE_PAYPAL => 'Paypal',
+            self::PAY_TYPE_PAYPAL_1 => 'Paypal Card',
+            self::PAY_TYPE_PAYDOLLAR => 'Paydollar',
+            self::PAY_TYPE_PAYDOLLAR_1 => 'Union',
+            self::PAY_TYPE_PAYDOLLAR_2 => 'AliPay',
+            self::PAY_TYPE_PAYDOLLAR_3 => 'Wechat',
+            self::PAY_TYPE_CARD => 'Card',
+            self::PAY_TYPE_WIRE_TRANSFER => 'WireTransfer',
+        ];
+    }
+
     /**
      * 支付类型
      *

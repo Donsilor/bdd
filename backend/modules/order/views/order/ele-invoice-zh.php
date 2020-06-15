@@ -71,21 +71,21 @@
                 </div>
                 <div class="package-child fl">
                     <div class="package-child-v">支付方式</div>
-                    <div class="package-child-val"><?php echo $result['delivery_time'];?></div>
+                    <div class="package-child-val"><?php echo Yii::t('pay', \common\enums\PayEnum::getValue($result['payment_type'], "payTypeName"), [], $result['language']);//$result['delivery_time'];?></div>
                 </div>
             </div>
             <div class="package-info clf">
                 <div class="package-child fl">
-                    <div class="package-child-v">出口国家</div>
-                    <div class="package-child-val">中国</div>
+                    <div class="package-child-v">出口地</div>
+                    <div class="package-child-val">香港</div>
                 </div>
                 <div class="package-child fl">
                     <div class="package-child-v">交易币种</div>
                     <div class="package-child-val"><?php echo $result['currency'];?></div>
                 </div>
                 <div class="package-child fl">
-                    <div class="package-child-v">目的地国家</div>
-                    <div class="package-child-val"><?php echo $result['country'];?></div>
+                    <div class="package-child-v">目的地</div>
+                    <div class="package-child-val"><?php echo "香港";//$result['country'];?></div>
                 </div>
             </div>
         </div>

@@ -71,21 +71,21 @@
                 </div>
                 <div class="package-child fl">
                     <div class="package-child-v">Payment method</div>
-                    <div class="package-child-val"><?php echo $result['delivery_time'];?></div>
+                    <div class="package-child-val"><?php echo Yii::t('pay', \common\enums\PayEnum::getValue($result['payment_type'], "payTypeName"), [], $result['language']);//$result['delivery_time'];?></div>
                 </div>
             </div>
             <div class="package-info clf">
                 <div class="package-child fl">
-                    <div class="package-child-v">Country of Export</div>
-                    <div class="package-child-val">CHINA</div>
+                    <div class="package-child-v">Place of Export</div>
+                    <div class="package-child-val">Hong Kong</div>
                 </div>
                 <div class="package-child fl">
                     <div class="package-child-v">Currency Of Sale</div>
                     <div class="package-child-val"><?php echo $result['currency'];?></div>
                 </div>
                 <div class="package-child fl">
-                    <div class="package-child-v">Country of Uitimate Destination</div>
-                    <div class="package-child-val"><?php echo $result['country'];?></div>
+                    <div class="package-child-v">Shipping address</div>
+                    <div class="package-child-val"><?php echo "Hong Kong";//$result['country'];?></div>
                 </div>
             </div>
         </div>

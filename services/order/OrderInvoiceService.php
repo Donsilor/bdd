@@ -93,6 +93,7 @@ class OrderInvoiceService extends OrderBaseService
             'shipper_name' => '',
             'shipper_address' => '',
             'order_sn' => $order->order_sn,
+            'payment_type' => $order->payment_type,
             'realname' => $order->address->realname,
             'address_details' => $order->address->address_details,
             'express_no' => $order->express_no,
