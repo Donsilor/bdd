@@ -83,12 +83,8 @@ DOM;
             'model' => $this->modelClass,
             'scenario' => 'default',
             'partialMatchAttributes' => [], // 模糊查询
-            'defaultOrder' => [
-                'style_id' => 'desc',
-            ],
             'pageSize' => $this->pageSize,
-            'relations' => [
-            ]
+            'relations' => []
         ]);
 
         $queryParams = Yii::$app->request->queryParams;
@@ -114,8 +110,6 @@ DOM;
 
         $dataProvider->query->andWhere(['or', ['>','og.count','0'], ['>','oc.count','0']]);
 
-        $dataProvider->query->orderBy('statistics_style_view.style_id,statistics_style_view.platform_group');
-
         $dataProvider->query->asArray();
 
         $dataProvider->setSort([
@@ -130,6 +124,7 @@ DOM;
             ],
             'defaultOrder' => [
                 'style_id' => 'desc',
+                'platform_group' => 'desc',
             ],
         ]);
 
