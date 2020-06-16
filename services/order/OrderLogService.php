@@ -79,6 +79,22 @@ class OrderLogService extends Service
         return self::log($attr);
     }
 
+    //创建订单
+    static public function changeAddress($order, $data=[])
+    {
+        $old = array_diff($data[0], $data[1]);
+        $new = array_diff($data[1], $data[0]);
+
+        //收货人+手机号+邮箱+ip归属城市 +客户留言
+        $attr['action_name'] = strtoupper(__FUNCTION__);
+        $attr['order_sn'] = $order['order_sn'];
+        $attr['data'] = [$old, $new];
+
+        //状态变更
+        $attr['log_msg'] = '订单收件人信息修改';
+        return self::log($attr);
+    }
+
     //取消订单
     static public function cancel($order, $data=[])
     {

@@ -2,6 +2,8 @@
 
 namespace common\models\order;
 
+use common\enums\StatusEnum;
+use common\helpers\RegularHelper;
 use Yii;
 
 /**
@@ -54,6 +56,8 @@ class OrderAddress extends \common\models\base\BaseModel
             [['zip_code'], 'string', 'max' => 20],
             [['mobile_code'], 'string', 'max' => 10],
             [['order_id'], 'unique'],
+            ['mobile', 'match', 'pattern' => RegularHelper::mobile(), 'message' => '请输入正确的手机号'],
+            ['email', 'match', 'pattern' => RegularHelper::email(), 'message' => '请输入正确的邮箱'],
         ];
     }
 
@@ -98,5 +102,31 @@ class OrderAddress extends \common\models\base\BaseModel
     public function getOrder()
     {
         return $this->hasOne(Order::class, ['id'=>'order_id']);
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        //更新地区名称
+        $country = Yii::$app->services->area->getArea($this->country_id);
+        $province = Yii::$app->services->area->getArea($this->province_id);
+        $city = Yii::$app->services->area->getArea($this->city_id);
+
+        $this->country_name = $country['name']?? '';
+        $this->province_name = $province['name']?? '';
+        $this->city_name = $city['name']?? '';
+
+        if(RegularHelper::verify('chineseCharacters',$this->lastname.''.$this->firstname)) {
+            $realname  = $this->lastname.''.$this->firstname;
+        }else {
+            $realname  = $this->firstname.' '.$this->lastname;
+        }
+        if(trim($realname) != '' && $realname != $this->realname) {
+            $this->realname = $realname;
+        }
+        return parent::beforeSave($insert);
     }
 }

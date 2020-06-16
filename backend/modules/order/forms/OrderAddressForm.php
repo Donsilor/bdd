@@ -3,6 +3,8 @@
 namespace backend\modules\order\forms;
 use common\enums\AuditStatusEnum;
 use common\enums\OrderStatusEnum;
+use common\models\base\BaseModel;
+use common\models\order\OrderAddress;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 /**
@@ -10,7 +12,7 @@ use yii\behaviors\TimestampBehavior;
  * Class OrderAddressFormForm
  * @package backend\forms
   */
-class OrderAddressForm extends \common\models\order\Order
+class OrderAddressForm extends OrderAddress
 {
 
     public function rules()
@@ -52,11 +54,11 @@ class OrderAddressForm extends \common\models\order\Order
         ];
     }
 
-    public function validateRefundStatus($attribute)
-    {
-        if($this->refund_status != OrderStatusEnum::ORDER_REFUND_YES) {
-            $this->addError($attribute,"请选择是否退款");
-            return false;
-        }
-    }
+//    public function validateRefundStatus($attribute)
+//    {
+//        if($this->refund_status != OrderStatusEnum::ORDER_REFUND_YES) {
+//            $this->addError($attribute,"请选择是否退款");
+//            return false;
+//        }
+//    }
 }

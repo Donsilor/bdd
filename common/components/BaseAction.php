@@ -216,9 +216,21 @@ trait BaseAction
     protected function activeFormValidate($model)
     {
         if (Yii::$app->request->isAjax && !Yii::$app->request->isPjax) {
-            if ($model->load(Yii::$app->request->post())) {
+
+            $models = func_get_args();
+
+            $format = null;
+            $data = [];
+            foreach ($models as $model) {
+                if ($model->load(Yii::$app->request->post())) {
+                    $format = \yii\web\Response::FORMAT_JSON;
+                    $data += \yii\widgets\ActiveForm::validate($model);
+                }
+            }
+
+            if($format) {
                 Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                Yii::$app->response->data = \yii\widgets\ActiveForm::validate($model);
+                Yii::$app->response->data = $data;
                 Yii::$app->end();
             }
         }
