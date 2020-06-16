@@ -136,9 +136,13 @@ $model->style_spec = $style_spec;
    							    
                             </div> 
                           <?php 
-                          $data = [];                          
+                          $data = [];
+
+                          $INPUT_STYLE_GOODS_LIST = false;
+                          $styles = [];
                           foreach ($attr_list as $k=>$attr){
                               if($attr['input_type']==\common\enums\InputTypeEnum::INPUT_STYLE_GOODS_LIST) {
+                                  $INPUT_STYLE_GOODS_LIST = true;
 
                                   $goodsIds = $model->style_spec['a'][$attr['id']]??[];
 
@@ -146,6 +150,8 @@ $model->style_spec = $style_spec;
 
                                   $values = [];
                                   $styleInfo = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id']??array_pop($attrStyleIds));
+
+                                  $styles[] = $styleInfo['id'];
 
                                   $attr_require = null;
                                   foreach($styleInfo['specs'] as $spec) {
@@ -186,7 +192,31 @@ $model->style_spec = $style_spec;
                                   ];
                               }
                           }
-                         
+
+                          if($INPUT_STYLE_GOODS_LIST) {
+
+                          ?>
+<table class="table table-hover"><thead>
+    <tr>
+        <th>适用人群</th>
+        <th>商品名称</th>
+        <th>款式编号</th>
+
+        <th>销售价</th>
+        <th>商品库存</th>
+
+        <th class="action-column"></th>
+    </tr>
+
+    </thead>
+    <tbody id="style_table">
+    </tbody></table>
+</div>
+
+                          <?php
+
+                          }
+
                           if(!empty($data)){
                              echo common\widgets\skutable\SkuTable::widget(['form' => $form,'model' => $model,'data' =>$data,'name'=>'Style[style_spec]']);
                              ?>
@@ -832,6 +862,55 @@ $(function(){
 		//$("#style-market_price").val(minPrice).attr('readonly',true);
         return minPrice; 
 	} */
+
+    function getStyle(style_id) {
+        $.ajax({
+            type: "post",
+            url: 'get-style',
+            dataType: "json",
+            data: {style_id: style_id},
+            success: function (data) {
+                if (parseInt(data.code) !== 200) {
+                    rfMsg(data.message);
+                } else {
+
+                    console.log(data.data);
+                    var data = data.data
+
+                    var hav = true;
+
+                    $("input[name*='RingRelation[style_id][]']").each(function () {
+                        if ($(this).val() == data.id) {
+                            hav = false;
+                        }
+                    });
+                    if (hav == false) {
+                        layer.msg("此商品已经添加");
+                        return false;
+                    }
+
+                    var tr = "<tr><input type='hidden' name='RingRelation[style_id][]' value='" + data.id + "'/>"
+                        +"<td>" + data.attr_require + "</td>"
+                        + "<td>" + data.style_name + "</td>"
+                        + "<td>" + data.style_sn + "</td>"
+                        + "<td>" + data.sale_price + "</td>"
+                        + "<td>" + data.goods_storage + "</td>"
+                        + '<td></td>'
+                        + "</tr>";
+                    $("#style_table").append(tr);
+
+                    $(document).on('click', '.deltr', function () {
+                        //当前元素的父级的父级的元素（一行，移除
+                        $(this).parents("tr").remove();
+                    })
+
+                }
+            }
+        });
+    }
+
+    getStyle(<?= $styles[0] ?>);
+    getStyle(<?= $styles[1] ?>);
 
 });
 </script>

@@ -35,6 +35,7 @@ class StyleController extends BaseController
     * @var Style
     */
     public $modelClass = Style::class;
+    public $enableCsrfValidation = false;
 
 
     /**
