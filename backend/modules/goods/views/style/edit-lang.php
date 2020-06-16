@@ -210,9 +210,8 @@ $model->style_spec = $style_spec;
 
     </thead>
     <tbody id="style_table">
-    </tbody></table>
-</div>
-
+    </tbody>
+</table>
                           <?php
 
                           }
@@ -874,7 +873,6 @@ $(function(){
                     rfMsg(data.message);
                 } else {
 
-                    console.log(data.data);
                     var data = data.data
 
                     var hav = true;
@@ -898,11 +896,6 @@ $(function(){
                         + '<td></td>'
                         + "</tr>";
                     $("#style_table").append(tr);
-
-                    $(document).on('click', '.deltr', function () {
-                        //当前元素的父级的父级的元素（一行，移除
-                        $(this).parents("tr").remove();
-                    })
 
                 }
             }
