@@ -72,7 +72,7 @@ class StyleController extends BaseController
               END) AS order_from
 FROM `order` `o`
 RIGHT JOIN `order_goods` AS `og` ON  `o`.`id`=`og`.`order_id`
-WHERE `o`.`created_at` BETWEEN :start_time and :end_time and order_status>10 GROUP BY `og`.`style_id`,`o`.`order_from`) AS og
+WHERE `o`.`created_at` BETWEEN :start_time and :end_time and order_status>10 GROUP BY `og`.`style_id`,CASE `o`.`order_from` WHEN 10 THEN 'HK' WHEN 11 THEN 'HK' WHEN 20 THEN 'CN' WHEN 21 THEN 'CN' WHEN 30 THEN 'US' WHEN 31 THEN 'US' END) AS og
 DOM;
 
         $orderCart = <<<DOM
@@ -128,8 +128,6 @@ DOM;
             ],
         ]);
 
-        $searchModel->platform_group = Yii::$app->request->queryParams['SearchModel']['platform_group']??[];
-
         //导出
         if(Yii::$app->request->get('action') === 'export'){
             $query = Yii::$app->request->queryParams;
@@ -141,6 +139,8 @@ DOM;
             $list = $dataProvider->models;
             $this->getExport($list);
         }
+
+        $searchModel->platform_group = Yii::$app->request->queryParams['SearchModel']['platform_group']??[];
 
         return $this->render($this->action->id, [
             'dataProvider' => $dataProvider,
