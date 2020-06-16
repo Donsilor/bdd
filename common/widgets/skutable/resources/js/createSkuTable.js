@@ -275,6 +275,39 @@ function checkSkuInputData(){
 			uniqueArr[$(this).attr("attr-name")] = [];
 		}		
 	});
+
+	//对戒的那点事
+	var $input61 = $('input[name="Style[style_spec][a][61][]"]');
+	var $input62 = $('input[name="Style[style_spec][a][62][]"]');
+
+	function cacheRing($input) {
+		let tip = true;
+		$input.each(function(i, v) {
+			if($(this).prop("checked")) {
+				tip = false;
+			}
+		});
+		if(tip) {
+			let $title = '';
+
+			if($input.attr("name").indexOf("61")!==-1) {
+				$title = $(".sku_type").find('[propid="61"]').attr("sku-type-name");
+			}
+
+			if($input.attr("name").indexOf("62")!==-1) {
+				$title = $(".sku_type").find('[propid="62"]').attr("sku-type-name");
+			}
+
+			appConfirm($title+"必须勾选", $title+"必须勾选");
+
+			return false;
+		}
+		return true;
+	}
+
+	if(!cacheRing($input61) || !cacheRing($input62)) {
+		return false;
+	}
 	
 	$("#skuTableBox tr[class*='sku_table_tr']").each(function(index){
 	    var uniqueVals = {};

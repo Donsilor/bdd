@@ -146,13 +146,32 @@ $model->style_spec = $style_spec;
 
                                   $values = [];
                                   $styleInfo = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id']??array_pop($attrStyleIds));
+
+                                  $attr_require = null;
+                                  foreach($styleInfo['specs'] as $spec) {
+                                      if($spec['configId']==26) {
+                                          $attr_require = $spec['configAttrVal'];
+                                      }
+                                  }
+
+                                  $sizes = [];
+                                  foreach($styleInfo['sizes'] as $size) {
+                                      $sizes[$size['id']] = $size['name'];
+                                  }
+
+                                  $materials = [];
+                                  foreach($styleInfo['materials'] as $material) {
+                                      $materials[$material['id']] = $material['name'];
+                                  }
+
                                   foreach ($styleInfo['details'] as $detail) {
-                                      $values[$detail['id']] = $detail['goodsDetailsCode'];
+                                      $goodsDetailsCode = $detail['goodsDetailsCode'] . '(' . $materials[$detail['material']] . ',' . $sizes[$detail['size']] . ')';
+                                      $values[$detail['id']] = $goodsDetailsCode;
                                   }
 
                                   $data[] = [
                                       'id'=>$attr['id'],
-                                      'name'=>$attr['attr_name'],
+                                      'name'=>$attr['attr_name'] . '.' . $attr_require,
                                       'value'=>$values,
                                       'current'=>$model->style_spec['a'][$attr['id']]??[]
                                   ];

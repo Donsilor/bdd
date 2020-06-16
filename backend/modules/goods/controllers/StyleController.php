@@ -190,6 +190,36 @@ class StyleController extends BaseController
             'searchModel' => $searchModel,
         ]);
     }
+
+    //编辑时获取单个戒指数据
+    public function actionGetStyle(){
+        $request = Yii::$app->request;
+
+        if($request->isPost)
+        {
+
+            $values = Yii::$app->services->goodsAttribute->getValuesByAttrId(26);
+
+            $post = Yii::$app->request->post();
+//            return ResultHelper::json(200, '保存成功',['model'=>$post]);
+            if(!isset($post['style_id']) || empty($post['style_id'])){
+                return ResultHelper::json(422, '参数错误');
+            }
+            $style_id = $post['style_id'];
+            $model = Yii::$app->services->goodsStyle->getStyle($style_id);
+            $data['id'] = $model['id'];
+            $data['style_name'] = $model['style_name'];
+            $data['style_sn'] = $model['style_sn'];
+            $data['sale_price'] = $model['sale_price'];
+            $data['goods_storage'] = $model['goods_storage'];
+
+            $styleAttr = is_array($model['style_attr'])?$model['style_attr']:\Qiniu\json_decode($model['style_attr'], true);
+            $data['attr_require'] = $values[$styleAttr['26']]??'';
+
+            return ResultHelper::json(200, '保存成功',$data);
+        }
+
+    }
     
     /**
      * ajax更新排序/状态

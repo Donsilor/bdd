@@ -19,6 +19,7 @@ use common\helpers\Url;
             <table class="table table-hover">
                 <thead>
                     <tr>
+                        <th>适用人群</th>
                         <th>商品名称</th>
                         <th>款式编号</th>
 
@@ -62,7 +63,6 @@ use common\helpers\Url;
                             'format' => 'raw',
                             'headerOptions' => ['width'=>'50'],
                         ],
-
                         [
                             'attribute' => 'lang.style_name',
                             'value' => 'lang.style_name',
@@ -72,6 +72,23 @@ use common\helpers\Url;
                             ]),
                             'format' => 'raw',
 
+                        ],
+                        [
+                            'label' => '适用人群',
+                            'attribute' => 'lang.style_name',
+                            'filter' => false,
+                            'format' => 'raw',
+                            'value' => function($mobile) {
+                                static $values = [];
+
+                                if(empty($values)) {
+                                    $values = Yii::$app->services->goodsAttribute->getValuesByAttrId(26);
+                                }
+
+                                if(!is_array($mobile->style_attr))
+                                $styleAttr = is_array($mobile->style_attr)?$mobile->style_attr:\Qiniu\json_decode($mobile->style_attr, true);
+                                return $values[$styleAttr['26']]??'';
+                            },
                         ],
                         [
                             'attribute' => 'style_sn',
@@ -181,7 +198,7 @@ use common\helpers\Url;
         function showStyle(style_id) {
             $.ajax({
                 type: "post",
-                url: '../ring/get-style',
+                url: 'get-style',
                 dataType: "json",
                 data: {style_id:style_id},
                 success: function (data) {
@@ -192,6 +209,7 @@ use common\helpers\Url;
                         var data = data.data
 
                         var tr = $("<tr>"
+                            +"<td>" + data.attr_require + "</td>"
                             +"<td>" + data.style_name + "</td>"
                             +"<td>" + data.style_sn + "</td>"
                             +"<td>" + data.sale_price + "</td>"
