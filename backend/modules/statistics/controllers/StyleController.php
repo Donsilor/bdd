@@ -72,7 +72,7 @@ class StyleController extends BaseController
               END) AS order_from
 FROM `order` `o`
 RIGHT JOIN `order_goods` AS `og` ON  `o`.`id`=`og`.`order_id`
-WHERE `o`.`created_at` BETWEEN :start_time and :end_time GROUP BY `og`.`style_id`,`o`.`order_from`) AS og
+WHERE `o`.`created_at` BETWEEN :start_time and :end_time and order_status>10 GROUP BY `og`.`style_id`,`o`.`order_from`) AS og
 DOM;
 
         $orderCart = <<<DOM
@@ -111,6 +111,11 @@ DOM;
         $dataProvider->query->leftJoin($orderCart, 'statistics_style_view.style_id=oc.style_id and oc.platform_group=statistics_style_view.platform_group', ['start_time'=>$start_time, 'end_time'=>$end_time]);
 
         $dataProvider->query->select(['statistics_style_view.*','og.count','oc.count as cart_count']);
+
+        $dataProvider->query->andWhere(['or', ['>','og.count','0'], ['>','oc.count','0']]);
+
+        $dataProvider->query->orderBy('statistics_style_view.style_id,statistics_style_view.platform_group');
+
         $dataProvider->query->asArray();
 
         $dataProvider->setSort([
