@@ -62,7 +62,7 @@
             <div class="package-tit">订单信息</div>
             <div class="package-info clf">
                 <div class="package-child fl">
-                    <div class="package-child-v">国际空运货单.</div>
+                    <div class="package-child-v">提单号码</div>
                     <div class="package-child-val"><?php echo $result['express_no'];?></div>
                 </div>
                 <div class="package-child fl">
@@ -93,7 +93,6 @@
         <table cellspacing="0" cellpadding="0" width="100%" border="1" rules="cols">
             <tr>
                 <th width="">商品描述</th>
-                <th width="13%">国家</th>
                 <th width="20%">款号</th>
                 <th width="8%">数量</th>
                 <th width="15%">单价</th>
@@ -102,7 +101,6 @@
             <?php foreach ($result['order_goods'] as $val){ ?>
             <tr>
                 <td><?php echo $val['goods_name'];?></td>
-                <td>中国</td>
                 <td><?php echo $val['goods_sn'];?></td>
                 <td><?php echo $val['goods_num'];?></td>
                 <td><?php echo $val['goods_pay_price']. " ".$val['currency']; ?></td>
@@ -115,7 +113,7 @@
         <div class="signature clf">
             <div class="signature-name fl">
                 <div class="signature-t"><div class="signature-t-img"></div></div>
-                <div class="text">出口商签字</div>
+                <div class="text">销售商托运人签字</div>
             </div>
             <div class="signature-date fl">
                 <div class="signature-t"><?php echo $result['invoice_date'];?></div>

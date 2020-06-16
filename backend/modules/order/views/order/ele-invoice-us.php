@@ -62,7 +62,7 @@
             <div class="package-tit">Order Information</div>
             <div class="package-info clf">
                 <div class="package-child fl">
-                    <div class="package-child-v">International Air Waybill No.</div>
+                    <div class="package-child-v">Waybill No.</div>
                     <div class="package-child-val"><?php echo $result['express_no'];?></div>
                 </div>
                 <div class="package-child fl">
@@ -93,7 +93,6 @@
         <table cellspacing="0" cellpadding="0" width="100%" border="1" rules="cols">
             <tr>
                 <th width="32%">Item Description</th>
-                <th width="16%">Country</th>
                 <th width="20%">Stock No.</th>
                 <th width="10%">Qty</th>
                 <th width="15%">Unit Price</th>
@@ -102,7 +101,6 @@
             <?php foreach ($result['order_goods'] as $val){ ?>
             <tr>
                 <td><?php echo $val['goods_name'];?></td>
-                <td>CHINA</td>
                 <td><?php echo $val['goods_sn'];?></td>
                 <td><?php echo $val['goods_num'];?></td>
                 <td><?php echo $val['goods_pay_price']. " ".$val['currency']; ?></td>
@@ -124,25 +122,25 @@
         </div>
 
         <div>
-            <div style="width: 280px;" class="fl">
-                <div class="total clf" style="text-align: left;word-break:break-all;">
-                    If you have any questions, please contact our Customer Service Associate by sending e-mail to service@bddco.com
+            <div style="width: 280px;height: 200px;position: relative" class="fl">
+                <div class="total clf" style="text-align: left;word-break:break-all;margin: 0;position: absolute;bottom:0px;">
+                    If you have any questions, please contact our Customer Service Associate by <br/>sending e-mail to service@bddco.com
                 </div>
             </div>
             <div style="width: 350px;" class="fr">
                 <div class="total clf">
                     <div class="fr clf">
                         <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_amount']; ?> </div>
-                        <div class="fr total-bg">Total</div>
+                        <div class="fr total-bg">Subtotal</div>
                     </div>
                 </div>
 
-                <!--        <div class="total clf">-->
-                <!--            <div class="fr clf">-->
-                <!--                <div class="fr total-val"> - --><?php //echo $result['currency'] .' '.'0'; ?><!--</div>-->
-                <!--                <div class="fr total-bg">优惠劵抵扣</div>-->
-                <!--            </div>-->
-                <!--        </div>-->
+                <div class="total clf">
+                    <div class="fr clf">
+                        <div class="fr total-val"> - <?php echo $result['currency'] .' '.'0'; ?></div>
+                        <div class="fr total-bg">Coupon discount</div>
+                    </div>
+                </div>
 
                 <div class="total clf">
                     <div class="fr clf">
@@ -154,7 +152,7 @@
                 <div class="total clf">
                     <div class="fr clf">
                         <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_paid_amount']; ?></div>
-                        <div class="fr total-bg">Amount  Paid</div>
+                        <div class="fr total-bg">Total</div>
                     </div>
                 </div>
             </div>
