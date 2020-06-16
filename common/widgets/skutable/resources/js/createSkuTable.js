@@ -225,7 +225,6 @@ function getAlreadySetSkuVals(){
 		});		
 		alreadySetSkuVals[_propvalids] = _skuVals;
 	});
-	console.log(alreadySetSkuVals);
 }
 /**
  * 数据校验
