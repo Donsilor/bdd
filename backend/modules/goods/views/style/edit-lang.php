@@ -161,21 +161,21 @@ $model->style_spec = $style_spec;
                                   }
 
                                   $sizes = [];
-                                  if(is_array($styleInfo['sizes']) && !empty($styleInfo['sizes'])) {
+                                  if(!empty($styleInfo['sizes']) && is_array($styleInfo['sizes'])) {
                                       foreach ($styleInfo['sizes'] as $size) {
                                           $sizes[$size['id']] = $size['name'];
                                       }
                                   }
 
                                   $materials = [];
-                                  if(is_array($styleInfo['materials']) && !empty($styleInfo['materials'])) {
+                                  if(!empty($styleInfo['materials']) && is_array($styleInfo['materials'])) {
                                       foreach ($styleInfo['materials'] as $material) {
                                           $materials[$material['id']] = $material['name'];
                                       }
                                   }
 
                                   $carats = [];
-                                  if(is_array($styleInfo['carats']) && !empty($styleInfo['carats'])) {
+                                  if(!empty($styleInfo['carats']) && is_array($styleInfo['carats'])) {
                                       foreach($styleInfo['carats'] as $carat) {
                                           $carats[$carat['id']] = $carat['name'];
                                       }
