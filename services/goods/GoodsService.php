@@ -453,7 +453,7 @@ class GoodsService extends Service
      * @param unknown $language
      * @return 
      */
-    public function formatStyleGoodsById($style_id, $language = null, $area_id=null, $goods_ids=[]){
+    public function formatStyleGoodsById($style_id, $language = null, $area_id=null, $goods_ids=[], $status=1){
 
         $ip = \Yii::$app->request->userIP;
         if(empty($area_id)){
@@ -488,8 +488,12 @@ class GoodsService extends Service
         $query = Style::find()->alias('m')
             ->leftJoin(StyleLang::tableName().' lang',"m.id=lang.master_id and lang.language='".$language."'")
             ->leftJoin(StyleMarkup::tableName().' markup', 'm.id=markup.style_id and markup.area_id='.$area_id)
-            ->where(['m.id'=>$style_id])
-            ->andWhere(['or',['=','markup.status',1],['IS','markup.status',new \yii\db\Expression('NULL')]]);
+            ->where(['m.id'=>$style_id]);
+
+        if($status) {
+            $query->andWhere(['or',['=','markup.status',1],['IS','markup.status',new \yii\db\Expression('NULL')]]);
+        }
+
         $style_model =  $query->one();
         $format_style_attrs = $this->formatStyleAttrs($style_model);
 //        return $format_style_attrs;
@@ -664,7 +668,7 @@ class GoodsService extends Service
 
                 $goodsInfo = Goods::findOne($goodsId);
 
-                $ring[] = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id'], null, null, $item);
+                $ring[] = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id'], null, null, $item, 0);
 
             }
         }
