@@ -20,7 +20,7 @@
                 <div class="invoice-data-topcolor">Invoice</div>
                 <div class="invoice-data-b clf">
                     <div class="invoice-data-l fl">
-                        <div class="invoice-data-type">Dispatch date</div>
+                        <div class="invoice-data-type">Invoice Date</div>
                         <div class="invoice-data-val"><?php echo $result['invoice_date'];?></div>
                     </div>
                     <div class="invoice-data-r fl">
@@ -42,15 +42,15 @@
 
         <div class="site-type clf">
             <div class="list fl clf">
-                <div class="list-tit fl">Retailer:</div>
+                <div class="list-tit fl">Sales:</div>
                 <div class="list-details fl">
-                    <div class="child-name"><?php echo $result['realname'];?></div>
-                    <div class="child-addr"><?php echo $result['address_details'];?></div>
+                    <div class="child-name">BDD Co.</div>
+                    <div class="child-addr">Rm4, 23/F, Universal Trade Centre 3 Arbuthnot Road Central</div>
                 </div>
             </div>
 
             <div class="list fl clf">
-                <div class="list-tit fl">Shipping address:</div>
+                <div class="list-tit fl">Customer:</div>
                 <div class="list-details fl">
                     <div class="child-name"><?php echo $result['realname'];?></div>
                     <div class="child-addr"><?php echo $result['address_details'];?></div>
@@ -84,8 +84,8 @@
                     <div class="package-child-val"><?php echo $result['currency'];?></div>
                 </div>
                 <div class="package-child fl">
-                    <div class="package-child-v">Shipping address</div>
-                    <div class="package-child-val"><?php echo "Hong Kong";//$result['country'];?></div>
+                    <div class="package-child-v">Destination</div>
+                    <div class="package-child-val"><?php echo $result['country'];?></div>
                 </div>
             </div>
         </div>
@@ -124,7 +124,9 @@
         <div style="height: 200px;">
             <div style="width: 280px;height: 200px;position: relative" class="fl">
                 <div class="total clf" style="text-align: left;word-break:break-all;margin: 0;position: absolute;bottom:0px;">
-                    <br/><br/><br/>If you have any questions, please contact our Customer Service Associate by <br/>sending e-mail to service@bddco.com
+                    <br/><br/><br/>If you have any questions, please contact our Customer Service Associate by<br/>
+                    sending e-mail to service@bddco.com<br/>
+                    Thank you for choosing BDD Co.
                 </div>
             </div>
             <div style="width: 350px;height: 200px;" class="fr">
@@ -145,7 +147,7 @@
                 <div class="total clf">
                     <div class="fr clf">
                         <div class="fr total-val"> - <?php echo $result['currency'] .' '.$result['gift_card_amount']; ?></div>
-                        <div class="fr total-bg">Gift Card</div>
+                        <div class="fr total-bg">Shopping card deduction</div>
                     </div>
                 </div>
 

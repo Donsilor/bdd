@@ -48,32 +48,32 @@ class OrderInvoiceService extends OrderBaseService
     private $siteInfo = [
         OrderFromEnum::WEB_HK => [
             'webSite' => 'https://www.bddco.com/',
-            'tel' => '+852 21653905',
+            'tel' => '2165 3905',
             'email' => 'service@bddco.com',
         ],
         OrderFromEnum::MOBILE_HK => [
-            'webSite' => 'https://wap.bddco.com/',
-            'tel' => '+852 21653905',
+            'webSite' => 'https://www.bddco.com/',
+            'tel' => '2165 3905',
             'email' => 'service@bddco.com',
         ],
         OrderFromEnum::WEB_CN => [
-            'webSite' => 'https://www.bddco.cn/',
-            'tel' => '0755 25169121',
-            'email' => 'e-service@bddco.com',
+            'webSite' => 'https://www.bddco.com/',
+            'tel' => '2165 3905',
+            'email' => 'service@bddco.com',
         ],
         OrderFromEnum::MOBILE_CN => [
-            'webSite' => 'https://wap.bddco.cn/',
-            'tel' => '0755 25169121',
-            'email' => 'e-service@bddco.com',
+            'webSite' => 'https://www.bddco.com/',
+            'tel' => '2165 3905',
+            'email' => 'service@bddco.com',
         ],
         OrderFromEnum::WEB_US => [
-            'webSite' => 'https://us.bddco.com/',
-            'tel' => '+852 21653905',
+            'webSite' => 'https://www.bddco.com/',
+            'tel' => '2165 3905',
             'email' => 'service@bddco.com',
         ],
         OrderFromEnum::MOBILE_US => [
-            'webSite' => 'https://wap-us.bddco.com/',
-            'tel' => '+852 21653905',
+            'webSite' => 'https://www.bddco.com/',
+            'tel' => '2165 3905',
             'email' => 'service@bddco.com',
         ],
     ];

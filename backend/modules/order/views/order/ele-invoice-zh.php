@@ -44,8 +44,8 @@
             <div class="list fl clf">
                 <div class="list-tit fl">销售商:</div>
                 <div class="list-details fl">
-                    <div class="child-name"><?php echo $result['realname'];?></div>
-                    <div class="child-addr"><?php echo $result['address_details'];?></div>
+                    <div class="child-name">BDD Co.Ltd</div>
+                    <div class="child-addr">中环亚毕诺道3号环球贸易中心23楼04室</div>
                 </div>
             </div>
 
@@ -85,7 +85,7 @@
                 </div>
                 <div class="package-child fl">
                     <div class="package-child-v">目的地</div>
-                    <div class="package-child-val"><?php echo "香港";//$result['country'];?></div>
+                    <div class="package-child-val"><?php echo $result['country'];?></div>
                 </div>
             </div>
         </div>
