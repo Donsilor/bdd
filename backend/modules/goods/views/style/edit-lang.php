@@ -182,7 +182,7 @@ $model->style_spec = $style_spec;
                                   }
 
                                   foreach ($styleInfo['details'] as $detail) {
-                                      $goodsDetailsCode = $detail['goodsDetailsCode'] . '(' . $materials[$detail['material']] . '，' . $sizes[$detail['size']] . '，' . $carats[$detail['carat']] . ')';
+                                      $goodsDetailsCode = $detail['goodsDetailsCode'] . '(' . ($materials[$detail['material']]??'') . '，' . ($sizes[$detail['size']]??'') . '，' . ($carats[$detail['carat']]??'') . ')';
                                       $values[$detail['id']] = $goodsDetailsCode;
                                   }
 
