@@ -161,17 +161,28 @@ $model->style_spec = $style_spec;
                                   }
 
                                   $sizes = [];
-                                  foreach($styleInfo['sizes'] as $size) {
-                                      $sizes[$size['id']] = $size['name'];
+                                  if(is_array($styleInfo['sizes']) && !empty($styleInfo['sizes'])) {
+                                      foreach ($styleInfo['sizes'] as $size) {
+                                          $sizes[$size['id']] = $size['name'];
+                                      }
                                   }
 
                                   $materials = [];
-                                  foreach($styleInfo['materials'] as $material) {
-                                      $materials[$material['id']] = $material['name'];
+                                  if(is_array($styleInfo['materials']) && !empty($styleInfo['materials'])) {
+                                      foreach ($styleInfo['materials'] as $material) {
+                                          $materials[$material['id']] = $material['name'];
+                                      }
+                                  }
+
+                                  $carats = [];
+                                  if(is_array($styleInfo['carats']) && !empty($styleInfo['carats'])) {
+                                      foreach($styleInfo['carats'] as $carat) {
+                                          $carats[$carat['id']] = $carat['name'];
+                                      }
                                   }
 
                                   foreach ($styleInfo['details'] as $detail) {
-                                      $goodsDetailsCode = $detail['goodsDetailsCode'] . '(' . $materials[$detail['material']] . ',' . $sizes[$detail['size']] . ')';
+                                      $goodsDetailsCode = $detail['goodsDetailsCode'] . '(' . $materials[$detail['material']] . '，' . $sizes[$detail['size']] . '，' . $carats[$detail['carat']] . ')';
                                       $values[$detail['id']] = $goodsDetailsCode;
                                   }
 
@@ -196,22 +207,68 @@ $model->style_spec = $style_spec;
                           if($INPUT_STYLE_GOODS_LIST) {
 
                           ?>
-<table class="table table-hover"><thead>
-    <tr>
-        <th>适用人群</th>
-        <th>商品名称</th>
-        <th>款式编号</th>
+<table class="table table-hover" style="margin-bottom: 18px;">
+    <thead>
+        <tr>
+            <th>适用人群</th>
+            <th>商品名称</th>
+            <th>款式编号</th>
 
-        <th>销售价</th>
-        <th>商品库存</th>
+            <th>销售价</th>
+            <th>商品库存</th>
 
-        <th class="action-column"></th>
-    </tr>
-
+            <th class="action-column"></th>
+        </tr>
     </thead>
     <tbody id="style_table">
     </tbody>
 </table>
+<script>
+    function getStyle(style_id) {
+        $.ajax({
+            type: "post",
+            url: 'get-style',
+            dataType: "json",
+            data: {style_id: style_id},
+            success: function (data) {
+                if (parseInt(data.code) !== 200) {
+                    rfMsg(data.message);
+                } else {
+
+                    var data = data.data
+
+                    var hav = true;
+
+                    $("input[name*='RingRelation[style_id][]']").each(function () {
+                        if ($(this).val() == data.id) {
+                            hav = false;
+                        }
+                    });
+                    if (hav == false) {
+                        layer.msg("此商品已经添加");
+                        return false;
+                    }
+
+                    var tr = "<tr><input type='hidden' name='RingRelation[style_id][]' value='" + data.id + "'/>"
+                        +"<td>" + data.attr_require + "</td>"
+                        + "<td>" + data.style_name + "</td>"
+                        + "<td>" + data.style_sn + "</td>"
+                        + "<td>" + data.sale_price + "</td>"
+                        + "<td>" + data.goods_storage + "</td>"
+                        + '<td></td>'
+                        + "</tr>";
+                    $("#style_table").append(tr);
+
+                }
+            }
+        });
+    }
+
+    $(function () {
+        getStyle(<?= $styles[0] ?>);
+        getStyle(<?= $styles[1] ?>);
+    });
+</script>
                           <?php
 
                           }
@@ -861,49 +918,6 @@ $(function(){
 		//$("#style-market_price").val(minPrice).attr('readonly',true);
         return minPrice; 
 	} */
-
-    function getStyle(style_id) {
-        $.ajax({
-            type: "post",
-            url: 'get-style',
-            dataType: "json",
-            data: {style_id: style_id},
-            success: function (data) {
-                if (parseInt(data.code) !== 200) {
-                    rfMsg(data.message);
-                } else {
-
-                    var data = data.data
-
-                    var hav = true;
-
-                    $("input[name*='RingRelation[style_id][]']").each(function () {
-                        if ($(this).val() == data.id) {
-                            hav = false;
-                        }
-                    });
-                    if (hav == false) {
-                        layer.msg("此商品已经添加");
-                        return false;
-                    }
-
-                    var tr = "<tr><input type='hidden' name='RingRelation[style_id][]' value='" + data.id + "'/>"
-                        +"<td>" + data.attr_require + "</td>"
-                        + "<td>" + data.style_name + "</td>"
-                        + "<td>" + data.style_sn + "</td>"
-                        + "<td>" + data.sale_price + "</td>"
-                        + "<td>" + data.goods_storage + "</td>"
-                        + '<td></td>'
-                        + "</tr>";
-                    $("#style_table").append(tr);
-
-                }
-            }
-        });
-    }
-
-    getStyle(<?= $styles[0] ?>);
-    getStyle(<?= $styles[1] ?>);
 
 });
 </script>
