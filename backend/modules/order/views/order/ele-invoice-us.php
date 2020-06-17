@@ -121,13 +121,13 @@
             </div>
         </div>
 
-        <div>
+        <div style="height: 200px;">
             <div style="width: 280px;height: 200px;position: relative" class="fl">
                 <div class="total clf" style="text-align: left;word-break:break-all;margin: 0;position: absolute;bottom:0px;">
-                    If you have any questions, please contact our Customer Service Associate by <br/>sending e-mail to service@bddco.com
+                    <br/><br/><br/>If you have any questions, please contact our Customer Service Associate by <br/>sending e-mail to service@bddco.com
                 </div>
             </div>
-            <div style="width: 350px;" class="fr">
+            <div style="width: 350px;height: 200px;" class="fr">
                 <div class="total clf">
                     <div class="fr clf">
                         <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_amount']; ?> </div>
