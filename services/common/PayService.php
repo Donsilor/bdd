@@ -213,6 +213,9 @@ class PayService extends Service
             case '83':
                 $order['payMethod'] = 'WECHAT';//wechat
                 break;
+            case '84':
+                $order['payMethod'] = 'ALIPAYHKONL';//wechat
+                break;
             default:
                 $order['payMethod'] = 'ALL';
                 break;
