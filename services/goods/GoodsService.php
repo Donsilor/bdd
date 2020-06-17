@@ -163,7 +163,7 @@ class GoodsService extends Service
                             $goodsInfo = Goods::findOne($goodsId);
 
                             $all = [];
-                            $styleInfo = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id']);
+                            $styleInfo = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id'], null, null, [], 0);
                             foreach ($styleInfo['details'] as $detail) {
                                 $all[$detail['id']] = $detail['goodsDetailsCode'];
                             }
@@ -497,7 +497,7 @@ class GoodsService extends Service
         $style_model =  $query->one();
         $format_style_attrs = $this->formatStyleAttrs($style_model);
 //        return $format_style_attrs;
-        $model = $query ->select(['m.id','m.style_sn','m.status','m.goods_images','m.type_id','m.style_3ds','m.style_image','IFNULL(markup.sale_price,m.sale_price) as sale_price','lang.goods_body','lang.style_name','lang.meta_title','lang.meta_word','lang.meta_desc'])
+        $model = $query ->select(['m.id','m.style_sn','m.status','markup.status as markup_status','m.goods_images','m.type_id','m.style_3ds','m.style_image','IFNULL(markup.sale_price,m.sale_price) as sale_price','lang.goods_body','lang.style_name','lang.meta_title','lang.meta_word','lang.meta_desc'])
             ->asArray()->one();
 
         //规格属性
@@ -513,7 +513,7 @@ class GoodsService extends Service
         $style['categoryId'] = $model['type_id'];
         $style['goodsGiaImage'] = null;
         $style['goodsMod'] = $model['type_id'] == 12 ? 1: 2;
-        $style['goodsStatus'] = $model['status']== 1? 2:1;
+        $style['goodsStatus'] = $model['status']== 1 && "{$model['markup_status']}"!=="0" ? 2 : 1;
         $style['htmlUrl'] = null;
         $style['metaDesc'] = $model['meta_desc'];
         $style['metaTitle'] = $model['meta_title'];
