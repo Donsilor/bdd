@@ -453,7 +453,7 @@ class GoodsService extends Service
      * @param unknown $language
      * @return 
      */
-    public function formatStyleGoodsById($style_id, $language = null, $area_id=null, $goods_ids=[], $status=1){
+    public function formatStyleGoodsById($style_id, $language = null, $area_id=null, $goods_ids=[], $status=0){
 
         $ip = \Yii::$app->request->userIP;
         if(empty($area_id)){
