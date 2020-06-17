@@ -152,14 +152,44 @@ use common\helpers\Url;
         });
 
         $('input[name="id[]"]').change(function() {
-            // $("#style_id").val($(this).val());
-            // alert($(this).val());
-            if(($(this)[0]).checked) {
-                addStyle($(this).eq(0).val());
+            if($(this).prop("checked")) {
+                let result = addStyle($(this).eq(0).val());
+                if(!result) {
+                    $(this).prop("checked", false);
+                }
             }
             else {
                 delStyle($(this).val());
             }
+        });
+
+        function changeURLArg(url, arg, arg_val) {
+            var pattern = arg+'=([^&]*)';
+            var replaceText = arg+'='+arg_val;
+            if(url.match(pattern)){
+                var tmp = '/('+ arg+'=)([^&]*)/gi';
+                tmp = url.replace(eval(tmp),replaceText);
+                return tmp;
+            } else {
+                if(url.match('[\?]')) {
+                    return url+'&'+replaceText;
+                } else {
+                    return url+'?'+replaceText;
+                }
+            }
+        }
+
+        //给分页绑定事件
+        $(".pagination a").click(function () {
+            let href = $(this).attr("href");
+            let name = 'SearchModel[id]';
+            let value = $input.val();
+
+            href = decodeURI(href);
+            href = changeURLArg(href,name,value);
+            href = encodeURI(href);
+
+            $(this).attr("href", href);
         });
 
         function addStyle(style_id) {
@@ -178,13 +208,11 @@ use common\helpers\Url;
             });
 
             if(hav === false) {
-                //delStyle(style_id);
                 layer.msg("此商品已经添加");
                 return false;
             }
 
             if(styleIds.length > 1) {
-                //delStyle(style_id);
                 layer.msg("最多只能选两个商品");
                 return false;
             }
@@ -193,6 +221,8 @@ use common\helpers\Url;
             $input.val(styleIds.join("|"));
 
             showStyle(style_id);
+
+            return true;
         }
 
         function showStyle(style_id) {
