@@ -45,7 +45,10 @@
                 <div class="list-tit fl">Sales:</div>
                 <div class="list-details fl">
                     <div class="child-name">BDD Co.</div>
-                    <div class="child-addr">Unit 2304, 23/F, Universal Trade Centre, 3 Arbuthnot Road, Central, Hong Kong</div>
+                    <div class="child-addr">Unit 2304, 23/F,<br/>
+                        Universal Trade Centre,<br/>
+                        3 Arbuthnot Road,<br/>
+                        Central, Hong Kong</div>
                 </div>
             </div>
 
