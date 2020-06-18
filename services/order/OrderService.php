@@ -109,7 +109,7 @@ class OrderService extends OrderBaseService
                 }
             } 
             
-            //\Yii::$app->services->goods->updateGoodsStorageForOrder($orderGoods->goods_id,-$orderGoods->goods_num, $orderGoods->goods_type);
+            \Yii::$app->services->goods->updateGoodsStorageForOrder($orderGoods->goods_id,-$orderGoods->goods_num, $orderGoods->goods_type);
         }
         //金额校验
         if($order_info['order_amount'] != $order_amount) {

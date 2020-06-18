@@ -611,16 +611,15 @@ class GoodsService extends Service
      */
     public function updateGoodsStorageForOrder($goods_id,$quantity,$goods_type)
     {        
-        if($goods_type == \Yii::$app->params['goodsType.diamond']){
+        if($goods_type == \Yii::$app->params['goodsType.diamond']) {
             \Yii::$app->services->diamond->updateGoodsStorageForOrder($goods_id, $quantity);
-        }else {
-            $data = [
-                'goods_storage'=> new Expression("goods_storage+({$quantity})"),
-                'sale_volume'  =>new Expression("sale_volume-({$quantity})")
-            ];            
-            Goods::updateAll($data,['id'=>$goods_id]);
-            Style::updateAll($data,['in','id',Goods::find()->select(['style_id'])->where(['id'=>$goods_id])]);
         }
+        $data = [
+            'goods_storage'=> new Expression("goods_storage+({$quantity})"),
+            'sale_volume'  =>new Expression("sale_volume-({$quantity})")
+        ];
+        Goods::updateAll($data,['id'=>$goods_id]);
+        Style::updateAll($data,['in','id',Goods::find()->select(['style_id'])->where(['id'=>$goods_id])]);
     }
 
     /**
