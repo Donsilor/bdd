@@ -3,6 +3,7 @@
 namespace api\controllers;
 
 use common\enums\PayStatusEnum;
+use common\helpers\ResultHelper;
 use common\models\common\PayLog;
 use Yii;
 use yii\db\Exception;
@@ -172,27 +173,29 @@ class NotifyController extends Controller
         try {
             $response = Yii::$app->pay->paydollar()->notify();
 
+            // 日志记录
+            $logPath = $this->getLogPath('Paydollar');
+            FileHelper::writeLog($logPath, Json::encode(ArrayHelper::toArray($message)));
+
             if ($response->isPaid()) {
                 $message = Yii::$app->request->post();
                 $message['pay_fee'] = $message['Amt'];
                 $message['transaction_id'] = $message['PayRef'];
                 $message['out_trade_no'] = $message['Ref'];
 
-                // 日志记录
-                $logPath = $this->getLogPath('Paydollar');
-                FileHelper::writeLog($logPath, Json::encode(ArrayHelper::toArray($message)));
-
                 if ($this->pay($message)) {
                     die('ok');
                 }
             }
 
-            die('fail');
+            throw new UnprocessableEntityHttpException('支付验证失败');
         } catch (\Exception $e) {
             // 记录报错日志
             $logPath = $this->getLogPath('error');
             FileHelper::writeLog($logPath, $e->getMessage());
-            die('fail'); // 通知响应
+
+            return ResultHelper::api(500);
+            //die('fail'); // 通知响应
         }
     }
 
