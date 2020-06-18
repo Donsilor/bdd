@@ -173,15 +173,16 @@ class NotifyController extends Controller
         try {
             $response = Yii::$app->pay->paydollar()->notify();
 
+            $message = Yii::$app->request->post();
+            $message['pay_fee'] = $message['Amt'];
+            $message['transaction_id'] = $message['PayRef'];
+            $message['out_trade_no'] = $message['Ref'];
+
             // 日志记录
             $logPath = $this->getLogPath('Paydollar');
             FileHelper::writeLog($logPath, Json::encode(ArrayHelper::toArray($message)));
 
             if ($response->isPaid()) {
-                $message = Yii::$app->request->post();
-                $message['pay_fee'] = $message['Amt'];
-                $message['transaction_id'] = $message['PayRef'];
-                $message['out_trade_no'] = $message['Ref'];
 
                 if ($this->pay($message)) {
                     die('ok');
