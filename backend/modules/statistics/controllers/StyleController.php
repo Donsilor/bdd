@@ -160,7 +160,7 @@ DOM;
         // [名称, 字段名, 类型, 类型规则]
         $header = [
             ['款号', 'style_sn', 'text'],
-            ['商品名称', 'style_sn', 'text'],
+            ['商品名称', 'style_name', 'text'],
             ['产品线', 'type_id', 'function', function($row) {
                 $list = Yii::$app->services->goodsType->getTypeList();
                 return $list[$row['type_id']]??'';
