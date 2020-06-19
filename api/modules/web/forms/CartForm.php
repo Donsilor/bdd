@@ -17,6 +17,7 @@ class CartForm extends Model
     public $goods_num;//商品数量
     public $group_type;
     public $group_id;
+    public $createTime;
     
     /**
      * @inheritdoc
@@ -24,8 +25,8 @@ class CartForm extends Model
     public function rules()
     {
         return [
-             [['goods_id','goods_type','goods_num'], 'required'],
-             [['goods_id','goods_type','goods_num','group_type','group_id'], 'number'],
+             [['goods_id','goods_type','goods_num','createTime'], 'required'],
+             [['goods_id','goods_type','goods_num','group_type','group_id','createTime'], 'number'],
         ];
     }
     
@@ -37,8 +38,12 @@ class CartForm extends Model
                 'goods_num' => 'goods_num', 
                 'group_type' => 'group_type',
                 'group_id' => 'group_id',
+                'createTime' => 'createTime'
         ];
     }
-    
-    
+
+    public function getSign()
+    {
+        return md5(sprintf('ip:[%s],createTime:[%s],goods_type:[%s],goods_id:[%s]', \Yii::$app->request->userIP, $this->createTime, $this->goods_type, $this->goods_id));
+    }
 }

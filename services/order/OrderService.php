@@ -152,7 +152,7 @@ class OrderService extends OrderBaseService
         \Yii::$app->services->job->notifyContacts->createOrder($order->order_sn);
 
         //清空购物车
-        OrderCart::deleteAll(['id'=>$cart_ids,'member_id'=>$buyer_id]);
+        OrderCart::updateAll(['status'=>0], ['id'=>$cart_ids,'member_id'=>$buyer_id]);
         
         return [
                 "currency" => $currency,
