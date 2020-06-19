@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title></title>
 
-    <link href="/backend/resources/css/invoice.css" rel="stylesheet">
+    <link href="/resources/css/invoice.css" rel="stylesheet">
 </head>
 <body>
 
@@ -28,13 +28,13 @@
                         <div class="invoice-data-val">1 of 1</div>
                     </div>
                 </div>
-                <div class="invoice-data-b clf" style="border-top: 1px solid #333;padding: 10px;">发票号码:<?php echo $result['order_sn'];?>
+                <div class="invoice-data-b clf" style="border-top: 1px solid #333;padding: 10px;">發票號碼:<?php echo $result['order_sn'];?>
                 </div>
             </div>
             <div class="fl" style="margin: 20px 0px;width: 300px;">
-                <div>网址:<?php echo $result['siteInfo']['webSite']??'';?></div>
-                <div>邮箱:<?php echo $result['siteInfo']['email']??'';?></div>
-                <div>电话:<?php echo $result['siteInfo']['tel']??'';?></div>
+                <div>網址:<?php echo $result['siteInfo']['webSite']??'';?></div>
+                <div>郵箱:<?php echo $result['siteInfo']['email']??'';?></div>
+                <div>電話:<?php echo $result['siteInfo']['tel']??'';?></div>
             </div>
         </div>
 
