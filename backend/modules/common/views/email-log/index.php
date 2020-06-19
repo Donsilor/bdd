@@ -13,14 +13,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-xs-12">
         <div class="box nav-tabs-custom">
             <ul class="nav nav-tabs">
-                <li class="active">
+                <li>
                     <a href="<?= Url::to(['sms-log/index']) ?>"> 短信日志</a>
                 </li>
-                <li>
+                <li class="active">
                     <a href="<?= Url::to(['email-log/index']) ?>"> 邮件日志</a>
                 </li>
             </ul>
-
 
 <!--            <div class="box-header">-->
 <!--                <h3 class="box-title">--><?//= $this->title; ?><!--</h3>-->
@@ -40,12 +39,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     'tableOptions' => ['class' => 'table table-hover'],
                     'columns' => [
                         'id',
-                        'mobile',
+                        'email',
                         [
                             'attribute' => 'code',
                             'headerOptions' => ['class' => 'col-md-1'],
                         ],
-                        // 'content',
+                        'title',
 //                        [
 //                            'attribute' => 'usage',
 //                            'headerOptions' => ['class' => 'col-md-1'],
@@ -54,7 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'attribute' => 'usage',
                             'headerOptions' => ['class' => 'col-md-1'],
                             'value' => function($model) {
-                                return \common\models\common\SmsLog::$usageExplain[$model->usage]??$model->usage;
+                                return \common\models\common\EmailLog::$usageExplain[$model->usage]??$model->usage;
                             }
                         ],
                         [
