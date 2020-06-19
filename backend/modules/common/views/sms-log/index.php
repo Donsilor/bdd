@@ -55,7 +55,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             'headerOptions' => ['class' => 'col-md-1'],
                             'value' => function($model) {
                                 return \common\models\common\SmsLog::$usageExplain[$model->usage]??$model->usage;
-                            }
+                            },
+                            'filter' => Html::activeDropDownList($searchModel, 'usage', \common\models\common\SmsLog::$usageExplain, [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control'
+                                ]
+                            )
                         ],
                         [
                             'attribute' => 'used',
