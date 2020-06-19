@@ -93,7 +93,7 @@ class SmsService extends Service
     public function send($mobile, $usage, $data = [])
     {
         $data['ip'] = Yii::$app->request->userIP??'127.0.0.1';
-        $data['platform'] = $this->platform;
+        $data['platform'] = $data['platform']??$this->platform;
 
         if ($this->queueSwitch == true) {
             

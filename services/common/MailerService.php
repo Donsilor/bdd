@@ -66,7 +66,7 @@ class MailerService extends Service
         }
         $subject = Yii::t('mail', $subject,[],$language);
         $data['ip'] = Yii::$app->request->userIP??'127.0.0.1';
-        $data['platform'] = $this->platform;
+        $data['platform'] = $data['platform']??$this->platform;
         
         if ($this->queueSwitch == true) {
             $_params = array_merge(['data'=>$data],[
