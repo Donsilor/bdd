@@ -615,7 +615,7 @@ class GoodsService extends Service
             \Yii::$app->services->diamond->updateGoodsStorageForOrder($goods_id, $quantity);
         }
         $data = [
-            'goods_storage'=> new Expression("goods_storage+({$quantity})"),
+            //'goods_storage'=> new Expression("goods_storage+({$quantity})"),
             'sale_volume'  =>new Expression("sale_volume-({$quantity})")
         ];
         Goods::updateAll($data,['id'=>$goods_id]);
