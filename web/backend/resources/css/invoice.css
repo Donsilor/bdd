@@ -54,6 +54,13 @@ img {
     border: 1px solid #333;
 }
 
+.invoice-data-img{
+    width: 143px;
+    height: 60px;
+    background: url("/backend/resources/img/ele-index.png") no-repeat center;
+    background-size: 100% 100%;
+}
+
 .invoice-data-topcolor {
     height: 30px;
     background: #333 !important;
@@ -192,8 +199,9 @@ td:first-child{
 }
 
 .signature {
-    margin: 40px 0 80px;
-    text-align: center;
+    width: 500px;
+    margin: 20px auto 20px;
+    text-align: center
 }
 
 .signature-name {
@@ -209,6 +217,13 @@ td:first-child{
     height: 50px;
     border-bottom: 1px solid #333;
     line-height: 50px;
+}
+.signature-t-img {
+    width: 130px;
+    height: 50px;
+    margin: 0 auto;
+    background: url("/backend/resources/img/ele-sign.png") no-repeat center;
+    background-size: 100% 100%;
 }
 
 .signature .text {
@@ -226,7 +241,7 @@ td:first-child{
 }
 
 .total-bg {
-    width: 240px;
+    width: 140px;
     height: 30px;
     border: 1px solid #333;
     background-color: #333 !important;
@@ -237,7 +252,7 @@ td:first-child{
 }
 
 .total-val {
-    width: 180px;
+    width: 150px;
     height: 30px;
     border: 1px solid #333;
     color: #333;

@@ -7,7 +7,7 @@ use kartik\datetime\DateTimePicker;
 $form = ActiveForm::begin([
     'id' => $model->formName(),
     'enableAjaxValidation' => true,
-    'validationUrl' => Url::to(['ele-invoice-ajax-edit','invoice_id' => $invoice_id,'returnUrl'=>$returnUrl]),
+    'validationUrl' => Url::to(['ele-invoice-ajax-edit','order_id' => $order_id,'returnUrl'=>$returnUrl]),
     'fieldConfig' => [
         'template' => "<div class='col-sm-2 text-right'>{label}</div><div class='col-sm-10'>{input}\n{hint}\n{error}</div>",
     ]
@@ -39,6 +39,7 @@ $form = ActiveForm::begin([
                     'todayBtn' => true,//今日按钮显示
                 ]
             ]);?>
+
             <?= $form->field($model, 'sender_name')->textInput(); ?>
             <?= $form->field($model, 'sender_address')->textArea(); ?>
             <?= $form->field($model, 'express_id')->widget(kartik\select2\Select2::class, [
@@ -67,7 +68,7 @@ $form = ActiveForm::begin([
     </div>
     <!-- /.tab-content -->
     <div class="modal-footer">
-        <input type="hidden" id="invoice_id" name="OrderInvoiceEle[invoice_id]" value="<?php echo $invoice_id; ?>"/>
+        <?= $form->field($model,'order_id')->hiddenInput()->label(false)?>
         <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
         <button class="btn btn-primary" type="submit">保存</button>
     </div>

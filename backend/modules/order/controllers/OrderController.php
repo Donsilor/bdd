@@ -503,13 +503,14 @@ class OrderController extends BaseController
 
 
     public  function actionEleInvoiceAjaxEdit(){
-        $invoice_id = Yii::$app->request->get('invoice_id');
+        $order_id = Yii::$app->request->get('order_id');
         $returnUrl = Yii::$app->request->get('returnUrl',['index']);
         $language = Yii::$app->request->get('language');
 
 
         $this->modelClass = OrderInvoiceEle::class;
-        $model = $this->findModel($invoice_id);
+        $model = $this->findModel($order_id);
+        $model->order_id = $order_id;
 
         $oldModelData = $model->getAttributes();
 
@@ -533,8 +534,7 @@ class OrderController extends BaseController
             }
          // return $this->redirect($returnUrl);
 
-            $invoice = OrderInvoice::findOne($model->invoice_id);
-            $order = Order::findOne($invoice->order_id);
+            $order = Order::findOne($order_id);
 
             OrderLogService::eleInvoiceEdit($order,[$modelData, $oldModelData]);
 
@@ -542,7 +542,7 @@ class OrderController extends BaseController
         }
         return $this->renderAjax($this->action->id, [
             'model' => $model,
-            'invoice_id'=>$invoice_id,
+            'order_id' => $order_id,
             'returnUrl'=>$returnUrl
         ]);
 
@@ -556,6 +556,7 @@ class OrderController extends BaseController
         }
         $result = Yii::$app->services->orderInvoice->getEleInvoiceInfo($order_id);
         $content = $this->renderPartial($result['template'],['result'=>$result]);
+        if(!Yii::$app->request->get('is_pdf', true)) return $content;
         $usage = 'order-invoice';
         $usageExplains = EmailLog::$usageExplain;
         $subject  = $usageExplains[$usage]??'';
@@ -586,7 +587,7 @@ class OrderController extends BaseController
             ],
             // call mPDF methods on the fly
             'methods' => [
-                'SetHeader'=>[$subject],
+//                'SetHeader'=>[$subject],
                 'SetFooter'=>['{PAGENO}'],
             ]
         ]);
