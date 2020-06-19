@@ -99,19 +99,19 @@ $this->params['breadcrumbs'][] = $this->title;
                             'filter' => false, //不显示搜索框
                             'format' => ['date', 'php:Y-m-d H:i:s'],
                         ],
-                        [
-                            'header' => "操作",
-                            'class' => 'yii\grid\ActionColumn',
-                            'template' => '{view}',
-                            'buttons' => [
-                                'view' => function ($url, $model, $key) {
-                                    return Html::linkButton(['view', 'id' => $model->id], '查看详情', [
-                                        'data-toggle' => 'modal',
-                                        'data-target' => '#ajaxModalLg',
-                                    ]);
-                                },
-                            ],
-                        ],
+//                        [
+//                            'header' => "操作",
+//                            'class' => 'yii\grid\ActionColumn',
+//                            'template' => '{view}',
+//                            'buttons' => [
+//                                'view' => function ($url, $model, $key) {
+//                                    return Html::linkButton(['view', 'id' => $model->id], '查看详情', [
+//                                        'data-toggle' => 'modal',
+//                                        'data-target' => '#ajaxModalLg',
+//                                    ]);
+//                                },
+//                            ],
+//                        ],
                     ],
                 ]); ?>
                 <!-- /.box-body -->
