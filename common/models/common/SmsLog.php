@@ -12,6 +12,7 @@ use common\behaviors\MerchantBehavior;
  * @property string $merchant_id 商户id
  * @property string $member_id 用户id
  * @property string $mobile 手机号码
+ * @property int $platform platform
  * @property string $code 验证码
  * @property string $content 内容
  * @property int $error_code 报错code
@@ -66,7 +67,7 @@ class SmsLog extends \common\models\base\BaseModel
     public function rules()
     {
         return [
-            [['merchant_id', 'member_id', 'error_code', 'used', 'mobile', 'code', 'use_time', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['merchant_id', 'member_id', 'error_code', 'used', 'mobile', 'code', 'use_time', 'status', 'created_at', 'updated_at', 'platform'], 'integer'],
             [['error_data'], 'string'],
             [['usage'], 'string', 'max' => 20],
             [['ip'], 'string', 'max' => 30],
@@ -84,6 +85,7 @@ class SmsLog extends \common\models\base\BaseModel
             'id' => 'ID',
             'merchant_id' => '商户',
             'member_id' => '用户',
+            'platform' => '平台',
             'email' => '手机号码',
             'code' => '验证码',
             'content' => '内容',

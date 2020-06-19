@@ -66,6 +66,7 @@ class MailerService extends Service
         }
         $subject = Yii::t('mail', $subject,[],$language);
         $data['ip'] = Yii::$app->request->userIP??'127.0.0.1';
+        $data['platform'] = $this->platform;
         
         if ($this->queueSwitch == true) {
             $_params = array_merge(['data'=>$data],[
@@ -97,6 +98,7 @@ class MailerService extends Service
         try {
              $code = $data['code']??null;
              $member_id = $data['member_id']??0;
+            $platform = $data['platform']??0;
              $ip = $data['ip']??'';
              
              $this->setConfig();
@@ -123,6 +125,7 @@ class MailerService extends Service
                     'email' => $email,
                     'code' => $code,
                     'member_id' => $member_id,
+                    'platform' => $platform,
                     'usage' => $usage,
                     'ip' => $ip,
                     'error_code' => 200,

@@ -93,6 +93,8 @@ class SmsService extends Service
     public function send($mobile, $usage, $data = [])
     {
         $data['ip'] = Yii::$app->request->userIP??'127.0.0.1';
+        $data['platform'] = $this->platform;
+
         if ($this->queueSwitch == true) {
             
             $messageId = Yii::$app->queue->push(new SmsJob([
@@ -127,6 +129,7 @@ class SmsService extends Service
         $templateID = $template[$group] ?? '';
         $code  = $data['code']??null;
         $member_id = $data['member_id']??0;
+        $platform = $data['platform']??0;
         $ip = $data['ip']??'';
         if(isset($data['ip'])) unset($data['ip']);
         if(isset($data['member_id'])) unset($data['member_id']);
@@ -149,6 +152,7 @@ class SmsService extends Service
                 'mobile' => $mobile,
                 'code' => $code,
                 'member_id' => $member_id,
+                'platform' => $platform,
                 'usage' => $usage,
                 'ip'=>$ip,
                 'error_code' => 200,
