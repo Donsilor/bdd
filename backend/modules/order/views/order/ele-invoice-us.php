@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title></title>
 
-    <link href="/backend/resources/css/invoice.css" rel="stylesheet">
+    <link href="/resources/css/invoice.css" rel="stylesheet">
 </head>
 <body>
 
