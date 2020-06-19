@@ -115,8 +115,6 @@ class OrderTouristService extends OrderBaseService
             //订单ID
             $detail->order_tourist_id = $order->id;
 
-            \Yii::$app->services->goods->updateGoodsStorageForOrder($detail->goods_id, -$detail->goods_num, $detail->goods_type);
-
             //保存订单详情
             if(false === $detail->save()) {
                 throw new UnprocessableEntityHttpException($this->getError($detail));
@@ -306,6 +304,8 @@ class OrderTouristService extends OrderBaseService
             if(false === $orderTouristDetails->save()) {
                 throw new UnprocessableEntityHttpException($this->getError($orderTouristDetails));
             }
+
+            \Yii::$app->services->goods->updateGoodsStorageForOrder($detail->goods_id, -$detail->goods_num, $detail->goods_type);
 
             foreach (array_keys($languages) as $language) {
                 $goods = \Yii::$app->services->goods->getGoodsInfo($orderTouristDetails->goods_id,$orderTouristDetails->goods_type,false,$language);
