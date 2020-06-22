@@ -24,7 +24,7 @@ $form = ActiveForm::begin([
         <?= $form->field($model, 'remark')->textarea(['rows' => 6]) ?>
         <?= $form->field($model, 'follower_id')->hiddenInput([
             'value' => Yii::$app->user->getIdentity()->id
-        ]) ?>
+        ])->label("") ?>
         <!-- /.tab-pane -->
     </div>
     <!-- /.tab-content -->
