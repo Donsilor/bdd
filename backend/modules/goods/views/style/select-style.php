@@ -264,7 +264,7 @@ use common\helpers\Url;
 
             $.each(styleIds, function(i, v) {
                 if(v == style_id) {
-                    styleIds.pop(i);
+                    delete styleIds.splice(i,1);
                 }
             });
 
