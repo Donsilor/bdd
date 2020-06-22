@@ -214,6 +214,7 @@ class PayService extends Service
                 $order['payMethod'] = 'WECHAT';//wechat
                 break;
             case '84':
+                $order['deeplink'] = '3';//wechat
                 $order['payMethod'] = 'ALIPAYHKONL';//wechat
                 break;
             default:
