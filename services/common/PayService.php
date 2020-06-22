@@ -343,6 +343,11 @@ class PayService extends Service
                             'paid_currency'=> $log->currency,
                         ];
                         OrderAccount::updateAll($accountUpdata,['order_id'=>$order->id]);
+
+                        //订单销量
+                        foreach ($order->goods as $goods) {
+                            \Yii::$app->services->goods->updateGoodsStorageForOrder($goods->goods_id,-$goods->goods_num, $goods->goods_type);
+                        }
                         
                         //订单发送邮件
 //                        \Yii::$app->services->order->sendOrderNotification($order->id);
