@@ -2,6 +2,7 @@
 
 namespace backend\modules\member\controllers;
 
+use common\models\backend\Member;
 use Yii;
 use common\models\member\Contact;
 use common\components\Curd;
@@ -44,7 +45,7 @@ class ContactController extends BaseController
         ]);
 
         $dataProvider = $searchModel
-            ->search(Yii::$app->request->queryParams,['created_at','book_time']);
+            ->search(Yii::$app->request->queryParams,['created_at','book_time','follower_id']);
 
         $created_at = $searchModel->created_at;
         if (!empty($created_at)) {
@@ -57,6 +58,13 @@ class ContactController extends BaseController
             $dataProvider->query->andFilterWhere(['>=','book_time', explode('/', $searchModel->book_time)[0]]);//起始时间
             $dataProvider->query->andFilterWhere(['<','book_time', date('Y-m-d',strtotime("+1 day",strtotime(explode('/', $searchModel->book_time)[1])))] );//结束时间
         }
+
+        if($searchModel->follower_id) {
+            $followerIds = Member::find()->where(['username'=>$searchModel->follower_id])->select(['id']);
+            $dataProvider->query->andWhere(['in', 'follower_id', $followerIds]);
+        }
+
+
         return $this->render('index', [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,

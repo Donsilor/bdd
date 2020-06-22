@@ -77,6 +77,8 @@ class ContactController extends OnAuthController
         $model->ip_location = $address;
         $contact = new $this->modelClass();
         $contact->attributes = ArrayHelper::toArray($model);
+        $contact->platform = $this->platform;
+
         if (!$contact->save()) {
             return ResultHelper::api(422, $this->getError($contact));
         }
