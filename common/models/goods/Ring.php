@@ -36,7 +36,7 @@ class Ring extends BaseModel
     public function rules()
     {
         return [
-            [['id','ring_salenum', 'ring_style', 'status', 'created_at', 'updated_at','sale_volume','virtual_volume','virtual_clicks','goods_clicks'], 'integer'],
+            [['id','ring_salenum', 'ring_style', 'status', 'created_at', 'updated_at','sale_volume','virtual_volume','virtual_clicks','goods_clicks','type_id','style_id','goods_id','goods_storage'], 'integer'],
             [['sale_price'], 'number'],
             [['ring_sn','sale_price'],'required'],
             ['sale_price','compare','compareValue' => 0, 'operator' => '>'],
@@ -48,7 +48,7 @@ class Ring extends BaseModel
             [['ring_sn'],'string', 'max' => 100],
             [['qr_code'], 'string', 'max' => 200],
             [['ring_images'],'parseRingImages'],
-            [['ring_name','language','ring_images'], 'safe'],
+            [['ring_name','language','ring_images','style_salepolicy'], 'safe'],
         ];
     }
 
@@ -77,6 +77,19 @@ class Ring extends BaseModel
             'ring_3ds' => '360°主图',
             'created_at' => '创建时间',
             'updated_at' => '修改时间',
+
+            'type_id' => '产品线ID',
+            'style_id' => '款式ID',
+            'goods_id' => '商品ID',
+            'goods_storage' => '商品库存',
+            'style_salepolicy' => '',
+
+
+//ADD COLUMN `type_id` INT(10) UNSIGNED NULL DEFAULT '19' COMMENT '产品线ID',
+//ADD COLUMN `style_id` INT(10) NULL DEFAULT NULL COMMENT '款式ID',
+//ADD COLUMN `goods_id` INT(10) NULL DEFAULT NULL COMMENT '商品ID',
+//ADD COLUMN `goods_storage` INT(10) UNSIGNED NULL DEFAULT '10000' COMMENT '商品库存',
+//ADD COLUMN `goods_salepolicy` TEXT(65535) NULL DEFAULT NULL COMMENT '';
         ];
     }
 

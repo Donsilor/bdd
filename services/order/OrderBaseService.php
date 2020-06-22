@@ -213,7 +213,7 @@ class OrderBaseService extends Service
                 continue;
             }
             $goods_attr = json_decode($goods['goods_attr'],true);
-            if($goods_attr['12'] != '194'){
+            if(($goods_attr['12']??null) != '194') {
                 $delivery_type = 'futures_time';
                 continue;
             }

@@ -304,23 +304,77 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'label' => '商品清单',
                                         'value' => function ($model) {
                                             $html = <<<DOM
-        <div class="row">
+        <div class="row" style="margin: 10px -15px;">
         
-        <div class="col-lg-8">%s<br/>SKU：%s&nbsp;%s</div>
+        <div class="col-lg-11">%s<br/>SKU：%s&nbsp;%s</div>
         </div>
 DOM;
-                                            $goods_spec = '';
-                                            if($model->goods_spec){
-                                                $model->goods_spec = \Yii::$app->services->goods->formatGoodsSpec($model->goods_spec);
-                                                foreach ($model->goods_spec as $vo){
-                                                    $goods_spec .= $vo['attr_name'].":".$vo['attr_value']."&nbsp;";
+                                            $value = '';
+                                            if($model->goods_type==19) {
+                                                $value1 = '';
+                                                $value2 = '';
+                                                $goods_spec = '';
+                                                $goods_spec1 = '';
+                                                $goods_spec2 = '';
+                                                if($model->goods_spec) {
+                                                    $model->goods_spec = \Yii::$app->services->goods->formatGoodsSpec($model->goods_spec);
+                                                    foreach ($model->goods_spec as $vo) {
+                                                        if($vo['attr_id']==61) {
+                                                            $goods = Yii::$app->services->goods->getGoodsInfo($vo['value_id']);
+
+                                                            foreach ($goods['lang']['goods_spec'] as $spec) {
+                                                                $goods_spec1 .= $spec['attr_name'].":".$spec['attr_value']."&nbsp;";
+                                                            }
+
+                                                            $value1 .= sprintf($html,
+                                                                $vo['attr_name'] . '：' . $goods['goods_name'],
+                                                                $goods['goods_sn'],
+                                                                $goods_spec1
+                                                            );
+                                                            continue;
+                                                        }
+                                                        if($vo['attr_id']==62) {
+                                                            $goods = Yii::$app->services->goods->getGoodsInfo($vo['value_id']);
+
+                                                            foreach ($goods['lang']['goods_spec'] as $spec) {
+                                                                $goods_spec2 .= $spec['attr_name'].":".$spec['attr_value']."&nbsp;";
+                                                            }
+
+                                                            $value2 .= sprintf($html,
+                                                                $vo['attr_name'] . '：' . $goods['goods_name'],
+                                                                $goods['goods_sn'],
+                                                                $goods_spec2
+                                                            );
+                                                            continue;
+                                                        }
+                                                        $goods_spec .= $vo['attr_name'].":".$vo['attr_value']."&nbsp;";
+                                                    }
                                                 }
+                                                $value .= sprintf($html,
+                                                    '对戒名：' . $model->goods_name,
+                                                    $model->goods_sn,
+                                                    $goods_spec
+                                                );
+
+                                                $value .= $value1;
+                                                $value .= $value2;
                                             }
-                                            return sprintf($html,
-                                                $model->goods_name,
-                                                $model->goods_sn,
-                                                $goods_spec
-                                            );
+                                            else {
+                                                $goods_spec = '';
+                                                if($model->goods_spec){
+                                                    $model->goods_spec = \Yii::$app->services->goods->formatGoodsSpec($model->goods_spec);
+                                                    foreach ($model->goods_spec as $vo){
+                                                        $goods_spec .= $vo['attr_name'].":".$vo['attr_value']."&nbsp;";
+                                                    }
+                                                }
+                                                $value .= sprintf($html,
+                                                    $model->goods_name,
+                                                    $model->goods_sn,
+                                                    $goods_spec
+                                                );
+                                            }
+
+                                            return $value;
                                         },
                                         'filter' => false,
                                         'format' => 'html',

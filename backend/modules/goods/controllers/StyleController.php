@@ -2,6 +2,7 @@
 
 namespace backend\modules\goods\controllers;
 
+use common\models\goods\Goods;
 use common\enums\AreaEnum;
 use common\enums\FrameEnum;
 use common\enums\StatusEnum;
@@ -34,6 +35,7 @@ class StyleController extends BaseController
     * @var Style
     */
     public $modelClass = Style::class;
+    public $enableCsrfValidation = false;
 
 
     /**
@@ -121,16 +123,103 @@ class StyleController extends BaseController
 
             if(!empty($id)){
                 //记录日志
-                \Yii::$app->services->goods->recordGoodsLog($model, $old_style_info);
+//                \Yii::$app->services->goods->recordGoodsLog($model, $old_style_info);
             }
 
             //商品更新
             \Yii::$app->services->goods->syncStyleToGoods($model->id);
             return $this->message("保存成功", $this->redirect($returnUrl), 'success');
         }
+
+        $attrStyleIds = [];
+        if($type_id==19) {
+            $attrStyleIds = Yii::$app->request->get('attr_style_ids', '');
+
+            $attrStyleIds = explode('|', $attrStyleIds);
+
+            if(empty($id) && count($attrStyleIds)!=2) {
+                return;
+            }
+        }
+
         return $this->render($this->action->id, [
                 'model' => $model,
+            'attrStyleIds' => $attrStyleIds
         ]);
+    }
+
+    /**
+     * 添加商品时查询戒指数据
+     * @return string[]|array[]|string
+     */
+    public function actionSelectStyle()
+    {
+
+        $request = Yii::$app->request;
+        if($request->isPost)
+        {
+            $post = Yii::$app->request->post();
+            if(!isset($post['style_id']) || empty($post['style_id'])) {
+                return ResultHelper::json(422, '请选择商品');
+            }else{
+                $style_id = $post['style_id'];
+            }
+            return ResultHelper::json(200, '保存成功',['style_id'=>$style_id]);
+        }
+
+        $searchModel = new SearchModel([
+            'model' => Style::class,
+            'scenario' => 'default',
+            'partialMatchAttributes' => [], // 模糊查询
+            'defaultOrder' => [
+                'id' => SORT_DESC
+            ],
+            'pageSize' => 5
+        ]);
+
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,['style_name','id']);
+        $dataProvider->query->andWhere(['>=', 'status', StatusEnum::DISABLED]);
+        //戒指分类
+        $dataProvider->query->andFilterWhere(['=', 'type_id',2]);
+        $dataProvider->query->andFilterWhere(['=', 'ring_id',0]);
+
+        $dataProvider->query->joinWith(['lang']);
+
+        $dataProvider->query->andFilterWhere(['like', 'lang.style_name',$searchModel->style_name]);
+        return $this->render('select-style', [
+            'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+        ]);
+    }
+
+    //编辑时获取单个戒指数据
+    public function actionGetStyle(){
+        $request = Yii::$app->request;
+
+        if($request->isPost)
+        {
+
+            $values = Yii::$app->services->goodsAttribute->getValuesByAttrId(26);
+
+            $post = Yii::$app->request->post();
+//            return ResultHelper::json(200, '保存成功',['model'=>$post]);
+            if(!isset($post['style_id']) || empty($post['style_id'])){
+                return ResultHelper::json(422, '参数错误');
+            }
+            $style_id = $post['style_id'];
+            $model = Yii::$app->services->goodsStyle->getStyle($style_id);
+            $data['id'] = $model['id'];
+            $data['style_name'] = $model['style_name'];
+            $data['style_sn'] = $model['style_sn'];
+            $data['sale_price'] = $model['sale_price'];
+            $data['goods_storage'] = $model['goods_storage'];
+
+            $styleAttr = is_array($model['style_attr'])?$model['style_attr']:\Qiniu\json_decode($model['style_attr'], true);
+            $data['attr_require'] = $values[$styleAttr['26']]??'';
+
+            return ResultHelper::json(200, '保存成功',$data);
+        }
+
     }
     
     /**

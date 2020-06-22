@@ -29,7 +29,11 @@ $export_param = http_build_query($searchModel);
                 </li>
                 <li class="pull-right">
                 	<div class="box-header box-tools">
-                    <?= Html::create(['edit-lang','type_id'=>$type_id]) ?>
+                        <?php if($type_id==19) { ?>
+                            <a class="btn btn-primary btn-xs openIframe1" href="<?php echo Url::to(['select-style'])?>"><i class="icon ion-plus"></i>创建</a>
+                        <?php } else { ?>
+                            <?= Html::create(['edit-lang','type_id'=>$type_id]) ?>
+                        <?php } ?>
                     </div>
                 </li>
 
@@ -183,3 +187,95 @@ $export_param = http_build_query($searchModel);
         </div>
     </div>
 </div>
+
+<script>
+
+    /* 打一个新窗口 */
+    $(document).on("click", ".openIframe1", function (e) {
+
+        var title = $(this).data('title');
+        var width = $(this).data('width');
+        var height = $(this).data('height');
+        var offset = $(this).data('offset');
+        var href = $(this).attr('href');
+
+        if (title == undefined) {
+            title = '基本信息';
+        }
+
+        if (width == undefined) {
+            width = '80%';
+        }
+
+        if (height == undefined) {
+            height = '80%';
+        }
+
+        if (offset == undefined) {
+            offset = "10%";
+        }
+
+        openIframe1(title, width, height, href, offset);
+        e.preventDefault();
+        return false;
+    });
+    // 打一个新窗口
+    function openIframe1(title, width, height, content, offset) {
+        layer.open({
+            type: 2,
+            title: title,
+            shade: 0.3,
+            offset: offset,
+            shadeClose: true,
+            btn: ['确定', '关闭'],
+            yes: function (index, layero) {
+                var body = layer.getChildFrame('body', index);
+                var stylesIdsStr = body.find("input[name='SearchModel[id]']").val();
+
+                if(stylesIdsStr.split("|").length!==2) {
+                    rfMsg("必需选择两款商品");
+                    return false;
+                }
+
+                location.href = './edit-lang?type_id=19&attr_style_ids='+stylesIdsStr;
+
+                return true;
+                // $.ajax({
+                //     type: "post",
+                //     url: postUrl,
+                //     dataType: "json",
+                //     data: form.serialize(),
+                //     success: function (data) {
+                //         if (parseInt(data.code) !== 200) {
+                //             rfMsg(data.message);
+                //         } else {
+                //             console.log(data.data.style_id);
+                //             getStyle(data.data.style_id);
+                //
+                //             layer.close(index);
+                //
+                //         }
+                //     }
+                // });
+            },
+            btn2: function () {
+            },
+            area: [width, height],
+            content: content
+        });
+
+        return false;
+    }
+
+    function getStyles(style_ids) {
+        // for(var i = 0; i < style_ids.length; i++){
+        //     getStyle(style_ids[i]);
+        // }
+
+    }
+
+
+
+
+
+</script>

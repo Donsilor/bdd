@@ -5,6 +5,7 @@ namespace backend\modules\goods\controllers;
 use common\enums\StatusEnum;
 use common\models\goods\RingRelation;
 use common\models\goods\Style;
+use services\goods\RingService;
 use services\goods\StyleService;
 use Yii;
 use common\models\goods\Ring;
@@ -77,6 +78,8 @@ class RingController extends BaseController
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $this->editRingRelation($model->id);
             $this->editLang($model,true);
+
+            RingService::syncRingToGoods($model->id);
 
             return $this->redirect($returnUrl);
         }

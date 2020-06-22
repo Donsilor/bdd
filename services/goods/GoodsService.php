@@ -157,8 +157,32 @@ class GoodsService extends Service
                     $attr['all'] = [];
                     if(!$is_text){
                         $attr['value_id'] = $spec[$attr_id];//属性值ID列表
-                        $attr['value'] = \Yii::$app->services->goodsAttribute->getValuesByValueIds($attr['value_id'],$language);
-                        $attr['all'] = \Yii::$app->services->goodsAttribute->getValuesByAttrId($attr_id,StatusEnum::ENABLED,$language);
+                        if($attr['input_type']==InputTypeEnum::INPUT_STYLE_GOODS_LIST) {
+                            $goodsId = $attr['value_id'][0];
+
+                            $goodsInfo = Goods::findOne($goodsId);
+
+                            $all = [];
+                            $styleInfo = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id'], null, null, [], 0);
+                            foreach ($styleInfo['details'] as $detail) {
+                                $all[$detail['id']] = $detail['goodsDetailsCode'];
+                            }
+                            $attr['all'] = $all;
+
+                            $values = [];
+                            foreach ($all as $k => $item) {
+                                if(in_array($k, $attr['value_id'])) {
+                                    $values[$k] = $item;
+                                }
+                            }
+
+                            $attr['value'] = $values;
+
+                        }
+                        else {
+                            $attr['value'] = \Yii::$app->services->goodsAttribute->getValuesByValueIds($attr['value_id'],$language);
+                            $attr['all'] = \Yii::$app->services->goodsAttribute->getValuesByAttrId($attr_id,StatusEnum::ENABLED,$language);
+                        }
                     }
                     $format_data[$key][$attr['id']] = $attr;
                 }
@@ -309,6 +333,22 @@ class GoodsService extends Service
                  'goods_spec' => $this->formatGoodsSpec($goods['goods_spec'], $language)
            ];
        }
+
+        $ring = [];
+        if($goods['type_id']==19) {
+            $goods_spec = $goods['goods_spec'];
+            if(!is_array($goods['goods_spec'])) {
+                $goods_spec = json_decode($goods['goods_spec'],true);
+            }
+            foreach ($goods_spec as $key => $spec) {
+                if(!in_array($key, ['61', 62])) {
+                    continue;
+                }
+                $ring[] = $this->getGoodsInfo($spec);
+            }
+        }
+        $goods['ring'] = $ring;
+
        return $goods;
     }
     /**
@@ -413,7 +453,7 @@ class GoodsService extends Service
      * @param unknown $language
      * @return 
      */
-    public function formatStyleGoodsById($style_id, $language = null, $area_id=null){
+    public function formatStyleGoodsById($style_id, $language = null, $area_id=null, $goods_ids=[], $status=0){
 
         $ip = \Yii::$app->request->userIP;
         if(empty($area_id)){
@@ -436,16 +476,28 @@ class GoodsService extends Service
                 'attr_name'=>'carats',
                 'key_name'=>'carat',
             ),  // 主石大小
+            '61'=>array(
+                'attr_name'=>'menRing',
+                'key_name'=>'menRing',
+            ),  // 男戒
+            '62'=>array(
+                'attr_name'=>'ladyRing',
+                'key_name'=>'ladyRing',
+            ),  // 女戒
         ];
         $query = Style::find()->alias('m')
             ->leftJoin(StyleLang::tableName().' lang',"m.id=lang.master_id and lang.language='".$language."'")
             ->leftJoin(StyleMarkup::tableName().' markup', 'm.id=markup.style_id and markup.area_id='.$area_id)
-            ->where(['m.id'=>$style_id])
-            ->andWhere(['or',['=','markup.status',1],['IS','markup.status',new \yii\db\Expression('NULL')]]);
+            ->where(['m.id'=>$style_id]);
+
+        if($status) {
+            $query->andWhere(['or',['=','markup.status',1],['IS','markup.status',new \yii\db\Expression('NULL')]]);
+        }
+
         $style_model =  $query->one();
         $format_style_attrs = $this->formatStyleAttrs($style_model);
 //        return $format_style_attrs;
-        $model = $query ->select(['m.id','m.style_sn','m.status','m.goods_images','m.type_id','m.style_3ds','m.style_image','IFNULL(markup.sale_price,m.sale_price) as sale_price','lang.goods_body','lang.style_name','lang.meta_title','lang.meta_word','lang.meta_desc'])
+        $model = $query ->select(['m.id','m.style_sn','m.status','markup.status as markup_status','m.goods_images','m.type_id','m.style_3ds','m.style_image','IFNULL(markup.sale_price,m.sale_price) as sale_price','lang.goods_body','lang.style_name','lang.meta_title','lang.meta_word','lang.meta_desc'])
             ->asArray()->one();
 
         //规格属性
@@ -461,7 +513,7 @@ class GoodsService extends Service
         $style['categoryId'] = $model['type_id'];
         $style['goodsGiaImage'] = null;
         $style['goodsMod'] = $model['type_id'] == 12 ? 1: 2;
-        $style['goodsStatus'] = $model['status']== 1? 2:1;
+        $style['goodsStatus'] = $model['status']== 1 && "{$model['markup_status']}"!=="0" ? 2 : 1;
         $style['htmlUrl'] = null;
         $style['metaDesc'] = $model['meta_desc'];
         $style['metaTitle'] = $model['meta_title'];
@@ -536,8 +588,12 @@ class GoodsService extends Service
         $goods_array = Goods::find()->alias('g')
             ->leftJoin(GoodsMarkup::tableName().' markup', 'g.id=markup.goods_id and markup.area_id='.$area_id)
             ->where(['g.style_id'=>$style_id ,'g.status'=>StatusEnum::ENABLED])
-            ->andWhere(['or',['=','markup.status',1],['IS','markup.status',new \yii\db\Expression('NULL')]])
-            ->select(['g.id','type_id','goods_sn','IFNULL(markup.sale_price,g.sale_price) as sale_price','goods_storage','warehouse','goods_spec'])
+            ->andWhere(['or',['=','markup.status',1],['IS','markup.status',new \yii\db\Expression('NULL')]]);
+
+        if(!empty($goods_ids))
+            $goods_array = $goods_array->andWhere(['in', 'g.id', $goods_ids]);
+
+        $goods_array = $goods_array->select(['g.id','type_id','goods_sn','IFNULL(markup.sale_price,g.sale_price) as sale_price','goods_storage','warehouse','goods_spec'])
             ->asArray()
             ->all();
         $details = array();
@@ -555,8 +611,12 @@ class GoodsService extends Service
                         $check_goods_spec_ids[] = $goods_spec_id;
                         $attr = array();
                         $attr['id'] = $goods_spec_id;
-                        $attr['image'] = \Yii::$app->services->goodsAttribute->getAttrImageByValueId($goods_spec_id);
-                        $attr['name'] = \Yii::$app->attr->valueName($goods_spec_id);
+                        $attr['image'] = '';
+                        $attr['name'] = '';
+                        if(!in_array($k, [61, 62])) {
+                            $attr['image'] = \Yii::$app->services->goodsAttribute->getAttrImageByValueId($goods_spec_id);
+                            $attr['name'] = \Yii::$app->attr->valueName($goods_spec_id);
+                        }
                         $style[$v['attr_name']][] = $attr;
                     }
 
@@ -594,11 +654,26 @@ class GoodsService extends Service
             array_multisort($names,SORT_ASC,$style['sizes']);
         }
 
-
-
-
         $style['details'] = $details;
         $style['totalStock'] = $totalStock;
+
+        $styleSpec = json_decode($style_model->style_spec,true);
+        $spec = $styleSpec['a'];
+
+        $ring = [];
+        foreach ($spec as $key => $item) {
+            if(in_array($key, [61, 62])) {
+
+                $goodsId = $item[0];
+
+                $goodsInfo = Goods::findOne($goodsId);
+
+                $ring[] = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id'], null, null, $item, 0);
+
+            }
+        }
+
+        $style['ring'] = $ring;
 
         return $style;
 
