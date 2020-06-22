@@ -160,7 +160,7 @@ HTML;
 
                 ]),
                 'value' => function ($model) {
-                    return Yii::$app->formatter->asDate($model->created_at);
+                    return Yii::$app->formatter->asDate($model->created_at, 'Y-m-d H:i:s');
                 },
                 'format' => 'raw',
 
