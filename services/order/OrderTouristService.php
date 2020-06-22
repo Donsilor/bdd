@@ -305,6 +305,8 @@ class OrderTouristService extends OrderBaseService
                 throw new UnprocessableEntityHttpException($this->getError($orderTouristDetails));
             }
 
+            \Yii::$app->services->goods->updateGoodsStorageForOrder($detail->goods_id, -$detail->goods_num, $detail->goods_type);
+
             foreach (array_keys($languages) as $language) {
                 $goods = \Yii::$app->services->goods->getGoodsInfo($orderTouristDetails->goods_id,$orderTouristDetails->goods_type,false,$language);
                 if(empty($goods) || $goods['status'] != 1) {
