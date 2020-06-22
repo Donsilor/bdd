@@ -181,7 +181,7 @@ class StyleController extends BaseController
         $dataProvider->query->andWhere(['>=', 'status', StatusEnum::DISABLED]);
         //戒指分类
         $dataProvider->query->andFilterWhere(['=', 'type_id',2]);
-        $dataProvider->query->andFilterWhere(['=', 'ring_id',0]);
+//        $dataProvider->query->andFilterWhere(['=', 'ring_id',0]);
 
         $dataProvider->query->joinWith(['lang']);
 
