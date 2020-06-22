@@ -81,14 +81,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="form-group field-contact-content">
                         <div class="col-sm-1 text-right"><label class="control-label" for="contact-content"><?=Yii::t('content', '留言内容')?>: </label></div>
                         <div class="col-sm-11">
-                            <?=$model->content?? '&nbsp; ';?>
+                            <?=$model->content?: '&nbsp; ';?>
                             <div class="help-block"></div>
                         </div>
                     </div>
                     <div class="form-group field-contact-status">
                         <div class="col-sm-1 text-right"><label class="control-label" for="contact-status"><?=Yii::t('status', '状态')?></label></div>
                         <div class="col-sm-11">
-                            <?=\common\enums\FollowStatusEnum::getValue($model->status)?? '&nbsp; ';?>
+                            <?=\common\enums\FollowStatusEnum::getValue($model->followed_status)?? '&nbsp; ';?>
                             <div class="help-block"></div>
                         </div>
                     </div>
