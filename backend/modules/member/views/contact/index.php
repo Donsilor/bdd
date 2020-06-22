@@ -118,7 +118,7 @@ HTML;
                     'model' => $searchModel,
                     'attribute' => 'book_time',
                     'value' => $searchModel->created_at,
-                    'options' => ['readonly' => true,'class'=>'form-control','style'=>'background-color:#fff;width:100px;'],
+                    'options' => ['readonly' => false,'class'=>'form-control','style'=>'background-color:#fff;width:100px;'],
                     'pluginOptions' => [
                         'format' => 'yyyy-mm-dd',
                         'locale' => [
@@ -129,8 +129,6 @@ HTML;
                         'autoclose' => true,
                         'todayBtn' => 'linked',
                         'clearBtn' => true,
-
-
                     ],
 
                 ]),

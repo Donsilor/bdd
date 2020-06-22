@@ -100,12 +100,23 @@ class ContactController extends BaseController
             ['ID', 'id'],
             ['姓名', 'all_name', 'text'],
             ['电话', 'telphone', 'text'],
+            ['所属站点', 'platform', 'function', function($model) {
+                return \common\enums\OrderFromEnum::getValue($model['platform']);
+            }],
+            ['IP', 'ip', 'text'],
             ['Ip地址', 'ip_location', 'text'],
             ['预约时间', 'book_time', 'text'],
             ['留言时间', 'created_at', 'date', 'Y-m-d H:i:s'],
             ['留言内容', 'content', 'text'],
             ['跟进状态', 'followed_status', 'selectd', [0 => '未跟进', 1 => '已跟进']],
             ['备注', 'remark', 'text'],
+            ['跟进人', 'follower_id', 'function', function($model) {
+                $row = \common\models\backend\Member::find()->where(['id'=>$model['follower_id']])->one();
+                if($row) {
+                    return $row->username;
+                }
+                return '';
+            }],
             ['留言类别', 'type_id', 'selectd', \common\enums\ContactEnum::getMap()],
 
         ];
@@ -129,7 +140,7 @@ class ContactController extends BaseController
 
         $list = $searchModel
             ->orderBy('created_at desc')
-            ->select(['id','concat(`first_name`,`last_name`) as all_name','telphone','ip_location','book_time','created_at','content','followed_status','type_id','remark'])
+            ->select(['id','concat(`first_name`,`last_name`) as all_name','platform','telphone','ip','ip_location','book_time','created_at','content','follower_id','followed_status','type_id','remark'])
             ->asArray()
             ->all();
 
