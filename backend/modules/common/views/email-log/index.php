@@ -13,14 +13,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-xs-12">
         <div class="box nav-tabs-custom">
             <ul class="nav nav-tabs">
-                <li class="active">
+                <li>
                     <a href="<?= Url::to(['sms-log/index']) ?>"> 短信日志</a>
                 </li>
-                <li>
+                <li class="active">
                     <a href="<?= Url::to(['email-log/index']) ?>"> 邮件日志</a>
                 </li>
             </ul>
-
 
 <!--            <div class="box-header">-->
 <!--                <h3 class="box-title">--><?//= $this->title; ?><!--</h3>-->
@@ -40,12 +39,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     'tableOptions' => ['class' => 'table table-hover'],
                     'columns' => [
                         'id',
-                        'mobile',
+                        'email',
                         [
                             'attribute' => 'code',
                             'headerOptions' => ['class' => 'col-md-1'],
                         ],
-                        // 'content',
+                        'title',
 //                        [
 //                            'attribute' => 'usage',
 //                            'headerOptions' => ['class' => 'col-md-1'],
@@ -54,9 +53,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             'attribute' => 'usage',
                             'headerOptions' => ['class' => 'col-md-1'],
                             'value' => function($model) {
-                                return \common\models\common\SmsLog::$usageExplain[$model->usage]??$model->usage;
+                                return \common\models\common\EmailLog::$usageExplain[$model->usage]??$model->usage;
                             },
-                            'filter' => Html::activeDropDownList($searchModel, 'usage', \common\models\common\SmsLog::$usageExplain, [
+                            'filter' => Html::activeDropDownList($searchModel, 'usage', \common\models\common\EmailLog::$usageExplain, [
                                     'prompt' => '全部',
                                     'class' => 'form-control'
                                 ]
@@ -105,19 +104,19 @@ $this->params['breadcrumbs'][] = $this->title;
                             'filter' => false, //不显示搜索框
                             'format' => ['date', 'php:Y-m-d H:i:s'],
                         ],
-                        [
-                            'header' => "操作",
-                            'class' => 'yii\grid\ActionColumn',
-                            'template' => '{view}',
-                            'buttons' => [
-                                'view' => function ($url, $model, $key) {
-                                    return Html::linkButton(['view', 'id' => $model->id], '查看详情', [
-                                        'data-toggle' => 'modal',
-                                        'data-target' => '#ajaxModalLg',
-                                    ]);
-                                },
-                            ],
-                        ],
+//                        [
+//                            'header' => "操作",
+//                            'class' => 'yii\grid\ActionColumn',
+//                            'template' => '{view}',
+//                            'buttons' => [
+//                                'view' => function ($url, $model, $key) {
+//                                    return Html::linkButton(['view', 'id' => $model->id], '查看详情', [
+//                                        'data-toggle' => 'modal',
+//                                        'data-target' => '#ajaxModalLg',
+//                                    ]);
+//                                },
+//                            ],
+//                        ],
                     ],
                 ]); ?>
                 <!-- /.box-body -->
