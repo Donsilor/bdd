@@ -29,8 +29,8 @@ class OrderBaseService extends Service
     {
         $order = Order::find()->where(['or',['id'=>$order_id],['order_sn'=>$order_id]])->one();
 
-        if($order->is_tourist) {
-            if(RegularHelper::verify('email',$order->member->email)) {
+//        if($order->is_tourist) {
+            if(RegularHelper::verify('email',$order->address->email)) {
                 if($order->refund_status) {
                     //退款通知
                     $usage = EmailLog::$orderStatusMap['refund'] ?? '';
@@ -42,18 +42,20 @@ class OrderBaseService extends Service
                     \Yii::$app->services->mailer->queue(true)->send($order->address->email,$usage,['code'=>$order->id],$order->language);
                 }
             }
-        }elseif(RegularHelper::verify('email',$order->member->username)) {
-            if($order->refund_status) {
-                //退款通知
-                $usage = EmailLog::$orderStatusMap['refund'] ?? '';
-            }
-            else {
-                $usage = EmailLog::$orderStatusMap[$order->order_status] ?? '';
-            }
-            if($usage && $order->address->email) {
-                \Yii::$app->services->mailer->queue(true)->send($order->address->email,$usage,['code'=>$order->id],$order->language);
-            }
-        }elseif($order->address->mobile){
+//        }
+//        elseif(RegularHelper::verify('email',$order->member->username)) {
+//            if($order->refund_status) {
+//                //退款通知
+//                $usage = EmailLog::$orderStatusMap['refund'] ?? '';
+//            }
+//            else {
+//                $usage = EmailLog::$orderStatusMap[$order->order_status] ?? '';
+//            }
+//            if($usage && $order->address->email) {
+//                \Yii::$app->services->mailer->queue(true)->send($order->address->email,$usage,['code'=>$order->id],$order->language);
+//            }
+//        }
+        elseif($order->address->mobile){
             if($order->order_status == OrderStatusEnum::ORDER_SEND) {
                 $params = [
                     'code' =>$order->id,
@@ -70,7 +72,7 @@ class OrderBaseService extends Service
                 else {
                     $usage = SmsLog::USAGE_ORDER_SEND;
                 }
-                \Yii::$app->services->sms->queue(true)->send($order->address->mobile,$usage,$params,$order->language);
+                \Yii::$app->services->sms->queue(true)->send($order->address->mobile,$usage,$params);
             }
             elseif($order->refund_status) {
                 $params = [
