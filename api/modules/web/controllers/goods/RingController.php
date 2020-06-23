@@ -102,7 +102,7 @@ class RingController extends OnAuthController
 
 
     //訂婚戒指--活动页
-    public function actionWebSite() {
+    public function actionWebSite(){
         //对戒
         $type_id = 19;
         $limit = 4;
@@ -117,7 +117,6 @@ class RingController extends OnAuthController
         $ring_web_site['id'] = $type_id;
         foreach ($style_list as $val) {
             $moduleGoods = array();
-
             $moduleGoods['id'] = $val['id'];
             $moduleGoods['categoryId'] = $type_id;
             $moduleGoods['coinType'] = $this->getCurrencySign();
@@ -127,6 +126,7 @@ class RingController extends OnAuthController
             $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
             $ring_web_site['moduleGoods'][] = $moduleGoods;
         }
+
 
         $where = ['a.attr_id'=>26, 'a.attr_value_id'=>41];
         $man_web_site = $this->getAdvertStyle($where);
@@ -141,6 +141,7 @@ class RingController extends OnAuthController
         $woman_web_site['recommendInfo'] = 'Go for the traditional, classic wedding band, or dare to be different with a unique alternative metal wedding ring made from cobalt, tantalum or titanium.';
         $woman_web_site['title'] = \Yii::t('common','女士结婚戒指');
         $woman_web_site['id'] = $type_id;
+
 
         $result = array();
         $result['webSite'][0] = $ring_web_site;
