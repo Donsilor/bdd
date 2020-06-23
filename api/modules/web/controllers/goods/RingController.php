@@ -120,9 +120,9 @@ class RingController extends OnAuthController
             $moduleGoods['id'] = $val['id'];
             $moduleGoods['categoryId'] = $type_id;
             $moduleGoods['coinType'] = $this->getCurrencySign();
-            $moduleGoods['ringCode'] = $val['ring_sn'];
+            $moduleGoods['ringCode'] = $val['style_sn'];
             $moduleGoods['ringImg'] = ImageHelper::goodsThumbs($val['goods_images'],'big');
-            $moduleGoods['name'] = $val['ring_name'];
+            $moduleGoods['name'] = $val['style_name'];
             $moduleGoods['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
             $ring_web_site['moduleGoods'][] = $moduleGoods;
         }
