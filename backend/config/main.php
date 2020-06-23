@@ -45,6 +45,10 @@ return [
         'setting' => [
             'class' => 'backend\modules\setting\Module',
         ],
+        /** ------商城設置 ------ **/
+        'statistics' => [
+            'class' => 'backend\modules\statistics\Module',
+        ],
     ],
     'components' => [
         'request' => [

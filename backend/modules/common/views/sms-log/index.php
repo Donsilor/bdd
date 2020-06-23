@@ -4,22 +4,33 @@ use yii\grid\GridView;
 use common\helpers\Html;
 use common\enums\WhetherEnum;
 use common\helpers\DebrisHelper;
+use common\helpers\Url;
 
 $this->title = '短信日志';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="row">
     <div class="col-xs-12">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title"><?= $this->title; ?></h3>
-                <div class="box-tools">
-                    <?= Html::linkButton(['stat'], '<i class="fa fa-area-chart"></i> 异常发送报表统计', [
-                        'data-toggle' => 'modal',
-                        'data-target' => '#ajaxModalMax',
-                    ]) ?>
-                </div>
-            </div>
+        <div class="box nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="<?= Url::to(['sms-log/index']) ?>"> 短信日志</a>
+                </li>
+                <li>
+                    <a href="<?= Url::to(['email-log/index']) ?>"> 邮件日志</a>
+                </li>
+            </ul>
+
+
+<!--            <div class="box-header">-->
+<!--                <h3 class="box-title">--><?//= $this->title; ?><!--</h3>-->
+<!--                <div class="box-tools">-->
+<!--                    --><?//= Html::linkButton(['stat'], '<i class="fa fa-area-chart"></i> 异常发送报表统计', [
+//                        'data-toggle' => 'modal',
+//                        'data-target' => '#ajaxModalMax',
+//                    ]) ?>
+<!--                </div>-->
+<!--            </div>-->
             <!-- /.box-header -->
             <div class="box-body table-responsive">
                 <?= GridView::widget([
@@ -35,9 +46,21 @@ $this->params['breadcrumbs'][] = $this->title;
                             'headerOptions' => ['class' => 'col-md-1'],
                         ],
                         // 'content',
+//                        [
+//                            'attribute' => 'usage',
+//                            'headerOptions' => ['class' => 'col-md-1'],
+//                        ],
                         [
                             'attribute' => 'usage',
                             'headerOptions' => ['class' => 'col-md-1'],
+                            'value' => function($model) {
+                                return \common\models\common\SmsLog::$usageExplain[$model->usage]??$model->usage;
+                            },
+                            'filter' => Html::activeDropDownList($searchModel, 'usage', \common\models\common\SmsLog::$usageExplain, [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control'
+                                ]
+                            )
                         ],
                         [
                             'attribute' => 'used',

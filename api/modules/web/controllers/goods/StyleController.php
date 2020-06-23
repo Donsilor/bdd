@@ -5,6 +5,7 @@ namespace api\modules\web\controllers\goods;
 use common\enums\StatusEnum;
 use api\controllers\OnAuthController;
 use common\helpers\ImageHelper;
+use common\models\goods\Goods;
 use common\models\goods\Style;
 use common\helpers\ResultHelper;
 use common\models\goods\StyleLang;
@@ -64,14 +65,16 @@ class StyleController extends OnAuthController
         $params = \Yii::$app->request->post("params");  //属性帅选
 
 //        $params = json_decode($params);
+        if(is_array($type_id)) {
+            $query ->andWhere(['in','m.type_id',$type_id]);
+        }else{
+            $query ->andWhere(['m.type_id'=>$type_id]);
+        }
+
         if(!empty($params)){
 
+            $ringStyleQuery = null;
             $subQuery = AttributeIndex::find()->alias('a')->select(['a.style_id'])->distinct("a.style_id");
-            if(is_array($type_id)) {
-                $query ->andWhere(['in','m.type_id',$type_id]);
-            }else{
-                $query ->andWhere(['m.type_id'=>$type_id]);
-            }
 
             $k = 0;
             foreach ($params as $param){
@@ -107,7 +110,16 @@ class StyleController extends OnAuthController
                     $config_values = array_merge(array_diff($config_values, array(-1)));
                     if(empty($config_values)) continue;
                     $config_values_str = join(',',$config_values);
-                    $subQuery->innerJoin(AttributeIndex::tableName().' '.$alias, $on." and {$alias}.attr_value_id in ({$config_values_str})");
+
+                    if($param_name == "ring_style") {
+                        $where = [];
+                        $where['attr_id'] = $attr_id;
+                        $where['attr_value_id'] = $config_values;
+                        $ringStyleQuery = AttributeIndex::find()->alias($alias)->select(['style_id'])->where($where)->distinct("style_id");
+                    }
+                    else {
+                        $subQuery->innerJoin(AttributeIndex::tableName().' '.$alias, $on." and {$alias}.attr_value_id in ({$config_values_str})");
+                    }
                 }else if($value_type == 2){
                     $begin_value = $param['beginValue'];
                     $end_value = $param['endValue'];
@@ -116,8 +128,25 @@ class StyleController extends OnAuthController
             }
 //            echo $subQuery->createCommand()->getSql();exit;
 //            return $subQuery->asArray()->all();
-            $query->andWhere(['in','m.id',$subQuery]);
 
+            if($type_id==19) {
+                $subQuery2 = Goods::find()
+                    ->alias('goods')
+                    ->rightJoin(AttributeIndex::tableName().' as ai', 'ai.attr_value_id=goods.id')
+                    ->andWhere(['in','goods.style_id', $subQuery])
+                    ->andWhere(['in','ai.attr_id',[61,62]])
+                    ->select(['ai.style_id'])
+                    ->distinct("ai.style_id");
+
+                $query->andWhere(['in','m.id',$subQuery2]);
+
+                if($ringStyleQuery) {
+                    $query->andWhere(['in','m.id',$ringStyleQuery]);
+                }
+            }
+            else {
+                $query->andWhere(['in','m.id',$subQuery]);
+            }
         }
 //        echo $query->createCommand()->getSql();exit;
         $result = $this->pagination($query,$this->page, $this->pageSize);

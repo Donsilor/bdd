@@ -88,7 +88,7 @@ class ImageHelper
     public static function goodsThumb($image,$size = '')
     {
         if($size == 'small'){
-            return self::thumb($image,200,200);
+            return self::thumb($image,400,400);
         }elseif($size == 'mid') {
             return self::thumb($image,400,400);
         }else if($size == 'big'){

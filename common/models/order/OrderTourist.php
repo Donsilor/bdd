@@ -31,6 +31,8 @@ use yii\db\ActiveRecord;
  * @property int $status 状态：0未支付，1已支付，2已同步到标准订单
  * @property int $created_at 创建时间
  * @property int $updated_at 更新时间
+ * @property string $paid_amount 实付款
+ * @property string $paid_currency 实际支付货币
  */
 class OrderTourist extends \common\models\base\BaseModel
 {
@@ -64,8 +66,8 @@ class OrderTourist extends \common\models\base\BaseModel
     {
         return [
             [['merchant_id', 'store_id', 'tourist_key', 'status', 'created_at', 'updated_at', 'ip_area_id','order_from'], 'integer'],
-            [['order_amount', 'goods_amount', 'discount_amount', 'pay_amount', 'refund_amount', 'shipping_fee', 'tax_fee', 'safe_fee', 'other_fee', 'exchange_rate'], 'number'],
-            [['currency'], 'string', 'max' => 3],
+            [['order_amount', 'goods_amount', 'discount_amount', 'pay_amount', 'refund_amount', 'shipping_fee', 'tax_fee', 'safe_fee', 'other_fee', 'exchange_rate', 'paid_amount'], 'number'],
+            [['currency', 'paid_currency'], 'string', 'max' => 3],
             [['order_sn'], 'string', 'max' => 20],
             [['language'], 'safe'],
             [['ip'], 'string', 'max' => 30],
@@ -102,6 +104,8 @@ class OrderTourist extends \common\models\base\BaseModel
             'order_from' => "订单来源",
             'created_at' => Yii::t('app', '下单时间'),
             'updated_at' => Yii::t('app', '更新时间'),
+            'paid_amount' => \Yii::t('order','实际付款'),
+            'paid_currency'=> \Yii::t('common','实际支付货币'),
         ];
     }
     

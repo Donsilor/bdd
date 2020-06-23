@@ -3,8 +3,13 @@
 namespace backend\modules\order\controllers;
 
 use backend\controllers\BaseController;
+use backend\modules\order\forms\OrderAuditForm;
+use backend\modules\order\forms\OrderCancelForm;
+use backend\modules\order\forms\OrderFollowerForm;
+use backend\modules\order\forms\OrderRefundForm;
 use common\enums\CurrencyEnum;
 use common\enums\InvoiceElectronicEnum;
+use common\enums\OrderFromEnum;
 use common\enums\OrderStatusEnum;
 use common\enums\PayEnum;
 use common\enums\PayStatusEnum;
@@ -59,6 +64,7 @@ class OrderController extends BaseController
     public function actionIndex()
     {
         $orderStatus = Yii::$app->request->get('order_status', -1);
+        $orderStatus2 = Yii::$app->request->queryParams['SearchModel']['order_status']??"";
 
         $searchModel = new SearchModel([
             'model' => $this->modelClass,
@@ -77,16 +83,46 @@ class OrderController extends BaseController
             ]
         ]);
 
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at', 'address.mobile', 'address.email']);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at', 'address.mobile', 'address.email', 'order_status']);
 
         //订单状态
         if ($orderStatus !== -1) {
             if($orderStatus==11) {
                 $dataProvider->query->andWhere('common_pay_wire_transfer.id is not null');
             }
+            elseif($orderStatus==1) {
+                $orderStatus2 = $orderStatus;
+            }
             else {
                 $dataProvider->query->andWhere(['=', 'order_status', $orderStatus]);
             }
+        }
+
+        //订单状态
+        if($orderStatus2!="") {
+            if($orderStatus2==1) {
+                $dataProvider->query->andWhere(['=', 'refund_status', $orderStatus2]);
+                $dataProvider->query->andWhere(['=', 'order_status', 0]);
+            }
+            elseif($orderStatus2==0) {
+                $dataProvider->query->andWhere(['=', 'order_status', $orderStatus2]);
+                $dataProvider->query->andWhere(['=', 'refund_status', 0]);
+            }
+            else {
+                $dataProvider->query->andWhere(['=', 'order_status', $orderStatus2]);
+            }
+        }
+
+        //站点地区
+        $sitesAttach = \Yii::$app->getUser()->identity->sites_attach;
+        if(is_array($sitesAttach)) {
+            $orderFroms = [];
+
+            foreach ($sitesAttach as $site) {
+                $orderFroms = array_merge($orderFroms, OrderFromEnum::platformsForGroup($site));
+            }
+
+            $dataProvider->query->andWhere(['in', 'order.order_from', $orderFroms]);
         }
 
         // 数据状态
@@ -164,12 +200,128 @@ class OrderController extends BaseController
     }
 
     /**
+     * 取消一个订单
+     */
+    public function actionEditCancel()
+    {
+        $id = Yii::$app->request->get('id', null);
+        $order = Yii::$app->request->post('OrderCancelForm', []);
+
+        $this->modelClass = OrderCancelForm::class;
+
+        $model = $this->findModel($id);
+
+        // ajax 校验
+        $this->activeFormValidate($model);
+        if (Yii::$app->request->isPost) {
+
+            Yii::$app->services->order->changeOrderStatusCancel($id, $order['cancel_remark']??'', 'admin', Yii::$app->getUser()->id);
+
+            return $this->redirect(['index']);
+        }
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionCancel()
+    {
+        $ids = Yii::$app->request->post("ids", []);
+        $trans = Yii::$app->db->beginTransaction();
+
+        try {
+            if(empty($ids) || !is_array($ids)) {
+                throw new Exception('提交数据异常');
+            }
+
+            foreach ($ids as $id) {
+                $model = $this->modelClass::findOne($id);
+                if(!$model) {
+                    throw new Exception(sprintf('[%d]数据未找到', $id));
+                }
+
+                //判断订单是否已付款状态
+                if($model->order_status !== OrderStatusEnum::ORDER_UNPAID) {
+                    throw new Exception(sprintf('[%d]不是待付款状态', $id));
+                }
+
+                $isPay = false;
+                //查验订单是否有多笔支付
+                foreach ($model->paylogs as $paylog) {
+                    if($paylog->pay_type==PayEnum::PAY_TYPE_CARD) {
+                        continue;
+                    }
+
+                    //获取支付类
+                    $pay = Yii::$app->services->pay->getPayByType($paylog->pay_type);
+
+                    /**
+                     * @var $state AbstractResponse
+                     */
+                    $state = $pay->verify(['model'=>$paylog, 'isVerify'=>true]);
+
+                    if(in_array($state->getCode(), ['null'])) {
+                        throw new Exception(sprintf('[%d]订单支付[%s]验证出错，请重试', $id, $paylog->out_trade_no));
+                    }
+                    elseif(in_array($state->getCode(), ['completed','pending', 'payer']) || $paylog->pay_status==PayStatusEnum::PAID) {
+                        throw new Exception(sprintf('[%d]订单存在支付[%s]', $id, $paylog->out_trade_no));
+                    }
+                }
+
+                //更新订单状态
+                \Yii::$app->services->order->changeOrderStatusCancel($model->id,"管理员取消订单", 'admin', Yii::$app->getUser()->id);
+            }
+            $trans->commit();
+        } catch (Exception $e) {
+            $trans->rollBack();
+            return ResultHelper::json(422, '取消失败！'.$e->getMessage());
+        }
+
+        return ResultHelper::json(200, '取消成功', [], true);
+
+
+
+    }
+
+    /**
+     * 订单退款
+     */
+    public function actionEditRefund()
+    {
+        $id = Yii::$app->request->get('id', null);
+        $order = Yii::$app->request->post('OrderRefundForm', []);
+
+        $this->modelClass = OrderRefundForm::class;
+
+        $model = $this->findModel($id);
+
+        // ajax 校验
+        $this->activeFormValidate($model);
+
+        if (Yii::$app->request->isPost) {
+
+            Yii::$app->services->order->changeOrderStatusRefund($id, $order['refund_remark']??'', 'admin', Yii::$app->getUser()->id);
+
+            return $this->redirect(['index']);
+        }
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+        ]);
+    }
+
+
+
+    /**
      * 跟进
      * @return mixed|string|\yii\web\Response
      * @throws \yii\base\ExitException
      */
     public function actionEditFollower()
     {
+        $this->modelClass = OrderFollowerForm::class;
+
         $id = Yii::$app->request->get('id', null);
 
         $model = $this->findModel($id);
@@ -224,6 +376,34 @@ class OrderController extends BaseController
             //订单发送邮件
             \Yii::$app->services->order->sendOrderNotification($id);
             return $result ? $this->redirect(['index']):$this->message($this->getError($model), $this->redirect(['index']), 'error');
+        }
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionEditAudit()
+    {
+        $id = Yii::$app->request->get('id', null);
+        $order = Yii::$app->request->post('OrderAuditForm', []);
+
+        $this->modelClass = OrderAuditForm::class;
+
+        $model = $this->findModel($id);
+
+        // ajax 校验
+        $this->activeFormValidate($model);
+
+        if (Yii::$app->request->isPost) {
+
+            try {
+                Yii::$app->services->order->changeOrderStatusAudit($id, $order['audit_status'], $order['audit_remark']??'');
+            } catch (Exception $exception) {
+                $this->message($exception->getMessage(), $this->redirect(['index']), 'error');
+            }
+
+            return $this->redirect(['index']);
         }
 
         return $this->renderAjax($this->action->id, [
@@ -323,13 +503,14 @@ class OrderController extends BaseController
 
 
     public  function actionEleInvoiceAjaxEdit(){
-        $invoice_id = Yii::$app->request->get('invoice_id');
+        $order_id = Yii::$app->request->get('order_id');
         $returnUrl = Yii::$app->request->get('returnUrl',['index']);
         $language = Yii::$app->request->get('language');
 
 
         $this->modelClass = OrderInvoiceEle::class;
-        $model = $this->findModel($invoice_id);
+        $model = $this->findModel($order_id);
+        $model->order_id = $order_id;
 
         $oldModelData = $model->getAttributes();
 
@@ -353,8 +534,7 @@ class OrderController extends BaseController
             }
          // return $this->redirect($returnUrl);
 
-            $invoice = OrderInvoice::findOne($model->invoice_id);
-            $order = Order::findOne($invoice->order_id);
+            $order = Order::findOne($order_id);
 
             OrderLogService::eleInvoiceEdit($order,[$modelData, $oldModelData]);
 
@@ -362,7 +542,7 @@ class OrderController extends BaseController
         }
         return $this->renderAjax($this->action->id, [
             'model' => $model,
-            'invoice_id'=>$invoice_id,
+            'order_id' => $order_id,
             'returnUrl'=>$returnUrl
         ]);
 
@@ -376,6 +556,7 @@ class OrderController extends BaseController
         }
         $result = Yii::$app->services->orderInvoice->getEleInvoiceInfo($order_id);
         $content = $this->renderPartial($result['template'],['result'=>$result]);
+        if(!Yii::$app->request->get('is_pdf', true)) return $content;
         $usage = 'order-invoice';
         $usageExplains = EmailLog::$usageExplain;
         $subject  = $usageExplains[$usage]??'';
@@ -406,7 +587,7 @@ class OrderController extends BaseController
             ],
             // call mPDF methods on the fly
             'methods' => [
-                'SetHeader'=>[$subject],
+//                'SetHeader'=>[$subject],
                 'SetFooter'=>['{PAGENO}'],
             ]
         ]);

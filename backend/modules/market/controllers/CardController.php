@@ -47,7 +47,7 @@ class CardController extends BaseController
                 'user' => ['username']
             ]
         ]);
-        $dataProvider = $searchModel->search(\Yii::$app->request->queryParams,['goods_type_attach','status','created_at']);
+        $dataProvider = $searchModel->search(\Yii::$app->request->queryParams,['goods_type_attach','status','created_at', 'max_use_time']);
 
         if(!empty($search['goods_type_attach'])) {
             $query = MarketCardGoodsType::find()->where(['goods_type'=>$search['goods_type_attach']])->select(['batch']);
@@ -80,6 +80,16 @@ class CardController extends BaseController
                 $where[] = ['=', 'balance' ,new Expression('amount')];
             }
             $dataProvider->query->andWhere($where);
+        }
+
+        //最大使用时长
+        if(isset($search['max_use_time'])) {
+            if($search['max_use_time']) {
+                $dataProvider->query->andWhere(['<>', 'max_use_time', 0]);
+            }
+            else {
+                $dataProvider->query->andWhere(['=', 'max_use_time', 0]);
+            }
         }
 
         //创建时间过滤

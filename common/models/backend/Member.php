@@ -36,6 +36,7 @@ use common\models\common\AuthAssignment;
  * @property int $last_time 最后一次登录时间
  * @property string $last_ip 最后一次登录ip
  * @property int $role 权限
+ * @property int $sites_attach 权限
  * @property int $status 状态[-1:删除;0:禁用;1启用]
  * @property string $created_at 创建时间
  * @property string $updated_at 修改时间
@@ -57,7 +58,7 @@ class Member extends User
     {
         return [
             [['type', 'gender', 'province_id', 'city_id', 'area_id', 'visit_count', 'last_time', 'role', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['birthday'], 'safe'],
+            [['birthday', 'sites_attach'], 'safe'],
             [['username', 'qq', 'mobile', 'home_phone'], 'string', 'max' => 20],
             [['password_hash', 'password_reset_token', 'head_portrait'], 'string', 'max' => 150],
             [['auth_key'], 'string', 'max' => 32],
@@ -98,6 +99,7 @@ class Member extends User
             'last_time' => '最后一次登录时间',
             'last_ip' => '最后一次登录IP',
             'role' => '权限',
+            'sites_attach' => '站点地区',
             'status' => '状态',
             'created_at' => '创建时间',
             'updated_at' => '修改时间',

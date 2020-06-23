@@ -3,6 +3,7 @@
 namespace api\modules\web\controllers\member;
 
 use api\modules\web\forms\CardForm;
+use common\enums\CurrencyEnum;
 use common\enums\PayEnum;
 use common\helpers\ImageHelper;
 use common\helpers\ResultHelper;
@@ -54,8 +55,6 @@ class OrderController extends UserAuthController
 
         $orderList = array();
         foreach ($result['data'] as $order) {
-            $exchange_rate = $order->account->exchange_rate;
-            $currency = $order->account->currency;
             $orderInfo = [
                 'id' =>$order->id,
                 'orderNO' =>$order->order_sn,
@@ -63,11 +62,11 @@ class OrderController extends UserAuthController
                 'refundStatus'=> $order->refund_status,
                 'wireTransferStatus'=> !empty($order->wireTransfer)?$order->wireTransfer->collection_status:null,
                 'orderAmount'=> $order->account->order_amount,
-//                'payAmount'=> bcsub($order->account->order_amount, CardService::getUseAmount($order->id), 2),
+                'payAmountHKD'=> \Yii::$app->services->currency->exchangeAmount($order->account->pay_amount, 2, CurrencyEnum::HKD, $order->account->currency),
                 'productAmount'=> $order->account->goods_amount,
                 'preferFee' => $order->account->discount_amount, //优惠金额
                 'payAmount' => $order->account->pay_amount,//支付金额
-                'coinCode'=> $currency,
+                'coinCode'=> $order->account->currency,
                 'payChannel'=>$order->payment_type,
                 'orderTime' =>$order->created_at,
                 'details'=>[],
@@ -123,13 +122,18 @@ class OrderController extends UserAuthController
                if(!empty($orderGoods->goods_spec)) {
                    $detailSpecs = [];
                    $goods_spec = \Yii::$app->services->goods->formatGoodsSpec($orderGoods->goods_spec);
+                   $ring = [];
                    foreach ($goods_spec as $vo){                       
                        $detailSpecs[] = [
                                'name' =>$vo['attr_name'],
                                'value' =>$vo['attr_value'],                               
                        ];
+                       if(in_array($vo['attr_id'], ['61', '62'])) {
+                           $ring[] = \Yii::$app->services->goods->getGoodsInfo($vo['value_id']);;
+                       }
                    }
                    $orderDetail['detailSpecs'] = json_encode($detailSpecs);
+                   $orderDetail['ring'] = $ring;
                }
                $orderInfo['details'][] = $orderDetail;
            }
@@ -190,10 +194,14 @@ class OrderController extends UserAuthController
             $trans->commit();
             //订单发送邮件
             \Yii::$app->services->order->sendOrderNotification($result['order_id']);
+
+            $payAmountHKD = \Yii::$app->services->currency->exchangeAmount($result['pay_amount'], 2, CurrencyEnum::HKD, $this->getCurrency());
+
             return [
                 "coinType" => $result['currency'],
                 "orderAmount"=> $result['order_amount'],
                 "payAmount"=> $result['pay_amount'],
+                "payAmountHKD"=> $payAmountHKD,
                 "orderId" => $result['order_id'],
                 "payStatus" => $pay['payStatus']??0,
             ];
@@ -277,13 +285,21 @@ class OrderController extends UserAuthController
             if(!empty($orderGoods->goods_spec)) {
                 $detailSpecs = [];
                 $goods_spec = \Yii::$app->services->goods->formatGoodsSpec($orderGoods->goods_spec);
+
+                $ring = [];
                 foreach ($goods_spec as $vo){
                     $detailSpecs[] = [
                         'name' =>$vo['attr_name'],
                         'value' =>$vo['attr_value'],
                     ];
+                    if(in_array($vo['attr_id'], ['61', '62'])) {
+                        $ring[] = \Yii::$app->services->goods->getGoodsInfo($vo['value_id']);;
+                    }
                 }
+
                 $orderDetail['detailSpecs'] = json_encode($detailSpecs);
+
+                $orderDetail['ring'] = $ring;
             }
             $orderDetails[] = $orderDetail;
         }
@@ -357,6 +373,7 @@ class OrderController extends UserAuthController
             'isInvoice'=> 2,            
             'orderNo' => $order->order_sn,
             'orderStatus' => $order->order_status,
+            'refundStatus'=> $order->refund_status,
             'wireTransferStatus'=> !empty($order->wireTransfer)?$order->wireTransfer->collection_status:null,
             'orderTime' => $order->created_at,
             'orderType' => $order->order_type,            

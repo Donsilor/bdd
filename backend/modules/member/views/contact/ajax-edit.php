@@ -20,9 +20,11 @@ $form = ActiveForm::begin([
     </div>
 
     <div class="modal-body">
-
-        <?= $form->field($model, 'status')->dropDownList(common\enums\FollowStatusEnum::getMap()) ?>
+        <?= $form->field($model, 'followed_status')->dropDownList(common\enums\FollowStatusEnum::getMap()) ?>
         <?= $form->field($model, 'remark')->textarea(['rows' => 6]) ?>
+        <?= $form->field($model, 'follower_id')->hiddenInput([
+            'value' => Yii::$app->user->getIdentity()->id
+        ])->label("") ?>
         <!-- /.tab-pane -->
     </div>
     <!-- /.tab-content -->

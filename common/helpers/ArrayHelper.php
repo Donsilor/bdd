@@ -405,6 +405,5 @@ class ArrayHelper extends BaseArrayHelper
             }
         }
         return $tree;
-    }
-        
+    }            
 }

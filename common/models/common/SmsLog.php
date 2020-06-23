@@ -12,6 +12,7 @@ use common\behaviors\MerchantBehavior;
  * @property string $merchant_id 商户id
  * @property string $member_id 用户id
  * @property string $mobile 手机号码
+ * @property int $platform platform
  * @property string $code 验证码
  * @property string $content 内容
  * @property int $error_code 报错code
@@ -33,7 +34,10 @@ class SmsLog extends \common\models\base\BaseModel
     const USAGE_UP_PWD = 'up-pwd';
     const USAGE_ORDER_SEND = 'order-send';
     const USAGE_ERROR_NOTICE = 'error-notice';
+    const USAGE_ORDER_REFUND_NOTICE = 'order-refund-notice';
     const USAGE_WIRE_TRANSFER_ORDER_NOTICE = 'wire-transfer-order-notice';
+    const USAGE_ORDER_PAY_SUCCESS = 'order-pay-success-notice';
+    const USAGE_ORDER_ABNORMAL_NOTICE = 'order-abnormal-notice';
 
     /**
      * @var array
@@ -44,8 +48,11 @@ class SmsLog extends \common\models\base\BaseModel
         self::USAGE_UP_PWD => '修改密码验证码',
         self::USAGE_ORDER_SEND => '订单发货通知',
         self::USAGE_ERROR_NOTICE => '系统异常提醒',
+        self::USAGE_ORDER_REFUND_NOTICE => '订单退款通知',
         self::USAGE_WIRE_TRANSFER_ORDER_NOTICE => '电汇订单通知',
-    ];   
+        self::USAGE_ORDER_PAY_SUCCESS => '付款成功通知',
+        self::USAGE_ORDER_ABNORMAL_NOTICE => '订单异常通知',
+    ];
     /**
      * {@inheritdoc}
      */
@@ -60,7 +67,7 @@ class SmsLog extends \common\models\base\BaseModel
     public function rules()
     {
         return [
-            [['merchant_id', 'member_id', 'error_code', 'used', 'mobile', 'code', 'use_time', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['merchant_id', 'member_id', 'error_code', 'used', 'mobile', 'code', 'use_time', 'status', 'created_at', 'updated_at', 'platform'], 'integer'],
             [['error_data'], 'string'],
             [['usage'], 'string', 'max' => 20],
             [['ip'], 'string', 'max' => 30],
@@ -78,6 +85,7 @@ class SmsLog extends \common\models\base\BaseModel
             'id' => 'ID',
             'merchant_id' => '商户',
             'member_id' => '用户',
+            'platform' => '平台',
             'email' => '手机号码',
             'code' => '验证码',
             'content' => '内容',

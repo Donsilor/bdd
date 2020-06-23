@@ -1,5 +1,6 @@
 <?php
 
+use common\enums\CurrencyEnum;
 use common\helpers\Html;
 use yii\widgets\ActiveForm;
 use common\widgets\langbox\LangBox;
@@ -32,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="tab-content">
                 <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_1">
                     <ul class="nav nav-tabs pull-right">
-                        <li class="pull-left header"><i class="fa fa-th"></i> 详情信息&nbsp; <span class="label label-primary"><?= \common\enums\OrderStatusEnum::getValue($model->order_status) ?></span>
+                        <li class="pull-left header"><i class="fa fa-th"></i> 详情信息&nbsp; <span class="label label-primary"><?= $model->refund_status?'已关闭':\common\enums\OrderStatusEnum::getValue($model->order_status) ?></span>
                         </li>
                     </ul>
                     <div class="box-body col-lg-12" style="margin-left:9px">
@@ -61,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             </div>
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4"><?= $model->getAttributeLabel('order_status') ?>：</label>
-                                <?= \common\enums\OrderStatusEnum::getValue($model->order_status) ?>
+                                <?= $model->refund_status?'已关闭':\common\enums\OrderStatusEnum::getValue($model->order_status) ?>
                             </div>
                         </div>
                         <div class="row">
@@ -82,7 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="row">
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4"><?= $model->getAttributeLabel('member.username') ?>：</label>
-                                <?= $model->member->username ?>
+                                <?= $model->member->username ?? '' ?>
                             </div>
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4"><?= $model->getAttributeLabel('order_from') ?>：</label>
@@ -230,14 +231,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="col-lg-6">
 
                                     <div class="row" style="margin-top:0px; ">
-                                        <?= Html::edit(['ele-invoice-ajax-edit', 'invoice_id' => $model->invoice->id, 'language'=>$model->language,'returnUrl' => Url::getReturnUrl()],'编辑', [
+                                        <?= Html::edit(['ele-invoice-ajax-edit', 'order_id' => $model->id, 'language'=>$model->language,'returnUrl' => Url::getReturnUrl()],'编辑', [
                                             'data-toggle' => 'modal',
                                             'data-target' => '#ajaxModalLg',
                                             'style'=>'height:25px;font-size:10px;'
                                         ])?>
                                     </div>
                                     <div class="row" style="margin-top:15px; ">
-                                        <?= Html::a('预览',['ele-invoice-pdf?order_id='.$model->id],  [
+                                        <?= Html::a('预览',['ele-invoice-pdf','order_id'=>$model->id],  [
                                             'class' => 'btn btn-info btn-sm','target'=>'blank',
                                             'style'=>'height:25px;font-size:10px;'
                                         ])?>
@@ -250,11 +251,30 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <!--                                    --><?//= Html::button('打印',['class'=>'btn btn-primary btn-sm','style'=>'height:25px;font-size:10px;'])?>
                                     <!--                                </div>-->
 
-
                                 </div>
                             </div>
                         <?php } else {?>
-                            不开发票
+                        <div class="col-lg-6">
+                                <div class="row">
+                                    不开发票
+                                </div>
+                                <br/>
+
+                                <div class="row">
+                                    <?= Html::a('预览',['ele-invoice-pdf','order_id'=>$model->id],  [
+                                        'class' => 'btn btn-info btn-sm','target'=>'blank',
+                                    ])?>
+                                    <?= Html::edit(['ele-invoice-ajax-edit', 'order_id' => $model->id, 'language'=>$model->language,'returnUrl' => Url::getReturnUrl()],'编辑', [
+                                        'data-toggle' => 'modal',
+                                        'data-target' => '#ajaxModalLg',
+
+                                    ])?>
+
+                                </div>
+
+
+                        </div>
+
                         <?php }?>
                     </div>
                 </div>
@@ -284,23 +304,77 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'label' => '商品清单',
                                         'value' => function ($model) {
                                             $html = <<<DOM
-        <div class="row">
+        <div class="row" style="margin: 10px -15px;">
         
-        <div class="col-lg-8">%s<br/>SKU：%s&nbsp;%s</div>
+        <div class="col-lg-11">%s<br/>SKU：%s&nbsp;%s</div>
         </div>
 DOM;
-                                            $goods_spec = '';
-                                            if($model->goods_spec){
-                                                $model->goods_spec = \Yii::$app->services->goods->formatGoodsSpec($model->goods_spec);
-                                                foreach ($model->goods_spec as $vo){
-                                                    $goods_spec .= $vo['attr_name'].":".$vo['attr_value']."&nbsp;";
+                                            $value = '';
+                                            if($model->goods_type==19) {
+                                                $value1 = '';
+                                                $value2 = '';
+                                                $goods_spec = '';
+                                                $goods_spec1 = '';
+                                                $goods_spec2 = '';
+                                                if($model->goods_spec) {
+                                                    $model->goods_spec = \Yii::$app->services->goods->formatGoodsSpec($model->goods_spec);
+                                                    foreach ($model->goods_spec as $vo) {
+                                                        if($vo['attr_id']==61) {
+                                                            $goods = Yii::$app->services->goods->getGoodsInfo($vo['value_id']);
+
+                                                            foreach ($goods['lang']['goods_spec'] as $spec) {
+                                                                $goods_spec1 .= $spec['attr_name'].":".$spec['attr_value']."&nbsp;";
+                                                            }
+
+                                                            $value1 .= sprintf($html,
+                                                                $vo['attr_name'] . '：' . $goods['goods_name'],
+                                                                $goods['goods_sn'],
+                                                                $goods_spec1
+                                                            );
+                                                            continue;
+                                                        }
+                                                        if($vo['attr_id']==62) {
+                                                            $goods = Yii::$app->services->goods->getGoodsInfo($vo['value_id']);
+
+                                                            foreach ($goods['lang']['goods_spec'] as $spec) {
+                                                                $goods_spec2 .= $spec['attr_name'].":".$spec['attr_value']."&nbsp;";
+                                                            }
+
+                                                            $value2 .= sprintf($html,
+                                                                $vo['attr_name'] . '：' . $goods['goods_name'],
+                                                                $goods['goods_sn'],
+                                                                $goods_spec2
+                                                            );
+                                                            continue;
+                                                        }
+                                                        $goods_spec .= $vo['attr_name'].":".$vo['attr_value']."&nbsp;";
+                                                    }
                                                 }
+                                                $value .= sprintf($html,
+                                                    '对戒名：' . $model->goods_name,
+                                                    $model->goods_sn,
+                                                    $goods_spec
+                                                );
+
+                                                $value .= $value1;
+                                                $value .= $value2;
                                             }
-                                            return sprintf($html,
-                                                $model->goods_name,
-                                                $model->goods_sn,
-                                                $goods_spec
-                                            );
+                                            else {
+                                                $goods_spec = '';
+                                                if($model->goods_spec){
+                                                    $model->goods_spec = \Yii::$app->services->goods->formatGoodsSpec($model->goods_spec);
+                                                    foreach ($model->goods_spec as $vo){
+                                                        $goods_spec .= $vo['attr_name'].":".$vo['attr_value']."&nbsp;";
+                                                    }
+                                                }
+                                                $value .= sprintf($html,
+                                                    $model->goods_name,
+                                                    $model->goods_sn,
+                                                    $goods_spec
+                                                );
+                                            }
+
+                                            return $value;
                                         },
                                         'filter' => false,
                                         'format' => 'html',
@@ -350,7 +424,23 @@ DOM;
                                     <div class="col-lg-3 text-right">
                                         <label><?= $model->getAttributeLabel('seller_remark') ?>：</label></div>
                                     <div class="col-lg-9">
-                                        <pre><?= $model->seller_remark ?></pre>
+
+                                            <?php
+                                            $remark = trim($model->seller_remark);
+                                            if($model->audit_remark) {
+                                                $remark && ($remark .= "\r\n--------------------\r\n");
+                                                $remark .= '[审核备注]：'.trim($model->audit_remark);
+                                            }
+                                            if($model->refund_remark) {
+                                                $remark && ($remark .= "\r\n--------------------\r\n");
+                                                $remark .= '[退款备注]：'.trim($model->refund_remark);
+                                            }
+                                            if($model->cancel_remark) {
+                                                $remark && ($remark .= "\r\n--------------------\r\n");
+                                                $remark .= '[取消备注]：'.trim($model->cancel_remark);
+                                            }
+                                            ?>
+                                        <pre><?= $remark ?></pre>
                                     </div>
                                 </div>
                             </div>
@@ -406,11 +496,22 @@ DOM;
                                 ?>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label style="font-weight:bold">应付款：</label></div>
-                                    <div class="col-lg-7 text-red"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($model->account->pay_amount, 2, ',') ?></div>
+                                    <?php
+                                    $receivable = bcadd($model->account->order_amount, $cardUseAmount, 2) + $model->account->discount_amount;
+                                    ?>
+                                    <?php if($model->account->currency == \common\enums\CurrencyEnum::CNY) { ?>
+                                        <div class="col-lg-7 text-red"><?= \common\enums\CurrencyEnum::HKD ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount(\Yii::$app->services->currency->exchangeAmount($receivable, 2, \common\enums\CurrencyEnum::HKD, CurrencyEnum::CNY), 2, ',') ?> (<?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($receivable, 2, ',') ?>)</div>
+                                    <?php } else { ?>
+                                        <div class="col-lg-7 text-red"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($receivable, 2, ',') ?></div>
+                                    <?php } ?>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label style="font-weight:bold"><?= $model->getAttributeLabel('account.pay_amount') ?>：</label></div>
-                                    <div class="col-lg-7 text-red"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount(!$model->payment_status?0:$model->account->pay_amount, 1, 2, ',') ?></div>
+                                    <?php if($model->account->currency == \common\enums\CurrencyEnum::CNY) { ?>
+                                        <div class="col-lg-7 text-red"><?= $model->account->paid_currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->paid_amount, 1, 2, ',') ?> (<?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->pay_amount, 1, 2, ',') ?>)</div>
+                                    <?php } else { ?>
+                                        <div class="col-lg-7 text-red"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->pay_amount, 1, 2, ',') ?></div>
+                                    <?php } ?>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label style="font-weight:bold">参考支付RMB金额：</label></div>

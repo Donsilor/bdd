@@ -116,6 +116,9 @@ class OrderTouristService extends OrderBaseService
             }
         }
 
+        //游客创建订单
+        \Yii::$app->services->job->notifyContacts->touristCreateOrder($order->order_sn);
+
         return $order->id;
     }
 
@@ -261,6 +264,8 @@ class OrderTouristService extends OrderBaseService
             'other_fee' => $orderTourist->other_fee,
             'exchange_rate' => $orderTourist->exchange_rate,
             'currency' => $orderTourist->currency,
+            'paid_amount' => $orderTourist->paid_amount,
+            'paid_currency' => $orderTourist->paid_currency,
         ];
         if(false === $orderAccount->save()) {
             throw new UnprocessableEntityHttpException($this->getError($orderAccount));
@@ -293,6 +298,8 @@ class OrderTouristService extends OrderBaseService
             if(false === $orderTouristDetails->save()) {
                 throw new UnprocessableEntityHttpException($this->getError($orderTouristDetails));
             }
+
+            \Yii::$app->services->goods->updateGoodsStorageForOrder($detail->goods_id, -$detail->goods_num, $detail->goods_type);
 
             foreach (array_keys($languages) as $language) {
                 $goods = \Yii::$app->services->goods->getGoodsInfo($orderTouristDetails->goods_id,$orderTouristDetails->goods_type,false,$language);

@@ -27,7 +27,7 @@ class DiamondService extends Service
     public function updateGoodsStorageForOrder($goods_id,$quantity)
     {
         $data = [
-            'goods_num'=> new Expression("goods_num+({$quantity})"),
+            //'goods_num'=> new Expression("goods_num+({$quantity})"),
             'sale_volume'=> new Expression("sale_volume-({$quantity})")
         ];
         Diamond::updateAll($data,['goods_id'=>$goods_id]);

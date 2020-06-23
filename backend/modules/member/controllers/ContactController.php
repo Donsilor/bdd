@@ -2,6 +2,7 @@
 
 namespace backend\modules\member\controllers;
 
+use common\models\backend\Member;
 use Yii;
 use common\models\member\Contact;
 use common\components\Curd;
@@ -44,7 +45,7 @@ class ContactController extends BaseController
         ]);
 
         $dataProvider = $searchModel
-            ->search(Yii::$app->request->queryParams,['created_at','book_time']);
+            ->search(Yii::$app->request->queryParams,['created_at','book_time','follower_id']);
 
         $created_at = $searchModel->created_at;
         if (!empty($created_at)) {
@@ -57,6 +58,13 @@ class ContactController extends BaseController
             $dataProvider->query->andFilterWhere(['>=','book_time', explode('/', $searchModel->book_time)[0]]);//起始时间
             $dataProvider->query->andFilterWhere(['<','book_time', date('Y-m-d',strtotime("+1 day",strtotime(explode('/', $searchModel->book_time)[1])))] );//结束时间
         }
+
+        if($searchModel->follower_id) {
+            $followerIds = Member::find()->where(['username'=>$searchModel->follower_id])->select(['id']);
+            $dataProvider->query->andWhere(['in', 'follower_id', $followerIds]);
+        }
+
+
         return $this->render('index', [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
@@ -92,13 +100,24 @@ class ContactController extends BaseController
             ['ID', 'id'],
             ['姓名', 'all_name', 'text'],
             ['电话', 'telphone', 'text'],
+            ['所属站点', 'platform', 'function', function($model) {
+                return \common\enums\OrderFromEnum::getValue($model['platform']);
+            }],
+            ['IP', 'ip', 'text'],
             ['Ip地址', 'ip_location', 'text'],
             ['预约时间', 'book_time', 'text'],
-            ['留言时间', 'created_at', 'date', 'Y-m-d'],
+            ['留言时间', 'created_at', 'date', 'Y-m-d H:i:s'],
             ['留言内容', 'content', 'text'],
-            ['跟进状态', 'status', 'selectd', [0 => '未跟进', 1 => '已跟进']],
+            ['跟进状态', 'followed_status', 'selectd', [0 => '未跟进', 1 => '已跟进']],
             ['备注', 'remark', 'text'],
-            ['留言类别', 'type_id', 'selectd', [1 => '订婚戒指', 2 => '结婚对戒',3 => '时尚饰品']],
+            ['跟进人', 'follower_id', 'function', function($model) {
+                $row = \common\models\backend\Member::find()->where(['id'=>$model['follower_id']])->one();
+                if($row) {
+                    return $row->username;
+                }
+                return '';
+            }],
+            ['留言类别', 'type_id', 'selectd', \common\enums\ContactEnum::getMap()],
 
         ];
         $searchModel = Contact::find();
@@ -107,7 +126,7 @@ class ContactController extends BaseController
             $searchModel->andFilterWhere(['telphone'=>$telphone]);
         }
         if($status){
-            $searchModel->andFilterWhere(['status'=>$status]);
+            $searchModel->andFilterWhere(['followed_status'=>$status]);
         }
         if (!empty($created_at)) {
             $created_at_array = explode('/', $created_at);
@@ -121,7 +140,7 @@ class ContactController extends BaseController
 
         $list = $searchModel
             ->orderBy('created_at desc')
-            ->select(['id','concat(`first_name`,`last_name`) as all_name','telphone','ip_location','book_time','created_at','content','status','type_id','remark'])
+            ->select(['id','concat(`first_name`,`last_name`) as all_name','platform','telphone','ip','ip_location','book_time','created_at','content','follower_id','followed_status','type_id','remark'])
             ->asArray()
             ->all();
 

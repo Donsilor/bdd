@@ -24,6 +24,10 @@ use Yii;
  * @property string $book_time 预约时间
  * @property int $created_at
  * @property int $updated_at
+ * @property int $platform
+ * @property string $follower_id 预约时间
+ * @property int $followed_time
+ * @property int $followed_status
  */
 class Contact extends BaseModel
 {
@@ -41,7 +45,7 @@ class Contact extends BaseModel
     public function rules()
     {
         return [
-            [['member_id', 'type_id', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['member_id', 'type_id', 'status', 'created_at', 'updated_at', 'platform', 'follower_id', 'followed_time', 'followed_status'], 'integer'],
             [['content'], 'string'],
             [['book_time','ip_location','remark'], 'safe'],
             [['language'], 'string', 'max' => 5],
@@ -73,6 +77,10 @@ class Contact extends BaseModel
             'book_time' => '预约时间',
             'created_at' => Yii::t('member_book', '留言时间'),
             'updated_at' => Yii::t('member_book', 'Updated At'),
+            'platform' => '所属站点',
+            'follower_id' => '跟进人',
+            'followed_time' => '跟进时间',
+            'followed_status'=> '跟进状态',
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace api\modules\web\controllers\member;
 
+use common\enums\OrderFromEnum;
 use common\helpers\ImageHelper;
 use common\models\goods\Ring;
 use common\models\goods\RingLang;
@@ -21,7 +22,10 @@ use yii\web\UnprocessableEntityHttpException;
  */
 class CartController extends UserAuthController
 {
-    
+
+    /**
+     * @var OrderCart
+     */
     public $modelClass = OrderCart::class;
     
     protected $authOptional = ['local'];
@@ -33,7 +37,7 @@ class CartController extends UserAuthController
     {
         $id = \Yii::$app->request->get('id');
         
-        $query = $this->modelClass::find()->where(['member_id'=>$this->member_id]);
+        $query = $this->modelClass::find()->where(['member_id'=>$this->member_id,'status'=>1]);
 
         if(!empty($id) && $id = explode(',',$id)) {
             $query->andWhere(['id'=>$id]);
@@ -62,12 +66,15 @@ class CartController extends UserAuthController
             $cart['groupType'] = $model->group_type;
             $cart['goodsType'] = $model->goods_type;
             $cart['groupId'] = $model->group_id;
+
             $cart['coupon'] = [
                 'type_id' => $model->goods_type,//产品线ID
                 'style_id' => $goods['style_id'],//款式ID
                 'price' => $sale_price,//价格
                 'num' =>1,//数量
             ];
+
+            $cart['ring'] = $goods['ring'];
 
             $simpleGoodsEntity = [
                     "goodId"=>$goods['style_id'],
@@ -174,7 +181,13 @@ class CartController extends UserAuthController
                 $cart->goods_type = $goods['type_id'];
                 $cart->goods_price = $goods['sale_price'];
                 $cart->goods_spec = json_encode($goods['goods_spec']);//商品规格
-                
+
+                //款式
+                $cart->style_id = $goods['style_id'];
+
+                //平台组
+                $cart->platform_group = OrderFromEnum::platformToGroup($this->platform);
+
                 if (!$cart->save()) {
                     throw new \Exception($this->getError($cart),500);
                 } 
@@ -199,7 +212,7 @@ class CartController extends UserAuthController
      */
     public function actionCount()
     {
-        return $this->modelClass::find()->where(['member_id'=>$this->member_id])->count();
+        return $this->modelClass::find()->where(['member_id'=>$this->member_id,'status'=>1])->count();
     }
     /**
      * 编辑购物车
@@ -221,12 +234,12 @@ class CartController extends UserAuthController
         }        
         if($id == -1) {
             //清空购物车
-            $num = $this->modelClass::deleteAll(['member_id'=>$this->member_id]);
-        }else {  
+            $num = $this->modelClass::updateAll(['status'=>0], ['member_id'=>$this->member_id]);
+        }else {
             if(!is_array($id)) {
                 $id = explode(',', $id);
             }
-            $num = $this->modelClass::deleteAll(['member_id'=>$this->member_id,'id'=>$id]);
+            $num = $this->modelClass::updateAll(['status'=>0], ['member_id'=>$this->member_id,'id'=>$id]);
         }
         return ['num'=>$num];
     }
@@ -261,6 +274,31 @@ class CartController extends UserAuthController
                 return ResultHelper::api(500,"查询商品失败");
             }
 
+            $sign = $model->getSign();
+            if(!OrderCart::find()->where(['sign'=>$sign])->count('id')) {
+                $_cart = new OrderCart();
+                $_cart->attributes = $model->toArray();
+                $_cart->merchant_id = $this->merchant_id;
+                $_cart->member_id = $this->member_id;
+
+                $_cart->goods_type = $goods['type_id'];
+                $_cart->goods_price = $goods['sale_price'];
+                $_cart->goods_spec = json_encode($goods['goods_spec']);//商品规格
+
+                //款式
+                $_cart->style_id = $goods['style_id'];
+
+                //平台组
+                $_cart->platform_group = OrderFromEnum::platformToGroup($this->platform);
+                $_cart->sign = $sign;
+
+                try {
+                    $_cart->save(false);
+                } catch (\Exception $exception) {
+                    // TODO
+                }
+            }
+
             $sale_price = $this->exchangeAmount($goods['sale_price'],0);
             $cart = array();
             //$cart['id'] = $model->id;
@@ -282,6 +320,8 @@ class CartController extends UserAuthController
                 'price' => $sale_price,//价格
                 'num' =>1,//数量
             ];
+
+            $cart['ring'] = $goods['ring'];
 
             $simpleGoodsEntity = [
                 "goodId"=>$goods['style_id'],

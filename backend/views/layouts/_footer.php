@@ -232,7 +232,17 @@ $this->registerJs($script);
     	let url = $(this).attr('data-url');
     	let status = $(this).attr('data-value');
     	let text = $(this).text();
-    	let ids = $("#"+grid).yiiGridView("getSelectedRows");
+
+        let id = $(this).closest("tr").data("key");
+
+        let ids = [];
+        if(id) {
+            ids.push(id);
+        }
+        else if($("#"+grid).length>0) {
+            ids = $("#"+grid).yiiGridView("getSelectedRows");
+        }
+
     	if(!url){
    		 	url = "<?= Url::to(['ajax-batch-update'])?>";
         }

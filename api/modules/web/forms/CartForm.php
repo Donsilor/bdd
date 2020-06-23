@@ -18,6 +18,8 @@ class CartForm extends Model
     public $group_type;
     public $group_id;
     public $coupon_id;//折扣券ID
+    public $createTime;
+
     
     /**
      * @inheritdoc
@@ -25,22 +27,27 @@ class CartForm extends Model
     public function rules()
     {
         return [
-             [['goods_id','goods_type','goods_num'], 'required'],
-             [['goods_id','goods_type','goods_num','group_type','group_id','coupon_id'], 'number'],
+            [['goods_id','goods_type','goods_num','createTime'], 'required'],
+            [['goods_id','goods_type','goods_num','group_type','group_id','coupon_id','createTime'], 'number'],
         ];
     }
     
     public function attributeLabels()
     {
         return [
+
             'goods_id' => 'goods_id',
             'goods_type' => 'goods_type',
             'goods_num' => 'goods_num',
             'group_type' => 'group_type',
             'group_id' => 'group_id',
             'coupon_id' => 'coupon_id',
+            'createTime' => 'createTime'
         ];
     }
-    
-    
+
+    public function getSign()
+    {
+        return md5(sprintf('ip:[%s],createTime:[%s],goods_type:[%s],goods_id:[%s]', \Yii::$app->request->userIP, $this->createTime, $this->goods_type, $this->goods_id));
+    }
 }
