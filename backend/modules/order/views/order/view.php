@@ -269,6 +269,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'data-target' => '#ajaxModalLg',
 
                                     ])?>
+                                    <?= Html::edit(['edit-send-paid-email', 'order_id' => $model->id,'returnUrl' => Url::getReturnUrl()],sprintf('发送付款邮件(%d)', $model->send_paid_email_time), [
+                                        'data-toggle' => 'modal',
+                                        'data-target' => '#ajaxModalLg',
+                                    ])?>
+
 
                                 </div>
 

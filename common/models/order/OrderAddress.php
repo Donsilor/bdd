@@ -28,6 +28,8 @@ use Yii;
  */
 class OrderAddress extends \common\models\base\BaseModel
 {
+    const SEND_PAID_EMAIL = 'send_paid_email';
+
     /**
      * {@inheritdoc}
      */
@@ -54,6 +56,8 @@ class OrderAddress extends \common\models\base\BaseModel
             [['zip_code'], 'string', 'max' => 20],
             [['mobile_code'], 'string', 'max' => 10],
             [['order_id'], 'unique'],
+            ['email', 'required', 'on' => self::SEND_PAID_EMAIL],
+            ['email', 'email', 'on' => self::SEND_PAID_EMAIL],
         ];
     }
 

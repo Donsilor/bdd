@@ -21,14 +21,27 @@ use yii\web\UnprocessableEntityHttpException;
 
 class OrderBaseService extends Service
 {
+
     /**
      * 发送订单邮件通知
-     * @param unknown $order_id
+     * @param int $order_id
      */
-    public function sendOrderNotification($order_id)
-    {
+    public function sendOrderNotification($order_id) {
         $order = Order::find()->where(['or',['id'=>$order_id],['order_sn'=>$order_id]])->one();
 
+        if(!$order) {
+            return null;
+        }
+
+        return $this->sendOrderNotificationByOrder($order);
+    }
+
+    /**
+     * 发送订单邮件通知
+     * @param Order $order
+     */
+    public function sendOrderNotificationByOrder($order)
+    {
 //        if($order->is_tourist) {
             if(RegularHelper::verify('email',$order->address->email)) {
                 if($order->refund_status) {
