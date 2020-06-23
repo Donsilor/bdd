@@ -669,18 +669,20 @@ class GoodsService extends Service
         $style['totalStock'] = $totalStock;
 
         $styleSpec = json_decode($style_model->style_spec,true);
-        $spec = $styleSpec['a'];
+        $spec = $styleSpec['a']??[];
 
         $ring = [];
-        foreach ($spec as $key => $item) {
-            if(in_array($key, [61, 62])) {
+        if(!empty($spec) && is_array($spec)) {
+            foreach ($spec as $key => $item) {
+                if(in_array($key, [61, 62])) {
 
-                $goodsId = $item[0];
+                    $goodsId = $item[0];
 
-                $goodsInfo = Goods::findOne($goodsId);
+                    $goodsInfo = Goods::findOne($goodsId);
 
-                $ring[] = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id'], null, null, $item, 0);
+                    $ring[] = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id'], null, null, $item, 0);
 
+                }
             }
         }
 
