@@ -22,6 +22,6 @@ $form = ActiveForm::begin([
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
-        <button class="btn btn-primary" type="submit">保存</button>
+        <button class="btn btn-primary" type="submit">发送</button>
     </div>
 <?php ActiveForm::end(); ?>

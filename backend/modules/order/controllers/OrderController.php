@@ -524,6 +524,10 @@ class OrderController extends BaseController
 
             Yii::$app->services->order->sendOrderNotificationByOrder($model);
 
+            OrderLogService::sendPaidEmail($model, [[
+                '收件邮箱' => $model->address->email
+            ]]);
+
             return $this->message("保存成功", $this->redirect($returnUrl), 'success');
         }
         return $this->renderAjax($this->action->id, [
