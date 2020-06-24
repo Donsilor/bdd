@@ -391,7 +391,11 @@ DOM;
                                         'label' => '优惠金额',
                                         'attribute'=>'goods_price',
                                         'value' => function($model) {
-                                            return $model->currency ." " . \common\helpers\AmountHelper::rateAmount($model->goods_price-$model->goods_pay_price, 1, 2, ',');
+                                            $value = \common\helpers\AmountHelper::rateAmount($model->goods_price-$model->goods_pay_price, 1, 2, ',');
+                                            if($value>0.01) {
+                                                $value .= sprintf(" （%s[%s]）", $model->coupon->specials->lang->title, \common\enums\PreferentialTypeEnum::getValue($model->coupon->type));
+                                            }
+                                            return $model->currency ." " . $value;
                                         }
                                     ],
                                     [
@@ -446,6 +450,11 @@ DOM;
                             </div>
                             <div class="col-lg-6">
                                 <div class="row">
+                                    <div class="col-lg-5 text-right"><label>商品件数
+                                            ：</label></div>
+                                    <div class="col-lg-7"><?= $dataProvider->getTotalCount() ?></div>
+                                </div>
+                                <div class="row">
                                     <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.goods_amount') ?>
                                             ：</label></div>
                                     <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->goods_amount, 1, 2, ',') ?></div>
@@ -471,14 +480,14 @@ DOM;
                                     <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->order_amount, 1, 2, ',') ?></div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.coupon_amount') ?>
-                                            ：</label></div>
-                                    <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount(-$model->account->coupon_amount, 1, 2, ',') ?></div>
-                                </div>
-                                <div class="row">
                                     <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.discount_amount') ?>
                                             ：</label></div>
                                     <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount(-$model->account->discount_amount, 1, 2, ',') ?></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.coupon_amount') ?>
+                                            ：</label></div>
+                                    <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount(-$model->account->coupon_amount, 1, 2, ',') ?></div>
                                 </div>
                                 <?php
                                 $cardUseAmount = 0;

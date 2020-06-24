@@ -97,6 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'value' => function($model) {
                                 if($model->type==1) {
                                     $value = '-'.$model->money.'元';
+                                    $value .= ' (满'.$model->at_least.'元使用）';
                                 }
                                 else {
                                     $value = '基础价 * '.($model->discount/100);
@@ -114,7 +115,8 @@ $this->params['breadcrumbs'][] = $this->title;
 //                            'attribute' => 'count',
 //                            'filter' => false,
                             'value' => function($model) {
-                                return $model->getReceiveCount();
+                                return $model->get_count;
+//                                return $model->getReceiveCount();
                             }
                         ],
                         [
@@ -122,7 +124,12 @@ $this->params['breadcrumbs'][] = $this->title;
 //                            'attribute' => 'count',
 //                            'filter' => false,
                             'value' => function($model) {
-                                return $model->getUseCount();
+                                if($model->type==PreferentialTypeEnum::MONEY) {
+                                    return $model->getUseCount();
+                                }
+                                if($model->type==PreferentialTypeEnum::DISCOUNT) {
+                                    return $model->get_count;
+                                }
                             }
                         ],
                         [
