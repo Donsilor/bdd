@@ -31,7 +31,7 @@ class NotifyContactsController extends BaseController
      */
     public function actionIndex()
     {
-        $SearchModel = Yii::$app->request->get('SearchModel', ['type_id'=>1]);
+        $SearchModel = Yii::$app->request->get('SearchModel');
 
         $searchModel = new SearchModel([
             'model' => $this->modelClass,
@@ -49,7 +49,7 @@ class NotifyContactsController extends BaseController
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams?:['SearchModel'=>$SearchModel]);
 
         return $this->render($this->action->id, [
-            'type_id' => $SearchModel['type_id'],
+            'type_id' => $SearchModel['type_id']??1,
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
         ]);
