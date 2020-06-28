@@ -260,7 +260,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <!--                                    --><?//= Html::button('打印',['class'=>'btn btn-primary btn-sm','style'=>'height:25px;font-size:10px;'])?>
                                     <!--                                </div>-->
 
-                                    <?php if($model->order_status==\common\enums\OrderStatusEnum::ORDER_PAID) { ?>
+                                    <?php if($model->order_status>=\common\enums\OrderStatusEnum::ORDER_PAID) { ?>
                                         <?= Html::edit(['edit-send-paid-email', 'order_id' => $model->id,'returnUrl' => Url::getReturnUrl()],sprintf('发送付款邮件(%d)', $model->send_paid_email_time), [
                                             'data-toggle' => 'modal',
                                             'data-target' => '#ajaxModalLg',
@@ -285,7 +285,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                     ])?>
 
-                                    <?php if($model->order_status==\common\enums\OrderStatusEnum::ORDER_PAID) { ?>
+                                    <?php if($model->order_status>=\common\enums\OrderStatusEnum::ORDER_PAID) { ?>
                                     <?= Html::edit(['edit-send-paid-email', 'order_id' => $model->id,'returnUrl' => Url::getReturnUrl()],sprintf('发送付款邮件(%d)', $model->send_paid_email_time), [
                                         'data-toggle' => 'modal',
                                         'data-target' => '#ajaxModalLg',
