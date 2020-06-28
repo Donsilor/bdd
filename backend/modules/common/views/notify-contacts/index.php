@@ -95,11 +95,29 @@ $this->params['breadcrumbs'][] = ['label' =>  $this->title];
                                 ]),
                             ],
                             [
-                                'label' => '添加时间',
                                 'attribute' => 'created_at',
-                                'value' => function($model) {
+                                'filter' => \kartik\daterange\DateRangePicker::widget([    // 日期组件
+                                    'model' => $searchModel,
+                                    'attribute' => 'created_at',
+                                    'value' => $searchModel->created_at,
+                                    'options' => ['readonly' => true,'class'=>'form-control','style'=>'background-color:#fff;width:100px;'],
+                                    'pluginOptions' => [
+                                        'format' => 'yyyy-mm-dd',
+                                        'locale' => [
+                                            'separator' => '/',
+                                            'cancelLabel'=> '清空',
+                                        ],
+                                        'endDate' => date('Y-m-d',time()),
+                                        'todayHighlight' => true,
+                                        'autoclose' => true,
+                                        'todayBtn' => 'linked',
+                                        'clearBtn' => true,
+                                    ],
+                                ]),
+                                'value' => function ($model) {
                                     return Yii::$app->formatter->asDatetime($model->created_at);
-                                }
+                                },
+                                'format' => 'raw',
                             ],
                             [
                                 'header' => "操作",
@@ -127,3 +145,14 @@ $this->params['breadcrumbs'][] = ['label' =>  $this->title];
         </div>
     </div>
 </div>
+
+<script>
+
+    (function ($) {
+
+        $("[data-krajee-daterangepicker]").on("cancel.daterangepicker", function () {
+            $(this).val("").trigger("change");
+        });
+
+    })(window.jQuery);
+</script>
