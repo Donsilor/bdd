@@ -50,10 +50,17 @@ class DiamondController extends BaseController
         ]);
 
         $dataProvider = $searchModel
-            ->search(Yii::$app->request->queryParams, ['goods_name','language']);
+            ->search(Yii::$app->request->queryParams, ['goods_name','language','created_at']);
         $this->setLocalLanguage($searchModel->language);
         $dataProvider->query->joinWith(['lang']);
         $dataProvider->query->andFilterWhere(['like', 'lang.goods_name',$searchModel->goods_name]);
+
+        //创建时间过滤
+        if (!empty(Yii::$app->request->queryParams['SearchModel']['created_at'])) {
+            list($start_date, $end_date) = explode('/', Yii::$app->request->queryParams['SearchModel']['created_at']);
+            $dataProvider->query->andFilterWhere(['between', 'goods_diamond.created_at', strtotime($start_date), strtotime($end_date) + 86400]);
+        }
+
         return $this->render('index', [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
