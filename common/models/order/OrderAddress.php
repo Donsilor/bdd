@@ -30,6 +30,8 @@ use Yii;
  */
 class OrderAddress extends \common\models\base\BaseModel
 {
+    const SEND_PAID_EMAIL = 'send_paid_email';
+
     /**
      * {@inheritdoc}
      */
@@ -58,6 +60,8 @@ class OrderAddress extends \common\models\base\BaseModel
             [['order_id'], 'unique'],
             ['mobile', 'match', 'pattern' => RegularHelper::mobile(), 'message' => '请输入正确的手机号'],
             ['email', 'match', 'pattern' => RegularHelper::email(), 'message' => '请输入正确的邮箱'],
+            ['email', 'required', 'on' => self::SEND_PAID_EMAIL],
+            ['email', 'email', 'on' => self::SEND_PAID_EMAIL],
         ];
     }
 

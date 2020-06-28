@@ -18,6 +18,7 @@ use common\helpers\ExcelHelper;
 use common\helpers\Html;
 use common\helpers\ResultHelper;
 use common\models\common\EmailLog;
+use common\models\goods\Goods;
 use common\models\market\MarketCard;
 use common\models\market\MarketCardDetails;
 use common\models\member\Address;
@@ -38,6 +39,7 @@ use common\enums\StatusEnum;
 use common\models\base\SearchModel;
 use common\models\order\Order;
 use Exception;
+use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use common\enums\FollowStatusEnum;
@@ -505,6 +507,39 @@ class OrderController extends BaseController
     }
 
 
+    public  function actionEditSendPaidEmail() {
+        $order_id = Yii::$app->request->get('order_id');
+        $returnUrl = Yii::$app->request->get('returnUrl', ['index']);
+
+        $model = $this->findModel($order_id);
+
+        $model->address->setScenario(OrderAddress::SEND_PAID_EMAIL);
+
+        $this->activeFormValidate($model->address);
+        if ($model->address->load(Yii::$app->request->post())) {
+
+            //更新发送次数
+            $data = [];
+            $data['send_paid_email_time'] = new Expression("send_paid_email_time+(1)");
+
+            Order::updateAll($data,['id'=>$model->id]);
+
+            $model->order_status = OrderStatusEnum::ORDER_PAID;
+
+            Yii::$app->services->order->sendOrderNotificationByOrder($model);
+
+            OrderLogService::sendPaidEmail($model, [[
+                '收件邮箱' => $model->address->email
+            ]]);
+
+            return $this->message("保存成功", $this->redirect($returnUrl), 'success');
+        }
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+            'order_id' => $order_id,
+            'returnUrl'=>$returnUrl
+        ]);
+    }
 
     public  function actionEleInvoiceAjaxEdit(){
         $order_id = Yii::$app->request->get('order_id');

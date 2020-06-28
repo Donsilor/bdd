@@ -47,6 +47,8 @@ use Yii;
  * @property int $status 状态 1已审核 0待审核 -1取消
  * @property int $created_at 订单生成时间
  * @property int $updated_at 更新时间
+ * @property int $send_paid_email_time 发送支付成功邮件次数
+ *
  */
 class Order extends \common\models\base\BaseModel
 {
@@ -64,7 +66,7 @@ class Order extends \common\models\base\BaseModel
     public function rules()
     {
         return [
-            [['audit_status', 'merchant_id','ip_area_id','payment_type','payment_status', 'payment_time', 'member_id', 'finished_time', 'evaluation_status', 'evaluation_again_status', 'order_status', 'refund_status', 'cancel_status', 'order_from', 'order_type', 'is_tourist', 'is_invoice','api_pay_time', 'status', 'created_at', 'updated_at', 'follower_id','followed_status' ,'followed_time', 'express_id','delivery_time','delivery_status', 'refund_status'], 'integer'],
+            [['audit_status', 'merchant_id','ip_area_id','payment_type','payment_status', 'payment_time', 'member_id', 'finished_time', 'evaluation_status', 'evaluation_again_status', 'order_status', 'refund_status', 'cancel_status', 'order_from', 'order_type', 'is_tourist', 'is_invoice','api_pay_time', 'status', 'created_at', 'updated_at', 'follower_id','followed_status' ,'followed_time', 'express_id','delivery_time','delivery_status', 'refund_status', 'send_paid_email_time'], 'integer'],
             [['language'], 'safe'],
             [['order_sn','pay_sn'], 'string', 'max' => 20],
             [['express_no', 'trade_no'], 'string', 'max' => 50],
@@ -119,6 +121,7 @@ class Order extends \common\models\base\BaseModel
             'status' => '审核状态',
             'created_at' => '下单时间',
             'updated_at' => '更新时间',
+            'send_paid_email_time' => '发送支付成功邮件次数',
         ];
     }
 
