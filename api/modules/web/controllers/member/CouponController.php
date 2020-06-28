@@ -36,7 +36,7 @@ class CouponController extends UserAuthController
         $query->leftJoin('market_specials', 'market_specials.id=market_coupon_details.specials_id');
 
         $query->andWhere(['market_coupon.status'=>1]);
-        $query->andWhere(['>', 'market_specials.end_time', time()]);
+        //$query->andWhere(['>', 'market_specials.end_time', time()]);
 
         $query->orderBy('id DESC');
 
