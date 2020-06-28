@@ -35,6 +35,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     <ul class="nav nav-tabs pull-right">
                         <li class="pull-left header"><i class="fa fa-th"></i> 详情信息&nbsp; <span class="label label-primary"><?= $model->refund_status?'已关闭':\common\enums\OrderStatusEnum::getValue($model->order_status) ?></span>
                         </li>
+                        <li class="pull-right header">
+                            <span class="label">
+                                <?= Html::edit(['edit-address', 'id' => $model->id], '编辑', [
+                                'data-toggle' => 'modal',
+                                'data-target' => '#ajaxModal',
+                                'class'=>'btn btn-info btn-sm'
+                                ]); ?>
+                            </span>
+                        </li>
                     </ul>
                     <div class="box-body col-lg-12" style="margin-left:9px">
                         <div class="row">

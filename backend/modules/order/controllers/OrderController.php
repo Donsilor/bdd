@@ -3,6 +3,7 @@
 namespace backend\modules\order\controllers;
 
 use backend\controllers\BaseController;
+use backend\modules\order\forms\OrderAddressForm;
 use backend\modules\order\forms\OrderAuditForm;
 use backend\modules\order\forms\OrderCancelForm;
 use backend\modules\order\forms\OrderFollowerForm;
@@ -14,6 +15,7 @@ use common\enums\OrderStatusEnum;
 use common\enums\PayEnum;
 use common\enums\PayStatusEnum;
 use common\helpers\ExcelHelper;
+use common\helpers\Html;
 use common\helpers\ResultHelper;
 use common\models\common\EmailLog;
 use common\models\market\MarketCard;
@@ -44,6 +46,8 @@ use backend\modules\order\forms\DeliveryForm;
 use common\enums\DeliveryStatusEnum;
 
 use kartik\mpdf\Pdf;
+use yii\web\Response;
+
 /**
  * Default controller for the `order` module
  */
@@ -780,7 +784,63 @@ class OrderController extends BaseController
         return ExcelHelper::exportData($list, $header, '订单数据导出_' . date('YmdHis',time()));
     }
 
+    public function actionEditAddress()
+    {
+        $id = Yii::$app->request->get('id', null);
 
+        $model = $this->findModel($id);
+
+        $orderOld = $model->getAttributes();
+        $orderOld += $model->address->getAttributes();
+
+        // ajax 校验
+        $this->activeFormValidate($model, $model->address);
+        if ($model->load(Yii::$app->request->post()) &&
+            $model->address->load(Yii::$app->request->post())) {
+
+            $model->link('address', $model->address);
+
+            $orderNew = $model->getAttributes();
+            $orderNew += $model->address->getAttributes();
+
+            $result = $model->save();
+
+            OrderLogService::changeAddress($model, [$orderNew, $orderOld]);
+
+            return $result
+                ? $this->redirect(['view', 'id'=>$id])
+                : $this->message($this->getError($model), $this->redirect(['index', 'id'=>$id]), 'error');
+        }
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionArea()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $pid = Yii::$app->request->get('pid', null);
+        $type_id = Yii::$app->request->get('type_id', null);
+
+        $str = "-- 请选择 --";
+        $model = Yii::$app->services->area->getDropDown($pid);
+        if ($type_id == 1 && !$pid) {
+            return Html::tag('option', '-- 请选择 --', ['value' => '']);
+        } elseif ($type_id == 2 && !$pid) {
+            return Html::tag('option', '-- 请选择 --', ['value' => '']);
+        } elseif ($type_id == 2 && $model) {
+            $str = "-- 请选择 --";
+        }
+
+        $str = Html::tag('option', $str, ['value' => '']);
+        foreach ($model as $value => $name) {
+            $str .= Html::tag('option', Html::encode($name), ['value' => $value]);
+        }
+
+        return $str;
+    }
 
 
 }
