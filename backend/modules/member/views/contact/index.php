@@ -118,11 +118,12 @@ HTML;
                     'model' => $searchModel,
                     'attribute' => 'book_time',
                     'value' => $searchModel->created_at,
-                    'options' => ['readonly' => false,'class'=>'form-control','style'=>'background-color:#fff;width:100px;'],
+                    'options' => ['readonly' => true,'class'=>'form-control','style'=>'background-color:#fff;width:100px;'],
                     'pluginOptions' => [
                         'format' => 'yyyy-mm-dd',
                         'locale' => [
                             'separator' => '/',
+                            'cancelLabel'=> '清空',
                         ],
                         'endDate' => date('Y-m-d',time()),
                         'todayHighlight' => true,
@@ -146,6 +147,7 @@ HTML;
                         'format' => 'yyyy-mm-dd',
                         'locale' => [
                             'separator' => '/',
+                            'cancelLabel'=> '清空',
                         ],
                         'endDate' => date('Y-m-d',time()),
                         'todayHighlight' => true,
@@ -237,3 +239,11 @@ HTML;
         </div>
     </div>
 </div>
+
+<script>
+    (function($) {
+        $("[data-krajee-daterangepicker]").on("cancel.daterangepicker", function () {
+            $(this).val("").trigger("change");
+        });
+    })(jQuery);
+</script>
