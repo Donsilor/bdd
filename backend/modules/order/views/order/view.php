@@ -506,7 +506,7 @@ DOM;
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label style="font-weight:bold">应付款：</label></div>
                                     <?php
-                                    $receivable = bcadd($model->account->order_amount, $cardUseAmount, 2) + $model->account->discount_amount;
+                                    $receivable = $model->account->pay_amount;//bcadd($model->account->order_amount, $cardUseAmount, 2) + $model->account->discount_amount;
                                     ?>
                                     <?php if($model->account->currency == \common\enums\CurrencyEnum::CNY) { ?>
                                         <div class="col-lg-7 text-red"><?= \common\enums\CurrencyEnum::HKD ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount(\Yii::$app->services->currency->exchangeAmount($receivable, 2, \common\enums\CurrencyEnum::HKD, CurrencyEnum::CNY), 2, ',') ?> (<?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($receivable, 2, ',') ?>)</div>
