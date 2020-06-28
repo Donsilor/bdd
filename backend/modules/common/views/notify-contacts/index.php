@@ -100,7 +100,7 @@ $this->params['breadcrumbs'][] = ['label' =>  $this->title];
                                     'model' => $searchModel,
                                     'attribute' => 'created_at',
                                     'value' => $searchModel->created_at,
-                                    'options' => ['readonly' => true,'class'=>'form-control','style'=>'background-color:#fff;width:100px;'],
+                                    'options' => ['readonly' => true,'class'=>'form-control','style'=>'background-color:#fff;'],
                                     'pluginOptions' => [
                                         'format' => 'yyyy-mm-dd',
                                         'locale' => [
