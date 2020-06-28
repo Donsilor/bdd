@@ -107,9 +107,11 @@ class OrderInvoiceService extends OrderBaseService
             'payment_status' => $order->payment_status,
             'order_status' => $order->order_status,
             'send_num' => $order->invoice->send_num ?? 0,
-            'gift_card_amount' => CardService::getUseAmount($order_id),
+            //'gift_card_amount' => CardService::getUseAmount($order_id),
         );
-        $result['order_paid_amount'] = bcsub($result['order_amount'],$result['gift_card_amount'],2);
+        $result['coupon_amount'] = bcadd($order->account->coupon_amount, $order->account->discount_amount, 2);
+        $result['gift_card_amount'] = $order->account->card_amount;
+        $result['order_paid_amount'] = $order->account->paid_amount;//bcsub($result['order_amount'],$result['gift_card_amount'],2);
 
         $order_invoice_exe_model = OrderInvoiceEle::find()
             ->where(['order_id'=>$order->id])

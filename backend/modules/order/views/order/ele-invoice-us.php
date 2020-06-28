@@ -142,7 +142,7 @@
 
                 <div class="total clf">
                     <div class="fr clf">
-                        <div class="fr total-val"> - <?php echo $result['currency'] .' '.'0'; ?></div>
+                        <div class="fr total-val"> - <?php echo $result['currency'] .' '.$result['coupon_amount']; ?></div>
                         <div class="fr total-bg">Coupon discount</div>
                     </div>
                 </div>
