@@ -115,13 +115,18 @@ class OrderAddress extends \common\models\base\BaseModel
     public function beforeSave($insert)
     {
         //更新地区名称
-        $country = Yii::$app->services->area->getArea($this->country_id);
-        $province = Yii::$app->services->area->getArea($this->province_id);
-        $city = Yii::$app->services->area->getArea($this->city_id);
-
-        $this->country_name = $country['name']?? '';
-        $this->province_name = $province['name']?? '';
-        $this->city_name = $city['name']?? '';
+        if(!empty($this->country_id)) {
+            $country = Yii::$app->services->area->getArea($this->country_id);
+            $this->country_name = $country['name']?? '';
+        }
+        if(!empty($this->province_id)) {
+            $province = Yii::$app->services->area->getArea($this->province_id);
+            $this->province_name = $province['name']?? '';
+        }
+        if(!empty($this->city_id)) {
+            $city = Yii::$app->services->area->getArea($this->city_id);
+            $this->city_name = $city['name']?? '';
+        }
 
         if(RegularHelper::verify('chineseCharacters',$this->lastname.''.$this->firstname)) {
             $realname  = $this->lastname.''.$this->firstname;
