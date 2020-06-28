@@ -125,11 +125,12 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                                     'model' => $searchModel,
                                     'attribute' => 'created_at',
                                     'value' => '',
-                                    'options' => ['readonly' => false, 'class' => 'form-control',],
+                                    'options' => ['readonly' => true, 'class' => 'form-control', 'style'=>'background-color:#fff;width:100px;'],
                                     'pluginOptions' => [
                                         'format' => 'yyyy-mm-dd',
                                         'locale' => [
                                             'separator' => '/',
+                                            'cancelLabel'=> '清空',
                                         ],
                                         'endDate' => date('Y-m-d', time()),
                                         'todayHighlight' => true,
@@ -417,6 +418,9 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
             $(".filters input[name='" + $(this).attr('name') + "']").val($(this).val()).trigger('change');
         });
 
+        $("[data-krajee-daterangepicker]").on("cancel.daterangepicker", function () {
+            $(this).val("").trigger("change");
+        });
 
     })(window.jQuery);
 </script>
