@@ -36,8 +36,12 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= $form->field($model, 'goods_attach')->textarea(['rows'=>3])->hint('款号之间用英文状态下,隔开。'); ?>
     <?php } else { ?>
         <?= $form->field($model, 'goods_type_attach')->checkboxList(\services\goods\TypeService::getTypeList()); ?>
-    <?php } ?>
-    <?= $form->field($model, 'area_attach')->checkboxList(AreaEnum::getMap()); ?>
+    <?php }
+    $areaEnum = AreaEnum::getMap();
+    unset($areaEnum[3]);
+    unset($areaEnum[4]);
+    ?>
+    <?= $form->field($model, 'area_attach')->checkboxList($areaEnum); ?>
     <?= $form->field($model, 'count')->textInput(); ?>
     <div id="money" class="<?= $specials->type == PreferentialTypeEnum::DISCOUNT ? 'hide' : ''; ?>">
         <?= $form->field($model, 'at_least')->textInput()->hint(' 0代表无限制'); ?>

@@ -77,7 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             }
                         ],
                         [
-                            'label' => '活动地区',
+                            'label' => '活动站点地区',
                             'attribute' => 'area_attach',
                             'value' => function($model) {
                                 if(empty($model->area_attach)) {
