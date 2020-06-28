@@ -35,6 +35,7 @@ class ClientPurchaseRequest extends AbstractClientRequest
             'lang'           => $this->getLang(),
             'payMethod'      => $this->getPayMethod(),
             'redirect'       => $this->getRedirect(),
+            'deeplink'       => $this->getDeeplink()
         );
 
         $data = Helper::filterData($data);

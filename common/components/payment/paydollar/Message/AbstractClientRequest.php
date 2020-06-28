@@ -24,6 +24,16 @@ abstract class AbstractClientRequest extends AbstractRequest
         return $this->getParameter('sandbox');
     }
 
+    public function setDeeplink($value)
+    {
+        return $this->setParameter('deeplink', $value);
+    }
+
+    public function getDeeplink()
+    {
+        return $this->getParameter('deeplink');
+    }
+
     public function setLoginId($value)
     {
         return $this->setParameter('loginId', $value);
