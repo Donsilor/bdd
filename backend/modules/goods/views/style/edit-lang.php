@@ -744,9 +744,13 @@ $(function(){
                	return false;
            	 }
         }
-    	$("#skuTable tr[class*='sku_table_tr']").each(function(){
+    	$("#skuTable tr[class*='sku_table_tr']").each(function(i){
         	if($(this).find(".setsku-status").val() == 1){
-        		$(this).find(".setsku-goods_sn").val(fromValue);
+        	    i++;
+        	    if(i<10) {
+        	        i = "0" + i;
+                }
+        		$(this).find(".setsku-goods_sn").val(fromValue + "-" +i);
         	}
         });
 
