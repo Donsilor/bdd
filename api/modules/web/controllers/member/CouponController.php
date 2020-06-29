@@ -44,6 +44,9 @@ class CouponController extends UserAuthController
 
         $couponList = [];
         foreach ($result['data'] as $datum) {
+            if($datum->specials->status!=1 && $datum->coupon_status==1) {
+                continue;
+            }
 
             $couponList[] = [
                 'specialsName' => $datum->specials->lang->title,//活动名
