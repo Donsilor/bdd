@@ -83,7 +83,7 @@ class CardController extends BaseController
         }
 
         //最大使用时长
-        if(isset($search['max_use_time'])) {
+        if(isset($search['max_use_time']) && strlen($search['max_use_time'])>0) {
             if($search['max_use_time']) {
                 $dataProvider->query->andWhere(['<>', 'max_use_time', 0]);
             }

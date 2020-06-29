@@ -68,6 +68,7 @@ $type_id = Yii::$app->request->get('type_id', 0);
                                     'format' => 'yyyy-mm-dd',
                                     'locale' => [
                                         'separator' => '/',
+                                        'cancelLabel'=> '清空',
                                     ],
                                     'endDate' => date('Y-m-d', time()),
                                     'todayHighlight' => true,
