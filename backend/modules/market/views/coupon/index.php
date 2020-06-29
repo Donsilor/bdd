@@ -115,7 +115,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //                            'attribute' => 'count',
 //                            'filter' => false,
                             'value' => function($model) {
-                                if($model->type==1) {
+                                if($model->type==PreferentialTypeEnum::MONEY) {
                                     return $model->get_count;
                                 }
                                 else {
@@ -129,12 +129,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //                            'attribute' => 'count',
 //                            'filter' => false,
                             'value' => function($model) {
-                                if($model->type==PreferentialTypeEnum::MONEY) {
-                                    return $model->get_count;
-                                }
-                                if($model->type==PreferentialTypeEnum::DISCOUNT) {
-                                    return $model->getUseCount();
-                                }
+                                return $model->getUseCount();
                             }
                         ],
                         [

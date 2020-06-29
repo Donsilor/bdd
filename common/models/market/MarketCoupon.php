@@ -2,6 +2,7 @@
 
 namespace common\models\market;
 
+use common\enums\PreferentialTypeEnum;
 use common\models\backend\Member;
 use common\models\goods\Goods;
 use common\models\goods\GoodsType;
@@ -144,7 +145,16 @@ class MarketCoupon extends \common\models\base\BaseModel
      */
     public function getUseCount()
     {
-        return MarketCouponDetails::find()->where(['coupon_id'=>$this->id, 'coupon_status'=>2])->count('id');
+        if($this->type==PreferentialTypeEnum::MONEY) {
+            $count = MarketCouponDetails::find()->where(['coupon_id'=>$this->id, 'coupon_status'=>2])->count('id');
+        }
+        elseif($this->type==PreferentialTypeEnum::DISCOUNT) {
+            $count = MarketCouponGoods::find()->where(['coupon_id'=>$this->id])->sum('get_count');
+        }
+        else {
+            $count = 0;
+        }
+        return $count;
     }
 
     /**
