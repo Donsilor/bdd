@@ -112,6 +112,7 @@ class OrderInvoiceService extends OrderBaseService
         $result['coupon_amount'] = bcadd($order->account->coupon_amount, $order->account->discount_amount, 2);
         $result['gift_card_amount'] = $order->account->card_amount;
         $result['order_paid_amount'] = $order->account->paid_amount;//bcsub($result['order_amount'],$result['gift_card_amount'],2);
+        $result['order_pay_amount'] = $order->account->pay_amount;//bcsub($result['order_amount'],$result['gift_card_amount'],2);
 
         $order_invoice_exe_model = OrderInvoiceEle::find()
             ->where(['order_id'=>$order->id])
@@ -145,7 +146,7 @@ class OrderInvoiceService extends OrderBaseService
         $order_goods = OrderGoods::find()->alias('m')
             ->leftJoin(OrderGoodsLang::tableName().'lang','m.id=lang.master_id and lang.language="'.$language.'"')
             ->where(['order_id'=>$order_id])
-            ->select(['lang.goods_name','m.goods_sn','m.goods_num','m.goods_pay_price','m.currency'])
+            ->select(['lang.goods_name','m.goods_sn','m.goods_num','m.goods_pay_price','m.goods_price','m.currency'])
             ->asArray()
             ->all();
         $result['order_goods'] = $order_goods;
