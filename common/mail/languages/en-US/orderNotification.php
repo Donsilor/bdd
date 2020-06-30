@@ -96,20 +96,22 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 						<ol>
 							<li>
 								<dl>
+                                    <dt class="sum"><span>Qty of commodities：</span><em><?= count($order->goods)?></em></dt>
 									<dt class="sum"><span>Goods Amount：</span><em><?= AmountHelper::outputAmount($order->account->goods_amount,2,$currency)?></em></dt>
-									<dd class="num"><span>Discount Amount：</span><em class="discount">-<?= AmountHelper::outputAmount($order->account->discount_amount,2,$currency)?></em></dd>
 									<dd class="num"><span>Freight：</span><em>+<?= AmountHelper::outputAmount($order->account->shipping_fee,2,$currency)?></em></dd>
 									<dd class="num"><span>Taxation：</span><em>+<?= AmountHelper::outputAmount($order->account->tax_fee,2,$currency)?></em></dd>
+									<dt class="count"><span>Order Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->order_amount,2,$currency)?></em></dt>
+                                    <dd class="num"><span>Discount Amount：</span><em class="discount">-<?= AmountHelper::outputAmount($order->account->discount_amount,2,$currency)?></em></dd>
+                                    <dd class="num"><span>Coupon：</span><em class="discount">-<?= AmountHelper::outputAmount($order->account->coupon_amount,2,$currency)?></em></dd>
                                     <?php
                                     if($order->cards) {
                                         foreach ($order->cards as $card) {
                                             if($card->type!=2) {
                                                 continue;
                                             }
-                                    ?>
-                                    <dd class="num"><span>Gift Card (<?= $card->card->sn ?>)：</span><em>-<?= AmountHelper::outputAmount(abs($card->use_amount),2,$currency)?></em></dd>
-                                    <?php }} ?>
-									<dt class="count"><span>Order Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->order_amount,2,$currency)?></em></dt>
+                                            ?>
+                                            <dd class="num"><span>Gift Card (<?= $card->card->sn ?>)：</span><em>-<?= AmountHelper::outputAmount(abs($card->use_amount),2,$currency)?></em></dd>
+                                        <?php }} ?>
 									<?php if($order->order_status == OrderStatusEnum::ORDER_PAID || $order->refund_status) {?>
 									<dt class="count"><span>Pay Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->paid_amount,2,$currency)?></em></dt>
                                     <?php } elseif($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
