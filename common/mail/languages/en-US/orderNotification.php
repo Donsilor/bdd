@@ -101,21 +101,19 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 									<dd class="num"><span>Freight：</span><em>+<?= AmountHelper::outputAmount($order->account->shipping_fee,2,$currency)?></em></dd>
 									<dd class="num"><span>Taxation：</span><em>+<?= AmountHelper::outputAmount($order->account->tax_fee,2,$currency)?></em></dd>
                                     <?php
-                                    $cardUseAmount = 0;
                                     if($order->cards) {
                                         foreach ($order->cards as $card) {
                                             if($card->type!=2) {
                                                 continue;
                                             }
-                                            $cardUseAmount = bcadd($cardUseAmount, $card->use_amount, 2);
-                                            ?>
-                                            <dd class="num"><span>Gift Card (<?= $card->card->sn ?>)：</span><em>-<?= AmountHelper::outputAmount(abs($card->use_amount),2,$currency)?></em></dd>
-                                        <?php }} ?>
+                                    ?>
+                                    <dd class="num"><span>Gift Card (<?= $card->card->sn ?>)：</span><em>-<?= AmountHelper::outputAmount(abs($card->use_amount),2,$currency)?></em></dd>
+                                    <?php }} ?>
 									<dt class="count"><span>Order Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->order_amount,2,$currency)?></em></dt>
 									<?php if($order->order_status == OrderStatusEnum::ORDER_PAID || $order->refund_status) {?>
-									<dt class="count"><span>Pay Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
+									<dt class="count"><span>Pay Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->paid_amount,2,$currency)?></em></dt>
                                     <?php } elseif($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
-                                        <dt class="count"><span>Total Amount：</span><em class="total"><?= AmountHelper::outputAmount(bcadd($order->account->order_amount, $cardUseAmount, 2),2,$currency)?></em></dt>
+                                        <dt class="count"><span>Total Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
                                     <?php }?>
                                     <?php if($order->refund_status) { ?>
                                         <dt class="count"><span>Refunded：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
