@@ -123,7 +123,7 @@ class Order extends \common\models\base\BaseModel
             'created_at' => '下单时间',
             'updated_at' => '更新时间',
             'send_paid_email_time' => '发送支付成功邮件次数',
-            'is_test' => '是否测试',
+            'is_test' => '测试',
         ];
     }
 

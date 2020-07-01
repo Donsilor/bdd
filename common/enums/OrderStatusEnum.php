@@ -52,7 +52,7 @@ class OrderStatusEnum extends BaseEnum
     public static function testStatus()
     {
         return [
-            self::ORDER_TEST_YES => \Yii::t('common','是'),
+            self::ORDER_TEST_YES => \Yii::t('common','[测试]'),
             self::ORDER_TEST_NO => \Yii::t('common','否'),
         ];
     }

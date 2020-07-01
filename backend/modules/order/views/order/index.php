@@ -144,6 +144,24 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                                 'format' => 'raw',
                             ],
                             [
+                                'attribute' => 'is_test',
+                                'headerOptions' => [
+                                    'class' => 'col-md-1',
+                                    'style' => 'width:20px;'
+                                ],
+                                'filter' => Html::activeDropDownList($searchModel, 'is_test', OrderStatusEnum::testStatus(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    if($model->is_test) {
+                                        return \common\enums\OrderStatusEnum::getValue($model->is_test, 'testStatus');
+                                    }
+                                    return '';
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
                                 'attribute' => 'order_sn',
                                 'filter' => Html::activeTextInput($searchModel, 'order_sn', [
                                     'class' => 'form-control',
