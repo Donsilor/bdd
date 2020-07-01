@@ -29,6 +29,29 @@ $form = ActiveForm::begin([
         <?= $form->field($model, 'seller_remark')->textarea() ?>
         <?= $form->field($model, 'is_test')->dropDownList(\common\enums\OrderStatusEnum::testStatus())->label('是否测试') ?>
     </div>
+    <div class="modal-body">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <td width="160px;">时间</td>
+                <td>跟进人</td>
+                <td>备注</td>
+            </tr>
+            </thead>
+            <tbody>
+            <?php if($orderLog) {
+            foreach ($orderLog as $item) { ?> <tr>
+                <td><?= Yii::$app->formatter->asDatetime($item->log_time) ?></td>
+                <td><?= $item->log_user ?></td>
+                <td><?= $item->data[0]['seller_remark']??'' ?></td>
+            </tr>
+            <?php }} else { ?> <tr>
+                <td colspan="3">无跟进信息</td>
+            </tr>
+            <?php } ?>
+            </tbody>
+        </table>
+    </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
         <button class="btn btn-primary" type="submit">保存</button>
