@@ -18,6 +18,19 @@ use yii\console\Request;
 class OrderLogService extends Service
 {
     //客户提交电汇支付
+    static public function sendPaidEmail($order, $data=[])
+    {
+        $attr['action_name'] = strtoupper(__FUNCTION__);
+        $attr['order_sn'] = $order['order_sn'];
+
+        $attr['data'] = $data;
+
+        //状态变更
+        $attr['log_msg'] = '发送付款邮件';
+        return self::log($attr);
+    }
+
+    //客户提交电汇支付
     static public function wireTransferAudit($order, $data=[])
     {
         $attr['action_name'] = strtoupper(__FUNCTION__);
@@ -76,6 +89,22 @@ class OrderLogService extends Service
         $attr['log_msg'] = '订单创建';
         //$attr['log_msg'] .= sprintf("\r\n[订单状态]：“%s”变更为“%s“;", OrderStatusEnum::getValue(OrderStatusEnum::ORDER_UNPAID), OrderStatusEnum::getValue(OrderStatusEnum::ORDER_CANCEL));
 
+        return self::log($attr);
+    }
+
+    //创建订单
+    static public function changeAddress($order, $data=[])
+    {
+        $old = array_diff($data[0], $data[1]);
+        $new = array_diff($data[1], $data[0]);
+
+        //收货人+手机号+邮箱+ip归属城市 +客户留言
+        $attr['action_name'] = strtoupper(__FUNCTION__);
+        $attr['order_sn'] = $order['order_sn'];
+        $attr['data'] = [$old, $new];
+
+        //状态变更
+        $attr['log_msg'] = '订单收件人信息修改';
         return self::log($attr);
     }
 

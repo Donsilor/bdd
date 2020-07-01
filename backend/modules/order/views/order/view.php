@@ -35,6 +35,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     <ul class="nav nav-tabs pull-right">
                         <li class="pull-left header"><i class="fa fa-th"></i> 详情信息&nbsp; <span class="label label-primary"><?= $model->refund_status?'已关闭':\common\enums\OrderStatusEnum::getValue($model->order_status) ?></span>
                         </li>
+                        <li class="pull-right header">
+                            <span class="label">
+                                <?= Html::edit(['edit-address', 'id' => $model->id], '编辑', [
+                                'data-toggle' => 'modal',
+                                'data-target' => '#ajaxModal',
+                                'class'=>'btn btn-info btn-sm'
+                                ]); ?>
+                            </span>
+                        </li>
                     </ul>
                     <div class="box-body col-lg-12" style="margin-left:9px">
                         <div class="row">
@@ -251,6 +260,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <!--                                    --><?//= Html::button('打印',['class'=>'btn btn-primary btn-sm','style'=>'height:25px;font-size:10px;'])?>
                                     <!--                                </div>-->
 
+                                    <?php if($model->order_status>=\common\enums\OrderStatusEnum::ORDER_PAID) { ?>
+                                        <?= Html::edit(['edit-send-paid-email', 'order_id' => $model->id,'returnUrl' => Url::getReturnUrl()],sprintf('发送付款邮件(%d)', $model->send_paid_email_time), [
+                                            'data-toggle' => 'modal',
+                                            'data-target' => '#ajaxModalLg',
+                                        ])?>
+                                    <?php } ?>
                                 </div>
                             </div>
                         <?php } else {?>
@@ -269,6 +284,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'data-target' => '#ajaxModalLg',
 
                                     ])?>
+
+                                    <?php if($model->order_status>=\common\enums\OrderStatusEnum::ORDER_PAID) { ?>
+                                    <?= Html::edit(['edit-send-paid-email', 'order_id' => $model->id,'returnUrl' => Url::getReturnUrl()],sprintf('发送付款邮件(%d)', $model->send_paid_email_time), [
+                                        'data-toggle' => 'modal',
+                                        'data-target' => '#ajaxModalLg',
+                                    ])?>
+                                    <?php } ?>
+
 
                                 </div>
 

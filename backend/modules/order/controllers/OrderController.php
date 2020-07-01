@@ -3,6 +3,7 @@
 namespace backend\modules\order\controllers;
 
 use backend\controllers\BaseController;
+use backend\modules\order\forms\OrderAddressForm;
 use backend\modules\order\forms\OrderAuditForm;
 use backend\modules\order\forms\OrderCancelForm;
 use backend\modules\order\forms\OrderFollowerForm;
@@ -14,8 +15,10 @@ use common\enums\OrderStatusEnum;
 use common\enums\PayEnum;
 use common\enums\PayStatusEnum;
 use common\helpers\ExcelHelper;
+use common\helpers\Html;
 use common\helpers\ResultHelper;
 use common\models\common\EmailLog;
+use common\models\goods\Goods;
 use common\models\market\MarketCard;
 use common\models\market\MarketCardDetails;
 use common\models\member\Address;
@@ -36,6 +39,7 @@ use common\enums\StatusEnum;
 use common\models\base\SearchModel;
 use common\models\order\Order;
 use Exception;
+use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use common\enums\FollowStatusEnum;
@@ -44,6 +48,8 @@ use backend\modules\order\forms\DeliveryForm;
 use common\enums\DeliveryStatusEnum;
 
 use kartik\mpdf\Pdf;
+use yii\web\Response;
+
 /**
  * Default controller for the `order` module
  */
@@ -501,6 +507,39 @@ class OrderController extends BaseController
     }
 
 
+    public  function actionEditSendPaidEmail() {
+        $order_id = Yii::$app->request->get('order_id');
+        $returnUrl = Yii::$app->request->get('returnUrl', ['index']);
+
+        $model = $this->findModel($order_id);
+
+        $model->address->setScenario(OrderAddress::SEND_PAID_EMAIL);
+
+        $this->activeFormValidate($model->address);
+        if ($model->address->load(Yii::$app->request->post())) {
+
+            //更新发送次数
+            $data = [];
+            $data['send_paid_email_time'] = new Expression("send_paid_email_time+(1)");
+
+            Order::updateAll($data,['id'=>$model->id]);
+
+            $model->order_status = OrderStatusEnum::ORDER_PAID;
+
+            Yii::$app->services->order->sendOrderNotificationByOrder($model);
+
+            OrderLogService::sendPaidEmail($model, [[
+                '收件邮箱' => $model->address->email
+            ]]);
+
+            return $this->message("保存成功", $this->redirect($returnUrl), 'success');
+        }
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+            'order_id' => $order_id,
+            'returnUrl'=>$returnUrl
+        ]);
+    }
 
     public  function actionEleInvoiceAjaxEdit(){
         $order_id = Yii::$app->request->get('order_id');
@@ -780,7 +819,63 @@ class OrderController extends BaseController
         return ExcelHelper::exportData($list, $header, '订单数据导出_' . date('YmdHis',time()));
     }
 
+    public function actionEditAddress()
+    {
+        $id = Yii::$app->request->get('id', null);
 
+        $model = $this->findModel($id);
+
+        $orderOld = $model->getAttributes();
+        $orderOld += $model->address->getAttributes();
+
+        // ajax 校验
+        $this->activeFormValidate($model, $model->address);
+        if ($model->load(Yii::$app->request->post()) &&
+            $model->address->load(Yii::$app->request->post())) {
+
+            $model->link('address', $model->address);
+
+            $orderNew = $model->getAttributes();
+            $orderNew += $model->address->getAttributes();
+
+            $result = $model->save();
+
+            OrderLogService::changeAddress($model, [$orderNew, $orderOld]);
+
+            return $result
+                ? $this->redirect(['view', 'id'=>$id])
+                : $this->message($this->getError($model), $this->redirect(['index', 'id'=>$id]), 'error');
+        }
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionArea()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $pid = Yii::$app->request->get('pid', null);
+        $type_id = Yii::$app->request->get('type_id', null);
+
+        $str = "-- 请选择 --";
+        $model = Yii::$app->services->area->getDropDown($pid);
+        if ($type_id == 1 && !$pid) {
+            return Html::tag('option', '-- 请选择 --', ['value' => '']);
+        } elseif ($type_id == 2 && !$pid) {
+            return Html::tag('option', '-- 请选择 --', ['value' => '']);
+        } elseif ($type_id == 2 && $model) {
+            $str = "-- 请选择 --";
+        }
+
+        $str = Html::tag('option', $str, ['value' => '']);
+        foreach ($model as $value => $name) {
+            $str .= Html::tag('option', Html::encode($name), ['value' => $value]);
+        }
+
+        return $str;
+    }
 
 
 }

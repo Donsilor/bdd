@@ -197,6 +197,13 @@ class OrderTouristController extends OnAuthController
 //            'userTelCode' => $order->address->mobile_code,
 //            'zipCode' => $order->address->zip_code,
 //        );
+        $orderDetails = array();
+        foreach ($order->details as $detail) {
+            $orderDetail = [
+                'goodsId' => $detail['style_id']
+            ];
+            $orderDetails[] = $orderDetail;
+        }
 
         $order = array(
             'id' => $order->id,
@@ -209,6 +216,8 @@ class OrderTouristController extends OnAuthController
             'orderNo' => $order->order_sn,
             'orderStatus' => $order->status,
             'orderTime' => $order->created_at,
+//            'payAmount' => $order->pay_amount,
+            'payAmount' => bcsub($order->order_amount, $order->discount_amount, 2),
 //            'orderType' => $order->order_type,
             'payChannel' => 6,
 //            'productCount' => count($orderDetails),
@@ -221,7 +230,7 @@ class OrderTouristController extends OnAuthController
             'safeFee' => $order->safe_fee,
             'taxFee' => $order->tax_fee,
 //            'userId' => $order->member_id,
-//            'details' => $orderDetails
+            'details' => $orderDetails
         );
 
         return $order;

@@ -35,6 +35,8 @@ class OrderLogEnum extends BaseEnum
             'FOLLOWER' => '订单跟进',
             'ELEINVOICEEDIT' => '电子发票编辑',
             'ELEINVOICESEND' => '电子发票发送',
+            'CHANGEADDRESS' => '订单收件人信息修改',
+            'SENDPAIDEMAIL' => '发送付款邮件',
         ];
     }
 
