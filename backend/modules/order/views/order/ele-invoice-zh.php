@@ -137,7 +137,7 @@
                 <div class="total clf">
                     <div class="fr clf">
                         <div class="fr total-val"> - <?php echo $result['currency'] .' '.$result['coupon_amount']; ?></div>
-                        <div class="fr total-bg">优惠劵抵扣</div>
+                        <div class="fr total-bg">优惠抵扣</div>
                     </div>
                 </div>
 
