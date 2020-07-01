@@ -27,6 +27,7 @@ $form = ActiveForm::begin([
         ]);?>
         <?php $model->seller_remark = ''; ?>
         <?= $form->field($model, 'seller_remark')->textarea() ?>
+        <?= $form->field($model, 'is_test')->dropDownList(\common\enums\OrderStatusEnum::testStatus())->label('是否测试') ?>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>

@@ -16,8 +16,8 @@ class OrderFollowerForm extends \common\models\order\Order
     public function rules()
     {
         return [
-            [['follower_id', 'seller_remark'], 'required'],
-            [['follower_id'], 'integer'],
+            [['follower_id', 'seller_remark', 'is_test'], 'required'],
+            [['follower_id', 'is_test'], 'integer'],
             [['seller_remark'], 'string', 'max' => 500],
         ];
     }
