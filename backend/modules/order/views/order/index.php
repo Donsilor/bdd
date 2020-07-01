@@ -191,7 +191,13 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                                 ]),
                                 'format' => 'raw',
                                 'value' => function ($model) {
-                                    return sprintf('(%s)%s', $model->account->currency, $model->account->order_amount);
+                                    if($model->account->paid_currency && $model->account->paid_currency != $model->account->currency) {
+                                        $amount = \Yii::$app->services->currency->exchangeAmount($model->account->order_amount, 2, $model->account->paid_currency, $model->account->currency);
+                                        return sprintf('(%s)%s', $model->account->paid_currency, $amount);
+                                    }
+                                    else {
+                                        return sprintf('(%s)%s', $model->account->currency, $model->account->order_amount);
+                                    }
                                 }
                             ],
                             [
