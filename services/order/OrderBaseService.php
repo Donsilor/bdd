@@ -195,7 +195,7 @@ class OrderBaseService extends Service
         }
 
         //执行优惠券接口。
-        $coupons = CouponService::getCouponByList($this->getAreaId(), $orderGoodsList);
+        $coupons = CouponService::getCouponByList($this->getAreaId(), $orderGoodsList, false);
 
         //最终使用优惠券信息
         $couponInfo = null;

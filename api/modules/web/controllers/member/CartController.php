@@ -144,7 +144,7 @@ class CartController extends UserAuthController
          
             $cart_list[] = $cart;
         }
-        CouponService::getCouponByList($this->getAreaId(), $cart_list);
+        CouponService::getCouponByList($this->getAreaId(), $cart_list, false);
         return $cart_list;
     }
     /**

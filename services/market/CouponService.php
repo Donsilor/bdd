@@ -9,6 +9,7 @@ use common\enums\OrderStatusEnum;
 use common\enums\OrderTouristStatusEnum;
 use common\enums\PayStatusEnum;
 use common\enums\PreferentialTypeEnum;
+use common\models\api\AccessToken;
 use common\models\goods\Goods;
 use common\models\goods\Style;
 use common\models\market\MarketCoupon;
@@ -375,10 +376,11 @@ class CouponService extends Service
      * 列表，根据活动类型，地区，产品线，款式,价格获取优惠信息
      * @param int $areaId 区域ID
      * @param array $records 商品列表数据
+     * @param bool $validateCouponCount 是否验证优惠券数量
      * @return void|array
      * @throws UnprocessableEntityHttpException
      */
-    static public function getCouponByList($areaId, &$records)
+    static public function getCouponByList($areaId, &$records, $validateCouponCount = true)
     {
 //        $coupon = [
 //            'type_id',//产品线ID
@@ -498,7 +500,19 @@ class CouponService extends Service
 
                 //过滤可用数量不足的券
                 if($money->count <= $money->get_count) {
-                    continue;
+                    //验证我是否已领取此券,只能已登陆的时候用
+                    if(!$validateCouponCount && (\Yii::$app->getUser()->identity instanceof AccessToken)) {
+                        $where = [];
+                        $where['coupon_id'] = $money->id;
+                        $where['coupon_status'] = 1;
+                        $where['member_id'] = \Yii::$app->getUser()->identity->member->id;
+                        if (!MarketCouponDetails::find()->where($where)->count('id')) {
+                            continue;
+                        }
+                    }
+                    else {
+                        continue;
+                    }
                 }
 
                 /**
