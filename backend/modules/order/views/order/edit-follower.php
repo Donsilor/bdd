@@ -26,8 +26,8 @@ $form = ActiveForm::begin([
             ],
         ]);?>
         <?php $model->seller_remark = ''; ?>
-        <?= $form->field($model, 'seller_remark')->textarea() ?>
         <?= $form->field($model, 'is_test')->dropDownList(\common\enums\OrderStatusEnum::testStatus())->label('是否测试') ?>
+        <?= $form->field($model, 'seller_remark')->textarea() ?>
     </div>
     <div class="modal-body">
         <table class="table table-hover">
