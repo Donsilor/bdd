@@ -34,7 +34,7 @@ class StyleController extends OnAuthController
      */
     public function actionSearch(){
         $sort_map = [
-            "sale_price"=>'m.sale_price',//价格
+            "sale_price"=>'sale_price',//价格
             "sale_volume"=>'m.virtual_volume',//销量
         ];
         $type_id = \Yii::$app->request->post("categoryId");//产品线ID
