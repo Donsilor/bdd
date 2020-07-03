@@ -414,7 +414,11 @@ DOM;
                                         'label' => '优惠金额',
                                         'attribute'=>'goods_price',
                                         'value' => function($model) {
-                                            return $model->currency ." "."0";
+                                            $value = \common\helpers\AmountHelper::rateAmount($model->goods_price-$model->goods_pay_price, 1, 2, ',');
+                                            if($value>0.01) {
+                                                $value .= sprintf(" （%s[%s]）", $model->coupon->specials->lang->title, \common\enums\PreferentialTypeEnum::getValue($model->coupon->type));
+                                            }
+                                            return $model->currency ." " . $value;
                                         }
                                     ],
                                     [
@@ -469,14 +473,19 @@ DOM;
                             </div>
                             <div class="col-lg-6">
                                 <div class="row">
+                                    <div class="col-lg-5 text-right"><label>商品件数
+                                            ：</label></div>
+                                    <div class="col-lg-7"><?= $dataProvider->getTotalCount() ?></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.goods_amount') ?>
+                                            ：</label></div>
+                                    <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->goods_amount, 1, 2, ',') ?></div>
+                                </div>
+                                <div class="row">
                                     <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.shipping_fee') ?>
                                             ：</label></div>
                                     <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->shipping_fee, 1, 2, ',') ?></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.discount_amount') ?>
-                                            ：</label></div>
-                                    <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->discount_amount, 1, 2, ',') ?></div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.tax_fee') ?>
@@ -493,13 +502,22 @@ DOM;
                                             ：</label></div>
                                     <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->order_amount, 1, 2, ',') ?></div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.discount_amount') ?>
+                                            ：</label></div>
+                                    <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount(-$model->account->discount_amount, 1, 2, ',') ?></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('account.coupon_amount') ?>
+                                            ：</label></div>
+                                    <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount(-$model->account->coupon_amount, 1, 2, ',') ?></div>
+                                </div>
                                 <?php
                                 $cardUseAmount = 0;
                                 foreach($model->cards as $n => $card) {
                                     if($card->type!=2) {
                                         continue;
                                     }
-                                    $cardUseAmount = bcadd($cardUseAmount, $card->use_amount, 2);
                                 ?>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label>购物卡<?= $n+1 ?>：</label></div>
@@ -511,25 +529,25 @@ DOM;
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label style="font-weight:bold">应付款：</label></div>
                                     <?php
-                                    $receivable = bcadd($model->account->order_amount, $cardUseAmount, 2) + $model->account->discount_amount;
+                                    $receivable = $model->account->pay_amount;//bcadd($model->account->order_amount, $cardUseAmount, 2) + $model->account->discount_amount;
                                     ?>
                                     <?php if($model->account->currency == \common\enums\CurrencyEnum::CNY) { ?>
-                                        <div class="col-lg-7 text-red"><?= \common\enums\CurrencyEnum::HKD ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount(\Yii::$app->services->currency->exchangeAmount($receivable, 2, \common\enums\CurrencyEnum::HKD, CurrencyEnum::CNY), 2, ',') ?> (<?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($receivable, 2, ',') ?>)</div>
+                                        <div class="col-lg-7 text-red"><?= \common\enums\CurrencyEnum::HKD ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount(\Yii::$app->services->currency->exchangeAmount($model->account->pay_amount, 2, \common\enums\CurrencyEnum::HKD, CurrencyEnum::CNY), 2, ',') ?> (<?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($model->account->pay_amount, 2, ',') ?>)</div>
                                     <?php } else { ?>
-                                        <div class="col-lg-7 text-red"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($receivable, 2, ',') ?></div>
+                                        <div class="col-lg-7 text-red"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($model->account->pay_amount, 2, ',') ?></div>
                                     <?php } ?>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-5 text-right"><label style="font-weight:bold"><?= $model->getAttributeLabel('account.pay_amount') ?>：</label></div>
+                                    <div class="col-lg-5 text-right"><label style="font-weight:bold"><?= $model->getAttributeLabel('account.paid_currency') ?>：</label></div>
                                     <?php if($model->account->currency == \common\enums\CurrencyEnum::CNY) { ?>
-                                        <div class="col-lg-7 text-red"><?= $model->account->paid_currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->paid_amount, 1, 2, ',') ?> (<?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->pay_amount, 1, 2, ',') ?>)</div>
+                                        <div class="col-lg-7 text-red"><?= $model->account->paid_currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->paid_amount, 1, 2, ',') ?> (<?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount(\Yii::$app->services->currency->exchangeAmount($model->account->paid_amount, 2, $model->account->currency, $model->account->paid_currency), 1, 2, ',') ?>)</div>
                                     <?php } else { ?>
-                                        <div class="col-lg-7 text-red"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->pay_amount, 1, 2, ',') ?></div>
+                                        <div class="col-lg-7 text-red"><?= $model->account->paid_currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->paid_amount, 1, 2, ',') ?></div>
                                     <?php } ?>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label style="font-weight:bold">参考支付RMB金额：</label></div>
-                                    <div class="col-lg-7 text-red"><?= \Yii::$app->services->currency->getSign() ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->pay_amount, 1/$model->account->exchange_rate, 2, ',') ?></div>
+                                    <div class="col-lg-7 text-red"><?= \Yii::$app->services->currency->getSign() ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount(!$model->payment_status?0:$model->account->pay_amount, 1/$model->account->exchange_rate, 2, ',') ?></div>
                                 </div>
                             </div>
                         </div>

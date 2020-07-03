@@ -2,6 +2,8 @@
 
 namespace api\modules\web\forms;
 
+use common\helpers\ResultHelper;
+use common\models\market\MarketCouponDetails;
 use yii\base\Model;
 
 /**
@@ -11,54 +13,77 @@ use yii\base\Model;
  */
 class OrderCreateForm extends Model
 {
-    public $cart_ids;
+    public $carts;
     public $buyer_address_id;
     public $buyer_remark;
     public $order_amount;
+
+    public $coupon_id;
+
     public $order_from;
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-                [['cart_ids','buyer_address_id','order_amount'], 'required'],
-                [['buyer_address_id','order_from'], 'integer'],
-                [['order_amount'], 'number'],                
-                [['buyer_remark'], 'string','max'=>500],
-                [['cart_ids'], 'validateIds'],
-                [['cart_ids'], 'validateCurrency'],
+
+            [['carts','buyer_address_id','order_amount'], 'required'],
+            [['buyer_address_id','order_from', 'coupon_id'], 'integer'],
+            [['order_amount'], 'number'],
+            [['buyer_remark'], 'string','max'=>500],
+            [['buyer_address_id'], 'validateCurrency'],
+            [['carts'], 'validateCarts'],
+            ['coupon_id', 'validateCouponId'],
+
         ];
     }
     
     public function attributeLabels()
     {
         return [
-                'cart_ids' => 'cart_ids',
-                'order_amount' => 'order_amount',
-                'buyer_address_id' => 'buyer_address_id',
-                'buyer_remark' => '订单备注',
-                'order_from' => 'order_from',
+
+            'carts' => 'carts',
+            'coupon_id' => 'coupon_id',
+            'order_amount' => 'order_amount',
+            'buyer_address_id' => 'buyer_address_id',
+            'buyer_remark' => '订单备注',
+            'order_from' => 'order_from',
         ];
     }
+
+    public function validateCouponId($attribute)
+    {
+        $where = [];
+        $where['member_id'] = \Yii::$app->getUser()->identity->member->id;
+        $where['coupon_status'] = 1;
+        $where['coupon_id'] = (int)$this->coupon_id;
+
+        if($this->coupon_id && !MarketCouponDetails::find()->where($where)->count()) {
+            $this->addError($attribute, $attribute.' 是无效的优惠券');
+        }
+    }
+
     /**
      * 校验购物车ID
      * @param unknown $attribute
      * @return boolean
      */
-    public function validateIds($attribute)
+    public function validateCarts($attribute)
     {
         $value = $this->$attribute;
         if(!is_array($value)) {
-            $value = explode(",",$value);
+            $this->addError($attribute, $attribute.' 必需是数组');
         }
-        foreach ($value as $id) {
-            if(!is_numeric($id)) {
+
+        foreach ($value as $cart) {
+            if(!is_numeric($cart['cart_id'])) {
                 $this->addError($attribute, $attribute.'校验失败');
                 return false;
             }
-        }    
-        $this->$attribute = $value;
+        }
+
         return true;
         
     }

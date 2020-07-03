@@ -43,7 +43,7 @@ $form = ActiveForm::begin([
                 <label class="control-label" for="wiretransfer-collection_amount">应付金额</label>
             </div>
             <div class="col-sm-10">
-                <input type="text" class="form-control" value="<?= \common\helpers\AmountHelper::outputAmount($model->order->getAmountPayable(),2,$model->order->account->currency) ?>" readonly="true">
+                <input type="text" class="form-control" value="<?= \common\helpers\AmountHelper::outputAmount($model->order->account->pay_amount,2,$model->order->account->currency) ?>" readonly="true">
                 <div class="help-block"></div>
             </div>
         </div>

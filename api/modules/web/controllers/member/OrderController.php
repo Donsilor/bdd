@@ -8,6 +8,7 @@ use common\enums\PayEnum;
 use common\helpers\ImageHelper;
 use common\helpers\ResultHelper;
 use api\controllers\UserAuthController;
+use common\models\market\MarketCouponDetails;
 use common\helpers\Url;
 use common\models\forms\PayForm;
 use common\models\member\Member;
@@ -54,10 +55,6 @@ class OrderController extends UserAuthController
 
         $orderList = array();
         foreach ($result['data'] as $order) {
-            $exchange_rate = $order->account->exchange_rate;
-            $currency = $order->account->currency;
-
-            $payAmount = bcsub($order->account->order_amount, CardService::getUseAmount($order->id), 2);
             $orderInfo = [
                 'id' =>$order->id,
                 'orderNO' =>$order->order_sn,
@@ -65,10 +62,11 @@ class OrderController extends UserAuthController
                 'refundStatus'=> $order->refund_status,
                 'wireTransferStatus'=> !empty($order->wireTransfer)?$order->wireTransfer->collection_status:null,
                 'orderAmount'=> $order->account->order_amount,
-                'payAmount'=> $payAmount,
-                'payAmountHKD'=> \Yii::$app->services->currency->exchangeAmount($payAmount, 2, CurrencyEnum::HKD, $order->account->currency),
+                'payAmountHKD'=> \Yii::$app->services->currency->exchangeAmount($order->account->pay_amount, 2, CurrencyEnum::HKD, $order->account->currency),
                 'productAmount'=> $order->account->goods_amount,
-                'coinCode'=> $currency,
+                'preferFee' => $order->account->discount_amount, //优惠金额
+                'payAmount' => $order->account->pay_amount,//支付金额
+                'coinCode'=> $order->account->currency,
                 'payChannel'=>$order->payment_type,
                 'orderTime' =>$order->created_at,
                 'details'=>[],
@@ -76,28 +74,38 @@ class OrderController extends UserAuthController
             ];
            $orderGoodsList = OrderGoods::find()->where(['order_id'=>$order->id])->all();
            foreach ($orderGoodsList as $key =>$orderGoods) {
+
+               $couponInfo = [];
+
+               if($_couponInfo = $orderGoods->coupon) {
+                   $couponInfo['type'] = $_couponInfo['type'];
+               }
+
                $orderDetail = [
-                       'id' => $orderGoods->id,
-                       'orderId'=>$order->id,
-                       'groupId'=>null,
-                       'groupType'=>null,
-                       'goodsId' => $orderGoods->style_id,
-                       'goodsDetailId' =>$orderGoods->goods_id,
-                       'goodsCode' => $orderGoods->goods_sn,
-                       'categoryId'=>$orderGoods->goods_type,
-                       'goodsName' => $orderGoods->lang ? $orderGoods->lang->goods_name: $orderGoods->goods_name,
-                       'goodsPrice'=>$orderGoods->goods_price,
-                       'detailType'=>1,
-                       'detailSpecs'=>null,
-                       'deliveryCount'=>1,
-                       'detailCount' => 1,
-                       'createTime' => $orderGoods->created_at,
-                       'joinCartTime'=>$orderGoods->created_at,
-                       'goodsImages'=>ImageHelper::goodsThumbs($orderGoods->goods_image,'small'),
-                       'mainGoodsCode'=>null,
-                       'ringName'=>"",
-                       'ringImg'=>"",
-                       'baseConfig'=>null
+                   'id' => $orderGoods->id,
+                   'orderId'=>$order->id,
+                   'groupId'=>null,
+                   'groupType'=>null,
+                   'goodsId' => $orderGoods->style_id,
+                   'goodsDetailId' =>$orderGoods->goods_id,
+                   'goodsCode' => $orderGoods->goods_sn,
+                   'categoryId'=>$orderGoods->goods_type,
+                   'goodsName' => $orderGoods->lang ? $orderGoods->lang->goods_name: $orderGoods->goods_name,
+                   'goodsPrice'=>$orderGoods->goods_price,
+                   'goodsPayPrice'=>$orderGoods->goods_pay_price,
+                   'couponInfo' => $couponInfo,
+                   'detailType'=>1,
+                   'detailSpecs'=>null,
+                   'deliveryCount'=>1,
+                   'detailCount' => 1,
+                   'createTime' => $orderGoods->created_at,
+                   'joinCartTime'=>$orderGoods->created_at,
+                   'goodsImages'=>ImageHelper::goodsThumbs($orderGoods->goods_image,'small'),
+                   'mainGoodsCode'=>null,
+                   'ringName'=>"",
+                   'ringImg'=>"",
+                   'baseConfig'=>null,
+                   'ring'=>[]
                ];
                if(!empty($orderGoods->goods_attr)) {
                    $goods_attr = \Yii::$app->services->goods->formatGoodsAttr($orderGoods->goods_attr, $orderGoods->goods_type);
@@ -149,6 +157,7 @@ class OrderController extends UserAuthController
             $model->attributes = \Yii::$app->request->post();
             $model->order_from = $this->platform;
             $invoiceInfo = \Yii::$app->request->post('invoice');
+            $coupon_id = (int)\Yii::$app->request->post('coupon_id',0);
             if(!$model->validate()) {
                 throw new \Exception($this->getError($model),500);
             }
@@ -163,16 +172,10 @@ class OrderController extends UserAuthController
                 }
             }
 
-            $result = \Yii::$app->services->order->createOrder($model->cart_ids, $this->member_id, $model->buyer_address_id,$model->toArray(),$invoiceInfo);
-
-            //购物券消费
-            CardService::consume($result['order_id'], $cards);
-
-            //购物券使用金额
-            $cardUseAmount = CardService::getUseAmount($result['order_id']);
+            $result = \Yii::$app->services->order->createOrder($model->carts, $this->member_id, $model->buyer_address_id, $model->toArray(), $invoiceInfo, $coupon_id, $cards);
 
             //如果订单金额为0
-            if($result['order_amount']-$cardUseAmount==0) {
+            if($result['pay_amount']==0) {
                 //自动 支付
                 //调用支付接口
                 $payForm = new PayForm();
@@ -193,19 +196,17 @@ class OrderController extends UserAuthController
             //订单发送邮件
             \Yii::$app->services->order->sendOrderNotification($result['order_id']);
 
-            $payAmount = bcsub($result['order_amount'], $cardUseAmount, 2);
-
-            $payAmountHKD = \Yii::$app->services->currency->exchangeAmount($payAmount, 2, CurrencyEnum::HKD, $this->getCurrency());
+            $payAmountHKD = \Yii::$app->services->currency->exchangeAmount($result['pay_amount'], 2, CurrencyEnum::HKD, $this->getCurrency());
 
             return [
                 "coinType" => $result['currency'],
                 "orderAmount"=> $result['order_amount'],
-                "payAmount"=> $payAmount,
+                "payAmount"=> $result['pay_amount'],
                 "payAmountHKD"=> $payAmountHKD,
                 "orderId" => $result['order_id'],
                 "payStatus" => $pay['payStatus']??0,
-            ];            
-        }catch(Exception $e) {            
+            ];
+        }catch(Exception $e) {
             $trans->rollBack();
             //记录日志
             \Yii::$app->services->actionLog->create('用户创建订单',$e->getMessage());
@@ -238,6 +239,12 @@ class OrderController extends UserAuthController
         $orderDetails = array();
         foreach ($orderGoodsList as $key =>$orderGoods) {
 
+            $couponInfo = [];
+
+            if($_couponInfo = $orderGoods->coupon) {
+                $couponInfo['type'] = $_couponInfo['type'];
+            }
+
             $orderDetail = [
                 'id' => $orderGoods->id,
                 'orderId'=>$order->id,
@@ -249,6 +256,8 @@ class OrderController extends UserAuthController
                 'categoryId'=>$orderGoods->goods_type,
                 'goodsName' => $orderGoods->lang ? $orderGoods->lang->goods_name : $orderGoods->goods_name,
                 'goodsPrice'=>$orderGoods->goods_price,
+                'goodsPayPrice'=>$orderGoods->goods_pay_price,
+                'couponInfo' => $couponInfo,
                 'detailType'=>1,
                 'detailSpecs'=>null,
                 'deliveryCount'=>1,
@@ -259,7 +268,8 @@ class OrderController extends UserAuthController
                 'mainGoodsCode'=>null,
                 'ringName'=>"",
                 'ringImg'=>"",
-                'baseConfig'=>null
+                'baseConfig'=>null,
+                'ring'=>[]
             ];
             if(!empty($orderGoods->goods_attr)) {
                 $goods_attr = \Yii::$app->services->goods->formatGoodsAttr($orderGoods->goods_attr, $orderGoods->goods_type);
@@ -371,11 +381,13 @@ class OrderController extends UserAuthController
             'orderType' => $order->order_type,            
             'payChannel' => $order->payment_type,
             'productCount' => count($orderDetails),
-            'preferFee' => $order->account->discount_amount, //优惠金额
-            'productAmount' => $order->account->goods_amount,
+            'productAmount' => $order->account->goods_amount,            
             'logisticsFee' => $order->account->shipping_fee,
+            'discountAmount' => $order->account->discount_amount, //优惠金额
+            'couponAmount' => $order->account->coupon_amount, //优惠金额
             'orderAmount' => $order->account->order_amount,
-            'payAmount' => bcadd($order->account->order_amount, $cardsUseAmount, 2) - $order->account->discount_amount,
+            'payAmount' => $order->account->pay_amount,//支付金额
+            //'payAmount' => bcadd($order->account->order_amount, $cardsUseAmount, 2) - $order->account->discount_amount,
             'otherFee' => $order->account->other_fee,
             'safeFee' => $order->account->safe_fee,
             'taxFee' => $order->account->tax_fee,
@@ -457,43 +469,65 @@ class OrderController extends UserAuthController
      */
     public function actionTax()
     {
-        $cartIds = \Yii::$app->request->post("cartIds");
+        $carts = \Yii::$app->request->post("carts");
         $addressId = \Yii::$app->request->post("addressId");
-        try{
-            if(empty($cartIds)) {
-                throw new \Exception("cartIds不能为空",500);
-            }
-            $cards = \Yii::$app->request->post('cards', []);
-            if(!empty($cards)) {
-                foreach ($cards as $card) {
-                    $model = new CardForm();
-                    $model->setAttributes($card);
-    
-                    if(!$model->validate()) {
-                        throw new \Exception($this->getError($model),500);
-                    }
+
+        $where = [];
+        $where['member_id'] = $this->member_id;
+        $where['coupon_status'] = 1;
+
+        if(empty($carts)) {
+            return ResultHelper::api(422,"carts不能为空");
+        }
+
+        $coupon_id = (int)\Yii::$app->request->post("coupon_id");
+        if($coupon_id && !MarketCouponDetails::find()->where(array_merge($where, ['coupon_id'=>$coupon_id]))->count()) {
+            return ResultHelper::api(422, '无效的优惠券');
+        }
+
+        $cards = \Yii::$app->request->post('cards', []);
+        if(!empty($cards)) {
+            foreach ($cards as $card) {
+                $model = new CardForm();
+                $model->setAttributes($card);
+
+                if (!$model->validate()) {
+                    return ResultHelper::api(422, $this->getError($model));
                 }
             }
-    
-            $taxInfo = \Yii::$app->services->order->getOrderAccountTax($cartIds, $this->member_id, $addressId, $cards);
-            return [
-                'logisticsFee' => $taxInfo['shipping_fee'],
-                'orderAmount'  => $taxInfo['order_amount'],
-                'productAmount' => $taxInfo['goods_amount'],
-                'safeFee'=> $taxInfo['safe_fee'],
-                'taxFee'  => $taxInfo['tax_fee'],
-                'planDays' => $taxInfo['plan_days'],
-                'currency' => $taxInfo['currency'],
-                'exchangeRate'=> $taxInfo['exchange_rate'],
-                'cards'=> $taxInfo['cards'],
-                'cardsUseAmount'=> $taxInfo['cards_use_amount'],
-                'payAmount'=> bcsub($taxInfo['order_amount'] ,$taxInfo['cards_use_amount'], 2) - $taxInfo['discount_amount']
-            ];
-        }catch (\Exception $e) {
-            //记录日志
-            \Yii::$app->services->actionLog->create('订单金额税费',"Exception:".$e->getMessage());
-            throw  $e;
         }
+
+        $taxInfo = \Yii::$app->services->order->getOrderAccountTax($carts, $this->member_id, $addressId, $coupon_id, $cards);
+
+        $myCoupons = [];
+
+        $where = [];
+        $where['member_id'] = $this->member_id;
+        $where['coupon_status'] = 1;
+        $where['coupon_id'] = array_keys($taxInfo['coupons']);
+        $conpouList = MarketCouponDetails::find()->where($where)->select('coupon_id')->distinct('coupon_id')->asArray()->all();
+
+        foreach ($conpouList as $item) {
+            $myCoupons[] = $item['coupon_id'];
+        }
+
+        return [
+            'logisticsFee' => $taxInfo['shipping_fee'],
+            'orderAmount'  => $taxInfo['order_amount'],
+            'productAmount' => $taxInfo['goods_amount'],
+            'discountAmount' => $taxInfo['discount_amount'],
+            'couponAmount' => $taxInfo['coupon_amount'],
+            'cardsUseAmount'=> $taxInfo['card_amount'],
+            'payAmount'=> $taxInfo['pay_amount'],
+            'safeFee'=> $taxInfo['safe_fee'],
+            'taxFee'  => $taxInfo['tax_fee'],
+            'planDays' => $taxInfo['plan_days'],
+            'currency' => $taxInfo['currency'],
+            'exchangeRate'=> $taxInfo['exchange_rate'],
+            'coupons' => $taxInfo['coupons'],
+            'myCoupons' => $myCoupons,
+            'cards'=> $taxInfo['cards'],
+        ];
     }
     
 }

@@ -56,14 +56,14 @@ class OrderTouristController extends OnAuthController
                 }
                 $cart_list[] = $model->toArray();
             }
-            //$orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $invoiceInfo);
         }
         $order_from = $this->platform;
         try {            
             $trans = \Yii::$app->db->beginTransaction();
             if(empty($orderSn)) {
                 //创建订单
-                $orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $invoiceInfo,$order_from);
+                $orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $invoiceInfo, $order_from);
+
             }
             else {
                 //按单号支付
@@ -221,8 +221,9 @@ class OrderTouristController extends OnAuthController
 //            'orderType' => $order->order_type,
             'payChannel' => 6,
 //            'productCount' => count($orderDetails),
-            'preferFee' => $order->discount_amount, //优惠金额
             'productAmount' => $order->goods_amount,
+            'preferFee' => $order->discount_amount, //优惠金额
+            'payAmount' => $order->pay_amount, //支付金额
             'logisticsFee' => $order->shipping_fee,
             'orderAmount' => $order->order_amount,
             'otherFee' => $order->other_fee,
@@ -244,6 +245,7 @@ class OrderTouristController extends OnAuthController
     public function actionTax()
     {
         $goodsCartList = \Yii::$app->request->post('goodsCartList');
+        $coupon_id = \Yii::$app->request->post('coupon_id');
         if (empty($goodsCartList)) {
             return ResultHelper::api(422, "goodsCartList不能为空");
         }
@@ -261,12 +263,11 @@ class OrderTouristController extends OnAuthController
         }
         
         try {
-            $taxInfo = \Yii::$app->services->orderTourist->getCartAccountTax($cartList);
-
+            $taxInfo = \Yii::$app->services->orderTourist->getCartAccountTax($cartList, $coupon_id);
             $taxInfo['order_amount_HKD'] = \Yii::$app->services->currency->exchangeAmount($taxInfo['order_amount'], 2, CurrencyEnum::HKD, $this->getCurrency());
-        } catch (\Exception $e) {
-            \Yii::$app->services->actionLog->create('游客订单金额汇总','Exception:'.$e->getMessage());
-            throw $e;
+        } catch (\Exception $exception) {
+            \Yii::$app->services->actionLog->create('游客订单金额汇总','Exception:'.$exception->getMessage());
+            throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
         return $taxInfo;

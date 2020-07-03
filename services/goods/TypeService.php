@@ -140,13 +140,13 @@ class TypeService extends Service
         }
         $query = Type::find()->alias('a');
         $model = $query->leftJoin('{{%goods_type}} b', 'b.pid = a.id and b.status=1')
-            ->leftJoin('{{%goods_type_lang}} c', 'c.master_id = a.id and c.language = "'.$language.'"')
-            ->andWhere(['a.status'=>1])
-            ->andWhere(['b.id'=>null])
-            ->select([ 'a.id','c.type_name'])
-            ->orderBy('a.pid asc,a.sort asc,a.created_at asc')
-            ->asArray()
-            ->all();
+			->leftJoin('{{%goods_type_lang}} c', 'c.master_id = a.id and c.language = "'.$language.'"')
+			->andWhere(['a.status'=>1])
+			->andWhere(['b.id'=>null])
+			->select([ 'a.id','c.type_name'])
+			->orderBy('a.pid asc,a.sort asc,a.created_at asc')
+			->asArray()
+			->all();
 
         foreach ($model as $item) {
             $data[$item['id']] = $item['type_name'];

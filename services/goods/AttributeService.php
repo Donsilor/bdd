@@ -224,6 +224,7 @@ class AttributeService extends Service
             ->leftJoin(AttributeValueLang::tableName()." lang","val.id=lang.master_id and lang.language='".$language."'")
             ->select(['val.id','attr_value_name as name','image as img'])
             ->where(['in','val.id',$ids])
+            ->andWhere(['status'=>1])
             ->asArray()->all();
         return $models;
     }

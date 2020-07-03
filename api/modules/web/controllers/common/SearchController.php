@@ -9,6 +9,7 @@ use common\models\goods\Style;
 use common\models\goods\StyleLang;
 use common\models\goods\Ring;
 use common\models\goods\RingLang;
+use services\market\CouponService;
 use yii\db\Query;
 use common\models\goods\StyleMarkup;
 use yii\data\Pagination;
@@ -55,23 +56,14 @@ class SearchController extends OnAuthController
             ->leftJoin(StyleMarkup::tableName().' markup', 'm1.id=markup.style_id and markup.area_id='.$area_id)
             ->where(['m1.status'=>StatusEnum::ENABLED])
             ->andWhere(['or',['=','markup.status',1],['IS','markup.status',new \yii\db\Expression('NULL')]]);
-			
-		$fields2 = ['m2.id','-1 as `type_id`','lang2.ring_name as style_name','m2.ring_images as goods_images','m2.sale_price','m2.virtual_volume'];
-		$query2 = Ring::find()->alias('m2')->select($fields2)
-            ->leftJoin(RingLang::tableName().' lang2',"m2.id=lang2.master_id and lang2.language='".$this->language."'")
-            ->where(['m2.status'=>StatusEnum::ENABLED]);
         		
         if(!empty($keyword)){
-            $query1->andWhere(['or',['like','lang1.style_name',$keyword],['=','m1.style_sn',$keyword]]);
-			$query2->andWhere(['or',['like','lang2.ring_name',$keyword],['=','m2.ring_sn',$keyword]]);
+            $query1->andWhere(['or',['like','lang1.style_name',$keyword],['like','m1.style_sn',$keyword]]);
         }
 
-		$queryAll = $query1->union($query2, true);
-        $query = (new Query())->from(['m' => $queryAll])->select('m.*')->orderby($order);
+        $query1->orderby($order);
 
-//        $sql = $query->createCommand()->getRawSql();
-
-        $result = $this->pagination($query,$this->page, $this->pageSize,false);
+        $result = $this->pagination($query1,$this->page, $this->pageSize,true);
 
         foreach($result['data'] as & $val) {
             $arr = array();
@@ -83,8 +75,19 @@ class SearchController extends OnAuthController
             $arr['goodsName'] = $val['style_name'];
             $arr['isJoin'] = null;
             $arr['specsModels'] = null;
+
+            $arr['coupon'] = [
+                'type_id' => $val['type_id'],//产品线ID
+                'style_id' => $val['id'],//款式ID
+                'price' => $arr['salePrice'],//价格
+                'num' =>1,//数量
+            ];
+
             $val = $arr;
         }
+
+        CouponService::getCouponByList($this->getAreaId(), $result['data']);
+
         return $result;
 
     }

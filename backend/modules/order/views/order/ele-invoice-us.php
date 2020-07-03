@@ -106,8 +106,8 @@
                 <td><?php echo $val['goods_name'];?></td>
                 <td><?php echo $val['goods_sn'];?></td>
                 <td><?php echo $val['goods_num'];?></td>
-                <td><?php echo $val['goods_pay_price']. " ".$val['currency']; ?></td>
-                <td><?php echo $val['goods_pay_price']*$val['goods_num'] . " ".$val['currency']; ?></td>
+                <td><?php echo $val['goods_price']. " ".$val['currency']; ?></td>
+                <td><?php echo $val['goods_price']*$val['goods_num'] . " ".$val['currency']; ?></td>
             </tr>
             <?php } ?>
 
@@ -142,7 +142,7 @@
 
                 <div class="total clf">
                     <div class="fr clf">
-                        <div class="fr total-val"> - <?php echo $result['currency'] .' '.'0'; ?></div>
+                        <div class="fr total-val"> - <?php echo $result['currency'] .' '.$result['coupon_amount']; ?></div>
                         <div class="fr total-bg">Coupon discount</div>
                     </div>
                 </div>
@@ -156,7 +156,7 @@
 
                 <div class="total clf">
                     <div class="fr clf">
-                        <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_paid_amount']; ?></div>
+                        <div class="fr total-val"><?php echo $result['currency'] .' '.$result['order_pay_amount']; ?></div>
                         <div class="fr total-bg">Total</div>
                     </div>
                 </div>

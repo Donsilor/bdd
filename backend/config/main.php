@@ -37,7 +37,7 @@ return [
         'order' => [
             'class' => 'backend\modules\order\Module',
         ],
-        /** ------促销活动 ------ **/
+        /** ------促销活动模块 ------ **/
         'market' => [
             'class' => 'backend\modules\market\Module',
         ],

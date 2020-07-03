@@ -23,6 +23,7 @@ use common\models\goods\DiamondLang;
 use common\enums\DiamondEnum;
 use common\enums\FrameEnum;
 use common\models\goods\StyleMarkup;
+use services\market\CouponService;
 use function GuzzleHttp\json_encode;
 use yii\db\Expression;
 
@@ -634,19 +635,29 @@ class GoodsService extends Service
 //                }
 //            }
 
+            $retailMallPrice = (float)$this->exchangeAmount($val['sale_price'],0);
+
             $details[$key]['barCode'] = null;
             $details[$key]['productNumber'] = null;
             $details[$key]['stock'] = $val['goods_storage'];
             $details[$key]['warehouse'] = $val['warehouse'];
             $details[$key]['categoryId'] = $model['type_id'];
             $details[$key]['goodsDetailsCode'] = $val['goods_sn'];
-            $details[$key]['retailMallPrice'] = (float)$this->exchangeAmount($val['sale_price'],0);
+            $details[$key]['retailMallPrice'] = $retailMallPrice;
             $details[$key]['retailPrice'] = null;
             $details[$key]['goodsId'] = $style_id;
             $details[$key]['id'] = $val['id'];
             $totalStock += $val['goods_storage'];
 
+            $details[$key]['coupon'] = [
+                'type_id' => $model['type_id'],//产品线ID
+                'style_id' => $style_id,//款式ID
+                'price' => $retailMallPrice,//价格
+                'num' =>1,//数量
+            ];
         }
+
+        CouponService::getCouponByList($this->getAreaId(), $details);
 
         //对尺寸进行排序
         if(isset($style['sizes'])){
@@ -658,22 +669,26 @@ class GoodsService extends Service
         $style['totalStock'] = $totalStock;
 
         $styleSpec = json_decode($style_model->style_spec,true);
-        $spec = $styleSpec['a'];
+        $spec = $styleSpec['a']??[];
 
         $ring = [];
-        foreach ($spec as $key => $item) {
-            if(in_array($key, [61, 62])) {
+        if(!empty($spec) && is_array($spec)) {
+            foreach ($spec as $key => $item) {
+                if(in_array($key, [61, 62])) {
 
-                $goodsId = $item[0];
+                    $goodsId = $item[0];
 
-                $goodsInfo = Goods::findOne($goodsId);
+                    $goodsInfo = Goods::findOne($goodsId);
 
-                $ring[] = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id'], null, null, $item, 0);
+                    $ring[] = Yii::$app->services->goods->formatStyleGoodsById($goodsInfo['style_id'], null, null, $item, 0);
 
+                }
             }
         }
 
         $style['ring'] = $ring;
+
+        $style['coupon'] = CouponService::getCouponByStyleInfo($this->getAreaId(), $style['categoryId'], $style['id'], $style['salePrice']);
 
         return $style;
 

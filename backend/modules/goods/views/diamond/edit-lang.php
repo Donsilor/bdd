@@ -433,6 +433,9 @@ $this->params['breadcrumbs'][] = $this->title;
         });
     }
 
+    $('input[type="text"],textarea').change(function () {
+        $(this).val($(this).val().trim());
+    });
 
 
 </script>
