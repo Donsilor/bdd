@@ -387,7 +387,7 @@ class OrderBaseService extends Service
         $result['exchange_rate'] = $this->getExchangeRate();//汇率
         $result['other_fee'] = $other_fee;//附加费
 
-        $result['plan_days'] = '1-2';//$this->getDeliveryTimeByGoods($orderGoodsList);;
+        $result['plan_days'] = $this->getDeliveryTimeByGoods($orderGoodsList);
         $result['orderGoodsList'] = $orderGoodsList;
         $result['coupons'] = $coupons;
         $result['coupon'] = $coupons[$coupon_id]??[];
