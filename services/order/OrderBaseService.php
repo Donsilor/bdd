@@ -171,7 +171,7 @@ class OrderBaseService extends Service
             }
 
             //商品价格
-            $sale_price = intval($this->exchangeAmount($goods['sale_price'],0));
+            $sale_price = $goods['sale_price']>1 ? intval($this->exchangeAmount($goods['sale_price'],0)) : $goods['sale_price'];
 
             $orderGoods = [];
             $orderGoods['goods_id'] = $item['goods_id'];//商品ID
