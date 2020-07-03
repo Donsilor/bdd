@@ -171,7 +171,7 @@ class OrderBaseService extends Service
             }
 
             //商品价格
-            $sale_price = $goods['sale_price']>1 ? intval($this->exchangeAmount($goods['sale_price'],0)) : $goods['sale_price'];
+            $sale_price = $goods['sale_price']>1 ? intval($this->exchangeAmount($goods['sale_price'],0)) : $this->exchangeAmount($goods['sale_price'],2);
 
             $orderGoods = [];
             $orderGoods['goods_id'] = $item['goods_id'];//商品ID
@@ -235,7 +235,7 @@ class OrderBaseService extends Service
         }
 
         foreach ($orderGoodsList as &$orderGoods) {
-            $goodsPrice = intval($orderGoods['goods_price']);
+            $goodsPrice = $orderGoods['goods_price'];
 
             if($orderGoods['coupon_id']!=0) {
                 //如果使用折扣券
