@@ -388,6 +388,9 @@ class CouponService extends Service
 //            'price',//价格
 //            'num',//币种
 //        ];
+        if(empty($records) || !is_array($records)) {
+            return;
+        }
 
         //产品线ID
         $goodsTypeIds = [];
