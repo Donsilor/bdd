@@ -58,7 +58,7 @@ class StyleController extends BaseController
         ]);
         $typeModel = Yii::$app->services->goodsType->getAllTypesById($type_id,null);
         $dataProvider = $searchModel
-            ->search(Yii::$app->request->queryParams,['style_name','language']);
+            ->search(Yii::$app->request->queryParams,['style_name','language','created_at']);
         //切换默认语言
         $this->setLocalLanguage($searchModel->language);
         if($typeModel){
@@ -67,6 +67,11 @@ class StyleController extends BaseController
         $dataProvider->query->joinWith(['lang']);
         $dataProvider->query->andFilterWhere(['like', 'lang.style_name',$searchModel->style_name]);
 
+        //创建时间过滤
+        if (!empty(Yii::$app->request->queryParams['SearchModel']['created_at'])) {
+            list($start_date, $end_date) = explode('/', Yii::$app->request->queryParams['SearchModel']['created_at']);
+            $dataProvider->query->andFilterWhere(['between', 'goods_style.created_at', strtotime($start_date), strtotime($end_date) + 86400]);
+        }
 
         //导出
         if(Yii::$app->request->get('action') === 'export'){
