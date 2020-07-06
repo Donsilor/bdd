@@ -9,6 +9,10 @@ namespace common\enums;
  */
 class OrderStatusEnum extends BaseEnum
 {
+    //测试状态
+    const ORDER_TEST_YES = 1;
+    const ORDER_TEST_NO = 0;
+
     //取消状态
     const ORDER_CANCEL_YES = 1;
     const ORDER_CANCEL_NO = 0;
@@ -42,6 +46,14 @@ class OrderStatusEnum extends BaseEnum
                 self::ORDER_SEND => \Yii::t('common','已发货'),
                 self::ORDER_FINISH => \Yii::t('common','已完成'),
                 self::ORDER_CANCEL => \Yii::t('common','已取消'),
+        ];
+    }
+
+    public static function testStatus()
+    {
+        return [
+            self::ORDER_TEST_YES => \Yii::t('common','[测试]'),
+            self::ORDER_TEST_NO => \Yii::t('common','否'),
         ];
     }
 
