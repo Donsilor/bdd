@@ -28,8 +28,11 @@ $form = ActiveForm::begin([
             <?php }else{ ?>
                 <?= $form->field($model, 'page_name')->textInput(['maxlength' => true, 'readonly' => 'true']) ?>
             <?php } ?>
-
-
+            <?= $form->field($model, 'platform')->dropDownList(\common\enums\OrderFromEnum::getMap(), [
+                'prompt' => '请选择',
+                'class' => 'form-control',
+            ]) ?>
+            <?= $form->field($model, 'route')->textInput(['maxlength' => true]) ?>
             <?php
             echo common\widgets\langbox\LangBox::widget(['form'=>$form,'model'=>$model,'tab'=>'tab',
                 'fields'=>
@@ -37,7 +40,6 @@ $form = ActiveForm::begin([
                         'meta_title'=>['type'=>'textInput'],
                         'meta_word'=>['type'=>'textArea','options'=>['rows'=>'4']],
                         'meta_desc'=>['type'=>'textArea','options'=>['rows'=>'4']],
-
                     ]]);
             ?>
         </div>

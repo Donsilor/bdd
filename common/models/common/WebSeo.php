@@ -45,7 +45,7 @@ class WebSeo extends \common\models\base\BaseModel
     {
         return [
             'id' => '主键',
-            'platform' => '平台',
+            'platform' => '客户端',
             'page_name' => '页面',
             'route' => '路由',
             'created_at' => '创建时间',
