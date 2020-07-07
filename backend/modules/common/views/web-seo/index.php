@@ -32,9 +32,20 @@ $this->params['breadcrumbs'][] = $this->title;
                 'class' => 'yii\grid\SerialColumn',
                 'visible' => false,
             ],
-
             'id',
+            [
+                'label' => '站点'
+            ],
+            [
+                'label' => '客户端'
+            ],
             'page_name',
+            [
+                'label' => '标题'
+            ],
+            [
+                'label' => '路由'
+            ],
             //'create_time',
             'updated_at:date',
             [
