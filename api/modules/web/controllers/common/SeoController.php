@@ -34,7 +34,7 @@ class SeoController extends OnAuthController
         $language = Yii::$app->params['language'];
         $model = $this->modelClass::find()->alias('m');
 
-        if(is_int($type)) {
+        if(is_numeric($type)) {
             $model = $model->where(['m.id'=>$type]);
         }
         else {
