@@ -154,7 +154,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'template' => '{edit} {status} {view} {show_log}',
                 'buttons' => [
                 'edit' => function($url, $model, $key){
-                        return Html::edit(['edit-lang', 'id' => $model->id, 'returnUrl' => Url::getReturnUrl()], '编辑', ['class'=>'btn btn-primary btn-sm openContab']);
+                        return Html::edit(['edit-lang', 'id' => $model->id, 'returnUrl' => Url::getReturnUrl()], '编辑', ['class'=>'btn btn-primary btn-sm openContab', 'data-title'=>$model->style_sn]);
                 },
                'status' => function($url, $model, $key){
                         return Html::status($model['status']);
