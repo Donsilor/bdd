@@ -31,6 +31,18 @@ class SeoController extends OnAuthController
     {
         $type = Yii::$app->request->get('type');
         if($type == null) return ResultHelper::api(422, '缺省参数');
+
+        $model = $this->getSeoInfo($type);
+
+        if(!$model) {
+            $model = $this->getSeoInfo('default');
+        }
+
+        return $model;
+    }
+
+    private function getSeoInfo($type)
+    {
         $language = Yii::$app->params['language'];
         $model = $this->modelClass::find()->alias('m');
 
