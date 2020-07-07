@@ -34,17 +34,29 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'id',
             [
-                'label' => '站点'
+                'label' => '站点',
+                'value' => function($model) {
+                    return \common\enums\OrderFromEnum::platformToGroupName($model->platform);
+                }
             ],
             [
-                'label' => '客户端'
+                'label' => '客户端',
+                'value' => function($model) {
+                    return \common\enums\OrderFromEnum::getValue($model->platform);
+                }
             ],
             'page_name',
             [
-                'label' => '标题'
+                'label' => '标题',
+                'value' => function($model) {
+                    return $model->lang->meta_title;
+                }
             ],
             [
-                'label' => '路由'
+                'label' => '路由',
+                'value' => function($model) {
+                    return $model->route;
+                }
             ],
             //'create_time',
             'updated_at:date',
