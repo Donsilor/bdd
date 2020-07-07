@@ -349,9 +349,11 @@ class OrderController extends BaseController
 
             $result = $model->save();
 
+            $returnUrl = Yii::$app->request->referrer;
+
             return $result
-                ? $this->redirect(['index'])
-                : $this->message($this->getError($model), $this->redirect(['index']), 'error');
+                ? $this->redirect($returnUrl)
+                : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
         }
 
         $where = [];
