@@ -29,12 +29,19 @@ class SeoController extends OnAuthController
      */
     public function actionIndex()
     {
-        $id = Yii::$app->request->get('type');
-        if($id == null) return ResultHelper::api(422, '缺省参数');
+        $type = Yii::$app->request->get('type');
+        if($type == null) return ResultHelper::api(422, '缺省参数');
         $language = Yii::$app->params['language'];
-        $model = $this->modelClass::find()->alias('m')
-            ->where(['m.id'=>$id])
-            ->leftJoin(WebSeoLang::tableName().' lang','lang.master_id = m.id and lang.language =  "'.$language.'"')
+        $model = $this->modelClass::find()->alias('m');
+
+        if(is_int($type)) {
+            $model = $model->where(['m.id'=>$type]);
+        }
+        else {
+            $model = $model->where(['m.page_name'=>$type]);
+        }
+
+        $model = $model->leftJoin(WebSeoLang::tableName().' lang','lang.master_id = m.id and lang.language =  "'.$language.'"')
             ->select(['lang.*'])
             ->asArray()
             ->one();
