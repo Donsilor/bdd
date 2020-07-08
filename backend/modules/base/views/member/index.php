@@ -89,11 +89,11 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                         return Html::status($model->status);
                                     }
                                 },
-                                'destroy' => function ($url, $model, $key) {
-                                    if ($model->id != Yii::$app->params['adminAccount']) {
-                                        return Html::delete(['destroy', 'id' => $model->id]);
-                                    }
-                                },
+//                                'destroy' => function ($url, $model, $key) {
+//                                    if ($model->id != Yii::$app->params['adminAccount']) {
+//                                        return Html::delete(['destroy', 'id' => $model->id]);
+//                                    }
+//                                },
                             ],
                         ],
                     ],
