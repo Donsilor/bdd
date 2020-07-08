@@ -48,6 +48,11 @@ $model->style_spec = $style_spec;
         'enableAjaxValidation' => true,
         'validationUrl' => Url::to(['ajax-edit-lang', 'id' => $model['id']]),       
 ]); ?>
+<style type="text/css">
+    .content-header .rfHeaderFont:nth-child(2) {
+        display: none;
+    }
+</style>
 <div class="box-body nav-tabs-custom">
      <h2 class="page-header">商品发布</h2>
      <?php 
