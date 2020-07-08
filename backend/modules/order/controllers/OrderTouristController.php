@@ -7,6 +7,7 @@ use common\enums\OrderFromEnum;
 use common\enums\OrderStatusEnum;
 use common\helpers\ResultHelper;
 use common\models\order\OrderGoods;
+use common\models\order\OrderTouristDetails;
 use Yii;
 use common\components\Curd;
 use common\enums\StatusEnum;
@@ -88,7 +89,7 @@ class OrderTouristController extends BaseController
         $dataProvider = null;
         if (!is_null($id)) {
             $searchModel = new SearchModel([
-                'model' => OrderGoods::class,
+                'model' => OrderTouristDetails::class,
                 'scenario' => 'default',
                 'partialMatchAttributes' => [], // 模糊查询
                 'defaultOrder' => [
@@ -99,7 +100,7 @@ class OrderTouristController extends BaseController
 
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-            $dataProvider->query->andWhere(['=', 'order_id', $id]);
+            $dataProvider->query->andWhere(['=', 'order_tourist_id', $id]);
 
             $dataProvider->setSort(false);
         }

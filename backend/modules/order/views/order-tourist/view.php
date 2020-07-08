@@ -190,7 +190,7 @@ DOM;
                                     [
                                         'attribute'=>'goods_price',
                                         'value' => function($model) {
-                                            return $model->currency . " " . \common\helpers\AmountHelper::rateAmount($model->goods_price, 1, 2, ',');
+                                            return $model->order->currency . " " . \common\helpers\AmountHelper::rateAmount($model->goods_price, 1, 2, ',');
                                         }
                                     ],
                                     [
@@ -201,13 +201,13 @@ DOM;
                                             if($value>0.01) {
                                                 $value .= sprintf(" （%s[%s]）", $model->coupon->specials->lang->title, \common\enums\PreferentialTypeEnum::getValue($model->coupon->type));
                                             }
-                                            return $model->currency ." " . $value;
+                                            return $model->order->currency ." " . $value;
                                         }
                                     ],
                                     [
                                         'attribute'=>'goods_pay_price',
                                         'value' => function($model) {
-                                            return $model->currency . " " . \common\helpers\AmountHelper::rateAmount($model->goods_pay_price, 1, 2, ',');
+                                            return $model->order->currency . " " . \common\helpers\AmountHelper::rateAmount($model->goods_pay_price, 1, 2, ',');
                                         }
                                     ],
                                 ]

@@ -2,6 +2,7 @@
 
 namespace common\models\order;
 
+use common\models\market\MarketCoupon;
 use Yii;
 
 /**
@@ -77,5 +78,23 @@ class OrderTouristDetails extends \common\models\base\BaseModel
             'created_at' => Yii::t('app', '创建时间'),
             'updated_at' => Yii::t('app', '更新时间'),
         ];
+    }
+
+    /**
+     * 对应订单商品信息模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrder()
+    {
+        return $this->hasOne(OrderTourist::class,['id'=>'order_tourist_id']);
+    }
+
+    /**
+     * 对应快递模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCoupon()
+    {
+        return $this->hasOne(MarketCoupon::class, ['id'=>'coupon_id']);
     }
 }
