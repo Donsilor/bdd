@@ -148,7 +148,7 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 						<div class="copy">
 							<p>如果您对BDDCO的产品有任何反馈或建议，或者使用时遇到了什么问题</p>
 							<p>欢迎随时与我们联系：<a href="mailto:service@bddco.com" rel="noopener" target="_blank">service@bddco.com</a></p>
-							<em>Copyright ©2012 - <?= date("Y")?> BDD Co., Ltd.</em>
+							<em>Copyright ©<?= date("Y")?> BDD Co., Ltd.</em>
 						</div>
 					</div>
 				</div>
