@@ -153,7 +153,7 @@ class OrderController extends BaseController
 
 
         //导出
-        if(Yii::$app->request->get('action') === 'export'){
+        if($this->export){
             $query = Yii::$app->request->queryParams;
             unset($query['action']);
             if(empty(array_filter($query))){
@@ -168,6 +168,12 @@ class OrderController extends BaseController
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
         ]);
+    }
+
+    public $export = false;
+    public function actionExport() {
+        $this->export = true;
+        return $this->actionIndex();
     }
 
     /**

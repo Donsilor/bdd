@@ -11,7 +11,6 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 
 $order_status = Yii::$app->request->get('order_status', -1);
 $params = Yii::$app->request->queryParams;
-$params = $params ? "&".http_build_query($params) : '';
 $export_param = http_build_query($searchModel)."&order_status={$order_status}";
 
 $OrderStatusEnum = common\enums\OrderStatusEnum::getMap();
@@ -37,7 +36,7 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                 <?php } ?>
                 <li class="pull-right">
                     <div class="box-header box-tools">
-                        <?= Html::a('导出Excel','index?action=export'.$params) ?>
+                        <?= Html::a('导出Excel',['export', $params]) ?>
                     </div>
                 </li>
 
