@@ -39,7 +39,8 @@ class StyleController extends OnAuthController
             "sale_volume"=>'m.virtual_volume',//销量
         ];
         $type_id = \Yii::$app->request->post("categoryId");//产品线ID
-        if(!$type_id){
+        $style_id = \Yii::$app->request->post("styleId");//产品线ID
+        if(!$type_id && !$style_id) {
             return ResultHelper::api(422, '产品线不能为空');
         }
         $order_param = \Yii::$app->request->post("orderParam");//排序参数
@@ -69,6 +70,12 @@ class StyleController extends OnAuthController
             $query ->andWhere(['in','m.type_id',$type_id]);
         }else{
             $query ->andWhere(['m.type_id'=>$type_id]);
+        }
+
+        if(is_array($style_id)) {
+            $query ->andWhere(['in','m.id',$style_id]);
+        } else {
+            $query ->andWhere(['m.id'=>$style_id]);
         }
 
         if(!empty($params)){
