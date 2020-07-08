@@ -73,5 +73,41 @@ class OrderTouristController extends BaseController
             'searchModel' => $searchModel,
         ]);
     }
+
+    /**
+     * 详情展示页
+     * @return string
+     * @throws NotFoundHttpException
+     */
+    public function actionView()
+    {
+        $id = Yii::$app->request->get('id', null);
+
+        $model = $this->findModel($id);
+
+        $dataProvider = null;
+        if (!is_null($id)) {
+            $searchModel = new SearchModel([
+                'model' => OrderGoods::class,
+                'scenario' => 'default',
+                'partialMatchAttributes' => [], // 模糊查询
+                'defaultOrder' => [
+                    'id' => SORT_DESC
+                ],
+                'pageSize' => 1000,
+            ]);
+
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+            $dataProvider->query->andWhere(['=', 'order_id', $id]);
+
+            $dataProvider->setSort(false);
+        }
+
+        return $this->render($this->action->id, [
+            'model' => $model,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
 }
 

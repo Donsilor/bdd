@@ -58,6 +58,13 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             ],
                             [
                                 'attribute' => 'order_sn',
+                                'filter' => Html::activeTextInput($searchModel, 'order_sn', [
+                                    'class' => 'form-control',
+                                ]),
+                                'format' => 'raw',
+                                'value' => function($model) {
+                                    return Html::a($model->order_sn, ['view', 'id' => $model->id], ['style'=>"text-decoration:underline;color:#3c8dbc"]);
+                                }
                             ],
                             [
                                 'attribute' => 'order_amount',
