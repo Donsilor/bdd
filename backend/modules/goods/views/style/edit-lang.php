@@ -710,7 +710,7 @@ $model->style_spec = $style_spec;
     <div class="modal-footer">
         <div class="col-sm-12 text-center">
             <button class="btn btn-primary" type="submit">保存</button>
-            <span class="btn btn-white" onclick="history.go(-1)">返回</span>
+            <span class="btn btn-white" onclick="$('.active.J_menuTab i', window.parent.document).click()">关闭</span>
         </div>
 	</div>
 </div>
