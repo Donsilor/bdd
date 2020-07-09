@@ -29,6 +29,7 @@ class DiamondController extends BaseController
     * @var Diamond
     */
     public $modelClass = Diamond::class;
+    public $enableCsrfValidation = false;
 
 
     /**
@@ -73,6 +74,7 @@ class DiamondController extends BaseController
         $status = $model ? $model->status:0;
         $old_diamond_info = $model->toArray();
         if ($model->load(Yii::$app->request->post())) { 
+            $model->type_id = 15;
             try{
                 $trans = Yii::$app->db->beginTransaction();
                 if($model->status == 1 && $status == 0){
