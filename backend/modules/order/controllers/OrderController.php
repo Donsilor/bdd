@@ -777,12 +777,11 @@ class OrderController extends BaseController
                 return $html;
             }],
             ['订单总金额', 'account.order_amount', 'text'],
+            ['折扣金额', 'account.discount_amount', 'text'],
+            ['优惠券金额', 'account.coupon_amount', 'text'],
+            ['购物卡金额', 'account.card_amount', 'text'],
             ['实付金额', 'account.pay_amount', 'text'],
             ['货币', 'account.currency', 'text'],
-            ['是否使用购物卡', 'id', 'function',function($model){
-                $row = MarketCardDetails::find()->where(['order_id'=>$model->id])->one();
-                return $row ? "是" : "否";
-            }],
             ['购物卡号', 'id', 'function',function($model){
                 $rows = MarketCardDetails::find()->alias('card_detail')
                     ->leftJoin(MarketCard::tableName()." card",'card.id=card_detail.card_id')
