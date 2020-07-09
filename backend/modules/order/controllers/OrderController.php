@@ -151,6 +151,25 @@ class OrderController extends BaseController
             $dataProvider->query->andFilterWhere(['between', 'order.created_at', strtotime($start_date), strtotime($end_date) + 86400]);
         }
 
+        if(!empty(Yii::$app->request->queryParams['SearchModel']['discount_type'])) {
+            $discountType = explode(',', Yii::$app->request->queryParams['SearchModel']['discount_type']);
+            $where = ['or'];
+
+            if(in_array('card', $discountType)) {
+                $where[] = ['>', 'order_account.card_amount', 0];
+            }
+
+            if(in_array('coupon', $discountType)) {
+                $where[] = ['>', 'order_account.coupon_amount', 0];
+            }
+
+            if(in_array('discount', $discountType)) {
+                $where[] = ['>', 'order_account.discount_amount', 0];
+            }
+
+            if(count($where)>1)
+                $dataProvider->query->andWhere($where);
+        }
 
         //导出
         if($this->export){
