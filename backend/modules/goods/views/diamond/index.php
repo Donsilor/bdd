@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="box-header">
                 <h3 class="box-title"><?= Html::encode($this->title) ?></h3>
                 <div class="box-tools"  style="right: 100px;">
-                    <?= Html::create(['edit-lang']) ?>
+                    <?= Html::create(['edit-lang'], '创建', ['class'=>'btn btn-primary btn-xs openContab']) ?>
                     <?= Html::a('导出Excel','export?goods_name='.$goods_name.'&id='.$id.'&goods_sn='.$goods_sn.'&cert_id='.$cert_id.'&sale_price='.$sale_price.'&carat='.$carat.'&status='.$status) ?>
                 </div>
 
@@ -154,7 +154,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'template' => '{edit} {status} {view} {show_log}',
                 'buttons' => [
                 'edit' => function($url, $model, $key){
-                        return Html::edit(['edit-lang', 'id' => $model->id, 'returnUrl' => Url::getReturnUrl()], '编辑', ['class'=>'btn btn-primary btn-sm openContab', 'data-title'=>$model->style_sn]);
+                        return Html::edit(['edit-lang', 'id' => $model->id, 'returnUrl' => Url::getReturnUrl()], '编辑', ['class'=>'btn btn-primary btn-sm openContab', 'data-title'=>$model->goods_sn]);
                 },
                'status' => function($url, $model, $key){
                         return Html::status($model['status']);

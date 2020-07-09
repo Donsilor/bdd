@@ -32,7 +32,7 @@ $export_param = http_build_query($searchModel);
                         <?php if($type_id==19) { ?>
                             <a class="btn btn-primary btn-xs openIframe1" href="<?php echo Url::to(['select-style'])?>"><i class="icon ion-plus"></i>创建</a>
                         <?php } else { ?>
-                            <?= Html::create(['edit-lang','type_id'=>$type_id]) ?>
+                            <?= Html::create(['edit-lang','type_id'=>$type_id],'创建', ['class'=>'btn btn-primary btn-xs openContab']) ?>
                         <?php } ?>
                     </div>
                 </li>
