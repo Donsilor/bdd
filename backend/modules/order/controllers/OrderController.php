@@ -157,7 +157,8 @@ class OrderController extends BaseController
             $query = Yii::$app->request->queryParams;
             unset($query['action']);
             if(empty(array_filter($query))){
-                return $this->message('导出条件不能为空', $this->redirect(['index']), 'warning');
+                $returnUrl = Yii::$app->request->referrer;
+                return $this->message('导出条件不能为空', $this->redirect($returnUrl), 'warning');
             }
             $dataProvider->setPagination(false);
             $list = $dataProvider->models;
@@ -230,7 +231,8 @@ class OrderController extends BaseController
 
             Yii::$app->services->order->changeOrderStatusCancel($id, $order['cancel_remark']??'', 'admin', Yii::$app->getUser()->id);
 
-            return $this->redirect(['index']);
+            $returnUrl = Yii::$app->request->referrer;
+            return $this->redirect($returnUrl);
         }
 
         return $this->renderAjax($this->action->id, [
@@ -316,7 +318,9 @@ class OrderController extends BaseController
 
             Yii::$app->services->order->changeOrderStatusRefund($id, $order['refund_remark']??'', 'admin', Yii::$app->getUser()->id);
 
-            return $this->redirect(['index']);
+
+            $returnUrl = Yii::$app->request->referrer;
+            return $this->redirect($returnUrl);
         }
 
         return $this->renderAjax($this->action->id, [
@@ -355,9 +359,8 @@ class OrderController extends BaseController
 
             $result = $model->save();
 
-            return $result
-                ? $this->redirect(['index'])
-                : $this->message($this->getError($model), $this->redirect(['index']), 'error');
+            $returnUrl = Yii::$app->request->referrer;
+            return $result ? $this->redirect($returnUrl) : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
         }
 
         $where = [];
@@ -395,7 +398,9 @@ class OrderController extends BaseController
 
             //订单发送邮件
             \Yii::$app->services->order->sendOrderNotification($id);
-            return $result ? $this->redirect(['index']):$this->message($this->getError($model), $this->redirect(['index']), 'error');
+
+            $returnUrl = Yii::$app->request->referrer;
+            return $result ? $this->redirect($returnUrl) : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
         }
 
         return $this->renderAjax($this->action->id, [
@@ -420,10 +425,10 @@ class OrderController extends BaseController
             try {
                 Yii::$app->services->order->changeOrderStatusAudit($id, $order['audit_status'], $order['audit_remark']??'');
             } catch (Exception $exception) {
-                $this->message($exception->getMessage(), $this->redirect(['index']), 'error');
+                $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
             }
 
-            return $this->redirect(['index']);
+            return $this->redirect(Yii::$app->request->referrer);
         }
 
         return $this->renderAjax($this->action->id, [
@@ -523,7 +528,6 @@ class OrderController extends BaseController
 
     public  function actionEditSendPaidEmail() {
         $order_id = Yii::$app->request->get('order_id');
-        $returnUrl = Yii::$app->request->get('returnUrl', ['index']);
 
         $model = $this->findModel($order_id);
 
@@ -546,12 +550,11 @@ class OrderController extends BaseController
                 '收件邮箱' => $model->address->email
             ]]);
 
-            return $this->message("保存成功", $this->redirect($returnUrl), 'success');
+            return $this->message("保存成功", $this->redirect(Yii::$app->request->referrer), 'success');
         }
         return $this->renderAjax($this->action->id, [
             'model' => $model,
-            'order_id' => $order_id,
-            'returnUrl'=>$returnUrl
+            'order_id' => $order_id
         ]);
     }
 
@@ -585,7 +588,6 @@ class OrderController extends BaseController
             if(false === $model->save()){
                 throw new Exception($this->getError($model));
             }
-         // return $this->redirect($returnUrl);
 
             $order = Order::findOne($order_id);
 
