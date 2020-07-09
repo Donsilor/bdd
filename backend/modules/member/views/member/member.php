@@ -76,16 +76,40 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             ]),
                             'value' => 'first_ip_location'
                         ],
-
+//                        [
+//                            'label' => '注册时间',
+//                            'attribute' => 'created_at',
+//                            'filter' => false,
+//                            'value' => function($model) {
+//                                return Yii::$app->getFormatter()->asDatetime($model->created_at);
+//                            }
+//                        ],
                         [
                             'label' => '注册时间',
                             'attribute' => 'created_at',
-                            'filter' => false,
-                            'value' => function($model) {
-                                return Yii::$app->getFormatter()->asDatetime($model->created_at);
-                            }
+                            'filter' => \kartik\daterange\DateRangePicker::widget([    // 日期组件
+                                'model' => $searchModel,
+                                'attribute' => 'created_at',
+                                'value' => $searchModel->created_at,
+                                'options' => ['readonly' => true,'class'=>'form-control','style'=>'background-color:#fff;'],
+                                'pluginOptions' => [
+                                    'format' => 'yyyy-mm-dd',
+                                    'locale' => [
+                                        'separator' => '/',
+                                        'cancelLabel'=> '清空',
+                                    ],
+                                    'endDate' => date('Y-m-d',time()),
+                                    'todayHighlight' => true,
+                                    'autoclose' => true,
+                                    'todayBtn' => 'linked',
+                                    'clearBtn' => true,
+                                ],
+                            ]),
+                            'value' => function ($model) {
+                                return Yii::$app->formatter->asDatetime($model->created_at);
+                            },
+                            'format' => 'raw',
                         ],
-
                         [
                             'label' => '用户信息',
                             'filter' => false, //不显示搜索框
@@ -166,3 +190,14 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
             </div>
         </div>
     </div>
+
+    <script>
+
+        (function ($) {
+
+            $("[data-krajee-daterangepicker]").on("cancel.daterangepicker", function () {
+                $(this).val("").trigger("change");
+            });
+
+        })(window.jQuery);
+    </script>

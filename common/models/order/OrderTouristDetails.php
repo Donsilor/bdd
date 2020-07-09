@@ -15,9 +15,10 @@ use Yii;
  * @property int $goods_type 产品线ID
  * @property string $goods_name 商品名称
  * @property string $goods_price 商品价格
+ * @property string $goods_pay_price 商品实际成交价
  * @property int $goods_num 购买商品数量
  * @property string $goods_image 商品图片
- * @property int $promotions_id 促销活动ID（抢购ID/限时折扣ID/优惠套装ID）与goods_type搭配使用
+ * @property int $coupon_id 促销活动ID（抢购ID/限时折扣ID/优惠套装ID）与goods_type搭配使用
  * @property int $group_id 分组ID
  * @property int $group_type 分组类型 1对戒 2定制 0单品
  * @property string $goods_spec 商品规格
@@ -42,8 +43,8 @@ class OrderTouristDetails extends \common\models\base\BaseModel
     {
         return [
             [['order_tourist_id'], 'required'],
-            [['order_tourist_id', 'goods_id','style_id', 'goods_type', 'goods_num', 'promotions_id', 'group_id', 'group_type', 'created_at', 'updated_at'], 'integer'],
-            [['goods_price'], 'number'],
+            [['order_tourist_id', 'goods_id','style_id', 'goods_type', 'goods_num', 'coupon_id', 'group_id', 'group_type', 'created_at', 'updated_at'], 'integer'],
+            [['goods_price', 'goods_pay_price'], 'number'],
             [['goods_spec', 'goods_attr'], 'string'],
             [['goods_sn'], 'string', 'max' => 50],
             [['goods_name'], 'string', 'max' => 300],
@@ -65,9 +66,10 @@ class OrderTouristDetails extends \common\models\base\BaseModel
             'goods_type' => Yii::t('app', '产品线ID'),
             'goods_name' => Yii::t('app', '商品名称'),
             'goods_price' => Yii::t('app', '商品价格'),
+            'goods_pay_price' => '商品实际成交价',
             'goods_num' => Yii::t('app', '购买商品数量'),
             'goods_image' => Yii::t('app', '商品图片'),
-            'promotions_id' => Yii::t('app', '促销活动ID（抢购ID/限时折扣ID/优惠套装ID）与goods_type搭配使用'),
+            'coupon_id' => Yii::t('app', '促销活动ID（抢购ID/限时折扣ID/优惠套装ID）与goods_type搭配使用'),
             'group_id' => Yii::t('app', '分组ID'),
             'group_type' => Yii::t('app', '分组类型 1对戒 2定制 0单品'),
             'goods_spec' => Yii::t('app', '商品规格'),

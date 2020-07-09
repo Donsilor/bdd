@@ -37,11 +37,12 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                     'model' => $searchModel,
                                     'attribute' => 'created_at',
                                     'value' => '',
-                                    'options' => ['readonly' => true, 'class' => 'form-control',],
+                                    'options' => ['readonly' => true, 'class' => 'form-control','style'=>'background-color:#fff;'],
                                     'pluginOptions' => [
                                         'format' => 'yyyy-mm-dd',
                                         'locale' => [
                                             'separator' => '/',
+                                            'cancelLabel'=> '清空',
                                         ],
                                         'endDate' => date('Y-m-d', time()),
                                         'todayHighlight' => true,
@@ -62,6 +63,12 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'attribute' => 'order_amount',
                                 'value' => function ($model) {
                                     return sprintf('(%s)%s', $model->currency, $model->order_amount);
+                                }
+                            ],
+                            [
+                                'label' => '优惠后金额',
+                                'value' => function ($model) {
+                                    return sprintf('(%s)%s', $model->currency, bcsub($model->order_amount, $model->discount_amount, 2));
                                 }
                             ],
                             [
@@ -120,6 +127,10 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
          */
         $(".top-form input,select").change(function () {
             $(".filters input[name='" + $(this).attr('name') + "']").val($(this).val()).trigger('change');
+        });
+
+        $("[data-krajee-daterangepicker]").on("cancel.daterangepicker", function () {
+            $(this).val("").trigger("change");
         });
 
 

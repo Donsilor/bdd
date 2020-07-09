@@ -50,7 +50,7 @@ $type_id = Yii::$app->request->get('type_id', 0);
                                 'model' => $searchModel,
                                 'attribute' => 'created_at',
                                 'value' => '',
-                                'options' => ['readonly' => true, 'class' => 'form-control',],
+                                'options' => ['readonly' => true, 'class' => 'form-control','style'=>'background-color:#fff;'],
                                 'pluginOptions' => [
                                     'format' => 'yyyy-mm-dd',
                                     'locale' => [
@@ -166,3 +166,14 @@ $type_id = Yii::$app->request->get('type_id', 0);
         </div>
     </div>
 </div>
+
+<script>
+
+    (function ($) {
+
+        $("[data-krajee-daterangepicker]").on("cancel.daterangepicker", function () {
+            $(this).val("").trigger("change");
+        });
+
+    })(window.jQuery);
+</script>

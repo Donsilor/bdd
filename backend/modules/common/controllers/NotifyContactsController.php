@@ -31,7 +31,7 @@ class NotifyContactsController extends BaseController
      */
     public function actionIndex()
     {
-        $SearchModel = Yii::$app->request->get('SearchModel', ['type_id'=>1]);
+        $SearchModel = Yii::$app->request->get('SearchModel');
 
         $searchModel = new SearchModel([
             'model' => $this->modelClass,
@@ -46,10 +46,16 @@ class NotifyContactsController extends BaseController
             ]
         ]);
 
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams?:['SearchModel'=>$SearchModel]);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams?:['SearchModel'=>$SearchModel],['created_at']);
+
+        //创建时间过滤
+        if (!empty(Yii::$app->request->queryParams['SearchModel']['created_at'])) {
+            list($start_date, $end_date) = explode('/', Yii::$app->request->queryParams['SearchModel']['created_at']);
+            $dataProvider->query->andFilterWhere(['between', 'common_notify_contacts.created_at', strtotime($start_date), strtotime($end_date) + 86400]);
+        }
 
         return $this->render($this->action->id, [
-            'type_id' => $SearchModel['type_id'],
+            'type_id' => $SearchModel['type_id']??1,
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
         ]);

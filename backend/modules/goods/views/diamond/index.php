@@ -149,6 +149,31 @@ $this->params['breadcrumbs'][] = $this->title;
             //'created_at',
             //'updated_at',
             [
+                'attribute' => 'created_at',
+                'filter' => \kartik\daterange\DateRangePicker::widget([    // 日期组件
+                    'model' => $searchModel,
+                    'attribute' => 'created_at',
+                    'value' => $searchModel->created_at,
+                    'options' => ['readonly' => true,'class'=>'form-control','style'=>'background-color:#fff;'],
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm-dd',
+                        'locale' => [
+                            'separator' => '/',
+                            'cancelLabel'=> '清空',
+                        ],
+                        'endDate' => date('Y-m-d',time()),
+                        'todayHighlight' => true,
+                        'autoclose' => true,
+                        'todayBtn' => 'linked',
+                        'clearBtn' => true,
+                    ],
+                ]),
+                'value' => function ($model) {
+                    return Yii::$app->formatter->asDatetime($model->created_at);
+                },
+                'format' => 'raw',
+            ],
+            [
                 'class' => 'yii\grid\ActionColumn',
                 'header' => '操作',
                 'template' => '{edit} {status} {view} {show_log}',
@@ -176,3 +201,12 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
+<script>
+    (function ($) {
+
+        $("[data-krajee-daterangepicker]").on("cancel.daterangepicker", function () {
+            $(this).val("").trigger("change");
+        });
+
+    })(window.jQuery);
+</script>

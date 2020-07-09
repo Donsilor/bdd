@@ -2,6 +2,8 @@
 
 namespace services\order;
 
+use common\models\market\MarketCouponDetails;
+use services\market\CouponService;
 
 use common\enums\AuditStatusEnum;
 use common\models\market\MarketCard;
@@ -38,15 +40,24 @@ class OrderService extends OrderBaseService
      * @param int $buyer_address_id
      * @param array $order_info
      * @param array $invoice_info
+     * @param int $coupon_id
      */
-    public function createOrder($cart_ids,$buyer_id, $buyer_address_id, $order_info, $invoice_info)
+    public function createOrder($cart_ids, $buyer_id, $buyer_address_id, $order_info, $invoice_info, $coupon_id=0, $cards=[])
     {
-        $buyer = Member::find()->where(['id'=>$buyer_id])->one();
-        
-        if($cart_ids && !is_array($cart_ids)) {
-            $cart_ids = explode(',', $cart_ids);
+        if($coupon_id) {
+            $where = [
+                'coupon_id' => $coupon_id,
+                'member_id' => $buyer_id,
+                'coupon_status' => 1,
+            ];
+            if(!($couponDetails = MarketCouponDetails::findOne($where))) {
+                throw new UnprocessableEntityHttpException("优惠券已失效");
+            }
         }
-        $orderAccountTax = $this->getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id);
+
+//        $buyer = Member::find()->where(['id'=>$buyer_id])->one();
+
+        $orderAccountTax = $this->getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $coupon_id, $cards);
 
         if(empty($orderAccountTax['buyerAddress'])) {
             throw new UnprocessableEntityHttpException("收货地址不能为空");
@@ -74,17 +85,47 @@ class OrderService extends OrderBaseService
         if(false === $order->save()){
             throw new UnprocessableEntityHttpException($this->getError($order));
         }
+
+        if($coupon_id) {
+            //使用优惠券
+            //CouponService::incrMoneyUse($coupon_id, 1);
+
+            $data = [
+                'coupon_code' => '',
+                'order_id' => $order->id,
+                'order_sn' => $order->order_sn,
+                'coupon_status' => 2,
+                'use_time' => time(),
+            ];
+
+            $where = [
+                'id' => $couponDetails->id,
+                'member_id' => $buyer_id,
+                'coupon_status' => 1,
+            ];
+
+            if(!MarketCouponDetails::updateAll($data, $where)) {
+                throw new UnprocessableEntityHttpException("优惠券使用失败");
+            }
+        }
+
         //订单商品       
         foreach ($orderGoodsList as $goods) {
+            if(!empty($goods['coupon_id']) && !empty($goods['coupon']['discount'])) {
+                //使用折扣券
+                $coupon = $goods['coupon'];
+                CouponService::incrDiscountUse($goods['coupon_id'], $coupon['type_id'], $coupon['style_id'], $coupon['num']);
+            }
 
             $orderGoods = new OrderGoods();
             $orderGoods->attributes = $goods;
             $orderGoods->order_id = $order->id;
             $orderGoods->exchange_rate = $exchange_rate;
             $orderGoods->currency = $currency;
-            if(false === $orderGoods->save()){
+            if(false === $orderGoods->save()) {
                 throw new UnprocessableEntityHttpException($this->getError($orderGoods));
-            }            
+            }
+
              //订单商品明细
             foreach (array_keys($languages) as $language){
                 $goods = \Yii::$app->services->goods->getGoodsInfo($orderGoods->goods_id,$orderGoods->goods_type,false,$language);
@@ -129,6 +170,9 @@ class OrderService extends OrderBaseService
             throw new UnprocessableEntityHttpException($this->getError($orderAddress));
         }
 
+        //购物券消费
+        CardService::consume($order->id, $orderAccountTax['cards']);
+
         //如果有发票信息
         if(!empty($invoice_info)) {
             $invoice = new OrderInvoice();
@@ -153,155 +197,60 @@ class OrderService extends OrderBaseService
         OrderCart::updateAll(['status'=>0], ['id'=>$cart_ids,'member_id'=>$buyer_id]);
         
         return [
-                "currency" => $currency,
-                "order_amount"=> $order_amount,
-                "order_id" => $order->id,
+            "currency" => $currency,
+            "order_amount"=> $order_amount,
+            "pay_amount"=> $orderAccountTax['pay_amount'],
+            "card_amount"=> $orderAccountTax['card_amount'],
+            "order_id" => $order->id,
         ];
     }
     /**
      * 获取订单金额，税费信息
-     * @param unknown $cart_ids
-     * @param unknown $buyer_id
-     * @param unknown $buyer_address_id
-     * @param number $promotion_id
+     * @param array $carts
+     * @param int $buyer_id
+     * @param int $buyer_address_id
+     * @param int $coupon_id
+     * @param array $cards
      * @throws UnprocessableEntityHttpException
      * @return array
      */
-    public function getOrderAccountTax($cart_ids, $buyer_id, $buyer_address_id, $cards = [])
+    public function getOrderAccountTax($carts, $buyer_id, $buyer_address_id, $coupon_id=0, $cards=[])
     {
-        if($cart_ids && !is_array($cart_ids)) {
-            $cart_ids = explode(',', $cart_ids);
+        if(empty($carts) || !is_array($carts)) {
+            throw new UnprocessableEntityHttpException("[carts]参数错误");
         }
-        $cart_list = OrderCart::find()->where(['member_id'=>$buyer_id,'id'=>$cart_ids])->all();
-        if(empty($cart_list)) {
+
+        $cartIds = [];
+        $discounts = [];
+
+        foreach ($carts as $cart) {
+            if(empty($cart['cart_id'])) {
+                throw new UnprocessableEntityHttpException("[carts]参数错误");
+            }
+
+            $cartIds[] = $cart['cart_id'];
+
+            if(!empty($cart['coupon_id'])) {
+                $discounts[$cart['cart_id']] = $cart['coupon_id'];
+            }
+        }
+        
+        $cartList = OrderCart::find()->where(['member_id'=>$buyer_id,'id'=>$cartIds])->asArray()->all();
+
+        if(empty($cartList)) {
             throw new UnprocessableEntityHttpException("您的购物车商品不存在");
         }
-        $buyerAddress = Address::find()->where(['id'=>$buyer_address_id,'member_id'=>$buyer_id])->one();
-        $orderGoodsList = [];
-        $goods_amount = 0;
 
-        //产品线金额
-        $goodsTypeAmounts = [];
-        //所有卡共用了多少金额
-        $cardsUseAmount = 0;
-
-        foreach ($cart_list as $cart) {
-            
-            $goods = \Yii::$app->services->goods->getGoodsInfo($cart->goods_id,$cart->goods_type,false);
-            if(empty($goods) || $goods['status'] != StatusEnum::ENABLED) {
-                continue;
-            }
-            $sale_price = $this->exchangeAmount($goods['sale_price'],0);
-            if(!isset($goodsTypeAmounts[$goods['type_id']])) {
-                $goodsTypeAmounts[$goods['type_id']] = $sale_price;
-            }
-            else {
-                $goodsTypeAmounts[$goods['type_id']] = bcadd($goodsTypeAmounts[$goods['type_id']], $sale_price, 2);
-            }
-            $goods_amount += $sale_price;
-            $orderGoodsList[] = [
-                    'goods_id' => $cart->goods_id,
-                    'goods_sn' => $goods['goods_sn'],
-                    'style_id' => $goods['style_id'],
-                    'style_sn' => $goods['style_sn'],
-                    'goods_name' => $goods['goods_name'],
-                    'goods_price' => $sale_price,
-                    'goods_pay_price' => $sale_price,
-                    'goods_num' => $cart->goods_num,
-                    'goods_type' => $cart->goods_type,
-                    'goods_image' => $goods['goods_image'],
-                    'promotions_id' => 0,
-                    'goods_attr' =>$goods['goods_attr'],
-                    'goods_spec' =>$goods['goods_spec'],
-            ];
+        foreach ($cartList as &$item) {
+            $item['coupon_id'] = $discounts[$item['id']]??0;
         }
 
-        if(!empty($cards)) {
-            foreach ($cards as &$card) {
+        $result = $this->getCartAccountTax($cartList, $coupon_id, $cards);
 
-                //状态，是否过期，是否有余额
-                $where = ['and'];
-                $where[] = [
-                    'sn' => $card['sn'],
-                    'status' => 1,
-                ];
-                $where[] = ['<=', 'start_time', time()];
-                $where[] = ['>', 'end_time', time()];
+        $result['buyerAddress'] = Address::find()->where(['id'=>$buyer_address_id,'member_id'=>$buyer_id])->one();;
 
-                $cardInfo = MarketCard::find()->where($where)->one();
+        return $result;
 
-                //验证状态
-                if(!$cardInfo || $cardInfo->balance==0) {
-                    continue;
-                }
-
-                //验证有效期
-
-                $balance = $this->exchangeAmount($cardInfo->balance);
-
-                if($balance==0) {
-                    continue;
-                }
-
-                $cardUseAmount = 0;
-
-                foreach ($goodsTypeAmounts as $goodsType => &$goodsTypeAmount) {
-                    if(!empty($cardInfo->goods_type_attach) && in_array($goodsType, $cardInfo->goods_type_attach) && $goodsTypeAmount > 0) {
-                        if($goodsTypeAmount >= $balance) {
-                            //购物卡余额不足时
-                            $cardUseAmount = bcadd($cardUseAmount, $balance, 2);
-                            $goodsTypeAmount = bcsub($goodsTypeAmount, $balance, 2);
-                            $balance = 0;
-                        }
-                        else {
-                            $cardUseAmount = bcadd($cardUseAmount, $goodsTypeAmount, 2);
-                            $balance = bcsub($balance, $goodsTypeAmount, 2);
-                            $goodsTypeAmount = 0;
-                        }
-                    }
-                }
-
-                $card['useAmount'] = $cardUseAmount;
-                $card['balanceCny'] = $cardInfo->balance;
-                $card['amountCny'] = $cardInfo->amount;
-                $card['goodsTypeAttach'] = $cardInfo->goods_type_attach;
-                $card['balance'] = $this->exchangeAmount($cardInfo->balance);
-                $card['amount'] = $this->exchangeAmount($cardInfo->amount);
-                $goodsTypes = [];
-                foreach (TypeService::getTypeList() as $key => $item) {
-                    if(in_array($key, $card['goodsTypeAttach'])) {
-                        $goodsTypes[$key] = $item;
-                    }
-                }
-                $card['goodsTypes'] = $goodsTypes;
-                $cardsUseAmount = bcadd($cardsUseAmount, $cardUseAmount, 2);
-            }
-        }
-
-        //金额
-        $discount_amount = 0;//优惠金额 
-        $shipping_fee = 0;//运费 
-        $tax_fee = 0;//税费 
-        $safe_fee = 0;//保险费 
-        $other_fee = 0;//其他费用 
-        
-        $order_amount = $goods_amount + $shipping_fee + $tax_fee + $safe_fee + $other_fee;//订单总金额 
-
-        return [
-            'shipping_fee' => $shipping_fee,
-            'order_amount'  => $order_amount,
-            'goods_amount' => $goods_amount,
-            'safe_fee' => $safe_fee,
-            'tax_fee'  => $tax_fee,
-            'discount_amount'=>$discount_amount,
-            'cards_use_amount'=>$cardsUseAmount,
-            'currency' => $this->getCurrency(),
-            'exchange_rate'=>$this->getExchangeRate(),
-            'plan_days' =>'5-12',
-            'buyerAddress'=>$buyerAddress,
-            'orderGoodsList'=>$orderGoodsList,
-            'cards'=>$cards,
-        ];
     }
     /**
      * 获取订单支付金额

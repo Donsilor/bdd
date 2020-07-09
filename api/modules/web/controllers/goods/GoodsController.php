@@ -7,6 +7,7 @@ use common\models\goods\Style;
 use common\helpers\ResultHelper;
 use common\models\goods\StyleLang;
 use common\helpers\ImageHelper;
+use services\market\CouponService;
 use yii\db\Expression;
 use common\models\goods\AttributeIndex;
 
@@ -58,7 +59,7 @@ class GoodsController extends OnAuthController
         
         $order = $sort_map[$sort] ?? '';
         
-        $fields = ['s.id','s.style_sn','lang.style_name','s.style_image','s.sale_price','s.goods_clicks'];
+        $fields = ['s.id','s.type_id','s.style_sn','lang.style_name','s.style_image','s.sale_price','s.goods_clicks'];
         $query = Style::find()->alias('s')->select($fields)
             ->leftJoin(StyleLang::tableName().' lang',"s.id=lang.master_id and lang.language='".\Yii::$app->language."'")
             ->orderby($order);
@@ -113,10 +114,16 @@ class GoodsController extends OnAuthController
         $result = $this->pagination($query,$page,$page_size);
         
         foreach($result['data'] as & $val) {
+            $arr['coupon'] = [
+                'type_id' => $val['type_id'],//产品线ID
+                'style_id' => $val['id'],//款式ID
+                'price' => $arr['sale_price'],//价格
+                'num' =>1,//数量
+            ];
             $val['currency'] = '$'; 
             $val['style_image'] = ImageHelper::thumb($val['style_image']);
-        } 
-        
+        }
+        CouponService::getCouponByList($this->getAreaId(), $result['data']);
         return $result;
         
     }
@@ -158,17 +165,20 @@ class GoodsController extends OnAuthController
         }else{
             $goods_images = [];
         }
+
         $info = [
-                'id' =>$model->id,
-                'type_id'=>$model->type_id,
-                'style_name'=>$model->lang->style_name,
-                'style_moq'=>1,
-                'sale_price'=>$model->sale_price,
-                'currency'=>'$',
-                'goods_images'=>$goods_images,
-                'goods_3ds'=>$model->style_3ds,
-                'style_attrs' =>$attr_list,                
+            'id' =>$model->id,
+            'type_id'=>$model->type_id,
+            'style_name'=>$model->lang->style_name,
+            'style_moq'=>1,
+            'sale_price'=>$model->sale_price,
+            'currency'=>'$',
+            'goods_images'=>$goods_images,
+            'goods_3ds'=>$model->style_3ds,
+            'style_attrs' =>$attr_list,
+            'coupon' => CouponService::getCouponByStyleInfo($this->getAreaId(), $model->type_id, $model->id, $model->sale_price)
         ];
+
         $model->goods_clicks = new Expression("goods_clicks+1");
         $model->virtual_clicks = new Expression("virtual_clicks+1");
         $model->save(false);//更新浏览量

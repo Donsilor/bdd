@@ -30,6 +30,7 @@ use common\models\order\OrderGoods;
 use common\models\order\OrderGoodsLang;
 use common\models\order\OrderInvoice;
 use common\models\order\OrderInvoiceEle;
+use common\models\order\OrderLog;
 use common\models\pay\WireTransfer;
 use Omnipay\Common\Message\AbstractResponse;
 use services\order\OrderLogService;
@@ -152,7 +153,7 @@ class OrderController extends BaseController
 
 
         //导出
-        if(Yii::$app->request->get('action') === 'export'){
+        if($this->export){
             $query = Yii::$app->request->queryParams;
             unset($query['action']);
             if(empty(array_filter($query))){
@@ -167,6 +168,12 @@ class OrderController extends BaseController
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
         ]);
+    }
+
+    public $export = false;
+    public function actionExport() {
+        $this->export = true;
+        return $this->actionIndex();
     }
 
     /**
@@ -353,8 +360,15 @@ class OrderController extends BaseController
                 : $this->message($this->getError($model), $this->redirect(['index']), 'error');
         }
 
+        $where = [];
+        $where['order_sn'] = $model->order_sn;
+        $where['action_name'] = 'FOLLOWER';
+
+        $orderLog = OrderLog::find()->where($where)->all();
+
         return $this->renderAjax($this->action->id, [
             'model' => $model,
+            'orderLog' => $orderLog
         ]);
     }
 

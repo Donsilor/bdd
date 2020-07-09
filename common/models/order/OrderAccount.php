@@ -12,6 +12,8 @@ use Yii;
  * @property string $order_amount 订单总金额
  * @property string $goods_amount 商品总金额
  * @property string $discount_amount 优惠金额
+ * @property string $coupon_amount 优惠金额
+ * @property string $card_amount 优惠金额
  * @property string $pay_amount 实付款
  * @property string $paid_amount 实付款
  * @property string $refund_amount 退款金额
@@ -45,7 +47,7 @@ class OrderAccount extends \common\models\base\BaseModel
         return [
             [['order_id'], 'required'],
             [['order_id', 'merchant_id'], 'integer'],
-            [['order_amount', 'goods_amount', 'discount_amount', 'paid_amount', 'pay_amount', 'refund_amount', 'shipping_fee', 'tax_fee', 'safe_fee', 'other_fee','exchange_rate'], 'number'],
+            [['order_amount', 'goods_amount', 'discount_amount', 'paid_amount', 'coupon_amount', 'card_amount', 'pay_amount', 'refund_amount', 'shipping_fee', 'tax_fee', 'safe_fee', 'other_fee','exchange_rate'], 'number'],
             [['order_id'], 'unique'],
             [['currency', 'paid_currency'], 'string','max'=>5],
         ];
@@ -61,7 +63,9 @@ class OrderAccount extends \common\models\base\BaseModel
             'merchant_id' => '商户ID',
             'order_amount' => \Yii::t('order','订单总金额'),
             'goods_amount' => \Yii::t('order','商品总金额'),
-            'discount_amount' => \Yii::t('order','优惠金额'),
+            'discount_amount' => \Yii::t('order','折扣金额'),
+            'coupon_amount' => \Yii::t('order','优惠券金额'),
+            'card_amount' => \Yii::t('order','购物卡金额'),
             'pay_amount' => \Yii::t('order','实付款'),
             'paid_amount' => \Yii::t('order','实际付款'),
             'refund_amount' => \Yii::t('order','退款金额'),

@@ -3,6 +3,7 @@
 namespace backend\modules\order\forms;
 use common\enums\AuditStatusEnum;
 use common\models\order\Order;
+use common\models\order\OrderAccount;
 use common\models\pay\WireTransfer;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
@@ -34,7 +35,7 @@ class WireTransferForm extends WireTransfer
 
     public function validateCollectionAmount($attribute)
     {
-        if($this->collection_status == 1 && Order::findOne($this->order_id)->getAmountPayable()!=$this->collection_amount) {
+        if($this->collection_status == 1 && OrderAccount::findOne($this->order_id)->pay_amount!=$this->collection_amount) {
             $this->addError($attribute, '审核通过时，收款金额必需等于订单金额');
         }
     }

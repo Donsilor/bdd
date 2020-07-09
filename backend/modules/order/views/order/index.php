@@ -11,7 +11,6 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 
 $order_status = Yii::$app->request->get('order_status', -1);
 $params = Yii::$app->request->queryParams;
-$params = $params ? "&".http_build_query($params) : '';
 $export_param = http_build_query($searchModel)."&order_status={$order_status}";
 
 $OrderStatusEnum = common\enums\OrderStatusEnum::getMap();
@@ -37,7 +36,7 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                 <?php } ?>
                 <li class="pull-right">
                     <div class="box-header box-tools">
-                        <?= Html::a('导出Excel','index?action=export'.$params) ?>
+                        <?= Html::a('导出Excel',['export', $params]) ?>
                     </div>
                 </li>
 
@@ -125,11 +124,12 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                                     'model' => $searchModel,
                                     'attribute' => 'created_at',
                                     'value' => '',
-                                    'options' => ['readonly' => false, 'class' => 'form-control',],
+                                    'options' => ['readonly' => true, 'class' => 'form-control', 'style'=>'background-color:#fff;width:100px;'],
                                     'pluginOptions' => [
                                         'format' => 'yyyy-mm-dd',
                                         'locale' => [
                                             'separator' => '/',
+                                            'cancelLabel'=> '清空',
                                         ],
                                         'endDate' => date('Y-m-d', time()),
                                         'todayHighlight' => true,
@@ -140,6 +140,28 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                                 ]),
                                 'value' => function ($model) {
                                     return Yii::$app->formatter->asDatetime($model->created_at);
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'is_test',
+                                'headerOptions' => [
+                                    'class' => 'col-md-1',
+                                    'style' => 'width:80px;'
+                                ],
+                                'filter' => Html::activeDropDownList($searchModel, 'is_test', OrderStatusEnum::testStatus(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                    'style' => 'width:78px;'
+                                ]),
+                                'value' => function ($model) {
+                                    if($model->is_test) {
+                                        $value = "<span class='red'>";
+                                        $value .= \common\enums\OrderStatusEnum::getValue($model->is_test, 'testStatus');
+                                        $value .= "</span>";
+                                        return $value;
+                                    }
+                                    return '';
                                 },
                                 'format' => 'raw',
                             ],
@@ -191,26 +213,25 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                                 ]),
                                 'format' => 'raw',
                                 'value' => function ($model) {
-                                    if($model->account->paid_currency) {
-                                        return sprintf('(%s)%s', $model->account->paid_currency, $model->account->paid_amount);
+                                    if($model->account->paid_currency && $model->account->paid_currency != $model->account->currency) {
+                                        $amount = \Yii::$app->services->currency->exchangeAmount($model->account->order_amount, 2, $model->account->paid_currency, $model->account->currency);
+                                        return sprintf('(%s)%s', $model->account->paid_currency, $amount);
                                     }
                                     else {
                                         return sprintf('(%s)%s', $model->account->currency, $model->account->order_amount);
                                     }
                                 }
                             ],
-//                            [
-//                                'attribute' => 'ip_area_id',
-//                                'headerOptions' => ['class' => 'col-md-1'],
-//                                'filter' => Html::activeDropDownList($searchModel, 'ip_area_id', \common\enums\AreaEnum::getMap(), [
-//                                    'prompt' => '全部',
-//                                    'class' => 'form-control',
-//                                ]),
-//                                'value' => function ($model) {
-//                                    return \common\enums\AreaEnum::getValue($model->ip_area_id);
-//                                },
-//                                'format' => 'raw',
-//                            ],
+                            [
+                                'label' => '优惠后金额',
+                                'value' => function ($model) {
+                                    if($model->account->paid_currency) {
+                                        return sprintf('(%s)%s', $model->account->paid_currency, $model->account->paid_amount);
+                                    } else {
+                                        return sprintf('(%s)%s', $model->account->currency, $model->account->pay_amount);//bcsub($model->account->order_amount-$model->account->coupon_amount-$model->account->card_amount, $model->account->discount_amount, 2));
+                                    }
+                                }
+                            ],
                             [
                                 'attribute' => 'order_from',
                                 'headerOptions' => ['class' => 'col-md-1'],
@@ -417,6 +438,9 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
             $(".filters input[name='" + $(this).attr('name') + "']").val($(this).val()).trigger('change');
         });
 
+        $("[data-krajee-daterangepicker]").on("cancel.daterangepicker", function () {
+            $(this).val("").trigger("change");
+        });
 
     })(window.jQuery);
 </script>

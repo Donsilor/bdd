@@ -95,26 +95,26 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 						<ol>
 							<li>
 								<dl>
+                                    <dt class="sum"><span>商品件數：</span><em><?= count($order->goods)?></em></dt>
 									<dt class="sum"><span>商品總額：</span><em><?= AmountHelper::outputAmount($order->account->goods_amount,2,$currency)?></em></dt>
-									<dd class="num"><span>優惠：</span><em class="discount">-<?= AmountHelper::outputAmount($order->account->discount_amount,2,$currency)?></em></dd>
-									<dd class="num"><span>運費：</span><em>+<?= AmountHelper::outputAmount($order->account->shipping_fee,2,$currency)?></em></dd>
+                                    <dd class="num"><span>運費：</span><em>+<?= AmountHelper::outputAmount($order->account->shipping_fee,2,$currency)?></em></dd>
 									<dd class="num"><span>稅費：</span><em>+<?= AmountHelper::outputAmount($order->account->tax_fee,2,$currency)?></em></dd>
+									<dt class="count"><span>訂單總額：</span><em class="total"><?= AmountHelper::outputAmount($order->account->order_amount,2,$currency)?></em></dt>
+                                    <dd class="num"><span>折扣：</span><em class="discount">-<?= AmountHelper::outputAmount($order->account->discount_amount,2,$currency)?></em></dd>
+                                    <dd class="num"><span>優惠券金額：</span><em class="discount">-<?= AmountHelper::outputAmount($order->account->coupon_amount,2,$currency)?></em></dd>
                                     <?php
-                                    $cardUseAmount = 0;
                                     if($order->cards) {
                                         foreach ($order->cards as $card) {
                                             if($card->type!=2) {
                                                 continue;
                                             }
-                                            $cardUseAmount = bcadd($cardUseAmount, $card->use_amount, 2);
                                             ?>
                                             <dd class="num"><span>购物卡 (<?= $card->card->sn ?>)：</span><em>-<?= AmountHelper::outputAmount(abs($card->use_amount),2,$currency)?></em></dd>
                                         <?php }} ?>
-									<dt class="count"><span>訂單總額：</span><em class="total"><?= AmountHelper::outputAmount($order->account->order_amount,2,$currency)?></em></dt>
 									<?php if($order->order_status == OrderStatusEnum::ORDER_PAID || $order->refund_status) {?>
 									<dt class="count"><span>實際支付：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
                                     <?php } elseif($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
-                                        <dt class="count"><span>應支付：</span><em class="total"><?= AmountHelper::outputAmount(bcadd($order->account->order_amount, $cardUseAmount, 2),2,$currency)?></em></dt>
+                                        <dt class="count"><span>應支付：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
                                     <?php }?>
                                     <?php if($order->refund_status) { ?>
                                         <dt class="count"><span>已退款：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
@@ -148,7 +148,7 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 						<div class="copy">
 							<p>如果您對BDDCO的產品有任何反饋或建議，或者使用時遇到了什麼問题</p>
 							<p>歡迎隨時與我們聯繫：<a href="mailto:service@bddco.com" rel="noopener" target="_blank">service@bddco.com</a></p>
-							<em>Copyright ©2012 - <?= date("Y")?> BDD Co., Ltd.</em>
+							<em>Copyright ©<?= date("Y")?> BDD Co., Ltd.</em>
 						</div>
 					</div>
 				</div>
