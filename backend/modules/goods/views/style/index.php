@@ -237,8 +237,13 @@ $export_param = http_build_query($searchModel);
                     return false;
                 }
 
-                location.href = './edit-lang?type_id=19&attr_style_ids='+stylesIdsStr;
+                let button = $("<a>").attr("href", '<?= URL::to(['edit-lang', 'type_id'=>19, 'attr_style_ids'=>'']) ?>' + stylesIdsStr).data('title', '创建').bind('click', function (e) {
+                    parent.openConTab($(this));
+                    return false;
+                });
+                button.click();
 
+                layer.close(index);
                 return true;
                 // $.ajax({
                 //     type: "post",
