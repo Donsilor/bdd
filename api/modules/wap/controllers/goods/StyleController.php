@@ -14,6 +14,7 @@ use services\market\CouponService;
 use yii\db\Exception;
 use yii\db\Expression;
 use common\models\goods\AttributeIndex;
+use yii\db\Query;
 
 /**
  * Class ProvincesController
@@ -86,14 +87,27 @@ class StyleController extends OnAuthController
                     $param_sale_price_arr = explode('-',$param_value);
                     $min_price = $param_sale_price_arr[0];
                     $max_price = $param_sale_price_arr[1];
+
+                    $where = ['or'];
+                    $where[1] = ['and'];
+                    $where2 = ['and'];
                     if(is_numeric($min_price)){
                         $min_price = $this->exchangeAmount($min_price,0, 'CNY', $this->getCurrency());
-                        $query->andWhere(['>','IFNULL(markup.sale_price,m.sale_price)',$min_price]);
+                        $where[1][] = ['>','IFNULL(markup.sale_price,m.sale_price)',$min_price];
+                        $where2[] = ['>','IFNULL(goods_markup.sale_price,goods.sale_price)',$min_price];
                     }
                     if(is_numeric($max_price) && $max_price>0){
                         $max_price = $this->exchangeAmount($max_price,0, 'CNY', $this->getCurrency());
-                        $query->andWhere(['<=','IFNULL(markup.sale_price,m.sale_price)',$max_price]);
+                        $where[1][] = ['<=','IFNULL(markup.sale_price,m.sale_price)',$max_price];
+                        $where2[] = ['<=','IFNULL(goods_markup.sale_price,goods.sale_price)',$max_price];
                     }
+                    $subQuery2 = Goods::find()
+                        ->innerJoinWith('markup')
+                        ->select(['goods.style_id'])
+                        ->where($where2)
+                        ->distinct("goods.style_id");
+                    $where[2] = ['in', 'm.id', $subQuery2];
+                    $query->andWhere($where);
                     continue;
                 }
 
