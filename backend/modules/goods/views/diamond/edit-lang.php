@@ -442,6 +442,11 @@ $this->params['breadcrumbs'][] = $this->title;
         $(this).val($(this).val().trim());
     });
 
+    $(function() {
+        <?php if($model->goods_sn) { ?>
+        $('.active.J_menuTab span', window.parent.document).text('<?= $model->goods_sn ?>');
+        <?php } ?>
+    });
 
 </script>
 

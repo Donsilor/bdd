@@ -718,6 +718,11 @@ $model->style_spec = $style_spec;
 <?php ActiveForm::end(); ?>
 <script type="text/javascript">
 $(function(){ 
+
+    <?php if($model->style_sn) { ?>
+    $('.active.J_menuTab span', window.parent.document).text('<?= $model->style_sn ?>');
+    <?php } ?>
+
 	$(document).on("click",'.control-label',function(){
          var checked = false; 
 		 if(!$(this).hasClass('checked')){

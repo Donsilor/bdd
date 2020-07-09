@@ -128,7 +128,7 @@ class StyleController extends BaseController
 
             //商品更新
             \Yii::$app->services->goods->syncStyleToGoods($model->id);
-            return $this->message("保存成功", $this->redirect(Yii::$app->request->referrer), 'success');
+            return $this->message("保存成功", $this->redirect([$this->action->id,'id'=>$model->id,'type_id'=>$type_id]), 'success');
         }
 
         $attrStyleIds = [];
