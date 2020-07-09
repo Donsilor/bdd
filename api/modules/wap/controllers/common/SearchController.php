@@ -58,7 +58,7 @@ class SearchController extends OnAuthController
             $query1->andWhere(['or',['like','lang1.style_name',$keyword],['like','m1.style_sn',$keyword]]);
         }
 
-        $query1->orderby($order);
+        $query1->orderby($order)->asArray();
 
         $result = $this->pagination($query1,$this->page, $this->pageSize,false);
 
