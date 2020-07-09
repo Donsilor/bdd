@@ -90,7 +90,7 @@ class OrderController extends BaseController
             ]
         ]);
 
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at', 'address.mobile', 'address.email', 'order_status']);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at', 'address.mobile', 'address.email', 'order_status', 'discount_type']);
 
         //订单状态
         if ($orderStatus !== -1) {
