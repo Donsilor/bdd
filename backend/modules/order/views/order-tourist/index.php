@@ -79,6 +79,18 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 }
                             ],
                             [
+                                'attribute' => 'order_from',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'order_from', \common\enums\OrderFromEnum::getMap(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    return \common\enums\OrderFromEnum::getValue($model->order_from);
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
                                 'attribute' => 'ip',
                                 'value' => function ($model) {
                                     return $model->ip."(".$model->ip_location.")";
