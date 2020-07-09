@@ -84,6 +84,46 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                     </div>
                 </div>
+                <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_2">
+                    <ul class="nav nav-tabs pull-right">
+                        <li class="pull-left header"><i class="fa fa-th"></i> 发票/发货单信息 </li>
+                    </ul>
+                    <div class="box-body col-lg-12" style="margin-left:9px">
+                        <?php if($model->invoice) {?>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('invoice.invoice_type') ?>：</label></div>
+                                        <div class="col-lg-7"><?= \common\enums\InvoiceTypeEnum::getValue($model->invoice->invoice_type) ?></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('invoice.invoice_title') ?>：</label> </div>
+                                        <div class="col-lg-7"><?= $model->invoice->invoice_title ?></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('invoice.tax_number') ?>：</label></div>
+                                        <div class="col-lg-7"><?= $model->invoice->tax_number ?></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('invoice.is_electronic') ?>：</label></div>
+                                        <div class="col-lg-7"><?= \common\enums\InvoiceElectronicEnum::getValue($model->invoice->is_electronic) ?></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('invoice.email') ?>：</label></div>
+                                        <div class="col-lg-7"><?= $model->invoice->email ?></div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } else {?>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    不开发票
+                                </div>
+                            </div>
+
+                        <?php }?>
+                    </div>
+                </div>
                 <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_3">
                     <ul class="nav nav-tabs pull-right">
                         <li class="pull-left header"><i class="fa fa-th"></i> 商品信息</li>
