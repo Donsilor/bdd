@@ -844,9 +844,9 @@ class OrderController extends BaseController
                 return \common\enums\FollowStatusEnum::getValue($model->followed_status);
             }],
             ['订单备注', 'seller_remark', 'text'],
-
-
-
+            ['区域', 'address.country_name', 'text'],
+            ['城市', 'address.city_name', 'text'],
+            ['详细地址', 'address.address_details', 'text'],
         ];
 
 
