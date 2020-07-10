@@ -41,12 +41,19 @@ use common\helpers\ArrayHelper;
  * @property string $verify_remark 审核失败原因
  * @property int $created_at 商品添加时间
  * @property int $updated_at
+ * @property int $hk_status 地区状态
+ * @property int $cn_status 地区状态
+ * @property int $us_status 地区状态
  */
 class Style extends BaseModel
 {
     
     public $attr_require;//必填属性
     public $attr_custom;//选填属性
+
+    public $hk_status;
+    public $cn_status;
+    public $us_status;
         
     /**
      * {@inheritdoc}
@@ -63,7 +70,7 @@ class Style extends BaseModel
     {
         return [
                 [['style_name','language','id'], 'safe'],
-                [['type_id', 'merchant_id','sale_volume','virtual_volume','virtual_clicks','goods_clicks','goods_storage','goods_clicks', 'storage_alarm', 'is_recommend', 'is_lock', 'supplier_id', 'status', 'verify_status','onsale_time', 'created_at', 'updated_at'], 'integer'],
+                [['type_id', 'merchant_id','sale_volume','virtual_volume','virtual_clicks','goods_clicks','goods_storage','goods_clicks', 'storage_alarm', 'is_recommend', 'is_lock', 'supplier_id', 'status', 'verify_status','onsale_time', 'created_at', 'updated_at', 'hk_status', 'cn_status', 'us_status'], 'integer'],
                 [['type_id','style_sn','sale_price','goods_storage'], 'required'],
                 [['sale_price', 'market_price', 'cost_price'], 'number'],
                 ['sale_price','compare','compareValue' => 0, 'operator' => '>'],
@@ -221,6 +228,10 @@ class Style extends BaseModel
             //自定义属性    
             'attr_require' => Yii::t('goods', '当前属性'),
             'attr_custom' => Yii::t('goods', '当前属性'),
+
+            'hk_status' => '香港上架',
+            'cn_status' => '大陆上架',
+            'us_status' => '美国上架',
         ];
     }
     

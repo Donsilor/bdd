@@ -14,6 +14,9 @@ $type_id = Yii::$app->request->get('type_id',0);
 $params = Yii::$app->request->queryParams;
 $params = $params ? "&".http_build_query($params) : '';
 $export_param = http_build_query($searchModel);
+
+$yesOrNo = \common\enums\StatusEnum::getYesOrNo();
+
 ?>
 
 <div class="row">
@@ -63,16 +66,38 @@ $export_param = http_build_query($searchModel);
                 'headerOptions' => ['width'=>'80'],            
             ],
             [
-                'attribute' => 'lang.language',
-                 'value' => function ($model) {
-                    return \common\enums\LanguageEnum::getValue($model->lang->language);
-                 },
-                 'filter' => Html::activeDropDownList($searchModel, 'language',\common\enums\LanguageEnum::getMap(), [
-                        'prompt' => '默认',
-                        'class' => 'form-control',
+                'attribute' => 'hk_status',
+                'value' => function ($model) {
+                    return \common\enums\StatusEnum::getValue($model->hk_status, 'getYesOrNo');
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'hk_status', $yesOrNo, [
+                    'prompt' => '全部',
+                    'class' => 'form-control',
                 ]),
                 'headerOptions' => ['width'=>'110'],
-            ], 
+            ],
+            [
+                'attribute' => 'cn_status',
+                'value' => function ($model) {
+                    return \common\enums\StatusEnum::getValue($model->cn_status, 'getYesOrNo');
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'cn_status', $yesOrNo, [
+                    'prompt' => '全部',
+                    'class' => 'form-control',
+                ]),
+                'headerOptions' => ['width'=>'110'],
+            ],
+            [
+                'attribute' => 'us_status',
+                'value' => function ($model) {
+                    return \common\enums\StatusEnum::getValue($model->us_status, 'getYesOrNo');
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'us_status', $yesOrNo, [
+                    'prompt' => '全部',
+                    'class' => 'form-control',
+                ]),
+                'headerOptions' => ['width'=>'110'],
+            ],
             [
                 'attribute' => 'style_image',
                 'value' => function ($model) {
