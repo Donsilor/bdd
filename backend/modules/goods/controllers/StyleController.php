@@ -66,6 +66,7 @@ class StyleController extends BaseController
             $dataProvider->query->andFilterWhere(['in', 'type_id',$typeModel['ids']]);
         }
         $dataProvider->query->joinWith(['lang']);
+        $dataProvider->query->andFilterWhere(['like', 'lang.style_name',$searchModel->style_name]);
 
         $goodsSql = <<<DOM
 (SELECT 
@@ -89,9 +90,7 @@ FROM
         AND markup99.status = 1
 GROUP BY goods.style_id) as goods
 DOM;
-        $dataProvider->query->innerJoin($goodsSql, 'goods.style_id=goods_style.id');
-
-        $dataProvider->query->andFilterWhere(['like', 'lang.style_name',$searchModel->style_name]);
+        $dataProvider->query->leftJoin($goodsSql, 'goods.style_id=goods_style.id');
 
         if(isset(Yii::$app->request->queryParams['SearchModel']['cn_status']) && Yii::$app->request->queryParams['SearchModel']['cn_status'] !== "") {
             $dataProvider->query->andWhere(['=', 'goods.cn_status', Yii::$app->request->queryParams['SearchModel']['cn_status']]);
