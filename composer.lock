@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b2c42c233216d5cac5f11e67aa49e859",
+    "content-hash": "c1c44b0d0fa5a92ba5dce919385fd8b2",
     "packages": [
         {
             "name": "2amigos/qrcode-library",
@@ -902,6 +902,59 @@
                 "html"
             ],
             "time": "2019-10-28T03:44:26+00:00"
+        },
+        {
+            "name": "finecho/logistics",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/finecho/logistics.git",
+                "reference": "4d63b713c9ecf134aebdde8d0241a5aa49c07261"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/finecho/logistics/zipball/4d63b713c9ecf134aebdde8d0241a5aa49c07261",
+                "reference": "4d63b713c9ecf134aebdde8d0241a5aa49c07261",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.3"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.2",
+                "phpunit/phpunit": "~5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Finecho\\Logistics\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Finecho\\Logistics\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "finecho",
+                    "email": "liuhao25@foxmail.com"
+                }
+            ],
+            "description": "A logistics SDK.",
+            "time": "2019-09-04T15:11:57+00:00"
         },
         {
             "name": "guzzlehttp/command",
@@ -4277,6 +4330,7 @@
                 "rest",
                 "sdk"
             ],
+            "abandoned": true,
             "time": "2019-01-04T20:04:25+00:00"
         },
         {
@@ -7916,7 +7970,6 @@
                 "functional testing",
                 "unit testing"
             ],
-            "abandoned": true,
             "time": "2019-04-24T11:36:34+00:00"
         },
         {
