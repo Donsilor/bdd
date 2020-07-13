@@ -90,7 +90,7 @@ class OrderController extends BaseController
             ]
         ]);
 
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at', 'address.mobile', 'address.email', 'order_status']);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at', 'address.mobile', 'address.email', 'order_status', 'discount_type']);
 
         //订单状态
         if ($orderStatus !== -1) {
@@ -151,6 +151,25 @@ class OrderController extends BaseController
             $dataProvider->query->andFilterWhere(['between', 'order.created_at', strtotime($start_date), strtotime($end_date) + 86400]);
         }
 
+        if(!empty(Yii::$app->request->queryParams['SearchModel']['discount_type'])) {
+            $discountType = explode(',', Yii::$app->request->queryParams['SearchModel']['discount_type']);
+            $where = ['or'];
+
+            if(in_array('card', $discountType)) {
+                $where[] = ['>', 'order_account.card_amount', 0];
+            }
+
+            if(in_array('coupon', $discountType)) {
+                $where[] = ['>', 'order_account.coupon_amount', 0];
+            }
+
+            if(in_array('discount', $discountType)) {
+                $where[] = ['>', 'order_account.discount_amount', 0];
+            }
+
+            if(count($where)>1)
+                $dataProvider->query->andWhere($where);
+        }
 
         //导出
         if($this->export){
@@ -758,12 +777,11 @@ class OrderController extends BaseController
                 return $html;
             }],
             ['订单总金额', 'account.order_amount', 'text'],
+            ['折扣金额', 'account.discount_amount', 'text'],
+            ['优惠券金额', 'account.coupon_amount', 'text'],
+            ['购物卡金额', 'account.card_amount', 'text'],
             ['实付金额', 'account.pay_amount', 'text'],
             ['货币', 'account.currency', 'text'],
-            ['是否使用购物卡', 'id', 'function',function($model){
-                $row = MarketCardDetails::find()->where(['order_id'=>$model->id])->one();
-                return $row ? "是" : "否";
-            }],
             ['购物卡号', 'id', 'function',function($model){
                 $rows = MarketCardDetails::find()->alias('card_detail')
                     ->leftJoin(MarketCard::tableName()." card",'card.id=card_detail.card_id')
@@ -826,9 +844,10 @@ class OrderController extends BaseController
                 return \common\enums\FollowStatusEnum::getValue($model->followed_status);
             }],
             ['订单备注', 'seller_remark', 'text'],
-
-
-
+            ['区域', 'address.country_name', 'text'],
+            ['省', 'address.province_name', 'text'],
+            ['城市', 'address.city_name', 'text'],
+            ['详细地址', 'address.address_details', 'text'],
         ];
 
 
