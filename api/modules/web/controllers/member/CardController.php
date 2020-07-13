@@ -31,28 +31,26 @@ class CardController extends UserAuthController
     
     public $modelClass = MarketCardDetails::class;
     
-    protected $authOptional = [];
+    protected $authOptional = ['index'];
 
     /**
      * 购物车列表     
-//     */
-//    public function actionIndex()
-//    {
-//        $post = \Yii::$app->request->post();
-//
-//        $model = new CardForm();
-//        $model->setAttributes($post);
-//
-//        if(!$model->validate()) {
-//            return ResultHelper::api(422, $this->getError($model));
-//        }
-//
-//        $query = $this->modelClass::find()->where(['card_id'=>$model->getCard()->id]);
-//
-//        $query->orderBy('id DESC');
-//
-//        return $this->pagination($query, $this->page, $this->pageSize,true);
-//    }
+     */
+    public function actionIndex()
+    {
+        $order = \Yii::$app->logistics->kd100('SF1074705590534', '顺丰');
+
+        echo $order->getCode(); // 状态码
+        var_dump("\r\n");
+        echo $order->getMsg(); // 状态信息
+        var_dump("\r\n");
+        echo $order->getCompany(); // 物流公司简称
+        var_dump("\r\n");
+        echo $order->getNo(); // 物流单号
+        var_dump("\r\n");
+        echo $order->getStatus(); // 当前物流单状态
+        var_dump("\r\n");
+    }
 
     /**
      * 验证购物卡

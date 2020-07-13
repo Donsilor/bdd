@@ -36,7 +36,7 @@ class Logistics extends Service
 
     public function init()
     {
-        $defaultConfig = Yii::$app->debris->backendConfigAll();
+        $defaultConfig = Yii::$app->debris->configAll();
         $this->config = [
             'aliyun' => [
                 'app_code' => $defaultConfig['logistics_aliyun_app_code'] ?? '',
