@@ -59,6 +59,7 @@
         "jaeger/querylist": "^4.1",
         "overtrue/wechat": "~4.2.2",
         "mingyoung/dingtalk": "2.0",
+        "finecho/logistics": "^3.0",
         "kartik-v/yii2-checkbox-x": "@dev",
         "kartik-v/yii2-mpdf": "^1.0"
     },
