@@ -119,8 +119,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div class="row">
                             <div class="col-lg-4">
-                                <label class="text-right col-lg-4"><?= $model->getAttributeLabel('address.city_name') ?>：</label>
-                                <?= $model->address->city_name ?>
+                                <label class="text-right col-lg-4"><?= $model->getAttributeLabel('address.province_name') ?>，<?= $model->getAttributeLabel('address.city_name') ?>：</label>
+                                <?= $model->address->province_name ?>，<?= $model->address->city_name ?>
                             </div>
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4"><?= $model->getAttributeLabel('ip_location') ?>：</label>
