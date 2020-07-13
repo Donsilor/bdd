@@ -28,10 +28,7 @@ $form = ActiveForm::begin([
             <?php }else{ ?>
                 <?= $form->field($model, 'page_name')->textInput(['maxlength' => true, 'readonly' => 'true']) ?>
             <?php } ?>
-            <?= $form->field($model, 'platform')->dropDownList(\common\enums\OrderFromEnum::getMap(), [
-                'prompt' => '请选择',
-                'class' => 'form-control',
-            ]) ?>
+            <?= $form->field($model, 'platforms')->checkboxList(\common\enums\OrderFromEnum::getMap()) ?>
             <?= $form->field($model, 'route')->textInput(['maxlength' => true]) ?>
             <?php
             echo common\widgets\langbox\LangBox::widget(['form'=>$form,'model'=>$model,'tab'=>'tab',

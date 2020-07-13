@@ -36,13 +36,30 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => '站点',
                 'value' => function($model) {
-                    return \common\enums\OrderFromEnum::platformToGroupName($model->platform);
+                    if(empty($model->platforms)) {
+                        return '';
+                    }
+
+                    $value = [];
+                    foreach ($model->platforms as $platform) {
+                        $groupName = \common\enums\OrderFromEnum::platformToGroupName($platform);
+                        $value[$groupName] = $groupName;
+                    }
+                    return implode(',', $value);
                 }
             ],
             [
                 'label' => '客户端',
                 'value' => function($model) {
-                    return \common\enums\OrderFromEnum::getValue($model->platform);
+                    if(empty($model->platforms)) {
+                        return '';
+                    }
+
+                    $value = [];
+                    foreach ($model->platforms as $platform) {
+                        $value[] = \common\enums\OrderFromEnum::getValue($platform);
+                    }
+                    return implode(',', $value);
                 }
             ],
             'page_name',
