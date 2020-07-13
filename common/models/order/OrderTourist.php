@@ -87,7 +87,7 @@ class OrderTourist extends \common\models\base\BaseModel
             'tourist_key' => Yii::t('app', '游客的KEY'),
             'order_amount' => Yii::t('app', '订单金额'),
             'goods_amount' => Yii::t('app', '商品总金额'),
-            'discount_amount' => Yii::t('app', '优惠金额'),
+            'discount_amount' => Yii::t('app', '折扣金额'),
             'pay_amount' => Yii::t('app', '实际支付金额'),
             'refund_amount' => Yii::t('app', '退款金额'),
             'shipping_fee' => Yii::t('app', '运费'),
