@@ -32,7 +32,7 @@ $export_param = http_build_query($searchModel);
                         <?php if($type_id==19) { ?>
                             <a class="btn btn-primary btn-xs openIframe1" href="<?php echo Url::to(['select-style'])?>"><i class="icon ion-plus"></i>创建</a>
                         <?php } else { ?>
-                            <?= Html::create(['edit-lang','type_id'=>$type_id]) ?>
+                            <?= Html::create(['edit-lang','type_id'=>$type_id],'创建', ['class'=>'btn btn-primary btn-xs openContab']) ?>
                         <?php } ?>
                     </div>
                 </li>
@@ -173,7 +173,7 @@ $export_param = http_build_query($searchModel);
                 'template' => '{edit} {view} {status} {show_log}',
                 'buttons' => [
                 'edit' => function($url, $model, $key){
-                    return Html::edit(['edit-lang','id' => $model->id,'type_id'=>Yii::$app->request->get('type_id'),'returnUrl' => Url::getReturnUrl()]);
+                    return Html::edit(['edit-lang','id' => $model->id,'type_id'=>Yii::$app->request->get('type_id'),'returnUrl' => Url::getReturnUrl()], '编辑', ['class'=>'btn btn-primary btn-sm openContab', 'data-title'=>$model->style_sn]);
                 },
                'status' => function($url, $model, $key){
                         return Html::status($model['status']);
@@ -262,8 +262,13 @@ $export_param = http_build_query($searchModel);
                     return false;
                 }
 
-                location.href = './edit-lang?type_id=19&attr_style_ids='+stylesIdsStr;
+                let button = $("<a>").attr("href", '<?= URL::to(['edit-lang', 'type_id'=>19, 'attr_style_ids'=>'']) ?>' + stylesIdsStr).data('title', '创建').bind('click', function (e) {
+                    parent.openConTab($(this));
+                    return false;
+                });
+                button.click();
 
+                layer.close(index);
                 return true;
                 // $.ajax({
                 //     type: "post",

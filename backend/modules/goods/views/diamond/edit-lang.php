@@ -27,6 +27,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
         ],
 ]); ?>
+<style type="text/css">
+    .content-header .rfHeaderFont:nth-child(2) {
+        display: none;
+    }
+</style>
 <div class="box-body nav-tabs-custom">
      <h2 class="page-header"><?php echo Yii::t('goods', '裸钻发布');?></h2>
       <?php $tab_list = [0=>'全部',1=>'基础信息',2=>'商品属性',3=>'图文信息',4=>'SEO优化',5=>'地区价格'];?>
@@ -374,7 +379,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="modal-footer">
         <div class="col-sm-12 text-center">
             <button class="btn btn-primary" type="submit">保存</button>
-            <span class="btn btn-white" onclick="history.go(-1)">返回</span>
+            <span class="btn btn-white" onclick="$('.active.J_menuTab i', window.parent.document).click()">关闭</span>
         </div>
 	</div>
 </div>
@@ -437,6 +442,11 @@ $this->params['breadcrumbs'][] = $this->title;
         $(this).val($(this).val().trim());
     });
 
+    $(function() {
+        <?php if($model->goods_sn) { ?>
+        $('.active.J_menuTab span', window.parent.document).text('<?= $model->goods_sn ?>');
+        <?php } ?>
+    });
 
 </script>
 
