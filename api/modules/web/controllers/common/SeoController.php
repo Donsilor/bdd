@@ -50,7 +50,8 @@ class SeoController extends OnAuthController
             $model = $model->where(['m.id'=>$type]);
         }
         else {
-            $model = $model->where(['m.page_name'=>$type, 'platform'=>$this->platform]);
+            $key = 'platform_' . $this->platform;
+            $model = $model->where(['m.page_name'=>$type, $key=>1]);
         }
 
         $model = $model->leftJoin(WebSeoLang::tableName().' lang','lang.master_id = m.id and lang.language =  "'.$language.'"')
