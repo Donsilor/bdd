@@ -41,7 +41,7 @@ class WebSeo extends \common\models\base\BaseModel
         return [
             [['page_name', 'route'], 'required'],
             [['page_name'], 'requiredPageName'],
-            [['created_at', 'updated_at', 'platforms'], 'safe'],
+            [['created_at', 'updated_at', 'platforms', 'platform_10'], 'safe'],
             [['page_name'], 'string', 'max' => 100],
             [['route'], 'string', 'max' => 255],
         ];

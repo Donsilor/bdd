@@ -26,6 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="box-body table-responsive">
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
         'tableOptions' => ['class' => 'table table-hover'],
         'columns' => [
             [
@@ -46,7 +47,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         $value[$groupName] = $groupName;
                     }
                     return implode(',', $value);
-                }
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'platform_10', \common\enums\OrderFromEnum::groups(), [
+                    'prompt' => '全部',
+                    'class' => 'form-control',
+                    'style' => 'width:78px;'
+                ]),
             ],
             [
                 'label' => '客户端',
@@ -60,23 +66,29 @@ $this->params['breadcrumbs'][] = $this->title;
                         $value[] = \common\enums\OrderFromEnum::getValue($platform);
                     }
                     return implode(',', $value);
-                }
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'platforms', \common\enums\OrderFromEnum::getMap(), [
+                    'prompt' => '全部',
+                    'class' => 'form-control',
+                    'style' => 'width:78px;'
+                ]),
             ],
-            'page_name',
             [
-                'label' => '标题',
-                'value' => function($model) {
-                    return $model->lang->meta_title;
-                }
+                'attribute' => 'page_name',
+            ],
+            [
+                'attribute' => 'lang.meta_title',
             ],
             [
                 'label' => '路由',
+                'attribute' => 'route',
+            ],
+            [
+                'label' => '修改时间',
                 'value' => function($model) {
-                    return $model->route;
+                    return Yii::$app->formatter->asDatetime($model->updated_at);
                 }
             ],
-            //'create_time',
-            'updated_at:date',
             [
                 'class' => 'yii\grid\ActionColumn',
                 'header' => '操作',
