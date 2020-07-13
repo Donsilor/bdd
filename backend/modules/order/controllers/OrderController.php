@@ -845,6 +845,7 @@ class OrderController extends BaseController
             }],
             ['订单备注', 'seller_remark', 'text'],
             ['区域', 'address.country_name', 'text'],
+            ['省', 'address.province_name', 'text'],
             ['城市', 'address.city_name', 'text'],
             ['详细地址', 'address.address_details', 'text'],
         ];
