@@ -40,16 +40,7 @@ class CardController extends UserAuthController
     {
         $order = \Yii::$app->logistics->kd100('SF1074705590534', '顺丰');
 
-        echo $order->getCode(); // 状态码
-        var_dump("\r\n");
-        echo $order->getMsg(); // 状态信息
-        var_dump("\r\n");
-        echo $order->getCompany(); // 物流公司简称
-        var_dump("\r\n");
-        echo $order->getNo(); // 物流单号
-        var_dump("\r\n");
-        echo $order->getStatus(); // 当前物流单状态
-        var_dump("\r\n");
+        print_r($order);
     }
 
     /**
