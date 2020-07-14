@@ -22,6 +22,8 @@ use Yii;
  * @property string $platform_21 平台
  * @property string $platform_30 平台
  * @property string $platform_31 平台
+ * @property string $platform_40 平台
+ * @property string $platform_41 平台
  */
 class WebSeo extends \common\models\base\BaseModel
 {
@@ -66,6 +68,8 @@ class WebSeo extends \common\models\base\BaseModel
             'platform_21' => '大陆移动端',
             'platform_30' => '美国PC端',
             'platform_31' => '美国移动端',
+            'platform_40' => '美国PC端',
+            'platform_41' => '美国移动端',
         ];
     }
 
