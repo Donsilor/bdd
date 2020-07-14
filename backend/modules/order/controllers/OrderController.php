@@ -90,7 +90,7 @@ class OrderController extends BaseController
             ]
         ]);
 
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at', 'address.mobile', 'address.email', 'order_status']);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at', 'address.mobile', 'address.email', 'order_status', 'discount_type']);
 
         //订单状态
         if ($orderStatus !== -1) {
@@ -151,13 +151,33 @@ class OrderController extends BaseController
             $dataProvider->query->andFilterWhere(['between', 'order.created_at', strtotime($start_date), strtotime($end_date) + 86400]);
         }
 
+        if(!empty(Yii::$app->request->queryParams['SearchModel']['discount_type'])) {
+            $discountType = explode(',', Yii::$app->request->queryParams['SearchModel']['discount_type']);
+            $where = ['or'];
+
+            if(in_array('card', $discountType)) {
+                $where[] = ['>', 'order_account.card_amount', 0];
+            }
+
+            if(in_array('coupon', $discountType)) {
+                $where[] = ['>', 'order_account.coupon_amount', 0];
+            }
+
+            if(in_array('discount', $discountType)) {
+                $where[] = ['>', 'order_account.discount_amount', 0];
+            }
+
+            if(count($where)>1)
+                $dataProvider->query->andWhere($where);
+        }
 
         //导出
-        if(Yii::$app->request->get('action') === 'export'){
+        if($this->export){
             $query = Yii::$app->request->queryParams;
             unset($query['action']);
             if(empty(array_filter($query))){
-                return $this->message('导出条件不能为空', $this->redirect(['index']), 'warning');
+                $returnUrl = Yii::$app->request->referrer;
+                return $this->message('导出条件不能为空', $this->redirect($returnUrl), 'warning');
             }
             $dataProvider->setPagination(false);
             $list = $dataProvider->models;
@@ -168,6 +188,12 @@ class OrderController extends BaseController
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
         ]);
+    }
+
+    public $export = false;
+    public function actionExport() {
+        $this->export = true;
+        return $this->actionIndex();
     }
 
     /**
@@ -224,7 +250,8 @@ class OrderController extends BaseController
 
             Yii::$app->services->order->changeOrderStatusCancel($id, $order['cancel_remark']??'', 'admin', Yii::$app->getUser()->id);
 
-            return $this->redirect(['index']);
+            $returnUrl = Yii::$app->request->referrer;
+            return $this->redirect($returnUrl);
         }
 
         return $this->renderAjax($this->action->id, [
@@ -310,7 +337,9 @@ class OrderController extends BaseController
 
             Yii::$app->services->order->changeOrderStatusRefund($id, $order['refund_remark']??'', 'admin', Yii::$app->getUser()->id);
 
-            return $this->redirect(['index']);
+
+            $returnUrl = Yii::$app->request->referrer;
+            return $this->redirect($returnUrl);
         }
 
         return $this->renderAjax($this->action->id, [
@@ -349,9 +378,8 @@ class OrderController extends BaseController
 
             $result = $model->save();
 
-            return $result
-                ? $this->redirect(['index'])
-                : $this->message($this->getError($model), $this->redirect(['index']), 'error');
+            $returnUrl = Yii::$app->request->referrer;
+            return $result ? $this->redirect($returnUrl) : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
         }
 
         $where = [];
@@ -389,7 +417,9 @@ class OrderController extends BaseController
 
             //订单发送邮件
             \Yii::$app->services->order->sendOrderNotification($id);
-            return $result ? $this->redirect(['index']):$this->message($this->getError($model), $this->redirect(['index']), 'error');
+
+            $returnUrl = Yii::$app->request->referrer;
+            return $result ? $this->redirect($returnUrl) : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
         }
 
         return $this->renderAjax($this->action->id, [
@@ -414,10 +444,10 @@ class OrderController extends BaseController
             try {
                 Yii::$app->services->order->changeOrderStatusAudit($id, $order['audit_status'], $order['audit_remark']??'');
             } catch (Exception $exception) {
-                $this->message($exception->getMessage(), $this->redirect(['index']), 'error');
+                $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
             }
 
-            return $this->redirect(['index']);
+            return $this->redirect(Yii::$app->request->referrer);
         }
 
         return $this->renderAjax($this->action->id, [
@@ -517,7 +547,6 @@ class OrderController extends BaseController
 
     public  function actionEditSendPaidEmail() {
         $order_id = Yii::$app->request->get('order_id');
-        $returnUrl = Yii::$app->request->get('returnUrl', ['index']);
 
         $model = $this->findModel($order_id);
 
@@ -540,12 +569,11 @@ class OrderController extends BaseController
                 '收件邮箱' => $model->address->email
             ]]);
 
-            return $this->message("保存成功", $this->redirect($returnUrl), 'success');
+            return $this->message("保存成功", $this->redirect(Yii::$app->request->referrer), 'success');
         }
         return $this->renderAjax($this->action->id, [
             'model' => $model,
-            'order_id' => $order_id,
-            'returnUrl'=>$returnUrl
+            'order_id' => $order_id
         ]);
     }
 
@@ -579,7 +607,6 @@ class OrderController extends BaseController
             if(false === $model->save()){
                 throw new Exception($this->getError($model));
             }
-         // return $this->redirect($returnUrl);
 
             $order = Order::findOne($order_id);
 
@@ -750,12 +777,11 @@ class OrderController extends BaseController
                 return $html;
             }],
             ['订单总金额', 'account.order_amount', 'text'],
+            ['折扣金额', 'account.discount_amount', 'text'],
+            ['优惠券金额', 'account.coupon_amount', 'text'],
+            ['购物卡金额', 'account.card_amount', 'text'],
             ['实付金额', 'account.pay_amount', 'text'],
             ['货币', 'account.currency', 'text'],
-            ['是否使用购物卡', 'id', 'function',function($model){
-                $row = MarketCardDetails::find()->where(['order_id'=>$model->id])->one();
-                return $row ? "是" : "否";
-            }],
             ['购物卡号', 'id', 'function',function($model){
                 $rows = MarketCardDetails::find()->alias('card_detail')
                     ->leftJoin(MarketCard::tableName()." card",'card.id=card_detail.card_id')
@@ -818,9 +844,10 @@ class OrderController extends BaseController
                 return \common\enums\FollowStatusEnum::getValue($model->followed_status);
             }],
             ['订单备注', 'seller_remark', 'text'],
-
-
-
+            ['区域', 'address.country_name', 'text'],
+            ['省', 'address.province_name', 'text'],
+            ['城市', 'address.city_name', 'text'],
+            ['详细地址', 'address.address_details', 'text'],
         ];
 
 

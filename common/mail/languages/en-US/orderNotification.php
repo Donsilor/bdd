@@ -149,7 +149,7 @@ At this stage, your order will be kept temporarily for up to 48 business hours. 
 						<div class="copy">
 							<p>If you have any feedback or suggestions on bddco's products, or if you have any problems using it</p>
 							<p>Feel free to contact us：<a href="mailto:service@bddco.com" rel="noopener" target="_blank">service@bddco.com</a></p>
-							<em>Copyright ©2012 - <?= date("Y")?> BDD Co., Ltd.</em>
+							<em>Copyright ©<?= date("Y")?> BDD Co., Ltd.</em>
 						</div>
 					</div>
 				</div>

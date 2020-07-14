@@ -39,7 +39,8 @@ class StyleController extends OnAuthController
             "sale_volume"=>'m.virtual_volume',//销量
         ];
         $type_id = \Yii::$app->request->post("categoryId");//产品线ID
-        if(!$type_id){
+        $style_id = \Yii::$app->request->post("styleId");//产品线ID
+        if(!$type_id && !$style_id) {
             return ResultHelper::api(422, '产品线不能为空');
         }
         $order_param = \Yii::$app->request->post("orderParam");//排序参数
@@ -65,10 +66,19 @@ class StyleController extends OnAuthController
         $params = \Yii::$app->request->post("params");  //属性帅选
 
 //        $params = json_decode($params);
-        if(is_array($type_id)) {
-            $query ->andWhere(['in','m.type_id',$type_id]);
-        }else{
-            $query ->andWhere(['m.type_id'=>$type_id]);
+        if(!$style_id) {
+            if(is_array($type_id)) {
+                $query ->andWhere(['in','m.type_id',$type_id]);
+            }else{
+                $query ->andWhere(['m.type_id'=>$type_id]);
+            }
+        }
+        else {
+            if(is_array($style_id)) {
+                $query ->andWhere(['in','m.id',$style_id]);
+            } else {
+                $query ->andWhere(['m.id'=>$style_id]);
+            }
         }
 
         if(!empty($params)){
@@ -85,14 +95,27 @@ class StyleController extends OnAuthController
                 if($param_name == 'sale_price'){
                     $min_price = $param['beginValue'];
                     $max_price = $param['endValue'];
+
+                    $where = ['or'];
+                    $where[1] = ['and'];
+                    $where2 = ['and'];
                     if(is_numeric($min_price)){
                         $min_price = $this->exchangeAmount($min_price,0, 'CNY', $this->getCurrency());
-                        $query->andWhere(['>','IFNULL(markup.sale_price,m.sale_price)',$min_price]);
+                        $where[1][] = ['>','IFNULL(markup.sale_price,m.sale_price)',$min_price];
+                        $where2[] = ['>','IFNULL(goods_markup.sale_price,goods.sale_price)',$min_price];
                     }
                     if(is_numeric($max_price) && $max_price>0){
                         $max_price = $this->exchangeAmount($max_price,0, 'CNY', $this->getCurrency());
-                        $query->andWhere(['<=','IFNULL(markup.sale_price,m.sale_price)',$max_price]);
+                        $where[1][] = ['<=','IFNULL(markup.sale_price,m.sale_price)',$max_price];
+                        $where2[] = ['<=','IFNULL(goods_markup.sale_price,goods.sale_price)',$max_price];
                     }
+                    $subQuery2 = Goods::find()
+                        ->innerJoinWith('markup')
+                        ->select(['goods.style_id'])
+                        ->where($where2)
+                        ->distinct("goods.style_id");
+                    $where[2] = ['in', 'm.id', $subQuery2];
+                    $query->andWhere($where);
                     continue;
                 }
                 if(isset($param['paramId']) && is_numeric($param['paramId'])){

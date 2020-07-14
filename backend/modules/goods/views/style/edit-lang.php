@@ -48,6 +48,11 @@ $model->style_spec = $style_spec;
         'enableAjaxValidation' => true,
         'validationUrl' => Url::to(['ajax-edit-lang', 'id' => $model['id']]),       
 ]); ?>
+<style type="text/css">
+    .content-header .rfHeaderFont:nth-child(2) {
+        display: none;
+    }
+</style>
 <div class="box-body nav-tabs-custom">
      <h2 class="page-header">商品发布</h2>
      <?php 
@@ -705,7 +710,7 @@ $model->style_spec = $style_spec;
     <div class="modal-footer">
         <div class="col-sm-12 text-center">
             <button class="btn btn-primary" type="submit">保存</button>
-            <span class="btn btn-white" onclick="history.go(-1)">返回</span>
+            <span class="btn btn-white" onclick="$('.active.J_menuTab i', window.parent.document).click()">关闭</span>
         </div>
 	</div>
 </div>
@@ -713,6 +718,11 @@ $model->style_spec = $style_spec;
 <?php ActiveForm::end(); ?>
 <script type="text/javascript">
 $(function(){ 
+
+    <?php if($model->style_sn) { ?>
+    $('.active.J_menuTab span', window.parent.document).text('<?= $model->style_sn ?>');
+    <?php } ?>
+
 	$(document).on("click",'.control-label',function(){
          var checked = false; 
 		 if(!$(this).hasClass('checked')){

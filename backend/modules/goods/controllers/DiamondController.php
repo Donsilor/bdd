@@ -29,6 +29,7 @@ class DiamondController extends BaseController
     * @var Diamond
     */
     public $modelClass = Diamond::class;
+    public $enableCsrfValidation = false;
 
 
     /**
@@ -80,6 +81,7 @@ class DiamondController extends BaseController
         $status = $model ? $model->status:0;
         $old_diamond_info = $model->toArray();
         if ($model->load(Yii::$app->request->post())) { 
+            $model->type_id = 15;
             try{
                 $trans = Yii::$app->db->beginTransaction();
                 if($model->status == 1 && $status == 0){
@@ -110,7 +112,7 @@ class DiamondController extends BaseController
                 return $this->message("保存失败:".$error, $this->redirect([$this->action->id,'id'=>$model->id]), 'error');
             }
             
-            return $this->message("保存成功", $this->redirect($returnUrl), 'success');
+            return $this->message("保存成功", $this->redirect([$this->action->id,'id'=>$model->id]), 'success');
         }
         
         return $this->render($this->action->id, [

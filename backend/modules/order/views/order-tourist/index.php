@@ -58,6 +58,13 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             ],
                             [
                                 'attribute' => 'order_sn',
+                                'filter' => Html::activeTextInput($searchModel, 'order_sn', [
+                                    'class' => 'form-control',
+                                ]),
+                                'format' => 'raw',
+                                'value' => function($model) {
+                                    return Html::a($model->order_sn, ['view', 'id' => $model->id], ['style'=>"text-decoration:underline;color:#3c8dbc"]);
+                                }
                             ],
                             [
                                 'attribute' => 'order_amount',
@@ -70,6 +77,18 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'value' => function ($model) {
                                     return sprintf('(%s)%s', $model->currency, bcsub($model->order_amount, $model->discount_amount, 2));
                                 }
+                            ],
+                            [
+                                'attribute' => 'order_from',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'order_from', \common\enums\OrderFromEnum::getMap(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    return \common\enums\OrderFromEnum::getValue($model->order_from);
+                                },
+                                'format' => 'raw',
                             ],
                             [
                                 'attribute' => 'ip',

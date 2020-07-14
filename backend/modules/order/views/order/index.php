@@ -11,7 +11,6 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 
 $order_status = Yii::$app->request->get('order_status', -1);
 $params = Yii::$app->request->queryParams;
-$params = $params ? "&".http_build_query($params) : '';
 $export_param = http_build_query($searchModel)."&order_status={$order_status}";
 
 $OrderStatusEnum = common\enums\OrderStatusEnum::getMap();
@@ -37,7 +36,7 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                 <?php } ?>
                 <li class="pull-right">
                     <div class="box-header box-tools">
-                        <?= Html::a('导出Excel','index?action=export'.$params) ?>
+                        <?= Html::a('导出Excel',['export']+$params) ?>
                     </div>
                 </li>
 
@@ -80,6 +79,19 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                             ]);
                             ?>
                         </div>
+                        <div class="col-sm-3">
+                            <?= $searchModel->model->getAttributeLabel('discount_type') ?>：<br/>
+                            <?= Html::activeCheckboxList($searchModel, 'discount_type', [
+                                'coupon' => '优惠券',
+                                'discount' => '折扣',
+                                'card' => '购物卡',
+                            ], [
+                                'prompt' => '全部',
+                                'class' => 'form-control',
+                                'value' => explode(',', $searchModel->discount_type)
+                            ]);
+                            ?>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -116,6 +128,9 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                                         'class' => 'hidden',
                                     ]) .
                                     Html::activeTextInput($searchModel, 'refund_status', [
+                                        'class' => 'hidden',
+                                    ]) .
+                                    Html::activeTextInput($searchModel, 'discount_type', [
                                         'class' => 'hidden',
                                     ])
                             ],
@@ -173,7 +188,7 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                                 ]),
                                 'format' => 'raw',
                                 'value' => function($model) {
-                                    return Html::a($model->order_sn, ['view', 'id' => $model->id], ['style'=>"text-decoration:underline;color:#3c8dbc"]);
+                                    return Html::a($model->order_sn, ['view', 'id' => $model->id], ['style'=>"text-decoration:underline;color:#3c8dbc", 'class'=>'openContab']);
                                 }
                             ],
                             [
@@ -436,7 +451,22 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
          * 头部文本框触发列表过滤事件
          */
         $(".top-form input,select").change(function () {
-            $(".filters input[name='" + $(this).attr('name') + "']").val($(this).val()).trigger('change');
+            let name = $(this).attr('name');
+            let val = '';
+            if($(this).attr('type')==="checkbox") {
+                let vals = [];
+                $(".top-form input[name='"+$(this).attr('name')+"']").each(function (i, v) {
+                    if($(v).prop("checked")) {
+                        vals.push($(v).val());
+                    }
+                });
+                name = name.substr(0, name.length-2);
+                val = vals.join(',')
+            }
+            else {
+                val = $(this).val();
+            }
+            $(".filters input[name='" + name + "']").val(val).trigger('change');
         });
 
         $("[data-krajee-daterangepicker]").on("cancel.daterangepicker", function () {
