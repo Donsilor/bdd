@@ -2,6 +2,7 @@
 
 namespace services\order;
 
+use common\enums\LogisticsEnum;
 use common\models\market\MarketCouponDetails;
 use services\market\CouponService;
 
@@ -33,6 +34,60 @@ use common\enums\PayEnum;
  */
 class OrderService extends OrderBaseService
 {
+    public function getOrderLogisticsInfo($order)
+    {
+        //如保数据库有信息，则直接返回
+
+        $message = null;
+        try {
+
+            if(!is_object($order)) {
+                return '错误';
+            }
+
+            $company = LogisticsEnum::getValue($order->express_id);
+
+            /**
+             * @var $logistics \Finecho\Logistics\Order
+             */
+            $logistics = \Yii::$app->logistics->kd100($order->express_no, $company, true);
+
+            $result = $logistics->toArray();
+
+            if(isset($result['original']))
+                unset($result['original']);
+
+        } catch (\Finecho\Logistics\Exceptions\InquiryErrorException $e) {
+            //查询错误
+            $message = $e->getMessage();
+            $result = null;
+        } catch (\Finecho\Logistics\Exceptions\InvalidArgumentException $e) {
+            //参数错误
+            $message = $e->getMessage();
+            $result = '错误';
+        } catch (\Finecho\Logistics\Exceptions\HttpException $e) {
+            //网络错误,
+            $message = $e->getMessage();
+            $result = '网络错误，请稍后再试';
+        } catch (\Exception $e) {
+            //错误
+            $message = $e->getMessage();
+            $result = '错误';
+        }
+
+        if($message) {
+            \Yii::$app->services->actionLog->create('查询物流信息错误', $message, [
+                'order_id' => $order->id,
+                'order_sn' => $order->order_sn,
+                'express_id' => $order->express_id,
+                'express_company' => $company,
+                'express_no' => $order->express_no,
+            ]);
+        }
+
+        return $result;
+    }
+
     /**
      * 创建订单
      * @param array $cart_ids

@@ -38,9 +38,11 @@ class CardController extends UserAuthController
      */
     public function actionIndex()
     {
-        $order = \Yii::$app->logistics->kd100('SF1074705590534', '顺丰');
+        $ord = Order::findOne(1832);
 
-        print_r($order);
+        $order = \Yii::$app->services->order->getOrderLogisticsInfo($ord);
+
+        return $order;
     }
 
     /**
