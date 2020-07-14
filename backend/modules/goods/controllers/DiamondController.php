@@ -64,17 +64,22 @@ class DiamondController extends BaseController
 FROM
     goods
         LEFT JOIN
-    goods_markup markup1 ON goods.id = markup1.goods_id
-        AND markup1.area_id = 1
+	 goods_style_markup markup ON goods.style_id=markup.style_id AND markup.status=1
+        LEFT JOIN
+    goods_markup markup1 ON markup1.area_id = 1
         AND markup1.status = 1
+        AND markup.area_id=markup1.area_id
+        AND goods.id = markup1.goods_id
         LEFT JOIN
-    goods_markup markup2 ON goods.id = markup2.goods_id
-        AND markup2.area_id = 2
+    goods_markup markup2 ON markup2.area_id = 2
         AND markup2.status = 1
+        AND markup.area_id=markup2.area_id
+        AND goods.id = markup2.goods_id
         LEFT JOIN
-    goods_markup markup99 ON goods.id = markup99.goods_id
-        AND markup99.area_id = 99
+    goods_markup markup99 ON markup99.area_id = 99
         AND markup99.status = 1
+        AND markup.area_id=markup99.area_id
+        AND goods.id = markup99.goods_id
 GROUP BY goods.style_id) as goods
 DOM;
         $dataProvider->query->leftJoin($goodsSql, 'goods.style_id=goods_diamond.style_id');
