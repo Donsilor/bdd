@@ -42,7 +42,11 @@ class OrderService extends OrderBaseService
         try {
 
             if(!is_object($order)) {
-                return '错误';
+                return '$order错误';
+            }
+
+            if(empty($order->express_no)) {
+                return '物流号为空';
             }
 
             $company = LogisticsEnum::getValue($order->express_id);
@@ -61,14 +65,14 @@ class OrderService extends OrderBaseService
             //查询错误
             $message = $e->getMessage();
             $result = null;
-        } catch (\Finecho\Logistics\Exceptions\InvalidArgumentException $e) {
-            //参数错误
-            $message = $e->getMessage();
-            $result = '错误';
         } catch (\Finecho\Logistics\Exceptions\HttpException $e) {
             //网络错误,
             $message = $e->getMessage();
             $result = '网络错误，请稍后再试';
+        } catch (\Finecho\Logistics\Exceptions\InvalidArgumentException $e) {
+            //参数错误
+            $message = $e->getMessage();
+            $result = '错误';
         } catch (\Exception $e) {
             //错误
             $message = $e->getMessage();
