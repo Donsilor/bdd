@@ -23,7 +23,9 @@ class CardController extends Controller
 
     public function actionTest()
     {
-        $order = \Yii::$app->logistics->kd100('SF1074705590534', '顺丰');
+        $order = \Yii::$app->logistics->kd100('SF1074705590534', '顺丰', true);
+        var_dump(is_array($order));
+        echo("\r\n");
         echo $order->getCode(); // 状态码
         echo("\r\n");
         echo $order->getMsg(); // 状态信息
@@ -34,6 +36,7 @@ class CardController extends Controller
         echo("\r\n");
         echo $order->getStatus(); // 当前物流单状态
         echo("\r\n");
+
     }
 
     /**
