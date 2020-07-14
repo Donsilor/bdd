@@ -42,6 +42,9 @@ class AttrIdEnum
     const SIDE_STONE_COLOR = 46;//副石颜色
     const SIDE_STONE_CLARITY = 47;//副石净度
     const CERT_TYPE = 48;//钻石证书类型ID
+    const XIANGKOU = 49;//镶口
+    const MAIN_STONE_TYPE = 56;//主石类型
+    const MAIN_STONE_WEIGHT = 59;//主石大小
 
     
 }
