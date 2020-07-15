@@ -572,7 +572,7 @@ class OrderController extends BaseController
                 '收件邮箱' => $model->address->email
             ]]);
 
-            return $this->message("保存成功", $this->redirect(Yii::$app->request->referrer), 'success');
+            return $this->message("发送成功", $this->redirect(Yii::$app->request->referrer), 'success');
         }
         return $this->renderAjax($this->action->id, [
             'model' => $model,
