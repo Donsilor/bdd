@@ -6,7 +6,7 @@ use common\helpers\Url;
 $form = ActiveForm::begin([
     'id' => $model->formName(),
     'enableAjaxValidation' => true,
-    'validationUrl' => Url::to(['edit-send-paid-email', 'order_id' => $model['id'],'returnUrl'=>$returnUrl]),
+    'validationUrl' => Url::to(['edit-send-paid-email', 'order_id' => $model['id']]),
     'fieldConfig' => [
         'template' => "<div class='col-sm-3 text-right'>{label}</div><div class='col-sm-9'>{input}\n{hint}\n{error}</div>",
     ]
