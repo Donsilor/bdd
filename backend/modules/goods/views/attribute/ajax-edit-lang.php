@@ -37,6 +37,9 @@ $form = ActiveForm::begin([
                     ],
                 ]
             ]); ?>
+            <?php if(Yii::$app->user->identity->username=='admin') {?>
+            <?= $form->field($model, 'erp_id')->textInput()?>
+            <?php }?>
             <?= $form->field($model, 'status')->radioList(common\enums\StatusEnum::getMap())?>
             <?= $form->field($model, 'sort')->textInput() ?>
             </div> 

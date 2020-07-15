@@ -43,6 +43,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ],
                             ]
                         ]); ?>
+                        <?php if(Yii::$app->user->identity->username=='admin') {?>
+                        <?= $form->field($model, 'erp_id')->textInput()?>
+                        <?php }?>
                         <?= $form->field($model, 'status')->radioList(common\enums\StatusEnum::getMap())?>
                         <?= $form->field($model, 'sort')->textInput() ?>                    
                     </div>  
@@ -101,6 +104,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($model, $key, $index, $column){
                     return  Html::sort($model->sort,['data-url'=>Url::to(['attribute-value/ajax-update'])]);
                 }
+            ],
+            [
+                'attribute'=>'erp_id',
+                'value' => function ($model) {
+                    return $model->erp_id;
+                },
+                'format' => 'raw',
+                'visible' => Yii::$app->user->identity->username == 'admin'
             ],
             [
                 'attribute' => 'status',

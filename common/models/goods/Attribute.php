@@ -37,7 +37,7 @@ class Attribute extends BaseModel
     {
         return [
             [['status'], 'required'],
-            [['id','status', 'sort','created_at', 'updated_at'], 'integer'],
+            [['id','status','erp_id','sort','created_at', 'updated_at'], 'integer'],
             //[['image'], 'string','max'=>100],
             [['attr_name','language','remark','image'], 'safe'],            
         ];
@@ -51,6 +51,7 @@ class Attribute extends BaseModel
         return [
             'id' => Yii::t('common', 'ID'),     
             'code' => Yii::t('common', '标识'),
+            'erp_id' => Yii::t('common', 'ERP属性ID'),
             'image' => Yii::t('common', '图标'),
             'attr_name'=>Yii::t('attribute', '属性名称'),
             'status' => Yii::t('common', '状态'),
