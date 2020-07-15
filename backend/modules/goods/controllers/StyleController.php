@@ -315,6 +315,9 @@ class StyleController extends BaseController
 
             ['销售价(CNY)', 'sale_price', 'text'],
             ['库存', 'goods_storage', 'text'],
+            ['上架状态', 'status', 'function', function($model){
+                return FrameEnum::getValue($model->status);
+            }],
             ['中国上架状态', 'status', 'function', function($model){
                 $styleMarkup = StyleMarkup::find()->where(['style_id'=>$model->id ,'area_id' => AreaEnum::China])->one();
                 return FrameEnum::getValue($styleMarkup->status ?? FrameEnum::DISABLED);
