@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php }
     $areaEnum = AreaEnum::getMap();
     unset($areaEnum[3]);
-    unset($areaEnum[4]);
+//    unset($areaEnum[4]);
     ?>
     <?= $form->field($model, 'area_attach')->checkboxList($areaEnum); ?>
     <?= $form->field($model, 'count')->textInput(); ?>
