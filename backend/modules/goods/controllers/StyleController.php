@@ -354,7 +354,8 @@ class StyleController extends BaseController
                 }elseif ($model->type_id == 9){
                     return \Yii::$app->params['frontBaseUrl'].'/jewellery/bracelet/'.$model->id.'?goodId='.$model->id;
                 }
-            }]
+            }],
+            ['创建时间', 'created_at', 'date', 'Y-m-d'],
         ];
 
 

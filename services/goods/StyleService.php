@@ -82,13 +82,13 @@ class StyleService extends Service
         return $result;
     }
 
-    //
+    //查询属性值
     public function getStyleAttrValue($style_id,$attr_id){
         $style_attr = AttributeIndex::find()->where(['style_id'=>$style_id,'attr_id'=>$attr_id])->asArray()->all();
         $attr_value = '';
         if($style_attr){
             foreach ($style_attr as $attr){
-                if($attr['attr_value_id'] === 0){
+                if($attr['attr_value_id'] == 0){
                     $attr_value .= $attr['attr_value'] . ',';
                 }else{
                     $attr_value .= Yii::$app->attr->valueName($attr['attr_value_id']) . ',';
