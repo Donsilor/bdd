@@ -33,9 +33,9 @@ $order = Order::find()->where(['id'=>$order_id])->one();
                 </dl>
                 <dl>
                     <dt>Dispatched</dt>
-                    <dd><span>Logistics Company：</span><span><?= \Yii::$app->services->express->getExressName($order->express_id,$order->language);?></span></dd>
-                    <dd><span>Logistics NO：</span><span><?= $order->express_no; ?></span></dd>
-                    <dd><span>Delivery Time：</span><span><?= \Yii::$app->formatter->asDatetime($order->delivery_time); ?></span></dd>
+                    <dd><span>Courier：</span><span><?= \Yii::$app->services->express->getExressName($order->express_id,$order->language);?></span></dd>
+                    <dd><span>Tracking Number：</span><span><?= $order->express_no; ?></span></dd>
+                    <dd><span>Dispatch date：</span><span><?= \Yii::$app->formatter->asDatetime($order->delivery_time); ?></span></dd>
                 </dl>
             </div>
             <div class="mind">

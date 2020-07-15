@@ -33,8 +33,8 @@ $order = Order::find()->where(['id'=>$order_id])->one();
                 </dl>
                 <dl>
                     <dt>订单详情：    【已发货】</dt>
-                    <dd><span>物流公司：</span><span><?= \Yii::$app->services->express->getExressName($order->express_id,$order->language);?></span></dd>
-                    <dd><span>物流单号：</span><span><?= $order->express_no; ?></span></dd>
+                    <dd><span>快递公司：</span><span><?= \Yii::$app->services->express->getExressName($order->express_id,$order->language);?></span></dd>
+                    <dd><span>快递单号：</span><span><?= $order->express_no; ?></span></dd>
                     <dd><span>发货时间：</span><span><?= \Yii::$app->formatter->asDatetime($order->delivery_time); ?></span></dd>
                 </dl>
             </div>

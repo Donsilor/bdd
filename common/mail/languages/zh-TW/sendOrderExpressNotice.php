@@ -29,12 +29,12 @@ $order = Order::find()->where(['id'=>$order_id])->one();
             <div class="info">
                 <dl>
                     <dt>尊敬的顧客：</dt>
-                    <dd>您购买的商品已经发货，感謝選擇BDD Co.。想了解更详细的物流信息，请在BDD官网登录您的账户查看。若您有任何疑问，請立即聯絡我們發電郵至service@bddco.com<a href="mailto:service@bddco.com" rel="noopener" target="_blank">service@bddco.com</a>。</dd>
+                    <dd>您购买的商品已经发货，感謝選擇BDD Co.。想了解更详细的物流信息，请在BDD官网登录您的账户查看。若您有任何疑问，請立即聯絡我們發電郵至<a href="mailto:service@bddco.com" rel="noopener" target="_blank">service@bddco.com</a>。</dd>
                 </dl>
                 <dl>
                     <dt>訂單詳情：    【已發貨】</dt>
-                    <dd><span>物流公司：</span><span><?= \Yii::$app->services->express->getExressName($order->express_id,$order->language);?></span></dd>
-                    <dd><span>物流單號：</span><span><?= $order->express_no; ?></span></dd>
+                    <dd><span>快遞公司：</span><span><?= \Yii::$app->services->express->getExressName($order->express_id,$order->language);?></span></dd>
+                    <dd><span>快遞單號：</span><span><?= $order->express_no; ?></span></dd>
                     <dd><span>發貨時間：</span><span><?= \Yii::$app->formatter->asDatetime($order->delivery_time); ?></span></dd>
                 </dl>
             </div>
