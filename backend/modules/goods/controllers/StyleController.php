@@ -355,7 +355,7 @@ class StyleController extends BaseController
                     return \Yii::$app->params['frontBaseUrl'].'/jewellery/bracelet/'.$model->id.'?goodId='.$model->id;
                 }
             }],
-            ['创建时间', 'created_at', 'date', 'Y-m-d'],
+            ['创建时间', 'created_at', 'date', 'Y-m-d H:i:s'],
         ];
 
 
