@@ -32,7 +32,7 @@ class AttributeValue extends BaseModel
     {
         return [
             [['status'], 'required'],
-            [['attr_id', 'sort', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['attr_id','erp_id', 'sort', 'status', 'created_at', 'updated_at'], 'integer'],
             [['code'], 'string','max'=>15],
             [['image'], 'string','max'=>100],
             //[['id'],'defaultAttrValueCode'],
@@ -55,6 +55,7 @@ class AttributeValue extends BaseModel
         return [
             'id' => Yii::t('goods_attribute', 'ID'),
             'attr_id' => Yii::t('goods_attribute', 'Attr ID'),
+            'erp_id' => Yii::t('goods_attribute', 'ERP属性值ID'),
             'code' => Yii::t('goods_attribute', '标识'),
             'image' => Yii::t('goods_attribute', '图标'),
             'sort' => Yii::t('common', '排序'),

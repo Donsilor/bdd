@@ -101,14 +101,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 //'filter' => false,
             ],
-            /* [
-                'attribute'=>'created_at',
+            [
+                'attribute'=>'erp_id',
                 'value' => function ($model) {
-                    return Yii::$app->formatter->asDatetime($model->created_at);
+                    return $model->erp_id;
                 },
                 'format' => 'raw',
+                'visible' => Yii::$app->user->identity->username == 'admin'
             ],
-            [
+            /* [
                 'attribute'=>'updated_at',
                 'value' => function ($model) {
                     return Yii::$app->formatter->asDatetime($model->updated_at);
