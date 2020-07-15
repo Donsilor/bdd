@@ -207,6 +207,8 @@ class OrderController extends BaseController
 
         $model = $this->findModel($id);
 
+        $logistics = Yii::$app->services->order->getOrderLogisticsInfo($model);
+
         $dataProvider = null;
         if (!is_null($id)) {
             $searchModel = new SearchModel([
@@ -229,6 +231,7 @@ class OrderController extends BaseController
         return $this->render($this->action->id, [
             'model' => $model,
             'dataProvider' => $dataProvider,
+            'logistics' => $logistics
         ]);
     }
 

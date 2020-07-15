@@ -553,6 +553,49 @@ DOM;
                         </div>
                     </div>
                 </div>
+                <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_4">
+                    <ul class="nav nav-tabs pull-right">
+                        <li class="pull-left header"><i class="fa fa-th"></i> 物流信息 </li>
+                    </ul>
+                    <div class="box-body col-lg-12" style="margin-left:9px">
+                        <?php if(is_array($logistics)) { ?>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="row">
+                                    <div class="col-lg-5 text-right"><label><?= '快递公司' ?>：</label></div>
+                                    <div class="col-lg-7"><?= $logistics['company'] ?></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-5 text-right"><label><?= '运单号' ?>：</label></div>
+                                    <div class="col-lg-7"><?= $logistics['no'] ?></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-5 text-right"><label>最新状态：</label></div>
+                                    <div class="col-lg-7"><?= $logistics['display_status'] ?></div>
+                                </div>
+                                <?php foreach ($logistics['abstract_status'] as $key => $status) { ?>
+                                    <div class="row">
+                                        <div class="col-lg-5 text-right"><label><?= \common\enums\LogisticsEnum::getValue($key, 'abstractStatus') ?>：</label></div>
+                                        <div class="col-lg-7"><?= $status?'是':'' ?></div>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                            <div class="col-lg-5">
+                                <?php foreach ($logistics['list'] as $logistic) { ?>
+                                    <div class="row" style="margin: 10px;">
+                                        <div class="col-lg-5 text-right"><label><?= $logistic['datetime'] ?>：</label></div>
+                                        <div class="col-lg-7"><?= $logistic['remark'] ?></div>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                        <?php } elseif(is_null($logistics)) {?>
+                            没有物流信息
+                        <?php } else {?>
+                            <?= $logistics ?>
+                        <?php } ?>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <div class="text-center">
