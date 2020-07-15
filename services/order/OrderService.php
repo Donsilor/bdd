@@ -34,7 +34,7 @@ use common\enums\PayEnum;
  */
 class OrderService extends OrderBaseService
 {
-    public function getOrderLogisticsInfo($order)
+    public function getOrderLogisticsInfo($order, $isCache=true)
     {
         //如保数据库有信息，则直接返回
 
@@ -54,7 +54,7 @@ class OrderService extends OrderBaseService
             /**
              * @var $logistics \Finecho\Logistics\Order
              */
-            $logistics = \Yii::$app->logistics->kd100($order->express_no, $company, true);
+            $logistics = \Yii::$app->logistics->kd100($order->express_no, $company, $isCache);
 
             $result = $logistics->toArray();
 

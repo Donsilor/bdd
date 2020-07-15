@@ -130,14 +130,10 @@ class Logistics extends Service
      * @param $provider
      * @return mixed
      */
-    protected function query($no, $company, $provider, $isCache)
+    protected function query($no, $company, $provider, $isCache=true)
     {
-        if ($isCache == false) {
-            return $this->logistics($provider)->query($no, $company);
-        }
-
         $key = 'Logistics|' .  $no;
-        if (!($data = Yii::$app->cache->get($key))) {
+        if (!$isCache || !($data = Yii::$app->cache->get($key))) {
             $data = $this->logistics($provider)->query($no, $company);
             Yii::$app->cache->set($key, $data, 60 * 60);
         }

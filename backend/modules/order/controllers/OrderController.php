@@ -207,7 +207,7 @@ class OrderController extends BaseController
 
         $model = $this->findModel($id);
 
-        $logistics = Yii::$app->services->order->getOrderLogisticsInfo($model);
+        $logistics = Yii::$app->services->order->getOrderLogisticsInfo($model, false);
 
         $dataProvider = null;
         if (!is_null($id)) {

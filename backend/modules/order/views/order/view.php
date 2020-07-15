@@ -599,7 +599,7 @@ DOM;
             </div>
             <div class="modal-footer">
                 <div class="text-center">
-                    <span class="btn btn-white" onclick="history.go(-1)">返回</span>
+                    <span class="btn btn-white"  onclick="$('.active.J_menuTab i', window.parent.document).click()">关闭</span>
                 </div>
             </div>
         </div>
