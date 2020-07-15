@@ -579,8 +579,15 @@ DOM;
                                         <div class="col-lg-7"><?= $status?'是':'' ?></div>
                                     </div>
                                 <?php } ?>
+                                <div class="row">
+                                    <div class="col-lg-5 text-right"><label>发送物流信息邮件：</label></div>
+                                    <div class="col-lg-7"><?= Html::edit(['send-order-express-email', 'order_id' => $model->id],'发送物流信息邮件', [
+                                            'data-toggle' => 'modal',
+                                            'data-target' => '#ajaxModalLg',
+                                        ])?></div>
+                                </div>
                             </div>
-                            <div class="col-lg-5">
+                            <div class="col-lg-8">
                                 <?php foreach ($logistics['list'] as $logistic) { ?>
                                     <div class="row" style="margin: 10px;">
                                         <div class="col-lg-5 text-right"><label><?= $logistic['datetime'] ?>：</label></div>

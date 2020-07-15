@@ -580,6 +580,29 @@ class OrderController extends BaseController
         ]);
     }
 
+
+    public  function actionSendOrderExpressEmail() {
+        $order_id = Yii::$app->request->get('order_id');
+
+        $model = $this->findModel($order_id);
+
+        $this->activeFormValidate($model->member);
+        if ($model->member->load(Yii::$app->request->post())) {
+
+            Yii::$app->services->order->sendOrderExpressEmail($model);
+
+            OrderLogService::sendExpressEmail($model, [[
+                '收件邮箱' => $model->member->email
+            ]]);
+
+            return $this->message("发送成功", $this->redirect(Yii::$app->request->referrer), 'success');
+        }
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+            'order_id' => $order_id
+        ]);
+    }
+
     public  function actionEleInvoiceAjaxEdit(){
         $order_id = Yii::$app->request->get('order_id');
         $returnUrl = Yii::$app->request->get('returnUrl',['index']);

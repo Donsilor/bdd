@@ -25,7 +25,7 @@ use yii\web\UnprocessableEntityHttpException;
 
 class OrderBaseService extends Service
 {
-    public function sendOrderExpress($order)
+    public function sendOrderExpressEmail($order)
     {
         if(RegularHelper::verify('email', $order->member->email)) {
             $usage = EmailLog::USAGE_SEND_ORDER_EXPRESS_NOTICE;
