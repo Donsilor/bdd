@@ -2,6 +2,7 @@
 
 namespace backend\modules\goods\controllers;
 
+use common\enums\AttrIdEnum;
 use common\models\goods\Goods;
 use common\enums\AreaEnum;
 use common\enums\FrameEnum;
@@ -292,6 +293,26 @@ class StyleController extends BaseController
             ['产品线', 'type_id', 'function', function($model){
                 return $model->type->type_name ?? '';
             }],
+            ['成色','id','function', function($model){
+                return Yii::$app->services->goodsStyle->getStyleAttrValue($model->id,AttrIdEnum::FINENESS);
+            }],
+            ['主石类型','id','function', function($model){
+                return Yii::$app->services->goodsStyle->getStyleAttrValue($model->id,AttrIdEnum::MAIN_STONE_TYPE);
+            }],
+            ['克重','id','function', function($model){
+                return Yii::$app->services->goodsStyle->getStyleAttrValue($model->id,AttrIdEnum::GRAM_WEIGHT);
+            }],
+            ['手寸','id','function', function($model){
+                return Yii::$app->services->goodsStyle->getStyleAttrValue($model->id,AttrIdEnum::SIZE);
+            }],
+            ['镶口','id','function', function($model){
+                return Yii::$app->services->goodsStyle->getStyleAttrValue($model->id,AttrIdEnum::XIANGKOU);
+            }],
+            ['主石大小','id','function', function($model){
+                return Yii::$app->services->goodsStyle->getStyleAttrValue($model->id,AttrIdEnum::MAIN_STONE_WEIGHT);
+            }],
+
+
             ['销售价(CNY)', 'sale_price', 'text'],
             ['库存', 'goods_storage', 'text'],
             ['中国上架状态', 'status', 'function', function($model){
@@ -333,7 +354,8 @@ class StyleController extends BaseController
                 }elseif ($model->type_id == 9){
                     return \Yii::$app->params['frontBaseUrl'].'/jewellery/bracelet/'.$model->id.'?goodId='.$model->id;
                 }
-            }]
+            }],
+            ['创建时间', 'created_at', 'date', 'Y-m-d H:i:s'],
         ];
 
 

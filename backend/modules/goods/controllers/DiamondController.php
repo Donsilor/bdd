@@ -243,8 +243,8 @@ class DiamondController extends BaseController
 //            ['库存类型', 'is_stock', 'text'],
             ['上架时间', 'onsale_time', 'date', 'Y-m-d'],
             ['上架状态', 'status', 'selectd',\common\enums\StatusEnum::getMap()],
-            ['创建时间', 'created_at', 'date', 'Y-m-d'],
-            ['更新时间', 'updated_at', 'date', 'Y-m-d'],
+            ['创建时间', 'created_at', 'date', 'Y-m-d H:i:s'],
+            ['更新时间', 'updated_at', 'date', 'Y-m-d H:i:s'],
             ['前端地址','id','function',function($model){
                 return \Yii::$app->params['frontBaseUrl'].'/diamond-details/'.$model->id.'?goodId='.$model->id;
             }]
