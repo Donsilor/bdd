@@ -48,32 +48,32 @@ class OrderInvoiceService extends OrderBaseService
     private $siteInfo = [
         OrderFromEnum::WEB_HK => [
             'webSite' => 'https://www.bddco.com/',
-            'tel' => '2165 3905',
+            'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
         OrderFromEnum::MOBILE_HK => [
             'webSite' => 'https://www.bddco.com/',
-            'tel' => '2165 3905',
+            'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
         OrderFromEnum::WEB_CN => [
             'webSite' => 'https://www.bddco.com/',
-            'tel' => '2165 3905',
+            'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
         OrderFromEnum::MOBILE_CN => [
             'webSite' => 'https://www.bddco.com/',
-            'tel' => '2165 3905',
+            'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
         OrderFromEnum::WEB_US => [
             'webSite' => 'https://www.bddco.com/',
-            'tel' => '2165 3905',
+            'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
         OrderFromEnum::MOBILE_US => [
             'webSite' => 'https://www.bddco.com/',
-            'tel' => '2165 3905',
+            'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
     ];
