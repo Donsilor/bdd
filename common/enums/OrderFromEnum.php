@@ -118,7 +118,7 @@ class OrderFromEnum extends BaseEnum
     {
         $countryIds = [
                 '7' => self::GROUP_CN,
-                '278' => self::GROUP_HK,
+                '278' => self::GROUP_TW,
                 '279' => self::GROUP_HK,
                 '280' => self::GROUP_HK,
         ];
