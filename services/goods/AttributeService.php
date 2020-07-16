@@ -29,17 +29,19 @@ class AttributeService extends Service
     public static function updateAttrValues($attr_id)
     {
         
-         $sql = 'UPDATE goods_attribute_lang attr_lang,
+        $sql1 = 'UPDATE '.AttributeLang::tableName().' set attr_values=null where master_id = '.$attr_id;
+        
+        $sql2 = 'UPDATE '.AttributeLang::tableName().' attr_lang,
              (
             	SELECT
             		val.attr_id,
             		val_lang.`language`,
-            		GROUP_CONCAT(attr_value_name) AS attr_values
+            		GROUP_CONCAT(attr_value_name order by sort asc) AS attr_values
             	FROM
-            		goods_attribute_value_lang val_lang
-            	INNER JOIN goods_attribute_value val ON val_lang.master_id = val.id
+            		'.AttributeValueLang::tableName().' val_lang
+            	INNER JOIN '.AttributeValue::tableName().' val ON val_lang.master_id = val.id
             	WHERE
-            		val.attr_id = '.$attr_id.' and val.`status`=1 
+            		val.attr_id = '.$attr_id.' and val.`status`=1
             	GROUP BY
             		val.attr_id,
             		val_lang.`language`
@@ -49,8 +51,9 @@ class AttributeService extends Service
             	attr_lang.master_id = t.attr_id
             AND attr_lang.`language` = t.`language`
             AND attr_lang.master_id = '.$attr_id.';';
-        
-        return \Yii::$app->db->createCommand($sql)->execute();
+        $res1 = \Yii::$app->db->createCommand($sql1)->execute();
+        $res2 = \Yii::$app->db->createCommand($sql2)->execute();
+        return $res1 && $res2;
     }
     /**
      * 基础属性下拉列表
