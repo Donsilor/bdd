@@ -11,6 +11,9 @@ namespace common\enums;
  */
 class StatusEnum extends BaseEnum
 {
+    const YES = 1;
+    const NO = 0;
+
     const ENABLED = 1;
     const DISABLED = 0;
     const DELETE = -1;
@@ -27,6 +30,12 @@ class StatusEnum extends BaseEnum
         ];
     }
 
-
+    public static function getYesOrNo()
+    {
+        return [
+            self::YES => '是',
+            self::NO => '否',
+        ];
+    }
 
 }
