@@ -103,11 +103,11 @@ class WebSeo extends \common\models\base\BaseModel
 
         if(!empty($this->platforms) && is_array($this->platforms)) {
             foreach ($this->platforms as $platform) {
-                $attribute = 'platform_' . $platform;
+                $platform_field = 'platform_' . $platform;
 
                 $where = ['and'];
                 $where[] = ['=', 'page_name', $this->page_name];
-                $where[] = ['=', $attribute, 1];
+                $where[] = ['=', $platform_field, 1];
 
                 if(!empty($this->id))
                     $where[] = ['<>', 'id', $this->id];
