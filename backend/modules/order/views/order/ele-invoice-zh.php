@@ -45,7 +45,7 @@
                 <div class="list-tit fl">销售商:</div>
                 <div class="list-details fl">
                     <div class="child-name">BDD Co.Ltd</div>
-                    <div class="child-addr">中环亚毕诺道3号环球贸易中心23楼04室</div>
+                    <div class="child-addr"><?php echo $result['sender_address']?:'中环亚毕诺道3号环球贸易中心23楼04室'; ?></div>
                 </div>
             </div>
 
@@ -77,7 +77,7 @@
             <div class="package-info clf">
                 <div class="package-child fl">
                     <div class="package-child-v">出口地</div>
-                    <div class="package-child-val">香港</div>
+                    <div class="package-child-val"><?php echo $result['sender_area']?:'香港'; ?></div>
                 </div>
                 <div class="package-child fl">
                     <div class="package-child-v">交易币种</div>

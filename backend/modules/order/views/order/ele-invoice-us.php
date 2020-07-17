@@ -45,10 +45,10 @@
                 <div class="list-tit fl">Sales:</div>
                 <div class="list-details fl">
                     <div class="child-name">BDD Co.</div>
-                    <div class="child-addr">Unit 2304, 23/F,<br/>
+                    <div class="child-addr"><?php echo $result['sender_address']?:'Unit 2304, 23/F,<br/>
                         Universal Trade Centre,<br/>
                         3 Arbuthnot Road,<br/>
-                        Central, Hong Kong</div>
+                        Central, Hong Kong'; ?></div>
                 </div>
             </div>
 
@@ -80,7 +80,7 @@
             <div class="package-info clf">
                 <div class="package-child fl">
                     <div class="package-child-v">Place of Export</div>
-                    <div class="package-child-val">Hong Kong</div>
+                    <div class="package-child-val"><?php echo $result['sender_area']?:'Hong Kong'; ?></div>
                 </div>
                 <div class="package-child fl">
                     <div class="package-child-v">Currency Of Sale</div>
