@@ -41,6 +41,7 @@ $form = ActiveForm::begin([
             ]);?>
 
             <?= $form->field($model, 'sender_name')->textInput(); ?>
+            <?= $form->field($model, 'sender_area')->textInput(); ?>
             <?= $form->field($model, 'sender_address')->textArea(); ?>
             <?= $form->field($model, 'express_id')->widget(kartik\select2\Select2::class, [
                 'data' => Yii::$app->services->express->getDropDown(),
