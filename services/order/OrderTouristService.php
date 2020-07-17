@@ -200,7 +200,7 @@ class OrderTouristService extends OrderBaseService
             'is_invoice' => empty($orderTourist->invoice)?0:1,//是否开发票
             'api_pay_time' => $payLog->pay_time,
 //            'trade_no' => '',
-            'buyer_remark' => '',
+            'buyer_remark' => $orderTourist->buyer_remark,
 //            'seller_remark' => '',
 //            'follower_id' => '',
 //            'followed_time' => '',
