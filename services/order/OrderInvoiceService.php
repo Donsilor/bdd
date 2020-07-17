@@ -48,32 +48,32 @@ class OrderInvoiceService extends OrderBaseService
     private $siteInfo = [
         OrderFromEnum::WEB_HK => [
             'webSite' => 'https://www.bddco.com/',
-            'tel' => '2165 3905',
+            'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
         OrderFromEnum::MOBILE_HK => [
             'webSite' => 'https://www.bddco.com/',
-            'tel' => '2165 3905',
+            'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
         OrderFromEnum::WEB_CN => [
             'webSite' => 'https://www.bddco.com/',
-            'tel' => '2165 3905',
+            'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
         OrderFromEnum::MOBILE_CN => [
             'webSite' => 'https://www.bddco.com/',
-            'tel' => '2165 3905',
+            'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
         OrderFromEnum::WEB_US => [
             'webSite' => 'https://www.bddco.com/',
-            'tel' => '2165 3905',
+            'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
         OrderFromEnum::MOBILE_US => [
             'webSite' => 'https://www.bddco.com/',
-            'tel' => '2165 3905',
+            'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
     ];
@@ -89,6 +89,7 @@ class OrderInvoiceService extends OrderBaseService
         $result = array(
             'invoice_date' => $order->delivery_time,
             'sender_name' => '',
+            'sender_area'=> '',
             'sender_address'=> '',
             'shipper_name' => '',
             'shipper_address' => '',
@@ -121,6 +122,7 @@ class OrderInvoiceService extends OrderBaseService
             $order_invoice_exe = $order_invoice_exe_model->toArray();
             $result['invoice_date'] = $order_invoice_exe['invoice_date'] ? $order_invoice_exe['invoice_date'] : $result['invoice_date'];
             $result['sender_name'] = $order_invoice_exe['sender_name'] ? $order_invoice_exe['sender_name'] : $result['sender_name'];
+            $result['sender_area'] = $order_invoice_exe['sender_area'] ? $order_invoice_exe['sender_area'] : $result['sender_address'];
             $result['sender_address'] = $order_invoice_exe['sender_address'] ? $order_invoice_exe['sender_address'] : $result['sender_address'];
             $result['shipper_name'] = $order_invoice_exe['shipper_name'] ? $order_invoice_exe['shipper_name'] : $result['shipper_name'];
             $result['shipper_address'] = $order_invoice_exe['shipper_address'] ? $order_invoice_exe['shipper_address'] : $result['shipper_address'];
