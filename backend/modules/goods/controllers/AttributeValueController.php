@@ -2,6 +2,8 @@
 
 namespace backend\modules\goods\controllers;
 
+use common\helpers\ArrayHelper;
+use common\helpers\ResultHelper;
 use Yii;
 use common\components\Curd;
 use common\models\base\SearchModel;
@@ -87,6 +89,28 @@ class AttributeValueController extends BaseController
           'model' => $model,
       ]);
   }
+
+
+    /**
+     * ajax更新排序/状态
+     *
+     * @param $id
+     * @return array
+     */
+    public function actionAjaxUpdate($id)
+    {
+        if (!($model = $this->modelClass::findOne($id))) {
+            return ResultHelper::json(404, '找不到数据');
+        }
+
+        $model->attributes = ArrayHelper::filter(Yii::$app->request->get(), ['sort', 'status','erp_id']);
+        if (!$model->save(false)) {
+            return ResultHelper::json(422, $this->getError($model));
+        }
+        return ResultHelper::json(200, '修改成功');
+    }
+
+
   /**
    * 删除
    *

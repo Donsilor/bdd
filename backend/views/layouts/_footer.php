@@ -315,6 +315,44 @@ $this->registerJs($script);
         }
     }
 
+    function rfAjaxUpdate(obj) {
+        let id = $(obj).attr('data-id');
+        let url = $(obj).attr('data-url');
+        let type = $(obj).attr('data-type');
+
+        if (!id) {
+            id = $(obj).parent().parent().attr('id');
+        }
+
+        if (!id) {
+            id = $(obj).parent().parent().attr('data-key');
+        }
+        if(!url){
+            url = "<?= Url::to(['ajax-update'])?>";
+        }
+
+        var val = $(obj).val();
+        var name = $(obj).attr('name');
+        var data = {'id':id};
+        data[name] = val;
+
+        if(type == 'number' && isNaN(val)){
+            rfAffirm('只能为数字');
+            return false;
+        }
+        $.ajax({
+            type: "get",
+            url: url,
+            dataType: "json",
+            data: data,
+            success: function (data) {
+                if (parseInt(data.code) !== 200) {
+                    rfAffirm(data.message);
+                }
+            }
+        });
+    }
+
     //显示360 主图
     function view_3ds() {
         var ds3 = $("#ds3").val();
