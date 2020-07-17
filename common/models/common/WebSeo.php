@@ -3,6 +3,7 @@
 namespace common\models\common;
 
 use common\enums\OrderFromEnum;
+use common\models\order\Order;
 use common\models\order\OrderTourist;
 use Yii;
 
@@ -98,6 +99,25 @@ class WebSeo extends \common\models\base\BaseModel
     public function requiredPageName($attribute, $params){
         if(!ctype_alnum($this->page_name)){
             $this->addError($attribute, '名称必须是字母与数字组成');
+        }
+
+        if(!empty($this->platforms) && is_array($this->platforms)) {
+            foreach ($this->platforms as $platform) {
+                $attribute = 'platform_' . $platform;
+
+                $where = ['and'];
+                $where[] = ['=', 'page_name', $this->page_name];
+                $where[] = ['=', $attribute, 1];
+
+                if(!empty($this->id))
+                    $where[] = ['<>', 'id', $this->id];
+
+                if(WebSeo::find()->where($where)->count('id')) {
+                    $platform_name = OrderFromEnum::getValue($platform);
+                    $this->addError($attribute, sprintf('%s已经有设置%s页', $platform_name, $this->page_name));
+                    return;
+                }
+            }
         }
     }
 
