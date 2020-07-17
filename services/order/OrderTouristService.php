@@ -38,7 +38,7 @@ class OrderTouristService extends OrderBaseService
      * @throws UnprocessableEntityHttpException
      */
 
-    public function createOrder($cartList, $invoice_info, $order_from)
+    public function createOrder($cartList, $buyer_remark, $invoice_info, $order_from)
     {
         $orderAccountTax = $this->getCartAccountTax($cartList);
 
@@ -79,6 +79,7 @@ class OrderTouristService extends OrderBaseService
         $order->ip_area_id = $ip_area_id;
 
         $order->status = OrderTouristStatusEnum::ORDER_UNPAID;  //状态
+        $order->buyer_remark = $buyer_remark;  //状态
 
         //保存订单
         if(false === $order->save()) {
