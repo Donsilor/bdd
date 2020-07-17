@@ -98,7 +98,7 @@ class AttributeController extends BaseController
                     'sort'=>SORT_ASC,
                     'id' => SORT_DESC
                 ],
-                'pageSize' => $this->pageSize,
+                'pageSize' =>1000,
             ]);
             
             $dataProvider = $searchModel

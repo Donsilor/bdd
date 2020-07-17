@@ -107,10 +107,11 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute'=>'erp_id',
-                'value' => function ($model) {
-                    return $model->erp_id;
-                },
                 'format' => 'raw',
+                'value' => function ($model, $key, $index, $column){
+                    return  Html::ajaxInput('erp_id', $model->erp_id, ['data-id'=>$model->id,'data-url'=>Url::to(['attribute-value/ajax-update'])]);
+                },
+                'headerOptions' => ['class' => 'col-md-1'],
                 'visible' => Yii::$app->user->identity->username == 'admin'
             ],
             [
