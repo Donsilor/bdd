@@ -56,6 +56,9 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'label' => '客户端',
+                'headerOptions' => [
+                    'width' => '120'
+                ],
                 'value' => function($model) {
                     if(empty($model->platforms)) {
                         return '';
@@ -77,18 +80,33 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'page_name',
             ],
             [
-                'attribute' => 'lang.meta_title',
-            ],
-            [
                 'label' => '路由',
                 'attribute' => 'route',
             ],
             [
-                'label' => '修改时间',
-                'value' => function($model) {
-                    return Yii::$app->formatter->asDatetime($model->updated_at);
-                }
+                'attribute' => 'lang.meta_title',
+                'headerOptions' => [
+                    'width' => '150'
+                ],
             ],
+            [
+                'attribute' => 'lang.meta_word',
+                'headerOptions' => [
+                    'width' => '150'
+                ],
+            ],
+            [
+                'attribute' => 'lang.meta_desc',
+                'headerOptions' => [
+                    'width' => '200'
+                ],
+            ],
+//            [
+//                'label' => '修改时间',
+//                'value' => function($model) {
+//                    return Yii::$app->formatter->asDatetime($model->updated_at);
+//                }
+//            ],
             [
                 'class' => 'yii\grid\ActionColumn',
                 'header' => '操作',
