@@ -63,7 +63,7 @@ class OrderTouristController extends OnAuthController
             $trans = \Yii::$app->db->beginTransaction();
             if(empty($orderSn)) {
                 //创建订单
-                $orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $buyer_remark,$invoiceInfo, $order_from);
+                $orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $buyer_remark, $invoiceInfo, $order_from);
 
             }
             else {
