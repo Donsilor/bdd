@@ -101,8 +101,18 @@ class WebSeoController extends BaseController
             }
         }
 
+        $configJson = Yii::$app->debris->config('tdk_page');
+        $configs = \Qiniu\json_decode($configJson, true);
+
+        $pageConfigs = [];
+        foreach ($configs as $value) {
+            $page = $value['page']??'';
+            $pageConfigs[$page] = $page;
+        }
+
         return $this->renderAjax($this->action->id, [
             'model' => $model,
+            'pageConfigs' => $pageConfigs,
         ]);
     }
 }

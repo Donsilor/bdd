@@ -23,11 +23,10 @@ $form = ActiveForm::begin([
     <div class="modal-body">
         <?php echo Html::langTab('tab')?>
         <div class="tab-content">
-            <?php if($model->isNewRecord){ ?>
-                <?= $form->field($model, 'page_name')->textInput(['maxlength' => true]) ?>
-            <?php }else{ ?>
-                <?= $form->field($model, 'page_name')->textInput(['maxlength' => true, 'readonly' => 'true']) ?>
-            <?php } ?>
+            <?= $form->field($model, 'page_name')->dropDownList($pageConfigs, [
+                'prompt' => '请选择',
+                'disabled' => $model->isNewRecord ? false : true
+            ]) ?>
             <?= $form->field($model, 'platforms')->checkboxList(\common\enums\OrderFromEnum::getMap()) ?>
             <?= $form->field($model, 'route')->textInput(['maxlength' => true]) ?>
             <?php
