@@ -39,6 +39,7 @@ $form = ActiveForm::begin([
                 'todayBtn' => true,//今日按钮显示
             ]
         ]);?>
+        <?= $form->field($model, 'send_now')->label('立即发送') ?>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>

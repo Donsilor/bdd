@@ -542,11 +542,22 @@ DOM;
                 <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_4">
                     <ul class="nav nav-tabs pull-right">
                         <li class="pull-left header"><i class="fa fa-th"></i> 物流信息 </li>
+                        <li class="pull-right header">
+
+                        </li>
                     </ul>
                     <div class="box-body col-lg-12" style="margin-left:9px">
                         <?php if(is_array($logistics)) { ?>
                         <div class="row">
                             <div class="col-lg-4">
+                                <div class="row">
+                                    <div class="col-lg-10 text-right"></div>
+                                    <div class="col-lg-2 pull-right"><?= Html::edit(['edit-delivery', 'id' => $model->id], '编辑', [
+                                            'data-toggle' => 'modal',
+                                            'data-target' => '#ajaxModal',
+                                            'class'=>'btn btn-success btn-sm'
+                                        ]); ?></div>
+                                </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label><?= '快递公司' ?>：</label></div>
                                     <div class="col-lg-7"><?= $logistics['company'] ?></div>
@@ -571,7 +582,8 @@ DOM;
                                 <?php } ?>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label>发送物流信息邮件：</label></div>
-                                    <div class="col-lg-7"><?= Html::edit(['send-order-express-email', 'order_id' => $model->id],'发送已发货邮件', [
+                                    <?php $count = \common\models\order\OrderLog::find()->where(['order_sn'=>$model->order_sn, 'action_name'=>'SENDEXPRESSEMAIL'])->count('id') ?>
+                                    <div class="col-lg-7"><?= Html::edit(['send-order-express-email', 'order_id' => $model->id],sprintf('发送已发货邮件(%d)', $count), [
                                             'data-toggle' => 'modal',
                                             'data-target' => '#ajaxModalLg',
                                         ])?></div>
