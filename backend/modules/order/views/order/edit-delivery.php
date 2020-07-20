@@ -45,3 +45,8 @@ $form = ActiveForm::begin([
         <button class="btn btn-primary" type="submit">保存</button>
     </div>
 <?php ActiveForm::end(); ?>
+<script>
+    $("#deliveryform-express_no").change(function (e) {
+        $(this).val($(this).val().trim());
+    });
+</script>
