@@ -586,13 +586,13 @@ class OrderController extends BaseController
 
         $model = $this->findModel($order_id);
 
-        $this->activeFormValidate($model->member);
-        if ($model->member->load(Yii::$app->request->post())) {
+        $this->activeFormValidate($model->address);
+        if ($model->address->load(Yii::$app->request->post())) {
 
             Yii::$app->services->order->sendOrderExpressEmail($model);
 
             OrderLogService::sendExpressEmail($model, [[
-                '收件邮箱' => $model->member->email
+                '收件邮箱' => $model->address->email
             ]]);
 
             return $this->message("发送成功", $this->redirect(Yii::$app->request->referrer), 'success');

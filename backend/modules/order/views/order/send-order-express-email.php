@@ -17,8 +17,8 @@ $form = ActiveForm::begin([
         <h4 class="modal-title">发送物流信息邮件</h4>
     </div>
     <div class="modal-body">
-        <?= $form->field($model->member, 'email')->textInput()->label('收件邮箱') ?>
-        <?= \common\helpers\Html::activeHiddenInput($model->member,'id') ?>
+        <?= $form->field($model->address, 'email')->textInput()->label('收件邮箱') ?>
+        <?= \common\helpers\Html::activeHiddenInput($model,'id') ?>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>

@@ -27,11 +27,11 @@ class OrderBaseService extends Service
 {
     public function sendOrderExpressEmail($order)
     {
-        if(RegularHelper::verify('email', $order->member->email)) {
+        if(RegularHelper::verify('email', $order->address->email)) {
             $usage = EmailLog::USAGE_SEND_ORDER_EXPRESS_NOTICE;
 
-            if($usage && $order->member->email) {
-                \Yii::$app->services->mailer->queue(true)->send($order->member->email, $usage, ['code'=>$order->id], $order->language);
+            if($usage && $order->address->email) {
+                \Yii::$app->services->mailer->queue(true)->send($order->address->email, $usage, ['code'=>$order->id], $order->language);
             }
         }
     }
