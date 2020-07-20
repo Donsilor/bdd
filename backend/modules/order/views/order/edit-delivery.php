@@ -26,7 +26,7 @@ $form = ActiveForm::begin([
                 'allowClear' => true
             ],
         ]);?>
-        <?= $form->field($model, 'express_no')->textInput() ?>
+        <?= $form->field($model, 'express_no')->textInput()->hint('*注：请仔细核对单号，否则物流信息无法显示！') ?>
         <?= $form->field($model, 'delivery_time')->widget(DateTimePicker::class, [
             'language' => 'zh-CN',
             'options' => [
