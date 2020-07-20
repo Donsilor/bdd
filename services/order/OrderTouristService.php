@@ -213,7 +213,10 @@ class OrderTouristService extends OrderBaseService
         if(false === $order->save()) {
             throw new UnprocessableEntityHttpException($this->getError($order));
         }
-
+        //插入order_sync
+        $sql = "insert into order_sync(order_id) values({$order->id})";
+        \Yii::$app->db->createCommand($sql)->execute();
+        
         //更新优惠券信息
         if($coupon = MarketCouponDetails::findOne(['order_sn'=>$order->order_sn])) {
             $coupon->order_id = $order->id;
