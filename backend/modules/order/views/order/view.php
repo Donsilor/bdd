@@ -571,10 +571,18 @@ DOM;
                                     <div class="col-lg-7"><?= Yii::$app->formatter->asDatetime($model->delivery_time); ?></div>
                                 </div>
                                 <div class="row">
+                                    <div class="col-lg-5 text-right"><label><?= '接收通知邮箱' ?>：</label></div>
+                                    <div class="col-lg-7"><?= Yii::$app->formatter->asDatetime($model->delivery_time); ?></div>
+                                </div>
+                                <div class="row">
                                     <div class="col-lg-5 text-right"><label>最新状态：</label></div>
                                     <div class="col-lg-7"><?= $logistics['display_status'] ?></div>
                                 </div>
-                                <?php foreach ($logistics['abstract_status'] as $key => $status) { ?>
+                                <?php foreach ($logistics['abstract_status'] as $key => $status) {
+                                    if(in_array($key, ['has_active','has_ended','has_signed'])) {
+                                        continue;
+                                    }
+                                ?>
                                     <div class="row">
                                         <div class="col-lg-5 text-right"><label><?= \common\enums\LogisticsEnum::getValue($key, 'abstractStatus') ?>：</label></div>
                                         <div class="col-lg-7"><?= $status?'是':'' ?></div>

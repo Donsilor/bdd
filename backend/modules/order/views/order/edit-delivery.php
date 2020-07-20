@@ -39,7 +39,8 @@ $form = ActiveForm::begin([
                 'todayBtn' => true,//今日按钮显示
             ]
         ]);?>
-        <?= $form->field($model, 'send_now')->label('立即发送') ?>
+        <?= $form->field($model->address, 'email')->textInput()->label('收件邮箱') ?>
+        <?= $form->field($model, 'send_now')->radioList(['0'=>'否', '1'=>'是'], ['value'=>0])->label('是否立即发送“发货邮件”') ?>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
