@@ -433,20 +433,6 @@ DOM;
                     <div class="box-body col-lg-12">
                         <div class="row">
                             <div class="col-lg-6">
-                                <?php  if($model->express_id){?>
-                                <div class="row">
-                                    <div class="col-lg-3 text-right"><label><?= $model->getAttributeLabel('express_id') ?>：</label></div>
-                                    <div class="col-lg-9"><?= \Yii::$app->services->express->getExressName($model->express_id);?></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-3 text-right"><label><?= $model->getAttributeLabel('express_no') ?>：</label></div>
-                                    <div class="col-lg-9"><?= $model->express_no ?></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-3 text-right"><label><?= $model->getAttributeLabel('delivery_time') ?>：</label></div>
-                                    <div class="col-lg-9"><?= date('Y-m-d H:i:s',$model->delivery_time)?></div>
-                                </div>
-                                <?php } ?>
                                 <div class="row">
                                     <div class="col-lg-3 text-right">
                                         <label><?= $model->getAttributeLabel('seller_remark') ?>：</label></div>
@@ -568,6 +554,10 @@ DOM;
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label><?= '运单号' ?>：</label></div>
                                     <div class="col-lg-7"><?= $logistics['no'] ?></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-5 text-right"><label><?= '发货时间' ?>：</label></div>
+                                    <div class="col-lg-7"><?= Yii::$app->formatter->asDatetime($model->delivery_time); ?></div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label>最新状态：</label></div>
