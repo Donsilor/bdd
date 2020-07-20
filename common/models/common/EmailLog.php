@@ -57,7 +57,7 @@ class EmailLog extends \common\models\base\BaseModel
         self::USAGE_WIRE_TRANSFER_ORDER_NOTICE => '电汇订单通知',
         self::USAGE_ORDER_PAY_SUCCESS => '付款成功通知',
         self::USAGE_ORDER_ABNORMAL_NOTICE => '订单异常通知',
-        self::USAGE_SEND_ORDER_EXPRESS_NOTICE => '订单物流信息通知',
+        self::USAGE_SEND_ORDER_EXPRESS_NOTICE => '已发货订单通知',
     ];
     public static $usageTemplates = [
             self::USAGE_LOGIN => 'loginCode',
