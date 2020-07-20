@@ -419,7 +419,7 @@ class OrderController extends BaseController
             OrderLogService::deliver($model);
 
             //订单发送邮件
-            \Yii::$app->services->order->sendOrderNotification($id);
+            Yii::$app->services->order->sendOrderExpressEmail($model);
 
             $returnUrl = Yii::$app->request->referrer;
             return $result ? $this->redirect($returnUrl) : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
