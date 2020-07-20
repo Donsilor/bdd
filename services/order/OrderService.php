@@ -85,7 +85,9 @@ class OrderService extends OrderBaseService
         if(false === $order->save()){
             throw new UnprocessableEntityHttpException($this->getError($order));
         }
-
+        //插入order_sync
+        $sql = "insert into order_sync(order_id) values({$order->id})";
+        \Yii::$app->db->createCommand($sql)->execute();
         if($coupon_id) {
             //使用优惠券
             //CouponService::incrMoneyUse($coupon_id, 1);
