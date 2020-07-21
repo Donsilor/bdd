@@ -47,9 +47,9 @@ class WebSeoLang extends \yii\db\ActiveRecord
             'id' => '主键',
             'master_id' => Yii::t('web_seo_lang', 'Master ID'),
             'language' => Yii::t('web_seo_lang', 'Language'),
-            'meta_title' => '标题',
-            'meta_desc' => '描述',
-            'meta_word' => '关键字',
+            'meta_title' => 'title',
+            'meta_desc' => 'description',
+            'meta_word' => 'keywords',
         ];
     }
 }
