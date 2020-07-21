@@ -56,7 +56,9 @@
                 <div class="list-tit fl">Customer:</div>
                 <div class="list-details fl">
                     <div class="child-name"><?php echo $result['realname'];?></div>
+                    <div class="child-name"><?php echo $result['mobile'];?></div>
                     <div class="child-addr"><?php echo $result['address_details'];?></div>
+                    <div class="child-name"><?php echo $result['zip_code'];?></div>
                 </div>
             </div>
         </div>

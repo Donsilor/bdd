@@ -4,6 +4,7 @@ namespace services\order;
 
 use common\components\Service;
 use common\enums\CurrencyEnum;
+use common\enums\LanguageEnum;
 use common\enums\OrderFromEnum;
 use common\helpers\ResultHelper;
 use common\models\order\OrderCart;
@@ -44,6 +45,68 @@ class OrderInvoiceService extends OrderBaseService
 //
 //美国：https://us.bddco.com/
 //https://wap-us.bddco.com/   [+852 21653905 / service@bddco.com
+
+    private $sendAddress = [
+        OrderFromEnum::GROUP_HK => [
+            LanguageEnum::ZH_HK => [
+                'name' => '香港',
+                'detailed' => '中環亞畢諾道3號環球貿易中心23樓04室',
+            ],
+            LanguageEnum::ZH_CN => [
+                'name' => '香港',
+                'detailed' => '中环亚毕诺道3号环球贸易中心23楼04室',
+            ],
+            LanguageEnum::EN_US => [
+                'name' => 'Hong Kong',
+                'detailed' => 'Unit 2304, 23/F,Universal Trade Centre,3 Arbuthnot Road,Central, Hong Kong',
+            ],
+        ],
+
+        OrderFromEnum::GROUP_TW => [
+            LanguageEnum::ZH_HK => [
+                'name' => '香港',
+                'detailed' => '中環亞畢諾道3號環球貿易中心23樓04室',
+            ],
+            LanguageEnum::ZH_CN => [
+                'name' => '香港',
+                'detailed' => '中环亚毕诺道3号环球贸易中心23楼04室',
+            ],
+            LanguageEnum::EN_US => [
+                'name' => 'Hong Kong',
+                'detailed' => 'Unit 2304, 23/F,Universal Trade Centre,3 Arbuthnot Road,Central, Hong Kong',
+            ],
+        ],
+
+        OrderFromEnum::GROUP_CN => [
+            LanguageEnum::ZH_HK => [
+                'name' => '深圳',
+                'detailed' => '深圳市羅湖區東曉街道獨樹社區布心路3008號IBC商務珠寶大廈A座',
+            ],
+            LanguageEnum::ZH_CN => [
+                'name' => '深圳',
+                'detailed' => '深圳市罗湖区东晓街道独树社区布心路3008号IBC商务珠宝大厦A座',
+            ],
+            LanguageEnum::EN_US => [
+                'name' => 'Shenzhen',
+                'detailed' => 'Building A, IBC Business Jewelry Building, No. 3008, Buxin Road, Dushu Community, Dongxiao Street, Luohu District, Shenzhen',
+            ],
+        ],
+
+        OrderFromEnum::GROUP_US => [
+            LanguageEnum::ZH_HK => [
+                'name' => '深圳',
+                'detailed' => '深圳市罗湖区东晓街道独树社区布心路3008号IBC商务珠宝大厦A座',
+            ],
+            LanguageEnum::ZH_CN => [
+                'name' => '深圳',
+                'detailed' => '深圳市羅湖區東曉街道獨樹社區布心路3008號IBC商務珠寶大廈A座',
+            ],
+            LanguageEnum::EN_US => [
+                'name' => 'Shenzhen',
+                'detailed' => 'Building A, IBC Business Jewelry Building, No. 3008, Buxin Road, Dushu Community, Dongxiao Street, Luohu District, Shenzhen',
+            ],
+        ],
+    ];
 
     private $siteInfo = [
         OrderFromEnum::WEB_HK => [
@@ -96,7 +159,9 @@ class OrderInvoiceService extends OrderBaseService
             'order_sn' => $order->order_sn,
             'payment_type' => $order->payment_type,
             'realname' => $order->address->realname,
+            'mobile' => $order->address->mobile_code . '-' . $order->address->mobile,
             'address_details' => $order->address->address_details,
+            'zip_code' => $order->address->zip_code,
             'express_no' => $order->express_no,
             'express_company_name' => '',
             'delivery_time' => $order->delivery_time,
@@ -174,7 +239,7 @@ class OrderInvoiceService extends OrderBaseService
             $result['address_details'] = $country_name . $province_name . $city_name . $order->address->address_details ;
         }
 
-        switch ($language){
+        switch ($language) {
             case 'en-US':
                 $result['template'] = 'ele-invoice-us.php';
                 break;
@@ -188,7 +253,19 @@ class OrderInvoiceService extends OrderBaseService
         //站点信息
         $result['siteInfo'] = $this->siteInfo[$order->order_from]??[];
 
+
+
+        //$result['sendAddressInfo'] = \GuzzleHttp\json_encode($result['sendAddressInfo']);
+
         return $result;
+    }
+
+    public function sendAddressInfo()
+    {
+        return $this->sendAddress;
+//        $result['sendAddressInfo'] = array_map(function ($e) use($language) {
+//            return $e[$language]??[];
+//        }, $this->sendAddress);
     }
     
 }

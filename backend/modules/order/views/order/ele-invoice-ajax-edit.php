@@ -41,6 +41,7 @@ $form = ActiveForm::begin([
             ]);?>
 
             <?= $form->field($model, 'sender_name')->textInput(); ?>
+            <?= $form->field($model, 'platforms_group')->radioList(\common\enums\OrderFromEnum::groups(), ['value'=>\common\enums\OrderFromEnum::platformToGroup($model->order->order_from)]); ?>
             <?= $form->field($model, 'sender_area')->textInput(); ?>
             <?= $form->field($model, 'sender_address')->textArea(); ?>
             <?= $form->field($model, 'express_id')->widget(kartik\select2\Select2::class, [
@@ -74,3 +75,38 @@ $form = ActiveForm::begin([
         <button class="btn btn-primary" type="submit">保存</button>
     </div>
 <?php ActiveForm::end(); ?>
+
+<script>
+    var sendAddress = <?= \GuzzleHttp\json_encode(Yii::$app->services->orderInvoice->sendAddressInfo()); ?>;
+
+    (function ($) {
+        var language = $("select[name='OrderInvoiceEle[language]']");
+        var platforms_group = $("input[name='OrderInvoiceEle[platforms_group]']");
+        var sender_area = $("#orderinvoiceele-sender_area");
+        var sender_address = $("#orderinvoiceele-sender_address");
+
+        function addressInit() {
+            //初使化数据
+            if(sender_area.val()==="" && sender_address.val()==="") {
+                let platforms_group2 = $("input[name='OrderInvoiceEle[platforms_group]']:checked").val();
+                let sendAddressInfo = sendAddress[platforms_group2][language.val()];
+                sender_area.val(sendAddressInfo['name']);
+                sender_address.val(sendAddressInfo['detailed']);
+            }
+        }
+
+        //切换站点地区
+        platforms_group.click(function () {
+            //初使化数据
+            if(sender_area.val()!=="" || sender_address.val()!=="") {
+                rfMsg("请先清空“发货地区”和“发货人地址”信息！");
+                return false;
+            }
+            addressInit()
+        });
+
+        //
+        addressInit();
+
+    })(window.jQuery);
+</script>
