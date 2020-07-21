@@ -37,6 +37,7 @@ class OrderLogEnum extends BaseEnum
             'ELEINVOICESEND' => '电子发票发送',
             'CHANGEADDRESS' => '订单收件人信息修改',
             'SENDPAIDEMAIL' => '发送付款邮件',
+            'SENDEXPRESSEMAIL' => '发送物流信息邮件',//sendExpressEmail
         ];
     }
 

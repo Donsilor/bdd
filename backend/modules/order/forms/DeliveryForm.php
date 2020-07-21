@@ -12,14 +12,16 @@ use yii\behaviors\TimestampBehavior;
 class DeliveryForm extends \common\models\order\Order
 {
 
+    public $send_now;
+
     public function rules()
     {
         return [
                 [['id','express_id', 'express_no','delivery_time'], 'required'],
-                [['order_status','updated_at','delivery_status'], 'integer'],
+                [['order_status','updated_at','delivery_status', 'send_now'], 'integer'],
                 [['express_no'], 'validateOrderStatus'],
         ];
-    }    
+    }
     /**
      * 订单状态校验
      * @param unknown $attribute

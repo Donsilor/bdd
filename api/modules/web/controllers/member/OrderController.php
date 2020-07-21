@@ -360,7 +360,7 @@ class OrderController extends UserAuthController
         if($order->order_status >= OrderStatusEnum::ORDER_PAID){
             $express = array();
             $express['expressNo'] = $order->express_no;
-            $express['companyName'] = $order->express->lang->express_name;
+            $express['companyName'] = $order->express ? $order->express->lang->express_name : '';
             $express['delivery_time'] = date('Y-m-d',$order->delivery_time);
 
             $express['logistics'] = \Yii::$app->services->order->getOrderLogisticsInfo($order);
