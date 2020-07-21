@@ -207,6 +207,8 @@ class OrderController extends BaseController
 
         $model = $this->findModel($id);
 
+        $logistics = Yii::$app->services->order->getOrderLogisticsInfo($model, false);
+
         $dataProvider = null;
         if (!is_null($id)) {
             $searchModel = new SearchModel([
@@ -229,6 +231,7 @@ class OrderController extends BaseController
         return $this->render($this->action->id, [
             'model' => $model,
             'dataProvider' => $dataProvider,
+            'logistics' => $logistics
         ]);
     }
 
@@ -407,16 +410,20 @@ class OrderController extends BaseController
         // ajax 校验
         $this->activeFormValidate($model);
         if ($model->load(Yii::$app->request->post())) {
-//            $model->delivery_time = time();
-            $model->delivery_status = DeliveryStatusEnum::SEND;
-            $model->order_status = OrderStatusEnum::ORDER_SEND;//已发货
-            $result = $model->save();
+            $result = true;
+            if($model->delivery_status != DeliveryStatusEnum::SEND) {
+                $model->delivery_status = DeliveryStatusEnum::SEND;
+                $model->order_status = OrderStatusEnum::ORDER_SEND;//已发货
+                $result = $model->save();
 
-            //发货日志
-            OrderLogService::deliver($model);
+                //发货日志
+                OrderLogService::deliver($model);
+            }
 
             //订单发送邮件
-            \Yii::$app->services->order->sendOrderNotification($id);
+            if($model->send_now && $model->address->load(Yii::$app->request->post())) {
+                Yii::$app->services->order->sendOrderExpressEmail($model);
+            }
 
             $returnUrl = Yii::$app->request->referrer;
             return $result ? $this->redirect($returnUrl) : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
@@ -569,7 +576,26 @@ class OrderController extends BaseController
                 '收件邮箱' => $model->address->email
             ]]);
 
-            return $this->message("保存成功", $this->redirect(Yii::$app->request->referrer), 'success');
+            return $this->message("发送成功", $this->redirect(Yii::$app->request->referrer), 'success');
+        }
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+            'order_id' => $order_id
+        ]);
+    }
+
+
+    public  function actionSendOrderExpressEmail() {
+        $order_id = Yii::$app->request->get('order_id');
+
+        $model = $this->findModel($order_id);
+
+        $this->activeFormValidate($model->address);
+        if ($model->address->load(Yii::$app->request->post())) {
+
+            Yii::$app->services->order->sendOrderExpressEmail($model);
+
+            return $this->message("发送成功", $this->redirect(Yii::$app->request->referrer), 'success');
         }
         return $this->renderAjax($this->action->id, [
             'model' => $model,
