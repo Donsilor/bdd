@@ -161,6 +161,7 @@ class OrderInvoiceService extends OrderBaseService
             'realname' => $order->address->realname,
             'mobile' => $order->address->mobile_code . '-' . $order->address->mobile,
             'address_details' => $order->address->address_details,
+            'zip_code' => $order->address->zip_code,
             'express_no' => $order->express_no,
             'express_company_name' => '',
             'delivery_time' => $order->delivery_time,
