@@ -159,7 +159,7 @@ class OrderInvoiceService extends OrderBaseService
             'order_sn' => $order->order_sn,
             'payment_type' => $order->payment_type,
             'realname' => $order->address->realname,
-            'mobile' => $order->address->mobile,
+            'mobile' => $order->address->mobile_code . '-' . $order->address->mobile,
             'address_details' => $order->address->address_details,
             'express_no' => $order->express_no,
             'express_company_name' => '',
