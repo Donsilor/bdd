@@ -26,7 +26,7 @@ $form = ActiveForm::begin([
                 'allowClear' => true
             ],
         ]);?>
-        <?= $form->field($model, 'express_no')->textInput()->hint('<span class="red">*注：请仔细核对单号，否则物流信息无法显示！</span>') ?>
+        <?= $form->field($model, 'express_no')->textInput() ?>
         <?= $form->field($model, 'delivery_time')->widget(DateTimePicker::class, [
             'language' => 'zh-CN',
             'options' => [
@@ -39,16 +39,9 @@ $form = ActiveForm::begin([
                 'todayBtn' => true,//今日按钮显示
             ]
         ]);?>
-        <?= $form->field($model->address, 'email')->textInput()->label('收件邮箱') ?>
-        <?= $form->field($model, 'send_now')->radioList(['0'=>'否', '1'=>'是'], ['value'=>0])->label('是否立即发送“发货邮件”') ?>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
         <button class="btn btn-primary" type="submit">保存</button>
     </div>
 <?php ActiveForm::end(); ?>
-<script>
-    $("#deliveryform-express_no").change(function (e) {
-        $(this).val($(this).val().trim());
-    });
-</script>

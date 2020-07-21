@@ -18,19 +18,6 @@ use yii\console\Request;
 class OrderLogService extends Service
 {
     //客户提交电汇支付
-    static public function sendExpressEmail($order, $data=[])
-    {
-        $attr['action_name'] = strtoupper(__FUNCTION__);
-        $attr['order_sn'] = $order['order_sn'];
-
-        $attr['data'] = $data;
-
-        //状态变更
-        $attr['log_msg'] = '发送物流信息邮件';
-        return self::log($attr);
-    }
-
-    //客户提交电汇支付
     static public function sendPaidEmail($order, $data=[])
     {
         $attr['action_name'] = strtoupper(__FUNCTION__);

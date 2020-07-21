@@ -433,6 +433,20 @@ DOM;
                     <div class="box-body col-lg-12">
                         <div class="row">
                             <div class="col-lg-6">
+                                <?php  if($model->express_id){?>
+                                <div class="row">
+                                    <div class="col-lg-3 text-right"><label><?= $model->getAttributeLabel('express_id') ?>：</label></div>
+                                    <div class="col-lg-9"><?= \Yii::$app->services->express->getExressName($model->express_id);?></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 text-right"><label><?= $model->getAttributeLabel('express_no') ?>：</label></div>
+                                    <div class="col-lg-9"><?= $model->express_no ?></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 text-right"><label><?= $model->getAttributeLabel('delivery_time') ?>：</label></div>
+                                    <div class="col-lg-9"><?= date('Y-m-d H:i:s',$model->delivery_time)?></div>
+                                </div>
+                                <?php } ?>
                                 <div class="row">
                                     <div class="col-lg-3 text-right">
                                         <label><?= $model->getAttributeLabel('seller_remark') ?>：</label></div>
@@ -539,84 +553,10 @@ DOM;
                         </div>
                     </div>
                 </div>
-                <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_4">
-                    <ul class="nav nav-tabs pull-right">
-                        <li class="pull-left header"><i class="fa fa-th"></i> 物流信息 </li>
-                        <li class="pull-right header">
-
-                        </li>
-                    </ul>
-                    <div class="box-body col-lg-12" style="margin-left:9px">
-                        <?php if(is_array($logistics)) { ?>
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <div class="row">
-                                    <div class="col-lg-10 text-right"></div>
-                                    <div class="col-lg-2 pull-right"><?= Html::edit(['edit-delivery', 'id' => $model->id], '编辑', [
-                                            'data-toggle' => 'modal',
-                                            'data-target' => '#ajaxModal',
-                                            'class'=>'btn btn-success btn-sm'
-                                        ]); ?></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-5 text-right"><label><?= '快递公司' ?>：</label></div>
-                                    <div class="col-lg-7"><?= $logistics['company'] ?></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-5 text-right"><label><?= '运单号' ?>：</label></div>
-                                    <div class="col-lg-7"><?= $logistics['no'] ?></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-5 text-right"><label><?= '发货时间' ?>：</label></div>
-                                    <div class="col-lg-7"><?= Yii::$app->formatter->asDatetime($model->delivery_time); ?></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-5 text-right"><label><?= '接收通知邮箱' ?>：</label></div>
-                                    <div class="col-lg-7"><?= Yii::$app->formatter->asDatetime($model->delivery_time); ?></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-5 text-right"><label>最新状态：</label></div>
-                                    <div class="col-lg-7"><?= $logistics['display_status'] ?></div>
-                                </div>
-                                <?php foreach ($logistics['abstract_status'] as $key => $status) {
-                                    if(in_array($key, ['has_active','has_ended','has_signed'])) {
-                                        continue;
-                                    }
-                                ?>
-                                    <div class="row">
-                                        <div class="col-lg-5 text-right"><label><?= \common\enums\LogisticsEnum::getValue($key, 'abstractStatus') ?>：</label></div>
-                                        <div class="col-lg-7"><?= $status?'是':'' ?></div>
-                                    </div>
-                                <?php } ?>
-                                <div class="row">
-                                    <div class="col-lg-5 text-right"><label>发送物流信息邮件：</label></div>
-                                    <?php $count = \common\models\order\OrderLog::find()->where(['order_sn'=>$model->order_sn, 'action_name'=>'SENDEXPRESSEMAIL'])->count('id') ?>
-                                    <div class="col-lg-7"><?= Html::edit(['send-order-express-email', 'order_id' => $model->id],sprintf('发送已发货邮件(%d)', $count), [
-                                            'data-toggle' => 'modal',
-                                            'data-target' => '#ajaxModalLg',
-                                        ])?></div>
-                                </div>
-                            </div>
-                            <div class="col-lg-8">
-                                <?php foreach ($logistics['list'] as $logistic) { ?>
-                                    <div class="row" style="margin: 10px;">
-                                        <div class="col-lg-5 text-right"><label><?= $logistic['datetime'] ?>：</label></div>
-                                        <div class="col-lg-7"><?= $logistic['remark'] ?></div>
-                                    </div>
-                                <?php } ?>
-                            </div>
-                        </div>
-                        <?php } elseif(is_null($logistics)) {?>
-                            没有物流信息
-                        <?php } else {?>
-                            <?= $logistics ?>
-                        <?php } ?>
-                    </div>
-                </div>
             </div>
             <div class="modal-footer">
                 <div class="text-center">
-                    <span class="btn btn-white"  onclick="$('.active.J_menuTab i', window.parent.document).click()">关闭</span>
+                    <span class="btn btn-white" onclick="history.go(-1)">返回</span>
                 </div>
             </div>
         </div>
