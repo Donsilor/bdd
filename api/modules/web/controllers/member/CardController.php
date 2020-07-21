@@ -31,28 +31,19 @@ class CardController extends UserAuthController
     
     public $modelClass = MarketCardDetails::class;
     
-    protected $authOptional = [];
+    protected $authOptional = ['index'];
 
     /**
      * 购物车列表     
-//     */
-//    public function actionIndex()
-//    {
-//        $post = \Yii::$app->request->post();
-//
-//        $model = new CardForm();
-//        $model->setAttributes($post);
-//
-//        if(!$model->validate()) {
-//            return ResultHelper::api(422, $this->getError($model));
-//        }
-//
-//        $query = $this->modelClass::find()->where(['card_id'=>$model->getCard()->id]);
-//
-//        $query->orderBy('id DESC');
-//
-//        return $this->pagination($query, $this->page, $this->pageSize,true);
-//    }
+     */
+    public function actionIndex()
+    {
+        $ord = Order::findOne(1832);
+
+        $order = \Yii::$app->services->order->getOrderLogisticsInfo($ord);
+
+        return $order;
+    }
 
     /**
      * 验证购物卡

@@ -80,6 +80,10 @@ return [
         'uploadDrive' => [
             'class' => 'common\components\UploadDrive',
         ],
+        /** ------ 快递查询 ------ **/
+        'logistics' => [
+            'class' => 'common\components\Logistics',
+        ],
         /** ------ 二维码 ------ **/
         'qr' => [
             'class' => '\Da\QrCode\Component\QrCodeComponent',

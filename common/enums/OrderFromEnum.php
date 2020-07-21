@@ -112,6 +112,15 @@ class OrderFromEnum extends BaseEnum
 
         return $platforms[$platform]??'';
     }
+
+    //平台到组
+    public static function platformToGroupName($platform)
+    {
+        $groups = self::groups();
+        $group = self::platformToGroup($platform);
+
+        return $groups[$group]??'';
+    }
     
     //国家ID，对应平台ID
     public static function countryIdToPlatforms($countryId)

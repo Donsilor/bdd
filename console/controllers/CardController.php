@@ -23,20 +23,20 @@ class CardController extends Controller
 
     public function actionTest()
     {
+        $order = \Yii::$app->logistics->kd100('SF1074705590534', '顺丰', true);
+        var_dump(is_array($order));
+        echo("\r\n");
+        echo $order->getCode(); // 状态码
+        echo("\r\n");
+        echo $order->getMsg(); // 状态信息
+        echo("\r\n");
+        echo $order->getCompany(); // 物流公司简称
+        echo("\r\n");
+        echo $order->getNo(); // 物流单号
+        echo("\r\n");
+        echo $order->getStatus(); // 当前物流单状态
+        echo("\r\n");
 
-        $order = Order::findOne(344);
-        var_dump(OrderLogService::create($order));
-        var_dump(OrderLogService::cancel($order));
-        var_dump(OrderLogService::pay($order));
-        var_dump(OrderLogService::audit($order));
-        var_dump(OrderLogService::finish($order));
-        var_dump(OrderLogService::deliver($order));
-        var_dump(OrderLogService::follower($order));
-
-//        $order = Order::findOne('523');
-//        $usage = EmailLog::$orderStatusMap[$order->order_status] ?? '';
-//        \Yii::$app->services->mailer->queue(false)->send('zhufu.zheng@bddco.com',$usage,['code'=>$order->id],$order->language);
-        //return \Yii::$app->services->mailer->send("763429951@qq.com",'order-notify',['code'=>'5']);
     }
 
     /**
