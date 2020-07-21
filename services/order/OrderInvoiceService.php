@@ -50,11 +50,26 @@ class OrderInvoiceService extends OrderBaseService
         OrderFromEnum::GROUP_HK => [
             LanguageEnum::ZH_HK => [
                 'name' => '香港',
-                'detailed' => '中环亚毕诺道3号环球贸易中心23楼04室',
+                'detailed' => '中環亞畢諾道3號環球貿易中心23樓04室',
             ],
             LanguageEnum::ZH_CN => [
                 'name' => '香港',
+                'detailed' => '中环亚毕诺道3号环球贸易中心23楼04室',
+            ],
+            LanguageEnum::EN_US => [
+                'name' => 'Hong Kong',
+                'detailed' => 'Unit 2304, 23/F,Universal Trade Centre,3 Arbuthnot Road,Central, Hong Kong',
+            ],
+        ],
+
+        OrderFromEnum::GROUP_TW => [
+            LanguageEnum::ZH_HK => [
+                'name' => '香港',
                 'detailed' => '中環亞畢諾道3號環球貿易中心23樓04室',
+            ],
+            LanguageEnum::ZH_CN => [
+                'name' => '香港',
+                'detailed' => '中环亚毕诺道3号环球贸易中心23楼04室',
             ],
             LanguageEnum::EN_US => [
                 'name' => 'Hong Kong',
@@ -65,11 +80,11 @@ class OrderInvoiceService extends OrderBaseService
         OrderFromEnum::GROUP_CN => [
             LanguageEnum::ZH_HK => [
                 'name' => '深圳',
-                'detailed' => '深圳市罗湖区东晓街道独树社区布心路3008号IBC商务珠宝大厦A座',
+                'detailed' => '深圳市羅湖區東曉街道獨樹社區布心路3008號IBC商務珠寶大廈A座',
             ],
             LanguageEnum::ZH_CN => [
                 'name' => '深圳',
-                'detailed' => '深圳市羅湖區東曉街道獨樹社區布心路3008號IBC商務珠寶大廈A座',
+                'detailed' => '深圳市罗湖区东晓街道独树社区布心路3008号IBC商务珠宝大厦A座',
             ],
             LanguageEnum::EN_US => [
                 'name' => 'Shenzhen',
@@ -237,9 +252,19 @@ class OrderInvoiceService extends OrderBaseService
         //站点信息
         $result['siteInfo'] = $this->siteInfo[$order->order_from]??[];
 
-        $result['sendAddressInfo'] = array_map(function ($e){}, []);
+
+
+        //$result['sendAddressInfo'] = \GuzzleHttp\json_encode($result['sendAddressInfo']);
 
         return $result;
+    }
+
+    public function sendAddressInfo()
+    {
+        return $this->sendAddress;
+//        $result['sendAddressInfo'] = array_map(function ($e) use($language) {
+//            return $e[$language]??[];
+//        }, $this->sendAddress);
     }
     
 }
