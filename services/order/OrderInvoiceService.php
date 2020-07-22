@@ -149,11 +149,14 @@ class OrderInvoiceService extends OrderBaseService
             throw new UnprocessableEntityHttpException("订单不存在");
         }
         $language = $order->language;
+
+        $sendAddressInfo = $this->getSendAddressByOrder($order);
+
         $result = array(
             'invoice_date' => $order->delivery_time,
             'sender_name' => '',
-            'sender_area'=> '',
-            'sender_address'=> '',
+            'sender_area'=> $sendAddressInfo['name']??'',
+            'sender_address'=> $sendAddressInfo['detailed']??'',
             'shipper_name' => '',
             'shipper_address' => '',
             'order_sn' => $order->order_sn,
@@ -263,9 +266,19 @@ class OrderInvoiceService extends OrderBaseService
     public function sendAddressInfo()
     {
         return $this->sendAddress;
-//        $result['sendAddressInfo'] = array_map(function ($e) use($language) {
-//            return $e[$language]??[];
-//        }, $this->sendAddress);
+    }
+
+    private function getSendAddressByOrder($order)
+    {
+        $orderFrom = $order->order_from;
+
+        $platformGroup = OrderFromEnum::platformToGroup($orderFrom);
+
+        $sendAddress = $this->sendAddress[$platformGroup]??[];
+
+        $language = $order->language;
+
+        return $sendAddress[$language]??[];
     }
     
 }
