@@ -160,6 +160,17 @@ $yesOrNo = \common\enums\StatusEnum::getYesOrNo();
                 'headerOptions' => ['width'=>'110'],
             ],
             [
+                'attribute' => 'tw_status',
+                'value' => function ($model) {
+                    return \common\enums\StatusEnum::getValue($model->tw_status, 'getYesOrNo');
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'tw_status', $yesOrNo, [
+                    'prompt' => '全部',
+                    'class' => 'form-control',
+                ]),
+                'headerOptions' => ['width'=>'110'],
+            ],
+            [
                 'attribute' => 'cn_status',
                 'value' => function ($model) {
                     return \common\enums\StatusEnum::getValue($model->cn_status, 'getYesOrNo');

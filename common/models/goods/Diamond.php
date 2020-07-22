@@ -41,6 +41,7 @@ class Diamond extends \yii\db\ActiveRecord
 {
 
     public $hk_status;
+    public $tw_status;
     public $cn_status;
     public $us_status;
 
@@ -58,7 +59,7 @@ class Diamond extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id','goods_num', 'shape', 'source_id', 'is_stock', 'status', 'created_at', 'updated_at','onsale_time','type_id','goods_id','sale_volume','virtual_volume','virtual_clicks','goods_clicks', 'hk_status', 'cn_status', 'us_status'], 'integer'],
+            [['id','goods_num', 'shape', 'source_id', 'is_stock', 'status', 'created_at', 'updated_at','onsale_time','type_id','goods_id','sale_volume','virtual_volume','virtual_clicks','goods_clicks', 'hk_status', 'tw_status', 'cn_status', 'us_status'], 'integer'],
             [['sale_price','source_id','shape','goods_num','goods_sn', 'carat', 'clarity', 'cut', 'color', 'symmetry', 'polish', 'fluorescence'], 'required'],
             [['goods_num','market_price', 'sale_price', 'cost_price', 'carat', 'source_discount','length','width','aspect_ratio'], 'number'],
             ['sale_price','compare','compareValue' => 0, 'operator' => '>'],
@@ -163,6 +164,7 @@ class Diamond extends \yii\db\ActiveRecord
             'updated_at' => Yii::t('common', '更新时间'),
 
             'hk_status' => '香港上架',
+            'tw_status' => '台湾上架',
             'cn_status' => '大陆上架',
             'us_status' => '美国上架',
         ];
