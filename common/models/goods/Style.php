@@ -52,6 +52,7 @@ class Style extends BaseModel
     public $attr_custom;//选填属性
 
     public $hk_status;
+    public $tw_status;
     public $cn_status;
     public $us_status;
         
@@ -70,7 +71,7 @@ class Style extends BaseModel
     {
         return [
                 [['style_name','language','id'], 'safe'],
-                [['type_id', 'merchant_id','sale_volume','virtual_volume','virtual_clicks','goods_clicks','goods_storage','goods_clicks', 'storage_alarm', 'is_recommend', 'is_lock', 'supplier_id', 'status', 'verify_status','onsale_time', 'created_at', 'updated_at', 'hk_status', 'cn_status', 'us_status'], 'integer'],
+                [['type_id', 'merchant_id','sale_volume','virtual_volume','virtual_clicks','goods_clicks','goods_storage','goods_clicks', 'storage_alarm', 'is_recommend', 'is_lock', 'supplier_id', 'status', 'verify_status','onsale_time', 'created_at', 'updated_at', 'hk_status', 'tw_status', 'cn_status', 'us_status'], 'integer'],
                 [['type_id','style_sn','sale_price','goods_storage'], 'required'],
                 [['sale_price', 'market_price', 'cost_price'], 'number'],
                 ['sale_price','compare','compareValue' => 0, 'operator' => '>'],
@@ -230,6 +231,7 @@ class Style extends BaseModel
             'attr_custom' => Yii::t('goods', '当前属性'),
 
             'hk_status' => '香港上架',
+            'tw_status' => '台湾上架',
             'cn_status' => '大陆上架',
             'us_status' => '美国上架',
         ];
