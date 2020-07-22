@@ -150,13 +150,11 @@ class OrderInvoiceService extends OrderBaseService
         }
         $language = $order->language;
 
-        $sendAddressInfo = $this->getSendAddressByOrder($order);
-
         $result = array(
             'invoice_date' => $order->delivery_time,
             'sender_name' => '',
-            'sender_area'=> $sendAddressInfo['name']??'',
-            'sender_address'=> $sendAddressInfo['detailed']??'',
+            'sender_area'=> '',
+            'sender_address'=> '',
             'shipper_name' => '',
             'shipper_address' => '',
             'order_sn' => $order->order_sn,
@@ -203,6 +201,11 @@ class OrderInvoiceService extends OrderBaseService
             $result['express_company_name'] = $order_invoice_exe['express_id'] ? $order_invoice_exe_model->express->lang->express_name : '';
             $result['express_no'] = $order_invoice_exe['express_no'] ? $order_invoice_exe['express_no'] : $result['express_no'];
         }
+
+        $sendAddressInfo = $this->getSendAddressByOrder($order, $order_invoice_exe_model?$order_invoice_exe['language']:null);
+
+        $result['sender_name'] = $result['sender_name']?:($sendAddressInfo['name']??'');
+        $result['sender_address'] = $result['sender_address']?:($sendAddressInfo['detailed']??'');
 
 
         //因为可能会重置语言，故把根据订单获取快递放到这里
@@ -268,7 +271,7 @@ class OrderInvoiceService extends OrderBaseService
         return $this->sendAddress;
     }
 
-    private function getSendAddressByOrder($order)
+    private function getSendAddressByOrder($order, $language=null)
     {
         $orderFrom = $order->order_from;
 
@@ -276,7 +279,7 @@ class OrderInvoiceService extends OrderBaseService
 
         $sendAddress = $this->sendAddress[$platformGroup]??[];
 
-        $language = $order->language;
+        $language = $language ? $language : 'en-US';//$order->language;
 
         return $sendAddress[$language]??[];
     }
