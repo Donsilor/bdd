@@ -196,8 +196,8 @@ class PayController extends OnAuthController
         }
 
         //alipay
-        if(!empty($query['out_trade_no'])) {
-            $where['out_trade_no'] = $query['out_trade_no'];
+        if(!empty($query['bdd_out_trade_no'])) {
+            $where['out_trade_no'] = $query['bdd_out_trade_no'];
         }
 
         //alipay
