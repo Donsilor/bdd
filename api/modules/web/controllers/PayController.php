@@ -292,7 +292,7 @@ class PayController extends OnAuthController
             Yii::$app->services->pay->notify($model, null);
            
             $response = Yii::$app->services->pay->getPayByType($model->pay_type)->verify(['model'=>$model]);
-            $payCode = $response->getCode() ?? 'error';
+            $payCode = method_exists($response, 'getCode') ? $response->getCode() : 'no getCode';
             //支付成功
             if($response->isPaid()) {
 
