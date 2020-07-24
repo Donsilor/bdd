@@ -95,11 +95,11 @@ class OrderInvoiceService extends OrderBaseService
         OrderFromEnum::GROUP_US => [
             LanguageEnum::ZH_HK => [
                 'name' => '深圳',
-                'detailed' => '深圳市罗湖区东晓街道独树社区布心路3008号IBC商务珠宝大厦A座',
+                'detailed' => '深圳市羅湖區東曉街道獨樹社區布心路3008號IBC商務珠寶大廈A座',
             ],
             LanguageEnum::ZH_CN => [
                 'name' => '深圳',
-                'detailed' => '深圳市羅湖區東曉街道獨樹社區布心路3008號IBC商務珠寶大廈A座',
+                'detailed' => '深圳市罗湖区东晓街道独树社区布心路3008号IBC商务珠宝大厦A座',
             ],
             LanguageEnum::EN_US => [
                 'name' => 'Shenzhen',
@@ -279,7 +279,7 @@ class OrderInvoiceService extends OrderBaseService
 
         $sendAddress = $this->sendAddress[$platformGroup]??[];
 
-        $language = $language ? $language : 'en-US';//$order->language;
+        $language = $language ? $language : $order->language;
 
         return $sendAddress[$language]??[];
     }
