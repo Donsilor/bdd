@@ -64,16 +64,16 @@ class OrderInvoiceService extends OrderBaseService
 
         OrderFromEnum::GROUP_TW => [
             LanguageEnum::ZH_HK => [
-                'name' => '香港',
-                'detailed' => '中環亞畢諾道3號環球貿易中心23樓04室',
+                'name' => '深圳',
+                'detailed' => '深圳市羅湖區東曉街道獨樹社區布心路3008號IBC商務珠寶大廈A座',
             ],
             LanguageEnum::ZH_CN => [
-                'name' => '香港',
-                'detailed' => '中环亚毕诺道3号环球贸易中心23楼04室',
+                'name' => '深圳',
+                'detailed' => '深圳市罗湖区东晓街道独树社区布心路3008号IBC商务珠宝大厦A座',
             ],
             LanguageEnum::EN_US => [
-                'name' => 'Hong Kong',
-                'detailed' => 'Unit 2304, 23/F,Universal Trade Centre,3 Arbuthnot Road,Central, Hong Kong',
+                'name' => 'Shenzhen',
+                'detailed' => 'Building A, IBC Business Jewelry Building, No. 3008, Buxin Road, Dushu Community, Dongxiao Street, Luohu District, Shenzhen',
             ],
         ],
 
@@ -204,7 +204,7 @@ class OrderInvoiceService extends OrderBaseService
 
         $sendAddressInfo = $this->getSendAddressByOrder($order, $order_invoice_exe_model?$order_invoice_exe['language']:null);
 
-        $result['sender_name'] = $result['sender_name']?:($sendAddressInfo['name']??'');
+        $result['sender_area'] = $result['sender_area']?:($sendAddressInfo['name']??'');
         $result['sender_address'] = $result['sender_address']?:($sendAddressInfo['detailed']??'');
 
 
