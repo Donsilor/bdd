@@ -41,6 +41,7 @@ class EmailLog extends \common\models\base\BaseModel
     const USAGE_WIRE_TRANSFER_ORDER_NOTICE = 'wire-transfer-order-notice';
     const USAGE_ORDER_PAY_SUCCESS = 'order-pay-success-notice';
     const USAGE_ORDER_ABNORMAL_NOTICE = 'order-abnormal-notice';
+    const USAGE_SEND_ORDER_EXPRESS_NOTICE = 'send-order-express-notice';
     /**
      * @var array
      */
@@ -56,6 +57,7 @@ class EmailLog extends \common\models\base\BaseModel
         self::USAGE_WIRE_TRANSFER_ORDER_NOTICE => '电汇订单通知',
         self::USAGE_ORDER_PAY_SUCCESS => '付款成功通知',
         self::USAGE_ORDER_ABNORMAL_NOTICE => '订单异常通知',
+        self::USAGE_SEND_ORDER_EXPRESS_NOTICE => '已发货订单通知',
     ];
     public static $usageTemplates = [
             self::USAGE_LOGIN => 'loginCode',
@@ -69,7 +71,8 @@ class EmailLog extends \common\models\base\BaseModel
         self::USAGE_WIRE_TRANSFER_ORDER_NOTICE => 'wireTransferOrderNotice',
         self::USAGE_ORDER_PAY_SUCCESS => 'orderPaySuccessNotice',
         self::USAGE_ORDER_ABNORMAL_NOTICE => 'OrderAbnormalNotice',
-    ];    
+        self::USAGE_SEND_ORDER_EXPRESS_NOTICE => 'sendOrderExpressNotice',
+    ];
     public static $orderStatusMap = [
             OrderStatusEnum::ORDER_UNPAID =>self::USAGE_ORDER_UNPAID,
             OrderStatusEnum::ORDER_PAID =>self::USAGE_ORDER_PAID,
