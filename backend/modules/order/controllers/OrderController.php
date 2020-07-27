@@ -287,6 +287,10 @@ class OrderController extends BaseController
                         continue;
                     }
 
+                    if(in_array($paylog->pay_type, [1, 2])) {
+                        continue;
+                    }
+
                     //获取支付类
                     $pay = Yii::$app->services->pay->getPayByType($paylog->pay_type);
 
