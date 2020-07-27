@@ -549,6 +549,7 @@ DOM;
                     <div class="box-body col-lg-12" style="margin-left:9px">
                         <div class="row">
                             <div class="col-lg-4">
+                                <?php if($model->order_status>=\common\enums\OrderStatusEnum::ORDER_CONFIRM) { ?>
                                 <div class="row">
                                     <div class="col-lg-10 text-right"></div>
                                     <div class="col-lg-2 pull-right"><?= Html::edit(['edit-delivery', 'id' => $model->id], '编辑', [
@@ -557,6 +558,8 @@ DOM;
                                             'class'=>'btn btn-success btn-sm'
                                         ]); ?></div>
                                 </div>
+                                <?php } ?>
+                                <?php if(!empty($model->express_no)) { ?>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('express_id') ?>：</label></div>
                                     <div class="col-lg-7"><?= \Yii::$app->services->express->getExressName($model->express_id);?></div>
@@ -577,7 +580,7 @@ DOM;
                                     <div class="col-lg-5 text-right"><label>最新状态：</label></div>
                                     <div class="col-lg-7"><?= $logistics['display_status']??'' ?></div>
                                 </div>
-                                <?php if(is_array($logistics['abstract_status'])) foreach ($logistics['abstract_status'] as $key => $status) {
+                                <?php if(isset($logistics['abstract_status']) && is_array($logistics['abstract_status'])) foreach ($logistics['abstract_status'] as $key => $status) {
                                     if(in_array($key, ['has_active','has_ended','has_signed'])) {
                                         continue;
                                     }
@@ -595,9 +598,10 @@ DOM;
                                             'data-target' => '#ajaxModalLg',
                                         ])?></div>
                                 </div>
+                                <?php } ?>
                             </div>
                             <div class="col-lg-8">
-                                <?php if(is_array($logistics['list'])) foreach ($logistics['list'] as $logistic) { ?>
+                                <?php if(isset($logistics['list']) && is_array($logistics['list'])) foreach ($logistics['list'] as $logistic) { ?>
                                     <div class="row" style="margin: 10px;">
                                         <div class="col-lg-5 text-right"><label><?= $logistic['datetime'] ?>：</label></div>
                                         <div class="col-lg-7"><?= $logistic['remark'] ?></div>
