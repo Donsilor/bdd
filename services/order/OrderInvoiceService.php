@@ -139,6 +139,16 @@ class OrderInvoiceService extends OrderBaseService
             'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
+        OrderFromEnum::WEB_TW => [
+            'webSite' => 'https://www.bddco.com/',
+            'tel' => '2165 3908',
+            'email' => 'service@bddco.com',
+        ],
+        OrderFromEnum::MOBILE_TW => [
+            'webSite' => 'https://www.bddco.com/',
+            'tel' => '2165 3908',
+            'email' => 'service@bddco.com',
+        ],
     ];
 
     public function getEleInvoiceInfo($order_id){
