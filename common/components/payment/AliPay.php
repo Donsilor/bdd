@@ -233,7 +233,8 @@ class AliPay
         if($returnUrl) {
             $urlInfo = parse_url($returnUrl);
             $query = parse_query($urlInfo['query']);
-            unset($query['bdd_out_trade_no']);
+            if (isset($query['bdd_out_trade_no'])) unset($query['bdd_out_trade_no']);
+            if (isset($query['orderId'])) unset($query['orderId']);
             $request->setParams($query);
         }
         else {
