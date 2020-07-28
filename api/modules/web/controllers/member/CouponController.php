@@ -63,6 +63,7 @@ class CouponController extends UserAuthController
                 'atLeastCn' => $datum->coupon->at_least,//满多少钱使用
                 'startTime' => $datum->specials->start_time,//开始时间
                 'endTime' => $datum->specials->end_time,//结束时间
+                'areaAttach' => $datum->coupon->area_attach,//活动地区
             ];
         }
         $result['data'] = $couponList;
