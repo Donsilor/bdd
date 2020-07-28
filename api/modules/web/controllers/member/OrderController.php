@@ -357,7 +357,7 @@ class OrderController extends UserAuthController
         }
 
         //快递信息
-        if($order->order_status >= OrderStatusEnum::ORDER_SEND){
+        if($order->order_status >= OrderStatusEnum::ORDER_PAID){
             $express = array();
             $express['expressNo'] = $order->express_no;
             $express['companyName'] = $order->express ? $order->express->lang->express_name : '';

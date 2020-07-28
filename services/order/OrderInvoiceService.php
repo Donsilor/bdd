@@ -64,16 +64,16 @@ class OrderInvoiceService extends OrderBaseService
 
         OrderFromEnum::GROUP_TW => [
             LanguageEnum::ZH_HK => [
-                'name' => '香港',
-                'detailed' => '中環亞畢諾道3號環球貿易中心23樓04室',
+                'name' => '深圳',
+                'detailed' => '深圳市羅湖區東曉街道獨樹社區布心路3008號IBC商務珠寶大廈A座',
             ],
             LanguageEnum::ZH_CN => [
-                'name' => '香港',
-                'detailed' => '中环亚毕诺道3号环球贸易中心23楼04室',
+                'name' => '深圳',
+                'detailed' => '深圳市罗湖区东晓街道独树社区布心路3008号IBC商务珠宝大厦A座',
             ],
             LanguageEnum::EN_US => [
-                'name' => 'Hong Kong',
-                'detailed' => 'Unit 2304, 23/F,Universal Trade Centre,3 Arbuthnot Road,Central, Hong Kong',
+                'name' => 'Shenzhen',
+                'detailed' => 'Building A, IBC Business Jewelry Building, No. 3008, Buxin Road, Dushu Community, Dongxiao Street, Luohu District, Shenzhen',
             ],
         ],
 
@@ -95,11 +95,11 @@ class OrderInvoiceService extends OrderBaseService
         OrderFromEnum::GROUP_US => [
             LanguageEnum::ZH_HK => [
                 'name' => '深圳',
-                'detailed' => '深圳市罗湖区东晓街道独树社区布心路3008号IBC商务珠宝大厦A座',
+                'detailed' => '深圳市羅湖區東曉街道獨樹社區布心路3008號IBC商務珠寶大廈A座',
             ],
             LanguageEnum::ZH_CN => [
                 'name' => '深圳',
-                'detailed' => '深圳市羅湖區東曉街道獨樹社區布心路3008號IBC商務珠寶大廈A座',
+                'detailed' => '深圳市罗湖区东晓街道独树社区布心路3008号IBC商务珠宝大厦A座',
             ],
             LanguageEnum::EN_US => [
                 'name' => 'Shenzhen',
@@ -139,6 +139,16 @@ class OrderInvoiceService extends OrderBaseService
             'tel' => '2165 3908',
             'email' => 'service@bddco.com',
         ],
+        OrderFromEnum::WEB_TW => [
+            'webSite' => 'https://www.bddco.com/',
+            'tel' => '2165 3908',
+            'email' => 'service@bddco.com',
+        ],
+        OrderFromEnum::MOBILE_TW => [
+            'webSite' => 'https://www.bddco.com/',
+            'tel' => '2165 3908',
+            'email' => 'service@bddco.com',
+        ],
     ];
 
     public function getEleInvoiceInfo($order_id){
@@ -149,6 +159,7 @@ class OrderInvoiceService extends OrderBaseService
             throw new UnprocessableEntityHttpException("订单不存在");
         }
         $language = $order->language;
+
         $result = array(
             'invoice_date' => $order->delivery_time,
             'sender_name' => '',
@@ -200,6 +211,11 @@ class OrderInvoiceService extends OrderBaseService
             $result['express_company_name'] = $order_invoice_exe['express_id'] ? $order_invoice_exe_model->express->lang->express_name : '';
             $result['express_no'] = $order_invoice_exe['express_no'] ? $order_invoice_exe['express_no'] : $result['express_no'];
         }
+
+        $sendAddressInfo = $this->getSendAddressByOrder($order, $order_invoice_exe_model?$order_invoice_exe['language']:null);
+
+        $result['sender_area'] = $result['sender_area']?:($sendAddressInfo['name']??'');
+        $result['sender_address'] = $result['sender_address']?:($sendAddressInfo['detailed']??'');
 
 
         //因为可能会重置语言，故把根据订单获取快递放到这里
@@ -263,9 +279,19 @@ class OrderInvoiceService extends OrderBaseService
     public function sendAddressInfo()
     {
         return $this->sendAddress;
-//        $result['sendAddressInfo'] = array_map(function ($e) use($language) {
-//            return $e[$language]??[];
-//        }, $this->sendAddress);
+    }
+
+    private function getSendAddressByOrder($order, $language=null)
+    {
+        $orderFrom = $order->order_from;
+
+        $platformGroup = OrderFromEnum::platformToGroup($orderFrom);
+
+        $sendAddress = $this->sendAddress[$platformGroup]??[];
+
+        $language = $language ? $language : $order->language;
+
+        return $sendAddress[$language]??[];
     }
     
 }

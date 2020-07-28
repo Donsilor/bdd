@@ -547,9 +547,9 @@ DOM;
                         </li>
                     </ul>
                     <div class="box-body col-lg-12" style="margin-left:9px">
-                        <?php if(is_array($logistics)) { ?>
                         <div class="row">
                             <div class="col-lg-4">
+                                <?php if($model->order_status>=\common\enums\OrderStatusEnum::ORDER_CONFIRM) { ?>
                                 <div class="row">
                                     <div class="col-lg-10 text-right"></div>
                                     <div class="col-lg-2 pull-right"><?= Html::edit(['edit-delivery', 'id' => $model->id], '编辑', [
@@ -558,13 +558,15 @@ DOM;
                                             'class'=>'btn btn-success btn-sm'
                                         ]); ?></div>
                                 </div>
+                                <?php } ?>
+                                <?php if(!empty($model->express_no)) { ?>
                                 <div class="row">
-                                    <div class="col-lg-5 text-right"><label><?= '快递公司' ?>：</label></div>
-                                    <div class="col-lg-7"><?= $logistics['company'] ?></div>
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('express_id') ?>：</label></div>
+                                    <div class="col-lg-7"><?= \Yii::$app->services->express->getExressName($model->express_id);?></div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-5 text-right"><label><?= '运单号' ?>：</label></div>
-                                    <div class="col-lg-7"><?= $logistics['no'] ?></div>
+                                    <div class="col-lg-5 text-right"><label><?= $model->getAttributeLabel('express_no') ?>：</label></div>
+                                    <div class="col-lg-7"><?= $model->express_no ?></div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label><?= '发货时间' ?>：</label></div>
@@ -572,13 +574,13 @@ DOM;
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label><?= '接收通知邮箱' ?>：</label></div>
-                                    <div class="col-lg-7"><?= Yii::$app->formatter->asDatetime($model->delivery_time); ?></div>
+                                    <div class="col-lg-7"><?= $model->address->email; ?></div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label>最新状态：</label></div>
-                                    <div class="col-lg-7"><?= $logistics['display_status'] ?></div>
+                                    <div class="col-lg-7"><?= $logistics['display_status']??'' ?></div>
                                 </div>
-                                <?php foreach ($logistics['abstract_status'] as $key => $status) {
+                                <?php if(isset($logistics['abstract_status']) && is_array($logistics['abstract_status'])) foreach ($logistics['abstract_status'] as $key => $status) {
                                     if(in_array($key, ['has_active','has_ended','has_signed'])) {
                                         continue;
                                     }
@@ -596,21 +598,25 @@ DOM;
                                             'data-target' => '#ajaxModalLg',
                                         ])?></div>
                                 </div>
+                                <?php } ?>
                             </div>
                             <div class="col-lg-8">
-                                <?php foreach ($logistics['list'] as $logistic) { ?>
+                                <?php if(isset($logistics['list']) && is_array($logistics['list'])) foreach ($logistics['list'] as $logistic) { ?>
                                     <div class="row" style="margin: 10px;">
                                         <div class="col-lg-5 text-right"><label><?= $logistic['datetime'] ?>：</label></div>
                                         <div class="col-lg-7"><?= $logistic['remark'] ?></div>
                                     </div>
+                                <?php } elseif(is_null($logistics)) {?>
+                                <div class="row" style="margin: 30px;">
+                                    没有物流轨迹信息
+                                </div>
+                                <?php } else {?>
+                                <div class="row" style="margin: 30px;">
+                                    <?= $logistics ?>
+                                </div>
                                 <?php } ?>
                             </div>
                         </div>
-                        <?php } elseif(is_null($logistics)) {?>
-                            没有物流信息
-                        <?php } else {?>
-                            <?= $logistics ?>
-                        <?php } ?>
                     </div>
                 </div>
             </div>

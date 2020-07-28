@@ -86,26 +86,18 @@ $form = ActiveForm::begin([
         var sender_address = $("#orderinvoiceele-sender_address");
 
         function addressInit() {
-            //初使化数据
-            if(sender_area.val()==="" && sender_address.val()==="") {
-                let platforms_group2 = $("input[name='OrderInvoiceEle[platforms_group]']:checked").val();
-                let sendAddressInfo = sendAddress[platforms_group2][language.val()];
-                sender_area.val(sendAddressInfo['name']);
-                sender_address.val(sendAddressInfo['detailed']);
-            }
+            let platforms_group2 = $("input[name='OrderInvoiceEle[platforms_group]']:checked").val();
+            let sendAddressInfo = sendAddress[platforms_group2][language.val()];
+            sender_area.val(sendAddressInfo['name']);
+            sender_address.val(sendAddressInfo['detailed']);
         }
 
         //切换站点地区
-        platforms_group.click(function () {
-            //初使化数据
-            if(sender_area.val()!=="" || sender_address.val()!=="") {
-                rfMsg("请先清空“发货地区”和“发货人地址”信息！");
-                return false;
-            }
-            addressInit()
-        });
+        language.change(addressInit);
 
-        //
+        //切换站点地区
+        platforms_group.change(addressInit);
+
         addressInit();
 
     })(window.jQuery);

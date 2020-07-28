@@ -33,9 +33,9 @@ $order = Order::find()->where(['id'=>$order_id])->one();
                 </dl>
                 <dl>
                     <dt>訂單詳情：    【已發貨】</dt>
+                    <dd><span>訂單編號：</span><span class="orderno"><?= $order->order_sn ?></span></dd>
                     <dd><span>快遞公司：</span><span><?= \Yii::$app->services->express->getExressName($order->express_id,$order->language);?></span></dd>
                     <dd><span>快遞單號：</span><span><?= $order->express_no; ?></span></dd>
-                    <dd><span>發貨時間：</span><span><?= \Yii::$app->formatter->asDatetime($order->delivery_time); ?></span></dd>
                 </dl>
             </div>
             <div class="mind">

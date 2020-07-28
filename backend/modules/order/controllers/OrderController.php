@@ -410,22 +410,25 @@ class OrderController extends BaseController
         // ajax 校验
         $this->activeFormValidate($model);
         if ($model->load(Yii::$app->request->post())) {
-            $result = true;
+
             if($model->delivery_status != DeliveryStatusEnum::SEND) {
                 $model->delivery_status = DeliveryStatusEnum::SEND;
                 $model->order_status = OrderStatusEnum::ORDER_SEND;//已发货
-                $result = $model->save();
 
                 //发货日志
                 OrderLogService::deliver($model);
             }
 
             //订单发送邮件
-            if($model->send_now && $model->address->load(Yii::$app->request->post())) {
+            if($model->address->load(Yii::$app->request->post()) && $model->send_now) {
                 Yii::$app->services->order->sendOrderExpressEmail($model);
             }
 
             $returnUrl = Yii::$app->request->referrer;
+
+            $model->address->save();
+            $result = $model->save();
+
             return $result ? $this->redirect($returnUrl) : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
         }
 
@@ -594,6 +597,8 @@ class OrderController extends BaseController
         if ($model->address->load(Yii::$app->request->post())) {
 
             Yii::$app->services->order->sendOrderExpressEmail($model);
+
+            $model->address->save();
 
             return $this->message("发送成功", $this->redirect(Yii::$app->request->referrer), 'success');
         }
