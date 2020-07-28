@@ -38,7 +38,7 @@ class OrderTouristService extends OrderBaseService
      * @throws UnprocessableEntityHttpException
      */
 
-    public function createOrder($cartList, $invoice_info, $order_from)
+    public function createOrder($cartList, $buyer_remark, $invoice_info, $order_from)
     {
         $orderAccountTax = $this->getCartAccountTax($cartList);
 
@@ -79,6 +79,7 @@ class OrderTouristService extends OrderBaseService
         $order->ip_area_id = $ip_area_id;
 
         $order->status = OrderTouristStatusEnum::ORDER_UNPAID;  //状态
+        $order->buyer_remark = $buyer_remark;  //状态
 
         //保存订单
         if(false === $order->save()) {
@@ -200,7 +201,7 @@ class OrderTouristService extends OrderBaseService
             'is_invoice' => empty($orderTourist->invoice)?0:1,//是否开发票
             'api_pay_time' => $payLog->pay_time,
 //            'trade_no' => '',
-            'buyer_remark' => '',
+            'buyer_remark' => $orderTourist->buyer_remark,
 //            'seller_remark' => '',
 //            'follower_id' => '',
 //            'followed_time' => '',
@@ -213,7 +214,10 @@ class OrderTouristService extends OrderBaseService
         if(false === $order->save()) {
             throw new UnprocessableEntityHttpException($this->getError($order));
         }
-
+        //插入order_sync
+        $sql = "insert into order_sync(order_id) values({$order->id})";
+        \Yii::$app->db->createCommand($sql)->execute();
+        
         //更新优惠券信息
         if($coupon = MarketCouponDetails::findOne(['order_sn'=>$order->order_sn])) {
             $coupon->order_id = $order->id;

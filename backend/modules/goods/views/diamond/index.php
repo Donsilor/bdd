@@ -19,6 +19,8 @@ $status = $searchModel->status;
 $this->title = Yii::t('goods_diamond', '裸钻管理');
 $this->params['breadcrumbs'][] = $this->title;
 //$cert_type = \common\enums\DiamondEnum::getCertTypeList();
+
+$yesOrNo = \common\enums\StatusEnum::getYesOrNo();
 ?>
 
 <div class="row">
@@ -145,6 +147,39 @@ $this->params['breadcrumbs'][] = $this->title;
                     'prompt' => '全部',
                     'class' => 'form-control',
                 ]),
+            ],
+            [
+                'attribute' => 'hk_status',
+                'value' => function ($model) {
+                    return \common\enums\StatusEnum::getValue($model->hk_status, 'getYesOrNo');
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'hk_status', $yesOrNo, [
+                    'prompt' => '全部',
+                    'class' => 'form-control',
+                ]),
+                'headerOptions' => ['width'=>'110'],
+            ],
+            [
+                'attribute' => 'cn_status',
+                'value' => function ($model) {
+                    return \common\enums\StatusEnum::getValue($model->cn_status, 'getYesOrNo');
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'cn_status', $yesOrNo, [
+                    'prompt' => '全部',
+                    'class' => 'form-control',
+                ]),
+                'headerOptions' => ['width'=>'110'],
+            ],
+            [
+                'attribute' => 'us_status',
+                'value' => function ($model) {
+                    return \common\enums\StatusEnum::getValue($model->us_status, 'getYesOrNo');
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'us_status', $yesOrNo, [
+                    'prompt' => '全部',
+                    'class' => 'form-control',
+                ]),
+                'headerOptions' => ['width'=>'110'],
             ],
             //'created_at',
             //'updated_at',

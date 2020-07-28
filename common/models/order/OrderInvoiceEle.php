@@ -12,6 +12,7 @@ use Yii;
  * @property int $order_id
  * @property int $invoice_date 发票日期
  * @property string $sender_name 发件人
+ * @property string $sender_area 发件人地址
  * @property string $sender_address 发件人地址
  * @property string $shipper_name 托运人姓名
  * @property string $shipper_address 托运人地址
@@ -22,6 +23,8 @@ use Yii;
  */
 class OrderInvoiceEle extends \common\models\base\BaseModel
 {
+    public $platforms_group;
+
     /**
      * {@inheritdoc}
      */
@@ -39,9 +42,9 @@ class OrderInvoiceEle extends \common\models\base\BaseModel
             [['order_id'], 'required'],
             [['order_id'], 'unique'],
             [['order_id'], 'integer'],
-            [['invoice_date','express_id','language', 'delivery_time','created_at'],'safe'],
+            [['invoice_date','express_id','language', 'delivery_time','created_at','platforms_group'],'safe'],
             [['sender_name', 'shipper_name','email'], 'string', 'max' => 50],
-            [['sender_address', 'shipper_address'], 'string', 'max' => 255],
+            [['sender_area', 'sender_address', 'shipper_address'], 'string', 'max' => 255],
             [['express_no'], 'string', 'max' => 100],
         ];
     }
@@ -57,6 +60,7 @@ class OrderInvoiceEle extends \common\models\base\BaseModel
             'order_id' => '订单ID',
             'invoice_date' => '发票日期',
             'sender_name' => '发货人',
+            'sender_area' => '发货地区',
             'sender_address' => '发货人地址',
             'shipper_name' => '进口商',
             'shipper_address' => '进口商地址',
@@ -66,6 +70,7 @@ class OrderInvoiceEle extends \common\models\base\BaseModel
             'email' => '接收邮箱',
             'create_at' => '创建时间',
             'updated_at' => '修改时间',
+            'platforms_group' => '发货站点地区',
         ];
     }
 
@@ -90,5 +95,10 @@ class OrderInvoiceEle extends \common\models\base\BaseModel
     public function getExpress()
     {
         return $this->hasOne(\common\models\common\Express::class, ['id'=>'express_id']);
+    }
+
+    public function getOrder()
+    {
+        return $this->hasOne(Order::class, ['id' => 'order_id']);
     }
 }

@@ -33,6 +33,7 @@ use yii\db\ActiveRecord;
  * @property int $updated_at 更新时间
  * @property string $paid_amount 实付款
  * @property string $paid_currency 实际支付货币
+ * @property string $buyer_remark 买家留言
  */
 class OrderTourist extends \common\models\base\BaseModel
 {
@@ -71,6 +72,7 @@ class OrderTourist extends \common\models\base\BaseModel
             [['order_sn'], 'string', 'max' => 20],
             [['language'], 'safe'],
             [['ip'], 'string', 'max' => 30],
+            [['buyer_remark'], 'string', 'max' => 500],
         ];
     }
 
@@ -106,6 +108,7 @@ class OrderTourist extends \common\models\base\BaseModel
             'updated_at' => Yii::t('app', '更新时间'),
             'paid_amount' => \Yii::t('order','实际付款'),
             'paid_currency'=> \Yii::t('common','实际支付货币'),
+            'buyer_remark' => '客户留言',
         ];
     }
     

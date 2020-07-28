@@ -11,6 +11,7 @@ use common\helpers\ExcelHelper;
 use common\helpers\Html;
 use common\helpers\ImageHelper;
 use common\models\goods\StyleMarkup;
+use Symfony\Component\VarDumper\Caster\DOMCaster;
 use Yii;
 use common\models\goods\Style;
 use common\components\Curd;
@@ -59,7 +60,7 @@ class StyleController extends BaseController
         ]);
         $typeModel = Yii::$app->services->goodsType->getAllTypesById($type_id,null);
         $dataProvider = $searchModel
-            ->search(Yii::$app->request->queryParams,['style_name','language','created_at']);
+            ->search(Yii::$app->request->queryParams,['style_name','language','created_at', 'hk_status', 'cn_status', 'us_status']);
         //切换默认语言
         $this->setLocalLanguage($searchModel->language);
         if($typeModel){
@@ -68,11 +69,54 @@ class StyleController extends BaseController
         $dataProvider->query->joinWith(['lang']);
         $dataProvider->query->andFilterWhere(['like', 'lang.style_name',$searchModel->style_name]);
 
+        $goodsSql = <<<DOM
+(SELECT 
+    goods.style_id,
+    (case COUNT(markup1.goods_id) when '0' then '0' else '1' end) as cn_status,
+    (case COUNT(markup2.goods_id) when '0' then '0' else '1' end) as hk_status,
+    (case COUNT(markup99.goods_id) when '0' then '0' else '1' end) as us_status
+FROM
+    goods
+        LEFT JOIN
+	 goods_style_markup markup ON goods.style_id=markup.style_id AND markup.status=1
+        LEFT JOIN
+    goods_markup markup1 ON markup1.area_id = 1
+        AND markup1.status = 1
+        AND markup.area_id=markup1.area_id
+        AND goods.id = markup1.goods_id
+        LEFT JOIN
+    goods_markup markup2 ON markup2.area_id = 2
+        AND markup2.status = 1
+        AND markup.area_id=markup2.area_id
+        AND goods.id = markup2.goods_id
+        LEFT JOIN
+    goods_markup markup99 ON markup99.area_id = 99
+        AND markup99.status = 1
+        AND markup.area_id=markup99.area_id
+        AND goods.id = markup99.goods_id
+GROUP BY goods.style_id) as goods
+DOM;
+        $dataProvider->query->leftJoin($goodsSql, 'goods.style_id=goods_style.id');
+
+        if(isset(Yii::$app->request->queryParams['SearchModel']['cn_status']) && Yii::$app->request->queryParams['SearchModel']['cn_status'] !== "") {
+            $dataProvider->query->andWhere(['=', 'goods.cn_status', Yii::$app->request->queryParams['SearchModel']['cn_status']]);
+        }
+
+        if(isset(Yii::$app->request->queryParams['SearchModel']['hk_status']) && Yii::$app->request->queryParams['SearchModel']['hk_status'] !== "") {
+            $dataProvider->query->andWhere(['=', 'goods.hk_status', Yii::$app->request->queryParams['SearchModel']['hk_status']]);
+        }
+
+        if(isset(Yii::$app->request->queryParams['SearchModel']['us_status']) && Yii::$app->request->queryParams['SearchModel']['us_status'] !== "") {
+            $dataProvider->query->andWhere(['=', 'goods.us_status', Yii::$app->request->queryParams['SearchModel']['us_status']]);
+        }
+
         //创建时间过滤
         if (!empty(Yii::$app->request->queryParams['SearchModel']['created_at'])) {
             list($start_date, $end_date) = explode('/', Yii::$app->request->queryParams['SearchModel']['created_at']);
             $dataProvider->query->andFilterWhere(['between', 'goods_style.created_at', strtotime($start_date), strtotime($end_date) + 86400]);
         }
+
+        $dataProvider->query->select(['goods_style.*', 'goods.hk_status', 'goods.cn_status', 'goods.us_status']);
 
         //导出
         if(Yii::$app->request->get('action') === 'export'){
@@ -315,6 +359,9 @@ class StyleController extends BaseController
 
             ['销售价(CNY)', 'sale_price', 'text'],
             ['库存', 'goods_storage', 'text'],
+            ['上架状态', 'status', 'function', function($model){
+                return FrameEnum::getValue($model->status);
+            }],
             ['中国上架状态', 'status', 'function', function($model){
                 $styleMarkup = StyleMarkup::find()->where(['style_id'=>$model->id ,'area_id' => AreaEnum::China])->one();
                 return FrameEnum::getValue($styleMarkup->status ?? FrameEnum::DISABLED);

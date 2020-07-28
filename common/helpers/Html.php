@@ -50,6 +50,27 @@ class Html extends BaseHtml
     }
 
     /**
+     * 列表input更新字段
+     *
+     * @param $value
+     * @return string
+     */
+    public static function ajaxInput($name,$value, $options = [])
+    {
+        $url = isset($options['data-url']) ?? 'ajax-update';
+        // 权限校验
+        if (!self::beforVerify($url)) {
+            return $value;
+        }
+        $options = ArrayHelper::merge([
+            'data-url' => $url,
+            'class' => 'form-control',
+            'onblur' => 'rfAjaxUpdate(this)',
+        ], $options);
+
+        return self::input('text', $name, $value, $options);
+    }
+    /**
      * 删除
      *
      * @param $url
