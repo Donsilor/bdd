@@ -106,6 +106,8 @@ class WechatPay
      */
     public function app($order, $debug = false)
     {
+        $order['total_fee'] = intval($order['total_fee'] * 100);
+
         $gateway = $this->create(self::APP);
         $request = $gateway->purchase(ArrayHelper::merge($this->order, $order));
         $response = $request->send();
@@ -127,6 +129,8 @@ class WechatPay
      */
     public function native($order, $debug = false)
     {
+        $order['total_fee'] = intval($order['total_fee'] * 100);
+
         $gateway = $this->create(self::NATIVE);
         $request = $gateway->purchase(ArrayHelper::merge($this->order, $order));
         $response = $request->send();
@@ -149,6 +153,8 @@ class WechatPay
      */
     public function js($order, $debug = true)
     {
+        $order['total_fee'] = intval($order['total_fee'] * 100);
+
         $gateway = $this->create(self::JS);
         $request = $gateway->purchase(ArrayHelper::merge($this->order, $order));
         $response = $request->send();
@@ -171,6 +177,8 @@ class WechatPay
      */
     public function pos($order, $debug = false)
     {
+        $order['total_fee'] = intval($order['total_fee'] * 100);
+
         $gateway = $this->create(self::POS);
         $request = $gateway->purchase(ArrayHelper::merge($this->order, $order));
         $response = $request->send();
@@ -191,6 +199,8 @@ class WechatPay
      */
     public function mweb($order, $debug = false)
     {
+        $order['total_fee'] = intval($order['total_fee'] * 100);
+
         $gateway = $this->create(self::MWEB);
         $request = $gateway->purchase(ArrayHelper::merge($this->order, $order));
         $response = $request->send();
