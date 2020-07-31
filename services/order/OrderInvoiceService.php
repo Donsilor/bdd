@@ -158,7 +158,7 @@ class OrderInvoiceService extends OrderBaseService
         if(empty($order)) {
             throw new UnprocessableEntityHttpException("订单不存在");
         }
-        $language = 'en-US';// $order->language;
+        \Yii::$app->params['language'] = $language = 'en-US';// $order->language;
 
         $result = array(
             'invoice_date' => $order->delivery_time,
