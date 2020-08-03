@@ -158,7 +158,7 @@ class OrderInvoiceService extends OrderBaseService
         if(empty($order)) {
             throw new UnprocessableEntityHttpException("订单不存在");
         }
-        $language = $order->language;
+        \Yii::$app->params['language'] = $language = 'en-US';// $order->language;
 
         $result = array(
             'invoice_date' => $order->delivery_time,
@@ -212,7 +212,7 @@ class OrderInvoiceService extends OrderBaseService
             $result['express_no'] = $order_invoice_exe['express_no'] ? $order_invoice_exe['express_no'] : $result['express_no'];
         }
 
-        $sendAddressInfo = $this->getSendAddressByOrder($order, $order_invoice_exe_model?$order_invoice_exe['language']:null);
+        $sendAddressInfo = $this->getSendAddressByOrder($order, $language);
 
         $result['sender_area'] = $result['sender_area']?:($sendAddressInfo['name']??'');
         $result['sender_address'] = $result['sender_address']?:($sendAddressInfo['detailed']??'');
