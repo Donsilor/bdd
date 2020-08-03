@@ -20,6 +20,7 @@ class WechatController extends UserAuthController
             $params['appid'] = \Yii::$app->debris->config('wechat_appid');
             $params['secret'] = \Yii::$app->debris->config('wechat_appsecret');
             $params['code'] = \Yii::$app->request->get('code', '');
+            $params['grant_type'] = 'authorization_code';
 
             $url = "https://api.weixin.qq.com/sns/oauth2/access_token";
 
