@@ -151,7 +151,7 @@ class WechatPay
      * @param bool $debug
      * @return mixed
      */
-    public function js($order, $debug = true)
+    public function js($order, $debug = false)
     {
         $order['total_fee'] = intval($order['total_fee'] * 100);
 
