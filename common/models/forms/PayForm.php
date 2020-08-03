@@ -32,6 +32,8 @@ class PayForm extends Model
     public $notifyUrl;
     public $orderId;
     public $coinType;
+    public $openid;
+
     /**
      * @return array
      */
@@ -41,7 +43,7 @@ class PayForm extends Model
             [['orderGroup', 'payType', 'tradeType', 'memberId','coinType'], 'required'],
             [['orderGroup'], 'in', 'range' => array_keys(PayEnum::$orderGroupExplain)],
             [['payType'], 'in', 'range' => array_keys(PayEnum::$payTypeExplain)],
-            [['notifyUrl', 'returnUrl','coinType'], 'string'],
+            [['notifyUrl', 'returnUrl','coinType','openid'], 'string'],
             [['tradeType'], 'verifyTradeType'],
             [['orderId'],'integer']
         ];
@@ -61,6 +63,7 @@ class PayForm extends Model
             'returnUrl' => '跳转地址',
             'notifyUrl' => '回调地址',
             'coinType' => '货币',
+            'openid' => 'openId',
         ];
     }
 

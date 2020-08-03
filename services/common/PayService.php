@@ -58,10 +58,11 @@ class PayService extends Service
             'out_trade_no' => $baseOrder['out_trade_no'], // 订单号
             'total_fee' => $baseOrder['total_fee'],
             'notify_url' => $payForm->notifyUrl, // 回调地址
+            'open_id' => $payForm->openid, // 回调地址
         ];
 
         //  判断如果是js支付
-        if ($payForm->tradeType == 'js') {
+        if ($payForm->tradeType != 'js') {
             $order['open_id'] = '';
         }
 
