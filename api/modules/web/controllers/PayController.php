@@ -231,8 +231,6 @@ class PayController extends OnAuthController
 
         $urlInfo = parse_url($returnUrl);
         $query = parse_query($urlInfo['query']);
-        //记录验证日志
-        $orderSn = $query['order_sn']??($query['orderId']??'');
         
         //获取支付记录模型
         /**
@@ -241,8 +239,30 @@ class PayController extends OnAuthController
         $model = $this->getPayModelByReturnUrlQuery($query);
 
         if(empty($model)) {
-            Yii::$app->services->actionLog->create('用户支付校验','订单号：'.$orderSn."<br/>支付状态：查询支付记录失败");
-            $result['verification_status'] = 'failed';
+
+            $where = [];
+            $where['payment_status'] = 1;
+
+            $order = null;
+            if(isset($query['order_sn'])) {
+                $where['order_sn'] = $query['order_sn'];
+                $order = Order::findOne($where);
+            }
+            if(isset($query['orderId'])) {
+                $where['id'] = $query['orderId'];
+                $order = Order::findOne($where);
+            }
+
+            if($order) {
+                $result['verification_status'] = 'completed';
+            }
+            else {
+                //记录验证日志
+                $orderSn = $query['order_sn']??($query['orderId']??'');
+                Yii::$app->services->actionLog->create('用户支付校验','订单号：'.$orderSn."<br/>支付状态：查询支付记录失败");
+                $result['verification_status'] = 'failed';
+            }
+
             return $result;
         }
         $logMessage = "订单号：".$model->order_sn.'<br/>支付编号：'.$model->out_trade_no;
