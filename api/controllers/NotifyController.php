@@ -321,6 +321,7 @@ class NotifyController extends Controller
             FileHelper::writeLog($logPath, Json::encode(ArrayHelper::toArray($message)));
 
             //pay success 注意微信会发二次消息过来 需要判断是通知还是回调
+            $message['total_fee'] = bcdiv($message['total_fee'], 100, 2);
             if ($this->pay($message)) {
                 exit( WechatHelper::success() );
             }
