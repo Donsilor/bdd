@@ -128,8 +128,10 @@ class PayForm extends Model
     {
         $baseOrder = $this->getBaseOrderInfo();
 
-        $this->notifyUrl = Url::buildUrl($this->notifyUrl,['bdd_out_trade_no'=>$baseOrder['out_trade_no']]);
-        $this->returnUrl = Url::buildUrl($this->returnUrl,['bdd_out_trade_no'=>$baseOrder['out_trade_no']]);
+        if(!in_array($this->payType, [PayEnum::PAY_TYPE_WECHAT])) {
+            $this->notifyUrl = Url::buildUrl($this->notifyUrl,['bdd_out_trade_no'=>$baseOrder['out_trade_no']]);
+            $this->returnUrl = Url::buildUrl($this->returnUrl,['bdd_out_trade_no'=>$baseOrder['out_trade_no']]);
+        }
 
         //如果订单金额为零，则直接更新订单状态。否则调用支付接口
         if($this->payType == PayEnum::PAY_TYPE_CARD) {
