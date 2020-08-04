@@ -209,7 +209,13 @@ class AliPay
     {
         $gateway = $this->create();
         $request = $gateway->completePurchase();
-        $request->setParams(array_merge(Yii::$app->request->post(), Yii::$app->request->get(), $info)); // Optional
+
+        $query = array_merge(Yii::$app->request->post(), Yii::$app->request->get(), $info);
+
+        if (isset($query['bdd_out_trade_no'])) unset($query['bdd_out_trade_no']);
+        if (isset($query['orderId'])) unset($query['orderId']);
+
+        $request->setParams($query); // Optional
         return $request->send();
     }
 
