@@ -106,6 +106,8 @@ class NotifyController extends Controller
     {
         $this->payment = 'ali';
 
+        Yii::$app->services->actionLog->create('alipay支付通知','支付结果通知', ArrayHelper::merge($_GET, $_POST));
+
         $response = Yii::$app->pay->alipay([
             'ali_public_key' => Yii::$app->debris->config('alipay_notification_cert_path'),
         ])->notify();
@@ -308,6 +310,8 @@ class NotifyController extends Controller
     public function actionWechat()
     {
         $this->payment = 'wechat';
+
+        Yii::$app->services->actionLog->create('wechat支付通知','支付结果通知', ArrayHelper::merge($_GET, $_POST));
 
         $response = Yii::$app->pay->wechat->notify();
         if ($response->isPaid()) {
