@@ -321,12 +321,12 @@ class NotifyController extends Controller
 
             //pay success 注意微信会发二次消息过来 需要判断是通知还是回调
             if ($this->pay($message)) {
-                return WechatHelper::success();
+                exit( WechatHelper::success() );
             }
 
-            return WechatHelper::fail();
+            exit( WechatHelper::fail() );
         } else {
-            return WechatHelper::fail();
+            exit( WechatHelper::fail() );
         }
     }
 
