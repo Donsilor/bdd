@@ -50,8 +50,8 @@ class PayEnum extends BaseEnum
     public static function getMap(): array
     {
         return [
-           // self::PAY_TYPE_WECHAT => '微信',
-           // self::PAY_TYPE_ALI => '支付宝',
+            self::PAY_TYPE_WECHAT => '微信',
+            self::PAY_TYPE_ALI => '支付宝',
            // self::PAY_TYPE_GLOBAL_ALIPAY => '支付宝国际版',
            // self::PAY_TYPE_UNION => '银联',
             self::PAY_TYPE_PAYPAL => 'Paypal',
