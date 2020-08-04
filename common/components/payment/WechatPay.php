@@ -205,7 +205,7 @@ class WechatPay
         $request = $gateway->purchase(ArrayHelper::merge($this->order, $order));
         $response = $request->send();
 
-        return $debug ? $response->getData() : $response->getData();
+        return $debug ? $response->getData() : $response->getMwebUrl();
     }
 
     /**
