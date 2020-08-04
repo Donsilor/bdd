@@ -104,7 +104,7 @@ class NotifyController extends Controller
      */
     public function actionAlipay()
     {
-        $this->payment = 'ali';
+        $this->payment = 'alipay';
 
         Yii::$app->services->actionLog->create(__CLASS__,__FUNCTION__, ArrayHelper::merge($_GET, $_POST));
 
