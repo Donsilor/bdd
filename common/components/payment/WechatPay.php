@@ -131,6 +131,8 @@ class WechatPay
     {
         $order['total_fee'] = intval($order['total_fee'] * 100);
 
+        Yii::$app->services->actionLog->create(__CLASS__,__FUNCTION__, $order);
+
         $gateway = $this->create(self::NATIVE);
         $request = $gateway->purchase(ArrayHelper::merge($this->order, $order));
         $response = $request->send();
@@ -154,6 +156,8 @@ class WechatPay
     public function js($order, $debug = false)
     {
         $order['total_fee'] = intval($order['total_fee'] * 100);
+
+        Yii::$app->services->actionLog->create(__CLASS__,__FUNCTION__, $order);
 
         $gateway = $this->create(self::JS);
         $request = $gateway->purchase(ArrayHelper::merge($this->order, $order));
@@ -179,6 +183,8 @@ class WechatPay
     {
         $order['total_fee'] = intval($order['total_fee'] * 100);
 
+        Yii::$app->services->actionLog->create(__CLASS__,__FUNCTION__, $order);
+
         $gateway = $this->create(self::POS);
         $request = $gateway->purchase(ArrayHelper::merge($this->order, $order));
         $response = $request->send();
@@ -200,6 +206,8 @@ class WechatPay
     public function mweb($order, $debug = false)
     {
         $order['total_fee'] = intval($order['total_fee'] * 100);
+
+        Yii::$app->services->actionLog->create(__CLASS__,__FUNCTION__, $order);
 
         $gateway = $this->create(self::MWEB);
         $request = $gateway->purchase(ArrayHelper::merge($this->order, $order));
