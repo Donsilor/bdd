@@ -801,7 +801,9 @@ class OrderController extends BaseController
             ['详细地址', 'address.address_details', 'text'],
             ['城市', 'address.city_name', 'text'],
             ['省', 'address.province_name', 'text'],
-            ['邮编', 'address.zip_code', 'text'],
+            ['邮编', 'id', 'function', function($row) {
+                return $row->address->zip_code;
+            }],
             ['区域', 'address.country_name', 'text'],
             ['联系方式：电话', 'id', 'function', function($row){
                 $model = OrderAddress::find()->where(['order_id'=>$row->id])->one();
