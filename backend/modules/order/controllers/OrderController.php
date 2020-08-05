@@ -789,16 +789,33 @@ class OrderController extends BaseController
     public function getExport($list)
     {
         // [名称, 字段名, 类型, 类型规则]
+
+        //订单编号，收货人；详细地址，城市，省，邮编，区域，收件人电话，
+        //2.详细地址，邮编和地址需要拆分
+        //2,1联系方式：需要拆分：电话和邮箱
+
         $header = [
             ['下单时间', 'created_at' , 'date', 'Y-m-d'],
             ['订单编号', 'order_sn', 'text'],
             ['收货人', 'address.realname', 'text'],
-            ['联系方式', 'id', 'function', function($row){
+            ['详细地址', 'address.address_details', 'text'],
+            ['城市', 'address.city_name', 'text'],
+            ['省', 'address.province_name', 'text'],
+            ['邮编', 'id', 'function', function($row) {
+                return $row->address->zip_code;
+            }],
+            ['区域', 'address.country_name', 'text'],
+            ['联系方式：电话', 'id', 'function', function($row){
                 $model = OrderAddress::find()->where(['order_id'=>$row->id])->one();
                 $html = "";
                 if($model->mobile) {
                     $html .= $model->mobile_code.'-'.$model->mobile;
                 }
+                return $html;
+            }],
+            ['联系方式：邮箱', 'id', 'function', function($row){
+                $model = OrderAddress::find()->where(['order_id'=>$row->id])->one();
+                $html = "";
                 if($model->email) {
                     if(!empty($html)) {
                         $html .= "\r\n  ";
@@ -875,10 +892,6 @@ class OrderController extends BaseController
                 return \common\enums\FollowStatusEnum::getValue($model->followed_status);
             }],
             ['订单备注', 'seller_remark', 'text'],
-            ['区域', 'address.country_name', 'text'],
-            ['省', 'address.province_name', 'text'],
-            ['城市', 'address.city_name', 'text'],
-            ['详细地址', 'address.address_details', 'text'],
         ];
 
 
