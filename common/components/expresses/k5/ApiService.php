@@ -2,6 +2,13 @@
 
 namespace expresses\k5;
 
+use GuzzleHttp\Client;
+
+/**
+ * Class ApiService
+ * @method array searchOrderTracknumber(array $params)
+ * @package expresses\k5
+ */
 class ApiService
 {
     /**
@@ -23,33 +30,40 @@ class ApiService
         'Token' => 'rWfj56YwWxdrtuUIGgCW',
     ];
 
-    public function __get($name)
-    {
-        // TODO: Implement __get() method.
-    }
-
     /**
      * @param $name
      * @param $arguments
-     * @throws \Exception
+     * @return array|boolean
      */
     public function __call($name, $arguments)
     {
-        if(!in_array($name, $this->method)) {
-            throw new \Exception("方法不存在");
+        try {
+            if (!in_array($name, $this->method)) {
+                throw new \Exception($name." 方法不存在");
+            }
+
+            /**
+             * @var string URL
+             */
+            $url = sprintf("%s%s", $this->baseUrl, $name);
+
+            //参数
+            $params = $this->getParams(...$arguments);
+
+            $client = new Client();
+
+            $response = $client->post($url, ['json' => $params]);
+
+            //返回结果
+            $result = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+        } catch (\Exception $exception) {
+            $result = [
+                'statusCode' => 'error',
+                'message' => $exception->getMessage()
+            ];
         }
 
-        /**
-         * @var string URL
-         */
-        $url = sprintf("%s%s", $this->baseUrl, $name);
-
-        //参数
-        $params = $this->getParams($arguments[0]??[]);
-
-        //返回结果
-
-        // TODO: Implement __call() method.
+        return $result;
     }
 
     /**
@@ -63,8 +77,5 @@ class ApiService
         $data += $params;
 
         return $data;
-
-//        return \GuzzleHttp\json_encode($data);
     }
-
 }
