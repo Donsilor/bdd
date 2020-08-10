@@ -976,9 +976,9 @@ class OrderController extends BaseController
         $sheet->setCellValue('B4', '');
         $sheet->setCellValue('F4', $result['order_sn']);
         $sheet->setCellValue('B5', $result['realname']);
-        $sheet->setCellValue('F5', 'Address: '.$result['sender_address']);
+        $sheet->setCellValue('F5', date('Y-m-d H:i:s'));
         $sheet->setCellValue('B6', $result['mobile']);
-        $sheet->setCellValue('F6', 'Address: '.$result['sender_address']);
+        $sheet->setCellValue('F6', Yii::t('pay', \common\enums\PayEnum::getValue($result['payment_type'], "payTypeName"), [], $result['language']));
         $sheet->setCellValue('B7', $result['address_details']);
         $sheet->setCellValue('F7', $result['zip_code']);
 
