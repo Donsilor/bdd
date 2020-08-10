@@ -61,7 +61,8 @@
         "mingyoung/dingtalk": "2.0",
         "kartik-v/yii2-checkbox-x": "@dev",
         "kartik-v/yii2-mpdf": "^1.0",
-        "finecho/logistics": "^3.0"
+        "finecho/logistics": "^3.0",
+        "phpoffice/phpexcel": "^1.8"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
