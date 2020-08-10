@@ -10,6 +10,7 @@ use backend\modules\order\forms\OrderFollowerForm;
 use backend\modules\order\forms\OrderRefundForm;
 use common\enums\CurrencyEnum;
 use common\enums\InvoiceElectronicEnum;
+use common\enums\LanguageEnum;
 use common\enums\OrderFromEnum;
 use common\enums\OrderStatusEnum;
 use common\enums\PayEnum;
@@ -33,6 +34,8 @@ use common\models\order\OrderInvoiceEle;
 use common\models\order\OrderLog;
 use common\models\pay\WireTransfer;
 use Omnipay\Common\Message\AbstractResponse;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use services\order\OrderLogService;
 use Yii;
 use common\components\Curd;
@@ -958,10 +961,37 @@ class OrderController extends BaseController
 
     public function actionExportExcelInvoice()
     {
-        $template = Yii::getAlias('@storage') . '';
-        print_r($template);
-        $excel = new \PHPExcel();
-        $sheet = $excel ->getActiveSheet();
+        $order_id = Yii::$app->request->get('order_id');
+        if(!$order_id){
+            return ResultHelper::json(422, '非法调用');
+        }
+        $result = Yii::$app->services->orderInvoice->getEleInvoiceInfo($order_id, LanguageEnum::EN_US);
+
+        $template = Yii::getAlias('@storage') . '/backend/excels/order_invoice.xlsx';
+
+        $spreadsheet = IOFactory::load($template);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A2', 'Address: '.$result['sender_address']);
+        $sheet->setCellValue('B4', '');
+        $sheet->setCellValue('F4', $result['order_sn']);
+        $sheet->setCellValue('B5', $result['realname']);
+        $sheet->setCellValue('F5', 'Address: '.$result['sender_address']);
+        $sheet->setCellValue('B6', $result['mobile']);
+        $sheet->setCellValue('F6', 'Address: '.$result['sender_address']);
+        $sheet->setCellValue('B7', $result['address_details']);
+        $sheet->setCellValue('F7', $result['zip_code']);
+        $sheet->insertNewRowBefore(10, 12);
+
+        header('Content-Type : application/vnd.ms-excel');
+        header('Content-Disposition:attachment;filename="'.'invoice-'.date("Y年m月j日").'.xls"');
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+
+        $spreadsheet->disconnectWorksheets();
+
+        exit;
     }
 
 }

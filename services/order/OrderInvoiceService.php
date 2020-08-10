@@ -151,14 +151,22 @@ class OrderInvoiceService extends OrderBaseService
         ],
     ];
 
-    public function getEleInvoiceInfo($order_id){
+    public function getEleInvoiceInfo($order_id, $setLanguage=null) {
         $order = Order::find()
             ->where(['id'=>$order_id])
             ->one();
         if(empty($order)) {
             throw new UnprocessableEntityHttpException("订单不存在");
         }
-        \Yii::$app->params['language'] = $language = 'en-US';// $order->language;
+
+        if($setLanguage) {
+            $language = $setLanguage;
+        }
+        else {
+            $language = LanguageEnum::EN_US;
+        }
+
+        \Yii::$app->params['language'] = $language;// $order->language;
 
         $result = array(
             'invoice_date' => $order->delivery_time,
@@ -205,9 +213,12 @@ class OrderInvoiceService extends OrderBaseService
             $result['delivery_time'] = $order_invoice_exe['delivery_time'] ? $order_invoice_exe['delivery_time'] : $result['delivery_time'];
             $result['delivery_time'] = $order_invoice_exe['delivery_time'] ? $order_invoice_exe['delivery_time'] : $result['delivery_time'];
             $result['email'] = $order_invoice_exe['email'] ? $order_invoice_exe['email'] : $result['email'];
-            $language = $order_invoice_exe['language'] ? $order_invoice_exe['language'] : $language;
 
-            \Yii::$app->params['language'] = $language; //设置语言
+            if(!$setLanguage) {
+                $language = $order_invoice_exe['language'] ? $order_invoice_exe['language'] : $language;
+                \Yii::$app->params['language'] = $language; //设置语言
+            }
+
             $result['express_company_name'] = $order_invoice_exe['express_id'] ? $order_invoice_exe_model->express->lang->express_name : '';
             $result['express_no'] = $order_invoice_exe['express_no'] ? $order_invoice_exe['express_no'] : $result['express_no'];
         }
