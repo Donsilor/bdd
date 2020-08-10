@@ -981,7 +981,34 @@ class OrderController extends BaseController
         $sheet->setCellValue('F6', 'Address: '.$result['sender_address']);
         $sheet->setCellValue('B7', $result['address_details']);
         $sheet->setCellValue('F7', $result['zip_code']);
-        $sheet->insertNewRowBefore(10, 12);
+
+        $startRowNum = 9;
+        $rowsNum = count($result['order_goods']);
+        $row=$key = 0;
+        $sum = 0;
+
+        if($rowsNum > 1) {
+            $sheet->insertNewRowBefore($startRowNum+1, $rowsNum - 1);
+        }
+
+        foreach ($result['order_goods'] as $key => $val) {
+            $row = $startRowNum + $key;
+            $sheet->setCellValue("A{$row}", $key+1);
+            $sheet->setCellValue("B{$row}", $val['goods_num']);
+            $sheet->setCellValue("C{$row}", $key+1);
+            $sheet->setCellValue("D{$row}", $val['goods_name']);
+            $sheet->setCellValue("E{$row}", $key+1);
+            $sheet->setCellValue("F{$row}", $val['goods_num']);
+            $sheet->setCellValue("G{$row}", $val['goods_price']. " ".$val['currency']);
+            $sheet->setCellValue("H{$row}", $val['goods_price']*$val['goods_num'] . " ".$val['currency']);
+            $sum += $val['goods_price']*$val['goods_num'];
+        }
+
+        $row++;
+
+        $sheet->setCellValue("A{$row}", 'Total '.($key+1));
+        $sheet->setCellValue("G{$row}", $sum . " ".$val['currency']);
+        $sheet->setCellValue("H{$row}", $sum . " ".$val['currency']);
 
         header('Content-Type : application/vnd.ms-excel');
         header('Content-Disposition:attachment;filename="'.'invoice-'.date("Y年m月j日").'.xls"');
