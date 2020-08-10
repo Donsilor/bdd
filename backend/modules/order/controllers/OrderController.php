@@ -497,7 +497,12 @@ class OrderController extends BaseController
                           continue;
                     }
 
-                    if($paylog->pay_type==PayEnum::PAY_TYPE_CARD || $paylog->pay_type==PayEnum::PAY_TYPE_WIRE_TRANSFER) {
+                    if(in_array($paylog->pay_type, [
+                        PayEnum::PAY_TYPE_CARD,
+                        PayEnum::PAY_TYPE_WIRE_TRANSFER,
+                        PayEnum::PAY_TYPE_ALI,
+                        PayEnum::PAY_TYPE_WECHAT
+                    ])) {
                         $isPay = true;
                         continue;
                     }
