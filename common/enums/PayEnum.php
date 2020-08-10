@@ -76,8 +76,8 @@ class PayEnum extends BaseEnum
     public static function payTypeName()
     {
         return [
-            self::PAY_TYPE_WECHAT => '微信',
-            self::PAY_TYPE_ALI => '支付宝',
+            self::PAY_TYPE_WECHAT => 'Wechat',
+            self::PAY_TYPE_ALI => 'AliPay',
             self::PAY_TYPE_PAYPAL => 'Paypal',
             self::PAY_TYPE_PAYPAL_1 => 'Paypal Card',
             self::PAY_TYPE_PAYDOLLAR => 'Paydollar',
