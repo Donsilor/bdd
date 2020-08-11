@@ -1095,15 +1095,23 @@ DOM;
         $sheet->setCellValue("G{$row}", $sum . " ".$val['currency']);
         $sheet->setCellValue("H{$row}", $sum . " ".$val['currency']);
 
-        header('Content-Type : application/vnd.ms-excel');
-        header('Content-Disposition:attachment;filename="'.'invoice-'.date("Y年m月j日").'.xls"');
+        // 清除之前的错误输出
+        ob_end_clean();
+        ob_start();
+
+        header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8;");
+        header("Content-Disposition: inline;filename='invoice-{$result['order_sn']}.xlsx");
+        header('Cache-Control: max-age=0');
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save('php://output');
 
         $spreadsheet->disconnectWorksheets();
 
-        exit;
+        unset($spreadsheet);
+        ob_end_flush();
+
+        exit();
     }
 
 }
