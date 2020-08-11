@@ -419,8 +419,17 @@ class OrderService extends OrderBaseService
             //查验订单是否有多笔支付
             foreach ($model->paylogs as $paylog) {
 
+                if($paylog->pay_status != PayStatusEnum::PAID) {
+                    continue;
+                }
+
                 //购物卡支付，电汇支付
-                if($paylog->pay_type==PayEnum::PAY_TYPE_CARD || $paylog->pay_type==PayEnum::PAY_TYPE_WIRE_TRANSFER && $paylog->pay_status == PayStatusEnum::PAID) {
+                if(in_array($paylog->pay_type, [
+                        PayEnum::PAY_TYPE_CARD,
+                        PayEnum::PAY_TYPE_WIRE_TRANSFER,
+                        PayEnum::PAY_TYPE_ALI,
+                        PayEnum::PAY_TYPE_WECHAT
+                    ])) {
                     $isPay = true;
                     continue;
                 }
