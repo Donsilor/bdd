@@ -32,6 +32,8 @@ class PayForm extends Model
     public $notifyUrl;
     public $orderId;
     public $coinType;
+    public $openid;
+
     /**
      * @return array
      */
@@ -41,7 +43,7 @@ class PayForm extends Model
             [['orderGroup', 'payType', 'tradeType', 'memberId','coinType'], 'required'],
             [['orderGroup'], 'in', 'range' => array_keys(PayEnum::$orderGroupExplain)],
             [['payType'], 'in', 'range' => array_keys(PayEnum::$payTypeExplain)],
-            [['notifyUrl', 'returnUrl','coinType'], 'string'],
+            [['notifyUrl', 'returnUrl','coinType','openid'], 'string'],
             [['tradeType'], 'verifyTradeType'],
             [['orderId'],'integer']
         ];
@@ -61,6 +63,7 @@ class PayForm extends Model
             'returnUrl' => '跳转地址',
             'notifyUrl' => '回调地址',
             'coinType' => '货币',
+            'openid' => 'openId',
         ];
     }
 
@@ -125,8 +128,10 @@ class PayForm extends Model
     {
         $baseOrder = $this->getBaseOrderInfo();
 
-        $this->notifyUrl = Url::buildUrl($this->notifyUrl,['out_trade_no'=>$baseOrder['out_trade_no']]);
-        $this->returnUrl = Url::buildUrl($this->returnUrl,['out_trade_no'=>$baseOrder['out_trade_no']]);
+        if(!in_array($this->payType, [PayEnum::PAY_TYPE_WECHAT])) {
+            $this->notifyUrl = Url::buildUrl($this->notifyUrl,['bdd_out_trade_no'=>$baseOrder['out_trade_no']]);
+            $this->returnUrl = Url::buildUrl($this->returnUrl,['bdd_out_trade_no'=>$baseOrder['out_trade_no']]);
+        }
 
         //如果订单金额为零，则直接更新订单状态。否则调用支付接口
         if($this->payType == PayEnum::PAY_TYPE_CARD) {
@@ -188,6 +193,10 @@ class PayForm extends Model
                 if(!empty($order->paylogs)) {
                     foreach ($order->paylogs as $paylog) {
                         if($paylog->pay_type==PayEnum::PAY_TYPE_CARD) {
+                            continue;
+                        }
+
+                        if(in_array($paylog->pay_type, [1, 2])) {
                             continue;
                         }
 
@@ -262,12 +271,12 @@ class PayForm extends Model
         // 也可直接查数据库对应的关联ID，这样子一个订单只生成一个支付操作ID 增加下单率
         // Yii::$app->services->pay->findByOutTradeNo($order->out_trade_no);
 
-        $toCurrency = CurrencyEnum::HKD;
+//        $toCurrency = CurrencyEnum::HKD;
 
-        if($order['currency'] == CurrencyEnum::CNY) {
-            $order['total_fee'] = \Yii::$app->services->currency->exchangeAmount($totalFee, 2, $toCurrency, CurrencyEnum::CNY);
-            $order['currency'] = $toCurrency;
-        }
+//        if($order['currency'] == CurrencyEnum::CNY) {
+//            $order['total_fee'] = \Yii::$app->services->currency->exchangeAmount($totalFee, 2, $toCurrency, CurrencyEnum::CNY);
+//            $order['currency'] = $toCurrency;
+//        }
 
         $order['out_trade_no'] = Yii::$app->services->pay->getOutTradeNo(
             $order['total_fee'],
