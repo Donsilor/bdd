@@ -991,13 +991,84 @@ class OrderController extends BaseController
             $sheet->insertNewRowBefore($startRowNum+1, $rowsNum - 1);
         }
 
+        $html = <<<DOM
+%s
+SKU：%s %s
+DOM;
+
         foreach ($result['order_goods'] as $key => $val) {
             $row = $startRowNum + $key;
             $sheet->setCellValue("A{$row}", $key+1);
             $sheet->setCellValue("B{$row}", $val['goods_num']);
-            $sheet->setCellValue("C{$row}", $key+1);
+//            $sheet->setCellValue("C{$row}", '');
             $sheet->setCellValue("D{$row}", $val['goods_name']);
-            $sheet->setCellValue("E{$row}", $key+1);
+
+            $value = '';
+            if($val->goods_type==19) {
+                $value1 = '';
+                $value2 = '';
+                $goods_spec = '';
+                $goods_spec1 = '';
+                $goods_spec2 = '';
+                if($val['goods_spec']) {
+                    $val['goods_spec'] = \Yii::$app->services->goods->formatGoodsSpec($val['goods_spec']);
+                    foreach ($val['goods_spec'] as $vo) {
+                        if($vo['attr_id']==61) {
+                            $goods = Yii::$app->services->goods->getGoodsInfo($vo['value_id']);
+
+                            foreach ($goods['lang']['goods_spec'] as $spec) {
+                                $goods_spec1 .= $spec['attr_name'].":".$spec['attr_value']." ";
+                            }
+
+                            $value1 .= sprintf($html,
+                                $vo['attr_name'] . '：' . $goods['goods_name'],
+                                $goods['goods_sn'],
+                                $goods_spec1
+                            );
+                            continue;
+                        }
+                        if($vo['attr_id']==62) {
+                            $goods = Yii::$app->services->goods->getGoodsInfo($vo['value_id']);
+
+                            foreach ($goods['lang']['goods_spec'] as $spec) {
+                                $goods_spec2 .= $spec['attr_name'].":".$spec['attr_value']." ";
+                            }
+
+                            $value2 .= sprintf($html,
+                                $vo['attr_name'] . '：' . $goods['goods_name'],
+                                $goods['goods_sn'],
+                                $goods_spec2
+                            );
+                            continue;
+                        }
+                        $goods_spec .= $vo['attr_name'].":".$vo['attr_value']." ";
+                    }
+                }
+                $value .= sprintf($html,
+                    $val->goods_name,
+                    $val->goods_sn,
+                    $goods_spec
+                );
+
+                $value .= $value1;
+                $value .= $value2;
+            }
+            else {
+                $goods_spec = '';
+                if($val['goods_spec']) {
+                    $val['goods_spec'] = \Yii::$app->services->goods->formatGoodsSpec($val['goods_spec']);
+                    foreach ($val['goods_spec'] as $vo){
+                        $goods_spec .= $vo['attr_name'].":".$vo['attr_value']." ";
+                    }
+                }
+                $value .= sprintf($html,
+                    $val['goods_name'],
+                    $val['goods_sn'],
+                    $goods_spec
+                );
+            }
+
+            $sheet->setCellValue("E{$row}", $value);
             $sheet->setCellValue("F{$row}", $val['goods_num']);
             $sheet->setCellValue("G{$row}", $val['goods_price']. " ".$val['currency']);
             $sheet->setCellValue("H{$row}", $val['goods_price']*$val['goods_num'] . " ".$val['currency']);
