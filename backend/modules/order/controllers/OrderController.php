@@ -1100,7 +1100,7 @@ DOM;
         ob_start();
 
         header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8;");
-        header("Content-Disposition: inline;filename='invoice-{$result['order_sn']}.xlsx");
+        header("Content-Disposition: inline;filename=invoice-{$result['order_sn']}.xlsx");
         header('Cache-Control: max-age=0');
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
