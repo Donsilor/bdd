@@ -290,6 +290,10 @@ class OrderController extends BaseController
                         continue;
                     }
 
+                    if(in_array($paylog->pay_type, [1, 2])) {
+                        continue;
+                    }
+
                     //获取支付类
                     $pay = Yii::$app->services->pay->getPayByType($paylog->pay_type);
 
@@ -503,7 +507,12 @@ class OrderController extends BaseController
                           continue;
                     }
 
-                    if($paylog->pay_type==PayEnum::PAY_TYPE_CARD || $paylog->pay_type==PayEnum::PAY_TYPE_WIRE_TRANSFER) {
+                    if(in_array($paylog->pay_type, [
+                        PayEnum::PAY_TYPE_CARD,
+                        PayEnum::PAY_TYPE_WIRE_TRANSFER,
+                        PayEnum::PAY_TYPE_ALI,
+                        PayEnum::PAY_TYPE_WECHAT
+                    ])) {
                         $isPay = true;
                         continue;
                     }

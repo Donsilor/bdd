@@ -104,7 +104,9 @@ class NotifyController extends Controller
      */
     public function actionAlipay()
     {
-        $this->payment = 'ali';
+        $this->payment = 'alipay';
+
+        Yii::$app->services->actionLog->create(__CLASS__,__FUNCTION__, ArrayHelper::merge($_GET, $_POST));
 
         $response = Yii::$app->pay->alipay([
             'ali_public_key' => Yii::$app->debris->config('alipay_notification_cert_path'),
@@ -309,6 +311,9 @@ class NotifyController extends Controller
     {
         $this->payment = 'wechat';
 
+
+        Yii::$app->services->actionLog->create(__CLASS__,__FUNCTION__, ArrayHelper::merge($_GET, $_POST));
+
         $response = Yii::$app->pay->wechat->notify();
         if ($response->isPaid()) {
             $message = $response->getRequestData();
@@ -316,13 +321,14 @@ class NotifyController extends Controller
             FileHelper::writeLog($logPath, Json::encode(ArrayHelper::toArray($message)));
 
             //pay success 注意微信会发二次消息过来 需要判断是通知还是回调
+            $message['total_fee'] = bcdiv($message['total_fee'], 100, 2);
             if ($this->pay($message)) {
-                return WechatHelper::success();
+                exit( WechatHelper::success() );
             }
 
-            return WechatHelper::fail();
+            exit( WechatHelper::fail() );
         } else {
-            return WechatHelper::fail();
+            exit( WechatHelper::fail() );
         }
     }
 
