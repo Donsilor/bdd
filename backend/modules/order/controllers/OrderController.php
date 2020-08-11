@@ -1008,7 +1008,7 @@ DOM;
         foreach ($result['order_goods'] as $key => $val) {
             $row = $startRowNum + $key;
             $sheet->setCellValue("A{$row}", $key+1);
-            $sheet->setCellValue("B{$row}", $val['goods_num']);
+            $sheet->setCellValue("B{$row}", $val['goods_sn']);
 //            $sheet->setCellValue("C{$row}", '');
             $sheet->setCellValue("D{$row}", $val['goods_name']);
 
