@@ -993,7 +993,7 @@ class OrderController extends BaseController
 
         $html = <<<DOM
 %s
-SKU：%s %s
+%s %s
 DOM;
 
         foreach ($result['order_goods'] as $key => $val) {
@@ -1004,7 +1004,7 @@ DOM;
             $sheet->setCellValue("D{$row}", $val['goods_name']);
 
             $value = '';
-            if($val->goods_type==19) {
+            if($val['goods_type']==19) {
                 $value1 = '';
                 $value2 = '';
                 $goods_spec = '';
@@ -1045,8 +1045,8 @@ DOM;
                     }
                 }
                 $value .= sprintf($html,
-                    $val->goods_name,
-                    $val->goods_sn,
+                    '',
+                    '',
                     $goods_spec
                 );
 
@@ -1062,8 +1062,8 @@ DOM;
                     }
                 }
                 $value .= sprintf($html,
-                    $val['goods_name'],
-                    $val['goods_sn'],
+                    '',
+                    '',
                     $goods_spec
                 );
             }
