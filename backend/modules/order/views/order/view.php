@@ -266,6 +266,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                             'data-target' => '#ajaxModalLg',
                                         ])?>
                                     <?php } ?>
+                                    <?= Html::a('导出',['export-excel-invoice','order_id'=>$model->id],  [
+                                        'class' => 'btn btn-info btn-sm','target'=>'blank',
+                                    ])?>
                                 </div>
                             </div>
                         <?php } else {?>
