@@ -1013,6 +1013,7 @@ DOM;
             $sheet->setCellValue("D{$row}", $val['goods_name']);
 
             $value = '';
+            $goods_spec = '';
             if($val['goods_type']==19) {
                 $value1 = '';
                 $value2 = '';
@@ -1062,19 +1063,23 @@ DOM;
                 $value .= $value1;
                 $value .= $value2;
             }
-            else {
-                $goods_spec = '';
+            elseif($val['goods_type']==2) {
                 if($val['goods_spec']) {
                     $val['goods_spec'] = \Yii::$app->services->goods->formatGoodsSpec($val['goods_spec']);
-                    foreach ($val['goods_spec'] as $vo){
+                    foreach ($val['goods_spec'] as $vo) {
                         $goods_spec .= $vo['attr_name'].":".$vo['attr_value']." ";
                     }
                 }
-                $value .= sprintf($html,
-                    '',
-                    '',
-                    $goods_spec
-                );
+                $value = $goods_spec;
+            }
+            elseif($val['goods_type']==4) {
+                if($val['goods_spec']) {
+                    $val['goods_spec'] = \Yii::$app->services->goods->formatGoodsSpec($val['goods_spec']);
+                    foreach ($val['goods_spec'] as $vo) {
+                        $goods_spec .= $vo['attr_name'].":".$vo['attr_value']." ";
+                    }
+                }
+                $value = $goods_spec;
             }
 
             $sheet->setCellValue("E{$row}", $value);
