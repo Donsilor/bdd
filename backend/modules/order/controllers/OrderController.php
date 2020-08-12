@@ -985,7 +985,7 @@ class OrderController extends BaseController
         $sheet->setCellValue('B4', '');
         $sheet->setCellValue('F4', $result['order_sn']);
         $sheet->setCellValue('B5', $result['realname']);
-        $sheet->setCellValue('F5', date('Y-m-d H:i:s'));
+        $sheet->setCellValue('F5', date('d-m-Y',time()));
         $sheet->setCellValue('B6', $result['mobile']);
         $sheet->setCellValue('F6', Yii::t('pay', \common\enums\PayEnum::getValue($result['payment_type'], "payTypeName"), [], $result['language']));
         $sheet->setCellValue('B7', $result['address_details']);
@@ -1083,7 +1083,7 @@ DOM;
             }
 
             $sheet->setCellValue("E{$row}", $value);
-            $sheet->setCellValue("F{$row}", $val['goods_num']);
+            $sheet->setCellValue("F{$row}", $val['goods_num'] . " pcs");
             $sheet->setCellValue("G{$row}", $val['goods_price']. " ".$val['currency']);
             $sheet->setCellValue("H{$row}", $val['goods_price']*$val['goods_num'] . " ".$val['currency']);
             $sum += $val['goods_price']*$val['goods_num'];
@@ -1091,8 +1091,8 @@ DOM;
 
         $row++;
 
-        $sheet->setCellValue("A{$row}", 'Total '.($key+1));
-        $sheet->setCellValue("G{$row}", $sum . " ".$val['currency']);
+//        $sheet->setCellValue("A{$row}", 'Total '.($key+1));
+        $sheet->setCellValue("F{$row}", ($key+1) . " pcs");
         $sheet->setCellValue("H{$row}", $sum . " ".$val['currency']);
 
         // 清除之前的错误输出
