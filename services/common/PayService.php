@@ -156,7 +156,7 @@ class PayService extends Service
             'currency' => $baseOrder['currency'],
         ];
 
-        if($order['currency'] == CurrencyEnum::TWD) {
+        if($order['currency'] == CurrencyEnum::TWD || $order['currency'] == CurrencyEnum::USD) {
             $order['total_amount'] = intval($order['total_amount']);
         }
 
