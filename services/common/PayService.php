@@ -156,6 +156,10 @@ class PayService extends Service
             'currency' => $baseOrder['currency'],
         ];
 
+        if($order['currency'] == CurrencyEnum::TWD) {
+            $order['total_amount'] = intval($order['total_amount']);
+        }
+
         //扩展支付
         switch ($payForm->payType) {
             case '61':
