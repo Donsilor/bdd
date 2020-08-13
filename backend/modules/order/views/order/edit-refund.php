@@ -17,9 +17,7 @@ $form = ActiveForm::begin([
         <h4 class="modal-title">退款确认</h4>
     </div>
     <div class="modal-body">
-        <?= $form->field($model, 'refund_status')->dropDownList(\common\enums\OrderStatusEnum::refundStatus(),[
-            'prompt' => '请选择',
-        ])->label('订单是否取消') ?>
+        <?= $form->field($model, 'refund_status')->dropDownList(\common\enums\OrderStatusEnum::refundStatus())->label('订单是否取消') ?>
         <?= $form->field($model, 'refund_remark')->textarea() ?>
     </div>
     <div class="modal-footer">

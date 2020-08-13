@@ -71,14 +71,14 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                         </div>
                     </div>
                     <div class="row col-sm-12">
-                        <div class="col-sm-3">
-                            <?= $searchModel->model->getAttributeLabel('refund_status') ?>：<br/>
-                            <?= Html::activeDropDownList($searchModel, 'refund_status', \common\enums\PayStatusEnum::refund(), [
-                                'prompt' => '全部',
-                                'class' => 'form-control',
-                            ]);
-                            ?>
-                        </div>
+<!--                        <div class="col-sm-3">-->
+<!--                            --><?//= $searchModel->model->getAttributeLabel('refund_status') ?><!--：<br/>-->
+<!--                            --><?//= Html::activeDropDownList($searchModel, 'refund_status', OrderStatusEnum::refundStatus(), [
+//                                'prompt' => '全部',
+//                                'class' => 'form-control',
+//                            ]);
+//                            ?>
+<!--                        </div>-->
                         <div class="col-sm-3">
                             <?= $searchModel->model->getAttributeLabel('discount_type') ?>：<br/>
                             <?= Html::activeCheckboxList($searchModel, 'discount_type', [
@@ -293,18 +293,18 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                                 },
                                 'format' => 'raw',
                             ],
-//                            [
-//                                'attribute' => 'refund_status',
-//                                'headerOptions' => ['class' => 'col-md-1'],
-//                                'filter' => Html::activeDropDownList($searchModel, 'refund_status', \common\enums\PayStatusEnum::refund(), [
-//                                    'prompt' => '全部',
-//                                    'class' => 'form-control',
-//                                ]),
-//                                'value' => function ($model) {
-//                                    return common\enums\PayStatusEnum::getValue($model->refund_status, 'refund');
-//                                },
-//                                'format' => 'raw',
-//                            ],
+                            [
+                                'attribute' => 'refund_status',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'refund_status', OrderStatusEnum::refundStatus(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    return OrderStatusEnum::getValue($model->refund_status, 'refundStatus');
+                                },
+                                'format' => 'raw',
+                            ],
                             [
                                 'label' => '跟进状态',
                                 'headerOptions' => ['class' => 'col-md-1'],
