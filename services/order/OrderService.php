@@ -245,7 +245,7 @@ class OrderService extends OrderBaseService
         }
 
         //清空购物车
-        OrderCart::updateAll(['status' => 0], ['id' => $cart_ids, 'member_id' => $buyer_id]);
+        OrderCart::updateAll(['status' => 0], ['id' => array_map(function($item){return $item['cart_id'];}, $cart_ids), 'member_id' => $buyer_id]);
 
         //订单日志
 //        $log_msg = "创建订单,订单编号：".$order->order_sn;
