@@ -363,33 +363,41 @@ class OrderService extends OrderBaseService
         OrderLogService::cancel($order);
     }
 
-    public function changeOrderStatusRefund($order_id,$remark, $log_role, $log_user)
+    public function changeOrderStatusRefund($order_id, $remark, $refund_status)
     {
         $order = Order::find()->where(['id'=>$order_id])->one();
         if($order->order_status <= OrderStatusEnum::ORDER_UNPAID) {
             return true;
         }
-        $order_goods_list = OrderGoods::find()->select(['id','goods_id','goods_type','goods_num'])->where(['order_id'=>$order_id])->all();
-        foreach ($order_goods_list as $goods) {
-            //\Yii::$app->services->goods->updateGoodsStorageForOrder($goods->goods_id, $goods->goods_num, $goods->goods_type);
-        }
-        //更改订单状态
-//        $order->cancel_remark = $remark;
-//        $order->seller_remark = $remark;
-        $order->order_status = OrderStatusEnum::ORDER_CANCEL;
+
+        $old = [
+            'refund_status' => OrderStatusEnum::getValue($order->refund_status, 'refundStatus'),
+            'order_status' => OrderStatusEnum::getValue($order->order_status)
+        ];
+
         $order->refund_remark = $remark;
-        $order->refund_status = 1;
+        $order->refund_status = $refund_status;
+
+        if($refund_status == OrderStatusEnum::ORDER_REFUND_YES) {
+
+            $order->order_status = OrderStatusEnum::ORDER_CANCEL;
+
+            //解冻购物卡
+            CardService::deFrozen($order_id);
+
+            //退款通知
+            \Yii::$app->services->order->sendOrderNotification($order->id);
+        }
+
         $order->save(false);
-        //解冻购物卡
-        CardService::deFrozen($order_id);
 
-        //退款通知
-        \Yii::$app->services->order->sendOrderNotification($order->id);
+        $new = [
+            'refund_remark' => $order->refund_remark,
+            'refund_status' => OrderStatusEnum::getValue($order->refund_status, 'refundStatus'),
+            'order_status' => OrderStatusEnum::getValue($order->order_status)
+        ];
 
-        //订单日志
-        //$this->addOrderLog($order_id, $remark, $log_role, $log_user,$order->order_status);
-        OrderLogService::refund($order);
-
+        OrderLogService::refund($order, [$new, $old]);
     }
 
     public function changeOrderStatusAudit($order_id, $status, $remark)
