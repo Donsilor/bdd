@@ -351,7 +351,7 @@ class PayService extends Service
 
                     if($result) {
                         $accountUpdata = [
-                            'pay_amount'=> $pay_amount,
+//                            'pay_amount'=> $pay_amount,
                             'paid_amount'=> $log->total_fee,
                             'paid_currency'=> $log->currency,
                         ];
@@ -388,13 +388,13 @@ class PayService extends Service
 
                     //保存游客支付订单状态
                     $orderTourist->status = OrderTouristStatusEnum::ORDER_PAID;
-                    $orderTourist->pay_amount = \Yii::$app->services->currency->exchangeAmount($log->total_fee, 2, $orderTourist->currency, $log->currency);
+//                    $orderTourist->pay_amount = \Yii::$app->services->currency->exchangeAmount($log->total_fee, 2, $orderTourist->currency, $log->currency);
                     $orderTourist->paid_amount = $log->total_fee;
                     $orderTourist->paid_currency = $log->currency;
 
                     $update = [
                         'status' => OrderTouristStatusEnum::ORDER_PAID,
-                        'pay_amount' => $orderTourist->pay_amount,
+//                        'pay_amount' => $orderTourist->pay_amount,
                         'paid_amount' => $log->total_fee,
                         'paid_currency' => $log->currency,
                     ];
