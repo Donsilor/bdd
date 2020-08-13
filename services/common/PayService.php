@@ -300,6 +300,10 @@ class PayService extends Service
      */
     public function getOutTradeNo($totalFee, string $orderSn, int $payType, $tradeType = 'JSAPI', $orderGroup = 1,$currency = null,$exchangeRate = null)
     {
+        //台币支付金额是整数
+        if($currency == CurrencyEnum::TWD) {
+            $totalFee = intval($totalFee);
+        }
 
         $payModel = new PayLog();
         $payModel->out_trade_no = StringHelper::randomNum(time());
