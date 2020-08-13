@@ -244,6 +244,9 @@ class OrderService extends OrderBaseService
             }
         }
 
+        //清空购物车
+        OrderCart::updateAll(['status' => 0], ['id' => $cart_ids, 'member_id' => $buyer_id]);
+
         //订单日志
 //        $log_msg = "创建订单,订单编号：".$order->order_sn;
 //        $log_role = 'buyer';
@@ -253,9 +256,6 @@ class OrderService extends OrderBaseService
 
         //创建订单
         \Yii::$app->services->job->notifyContacts->createOrder($order->order_sn);
-
-        //清空购物车
-        OrderCart::updateAll(['status'=>0], ['id'=>$cart_ids,'member_id'=>$buyer_id]);
         
         return [
             "currency" => $currency,
