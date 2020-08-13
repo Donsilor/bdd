@@ -289,7 +289,7 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                                     'class' => 'form-control',
                                 ]),
                                 'value' => function ($model) {
-                                    return $model->refund_status?'已关闭':common\enums\OrderStatusEnum::getValue($model->order_status);
+                                    return $model->refund_status == OrderStatusEnum::ORDER_REFUND_YES ?'已关闭':common\enums\OrderStatusEnum::getValue($model->order_status);
                                 },
                                 'format' => 'raw',
                             ],

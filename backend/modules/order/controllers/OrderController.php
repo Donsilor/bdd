@@ -113,7 +113,7 @@ class OrderController extends BaseController
             }
             elseif($orderStatus2==0) {
                 $dataProvider->query->andWhere(['=', 'order_status', $orderStatus2]);
-                $dataProvider->query->andWhere(['=', 'refund_status', 0]);
+                $dataProvider->query->andWhere(['<>', 'refund_status', 1]);
             }
             else {
                 $dataProvider->query->andWhere(['=', 'order_status', $orderStatus2]);
