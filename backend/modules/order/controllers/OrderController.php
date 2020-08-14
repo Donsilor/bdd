@@ -9,6 +9,7 @@ use backend\modules\order\forms\OrderCancelForm;
 use backend\modules\order\forms\OrderFollowerForm;
 use backend\modules\order\forms\OrderRefundForm;
 use common\enums\CurrencyEnum;
+use common\enums\ExpressEnum;
 use common\enums\InvoiceElectronicEnum;
 use common\enums\OrderFromEnum;
 use common\enums\OrderStatusEnum;
@@ -975,14 +976,142 @@ class OrderController extends BaseController
         return $str;
     }
 
-    public function getExportGoods($_list) {
-        $list = [];
-        foreach ($_list as $order) {
-            $list += $order->goods;
+    private function fun($specs) {
+        $cs = $sc = $xk = $zs = $zsdx = '';
+        foreach ($specs as $spec) {
+
+            switch ($spec['attr_id']) {
+                case 10: //成色
+                    $cs = $spec['attr_value'];
+                    break;
+                case 38: //手寸
+                    $sc = $spec['attr_value'];
+                    break;
+                case 49: //镶口
+                    $xk = $spec['attr_value'];
+                    break;
+                case 56: //主石类型
+                    $zs = $spec['attr_value'];
+                    break;
+                case 59: //主石大小
+                    $zsdx = $spec['attr_value'];
+                    break;
+                case 61:
+                case 62:
+                    $goods = Yii::$app->services->goods->getGoodsInfo($spec['value_id']);
+                    $val = $this->fun($goods['lang']['goods_spec']);
+
+                    foreach ($val as $key => $value) {
+                        $$key = $$key ? $$key.'/'.$value : $value;
+                    }
+
+                    break;
+                default:
+            }
         }
 
+        return [
+            'cs' => $cs,
+            'sc' => $sc,
+            'xk' => $xk,
+            'zs' => $zs,
+            'zsdx' => $zsdx,
+        ];
+    }
+
+    public function getExportGoods($_list) {
+
+        $list = [];
+        $specList = [];
+        foreach ($_list as $order) {
+            $list += $order->goods;
+            foreach ($order->goods as $goods) {
+                $list[] = $goods;
+
+                $specs = \Yii::$app->services->goods->formatGoodsSpec($goods->goods_spec);
+
+                $specList[$goods->id] = $this->fun($specs);
+            }
+        }
+
+//序号，订单号，客户姓名，客户邮箱，客户手机号，是否测试，订单状态，支付状态，下单时间，客户备注，快递公司，快递单号，订单总金额，优惠后金额
+//
+//
+//商品款号，商品名称，成色，手寸，镶口，主石类型，主石大小，商品原价，商品实际成交价
+
         $header = [
-            ['订单编号', 'order.order_sn', 'text'],
+            ['序号', 'id'],
+            ['订单号', 'id', 'function', function ($row) {
+                return $row->order->order_sn;
+            }],
+            ['客户姓名', 'id', 'function', function ($row) {
+                return $row->order->address->realname;
+            }],
+            ['客户邮箱', 'id', 'function', function ($row) {
+                return $row->order->address->email;
+            }],
+            ['客户手机号', 'id', 'function', function ($row) {
+                return $row->order->address->mobile;
+            }],
+            ['是否测试', 'id', 'function', function ($row) {
+                return OrderStatusEnum::getValue($row->order->is_test, 'testStatus');
+            }],
+            ['订单状态', 'id', 'function', function ($row) {
+                return OrderStatusEnum::getValue($row->order->order_status);
+            }],
+            ['支付状态', 'id', 'function', function ($row) {
+                return \common\enums\PayStatusEnum::getValue($row->order->payment_status);
+            }],
+            ['下单时间', 'id', 'function', function ($row) {
+                return Yii::$app->formatter->asDatetime($row->order->created_at);
+            }],
+            ['客户备注', 'id', 'function', function ($row) {
+                return $row->order->buyer_remark;
+            }],
+            ['快递公司', 'id', 'function', function ($row) {
+                return ExpressEnum::getValue($row->order->express_id);
+            }],
+            ['快递单号', 'id', 'function', function ($row) {
+                return $row->order->express_no;
+            }],
+            ['订单总金额', 'id', 'function', function ($row) {
+                return $row->order->account->order_amount;
+            }],
+            ['优惠后金额', 'id', 'function', function ($row) {
+                return $row->order->account->pay_amount;
+            }],
+
+            ['商品款号', 'id', 'function', function ($row) {
+                return $row->goods_sn;
+            }],
+            ['商品名称', 'id', 'function', function ($row) {
+                return $row->goods_name;
+            }],
+
+
+            ['成色', 'id', 'function', function ($row) use($specList) {
+                return $specList[$row->id]['cs'];
+            }],
+            ['手寸', 'id', 'function', function ($row) use($specList) {
+                return $specList[$row->id]['sc'];
+            }],
+            ['镶口', 'id', 'function', function ($row) use($specList) {
+                return $specList[$row->id]['xk'];
+            }],
+            ['主石类型', 'id', 'function', function ($row) use($specList) {
+                return $specList[$row->id]['zs'];
+            }],
+            ['主石大小', 'id', 'function', function ($row) use($specList) {
+                return $specList[$row->id]['zsdx'];
+            }],
+
+
+            ['商品原价', 'id', 'function', function ($row) {
+                return $row->goods_price;
+            }],
+            ['商品实际成交价', 'id', 'function', function ($row) {
+                return $row->goods_pay_price;
+            }],
         ];
 
         return ExcelHelper::exportData($list, $header, '订单商品统计导出_' . date('YmdHis',time()));
