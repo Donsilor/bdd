@@ -181,7 +181,13 @@ class OrderController extends BaseController
             }
             $dataProvider->setPagination(false);
             $list = $dataProvider->models;
-            $this->getExport($list);
+
+            if($this->export=='order') {
+                $this->getExport($list);
+            }
+            elseif ($this->export=='goods') {
+                $this->getExportGoods($list);
+            }
         }
 
         return $this->render($this->action->id, [
@@ -190,9 +196,14 @@ class OrderController extends BaseController
         ]);
     }
 
-    public $export = false;
+    public $export = null;
     public function actionExport() {
-        $this->export = true;
+        $this->export = 'order';
+        return $this->actionIndex();
+    }
+
+    public function actionExportGoods() {
+        $this->export = 'goods';
         return $this->actionIndex();
     }
 
@@ -903,7 +914,6 @@ class OrderController extends BaseController
             ['订单备注', 'seller_remark', 'text'],
         ];
 
-
         return ExcelHelper::exportData($list, $header, '订单数据导出_' . date('YmdHis',time()));
     }
 
@@ -965,6 +975,17 @@ class OrderController extends BaseController
         return $str;
     }
 
+    public function getExportGoods($_list) {
+        $list = [];
+        foreach ($_list as $order) {
+            $list += $order->goods;
+        }
 
+        $header = [
+            ['订单编号', 'order.order_sn', 'text'],
+        ];
+
+        return ExcelHelper::exportData($list, $header, '订单商品统计导出_' . date('YmdHis',time()));
+    }
 }
 
