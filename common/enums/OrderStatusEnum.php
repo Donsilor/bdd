@@ -72,7 +72,7 @@ class OrderStatusEnum extends BaseEnum
     {
         return [
             self::ORDER_REFUND_YES => \Yii::t('common','已退款'),
-            self::ORDER_REFUND_PENDING => \Yii::t('common','处理中'),
+            self::ORDER_REFUND_PENDING => \Yii::t('common','退款中'),
             self::ORDER_REFUND_NO => \Yii::t('common','未退款'),
         ];
     }
