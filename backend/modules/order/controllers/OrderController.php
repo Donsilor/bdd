@@ -1083,17 +1083,18 @@ DOM;
             }
 
             $sheet->setCellValue("E{$row}", $value);
-            $sheet->setCellValue("F{$row}", $val['goods_num'] . " pcs");
-            $sheet->setCellValue("G{$row}", $val['goods_price']. " ".$val['currency']);
+            $sheet->setCellValue("F{$row}", $val['goods_price']. " ".$val['currency']);
+            $sheet->setCellValue("G{$row}", $val['goods_num']);
             $sheet->setCellValue("H{$row}", $val['goods_price']*$val['goods_num'] . " ".$val['currency']);
-            $sum += $val['goods_price']*$val['goods_num'];
         }
 
         $row++;
-
-//        $sheet->setCellValue("A{$row}", 'Total '.($key+1));
-        $sheet->setCellValue("F{$row}", ($key+1) . " pcs");
-        $sheet->setCellValue("H{$row}", $sum . " ".$val['currency']);
+        $sheet->setCellValue("H{$row}", $result['coupon_amount'] . " ".$val['currency']);
+        $row++;
+        $sheet->setCellValue("H{$row}", $result['gift_card_amount'] . " ".$val['currency']);
+        $row++;
+        $sheet->setCellValue("G{$row}", ($key+1));
+        $sheet->setCellValue("H{$row}", $result['order_pay_amount'] . " ".$val['currency']);
 
         // 清除之前的错误输出
         ob_end_clean();
