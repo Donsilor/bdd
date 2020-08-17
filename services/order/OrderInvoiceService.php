@@ -11,6 +11,7 @@ use common\models\order\OrderCart;
 use common\models\order\OrderGoodsLang;
 use common\models\order\OrderInvoice;
 use common\models\order\OrderInvoiceEle;
+use kartik\mpdf\Pdf;
 use services\market\CardService;
 use yii\base\Controller;
 use yii\web\UnprocessableEntityHttpException;
