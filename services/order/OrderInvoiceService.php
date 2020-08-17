@@ -151,10 +151,13 @@ class OrderInvoiceService extends OrderBaseService
         ],
     ];
 
-    public function getEleInvoiceInfo($order_id){
-        $order = Order::find()
-            ->where(['id'=>$order_id])
-            ->one();
+    public function getEleInvoiceInfo($order) {
+        if(!($order instanceof Order)) {
+            $order = Order::find()
+                ->where(['id'=>$order])
+                ->one();
+        }
+
         if(empty($order)) {
             throw new UnprocessableEntityHttpException("订单不存在");
         }

@@ -663,9 +663,9 @@ class OrderController extends BaseController
     }
 
    //电子发票预览（PDF）
-    public function actionEleInvoicePdf(){
+    public function actionEleInvoicePdf() {
         $order_id = Yii::$app->request->get('order_id');
-        if(!$order_id){
+        if(!$order_id) {
             return ResultHelper::json(422, '非法调用');
         }
         $result = Yii::$app->services->orderInvoice->getEleInvoiceInfo($order_id);
