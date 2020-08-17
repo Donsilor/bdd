@@ -113,7 +113,7 @@ class OrderController extends BaseController
             }
             elseif($orderStatus2==0) {
                 $dataProvider->query->andWhere(['=', 'order_status', $orderStatus2]);
-                $dataProvider->query->andWhere(['=', 'refund_status', 0]);
+                $dataProvider->query->andWhere(['<>', 'refund_status', 1]);
             }
             else {
                 $dataProvider->query->andWhere(['=', 'order_status', $orderStatus2]);
@@ -342,7 +342,7 @@ class OrderController extends BaseController
 
         if (Yii::$app->request->isPost) {
 
-            Yii::$app->services->order->changeOrderStatusRefund($id, $order['refund_remark']??'', 'admin', Yii::$app->getUser()->id);
+            Yii::$app->services->order->changeOrderStatusRefund($id, $order['refund_remark']??'', $order['refund_status']);
 
 
             $returnUrl = Yii::$app->request->referrer;

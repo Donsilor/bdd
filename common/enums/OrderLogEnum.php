@@ -25,6 +25,7 @@ class OrderLogEnum extends BaseEnum
             'WIRETRANSFERAUDIT'=>'电汇审核',
             'WIRETRANSFER'=>'客户提交电汇支付',
             'CREATE' => '创建订单',
+            'REFUND' => '订单退款',
             'CREATE_TOURIST' => '创建游客订单',
             'SYNC_TOURIST' => '同步游客订单',
             'AUDIT' => '订单审核',
