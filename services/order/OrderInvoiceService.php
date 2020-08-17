@@ -12,6 +12,7 @@ use common\models\order\OrderGoodsLang;
 use common\models\order\OrderInvoice;
 use common\models\order\OrderInvoiceEle;
 use services\market\CardService;
+use yii\base\Controller;
 use yii\web\UnprocessableEntityHttpException;
 use common\models\order\OrderGoods;
 use common\models\order\Order;
@@ -295,6 +296,49 @@ class OrderInvoiceService extends OrderBaseService
         $language = $language ? $language : $order->language;
 
         return $sendAddress[$language]??[];
+    }
+
+    /**
+     * 生成PDF文件
+     * @param $order
+     */
+    public function generatePdfFile($order) {
+        $result = $this->getEleInvoiceInfo($order);
+
+        $content = \Yii::$app->getView()->render($result['template'], ['result'=>$result]);
+
+        $pdf = new Pdf([
+            // set to use core fonts only
+            'mode' => Pdf::MODE_UTF8,
+            // A4 paper format
+            'format' => Pdf::FORMAT_A4,
+            // portrait orientation
+            'orientation' => Pdf::ORIENT_PORTRAIT,
+            // stream to browser inline
+            'destination' => Pdf::DEST_BROWSER,
+            // your html content input
+            'content' => $content,
+            // format content from your own css file if needed or use the
+            // enhanced bootstrap css built by Krajee for mPDF formatting
+            'cssFile' => \Yii::getAlias('@webroot').'/resources/css/invoice.css',
+            // any css to be embedded if required
+            'cssInline' => '.kv-heading-1{font-size:18px}',
+            // set mPDF properties on the fly
+            'options' => [
+                'title' => '中文',
+                'autoLangToFont' => true,    //这几个配置加上可以显示中文
+                'autoScriptToLang' => true,  //这几个配置加上可以显示中文
+                'autoVietnamese' => true,    //这几个配置加上可以显示中文
+                'autoArabic' => true,        //这几个配置加上可以显示中文
+            ],
+            // call mPDF methods on the fly
+            'methods' => [
+//                'SetHeader'=>[$subject],
+                'SetFooter'=>['{PAGENO}'],
+            ]
+        ]);
+
+        return $pdf->render();
     }
     
 }
