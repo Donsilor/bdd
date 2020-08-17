@@ -303,12 +303,16 @@ class OrderInvoiceService extends OrderBaseService
      * 生成PDF文件
      * @param $order
      */
-    public function generatePdfFile($order) {
+    public function generatePdfFile($view, $order) {
         $result = $this->getEleInvoiceInfo($order);
 
-        $content = \Yii::$app->getView()->render($result['template'], ['result'=>$result]);
+        $content = $view->render($result['template'], ['result'=>$result]);
+
+        $file = \Yii::getAlias('@storage') . sprintf('/backend/pdfInvoice/%s.pdf', $result['order_sn']);
 
         $pdf = new Pdf([
+            //
+            'filename' => $file,
             // set to use core fonts only
             'mode' => Pdf::MODE_UTF8,
             // A4 paper format
@@ -316,7 +320,7 @@ class OrderInvoiceService extends OrderBaseService
             // portrait orientation
             'orientation' => Pdf::ORIENT_PORTRAIT,
             // stream to browser inline
-            'destination' => Pdf::DEST_BROWSER,
+            'destination' => Pdf::DEST_FILE,
             // your html content input
             'content' => $content,
             // format content from your own css file if needed or use the
