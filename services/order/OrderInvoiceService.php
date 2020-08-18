@@ -300,8 +300,15 @@ class OrderInvoiceService extends OrderBaseService
     }
 
     /**
-     * 生成PDF文件
+     * @param $view
      * @param $order
+     * @throws UnprocessableEntityHttpException
+     * @throws \Mpdf\MpdfException
+     * @throws \setasign\Fpdi\PdfParser\CrossReference\CrossReferenceException
+     * @throws \setasign\Fpdi\PdfParser\PdfParserException
+     * @throws \setasign\Fpdi\PdfParser\Type\PdfTypeException
+     * @throws \yii\base\InvalidConfigException
+     * @return string
      */
     public function generatePdfFile($view, $order) {
         $result = $this->getEleInvoiceInfo($order);
@@ -343,7 +350,9 @@ class OrderInvoiceService extends OrderBaseService
             ]
         ]);
 
-        return $pdf->render();
+        $pdf->render();
+
+        return $file;
     }
     
 }
