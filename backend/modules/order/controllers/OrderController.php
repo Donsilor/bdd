@@ -834,6 +834,10 @@ class OrderController extends BaseController
                 return $html;
             }],
             ['订单总金额', 'account.order_amount', 'text'],
+            ['物流公司', 'account.order_amount', 'function', function($row) {
+                return \Yii::$app->services->express->getExressName($row->express_id);
+            }],
+            ['物流单号', 'express_no', 'text'],
             ['折扣金额', 'account.discount_amount', 'text'],
             ['优惠券金额', 'account.coupon_amount', 'text'],
             ['购物卡金额', 'account.card_amount', 'text'],
