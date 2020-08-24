@@ -114,7 +114,11 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 									<?php if($order->order_status == OrderStatusEnum::ORDER_PAID || $order->refund_status) {?>
 									<dt class="count"><span>實際支付：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
                                     <?php } elseif($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
-                                        <dt class="count"><span>應支付：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
+                                        <dt class="count"><span>應支付：</span><em class="total"><?php
+                                                if($currency==\common\enums\CurrencyEnum::TWD) {
+                                                    ?><?= AmountHelper::outputAmount(intval($order->account->pay_amount),2,$currency)?><?php
+                                                } else {
+                                                    ?><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?><?php } ?></em></dt>
                                     <?php }?>
                                     <?php if($order->refund_status) { ?>
                                         <dt class="count"><span>已退款：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
