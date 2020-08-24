@@ -838,6 +838,12 @@ class OrderController extends BaseController
                 return \Yii::$app->services->express->getExressName($row->express_id);
             }],
             ['物流单号', 'express_no', 'text'],
+            ['发货时间', 'delivery_time', 'function', function($row) {
+                if($row->delivery_status) {
+                    return Yii::$app->formatter->asDatetime($row->delivery_time);
+                }
+                return '';
+            }],
             ['折扣金额', 'account.discount_amount', 'text'],
             ['优惠券金额', 'account.coupon_amount', 'text'],
             ['购物卡金额', 'account.card_amount', 'text'],
