@@ -8,7 +8,7 @@ use common\helpers\AmountHelper;
 $order_id = $code;
 $order = Order::find()->where(['id'=>$order_id])->one();
 
-\Yii::$app->language = $order->language;
+\Yii::$app->params['language']  = \Yii::$app->language = $order->language;
 ?>
 <!DOCTYPE html>
 <html>
