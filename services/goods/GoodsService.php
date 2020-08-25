@@ -873,15 +873,19 @@ class GoodsService extends Service
                         if(!empty($diff_arr_all)){
                             foreach ($diff_arr_all as $i => $item) {
                                 $obj = \Qiniu\json_decode($item);
-                                if(!isset($old_val[$i]) && isset($new_val[$i])){
-                                    $old_val[$i] = [];
-                                    $log_goods_add.=$new_val[$i]['goods_sn'].",";
+
+                                if('style_spec' == $k) {
+                                    if(!isset($old_val[$i]) && isset($new_val[$i])){
+                                        $old_val[$i] = [];
+                                        $log_goods_add.=$new_val[$i]['goods_sn'].",";
 //                                    continue;
+                                    }
+                                    if(!isset($new_val[$i]) && isset($old_val[$i])){
+                                        $log_goods_del.=$old_val[$i]['goods_sn'].",";
+                                        continue;
+                                    }
                                 }
-                                if(!isset($new_val[$i]) && isset($old_val[$i])){
-                                    $log_goods_del.=$old_val[$i]['goods_sn'].",";
-                                    continue;
-                                }
+
                                 $log_msg_lsit = '';
                                 $new_status = isset($new_val[$i]['status'])?$new_val[$i]['status']:'';
                                 $old_status = isset($old_val[$i]['status'])?$old_val[$i]['status']:'';
