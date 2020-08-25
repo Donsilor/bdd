@@ -804,6 +804,9 @@ class GoodsService extends Service
                             $old_arr[$i] = json_encode($item);
                         }
                     }
+                    else {
+                        $old_val = [];
+                    }
                     $new_arr = [];
                     if(!empty($new_val)){
                         foreach ($new_val as $i => $item) {
