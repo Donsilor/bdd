@@ -871,6 +871,7 @@ class GoodsService extends Service
                             foreach ($diff_arr_all as $i => $item) {
                                 $obj = \Qiniu\json_decode($item);
                                 if(!isset($old_val[$i]) && isset($new_val[$i])){
+                                    $old_val[$i] = [];
                                     $log_goods_add.=$new_val[$i]['goods_sn'].",";
 //                                    continue;
                                 }
