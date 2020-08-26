@@ -37,9 +37,8 @@ $form = ActiveForm::begin([
                 <?php
                     $order_amount = $model->order->account->order_amount;
                     if($model->order->account->currency == \common\enums\CurrencyEnum::TWD) {
-                        $order_amount = intval($order_amount);
+                        $order_amount = sprintf('%.2f', intval($order_amount));
                     }
-                ?>
                 ?>
                 <input type="text" class="form-control" value="<?= \common\helpers\AmountHelper::outputAmount($order_amount,2,$model->order->account->currency) ?>" readonly="true">
                 <div class="help-block"></div>

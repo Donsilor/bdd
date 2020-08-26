@@ -78,7 +78,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                     $order_amount = bcsub($model->order_amount, $model->discount_amount, 2);
 
                                     if($model->currency == \common\enums\CurrencyEnum::TWD) {
-                                        $order_amount = intval($order_amount);
+                                        $order_amount = sprintf('%.2f', intval($order_amount));
                                     }
 
                                     return sprintf('(%s)%s', $model->currency, $order_amount);
