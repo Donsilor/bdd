@@ -122,7 +122,11 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
                                                     ?><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?><?php } ?></em></dt>
                                     <?php }?>
                                     <?php if($order->refund_status) { ?>
-                                        <dt class="count"><span>Refunded：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
+                                        <dt class="count"><span>Refunded：</span><em class="total"><?php
+                                                if($currency==\common\enums\CurrencyEnum::TWD) {
+                                                    ?><?= AmountHelper::outputAmount(intval($order->account->pay_amount),2,$currency)?><?php
+                                                } else {
+                                                    ?><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?><?php } ?></em></dt>
                                     <?php } ?>
 								</dl>
 								<?php if($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
