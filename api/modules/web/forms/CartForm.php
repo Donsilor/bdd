@@ -18,6 +18,7 @@ class CartForm extends Model
     public $group_type;
     public $group_id;
     public $coupon_id;//折扣券ID
+    public $goods_attr;//商品属性
     public $createTime;
 
     
@@ -29,21 +30,39 @@ class CartForm extends Model
         return [
             [['goods_id','goods_type','goods_num','createTime'], 'required'],
             [['goods_id','goods_type','goods_num','group_type','group_id','coupon_id','createTime'], 'number'],
+            ['goods_attr', 'validateGoodsAttr'],
         ];
     }
     
     public function attributeLabels()
     {
         return [
-
             'goods_id' => 'goods_id',
             'goods_type' => 'goods_type',
             'goods_num' => 'goods_num',
             'group_type' => 'group_type',
             'group_id' => 'group_id',
             'coupon_id' => 'coupon_id',
+            'goods_attr' => 'goods_attr',
             'createTime' => 'createTime'
         ];
+    }
+
+    public function validateGoodsAttr($attribute)
+    {
+        if (!$this->hasErrors() && is_array($this->goods_attr) && !empty($this->goods_attr)) {
+            foreach ($this->goods_attr as $item) {
+                if(!isset($item['config_id']) || !isset($item['config_attr_id'])) {
+                    $this->addError($attribute, '验证错误');
+                }
+
+                $attr = \Yii::$app->services->goodsAttribute->getValuesByAttrId($item['config_id']);
+
+                if(!$attr && !isset($attr[$item['config_attr_id']])) {
+                    $this->addError($attribute, '验证错误');
+                }
+            }
+        }
     }
 
     public function getSign()
