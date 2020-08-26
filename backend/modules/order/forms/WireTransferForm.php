@@ -35,7 +35,11 @@ class WireTransferForm extends WireTransfer
 
     public function validateCollectionAmount($attribute)
     {
-        if($this->collection_status == 1 && OrderAccount::findOne($this->order_id)->pay_amount!=$this->collection_amount) {
+        $pay_amount = OrderAccount::findOne($this->order_id)->pay_amount;
+        if($this->collection) {
+            $pay_amount = intval($pay_amount);
+        }
+        if($this->collection_status == 1 && $pay_amount!=$this->collection_amount) {
             $this->addError($attribute, '审核通过时，收款金额必需等于订单金额');
         }
     }

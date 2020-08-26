@@ -34,7 +34,14 @@ $form = ActiveForm::begin([
                 <label class="control-label" for="wiretransfer-collection_amount">订单金额</label>
             </div>
             <div class="col-sm-10">
-                <input type="text" class="form-control" value="<?= \common\helpers\AmountHelper::outputAmount($model->order->account->order_amount,2,$model->order->account->currency) ?>" readonly="true">
+                <?php
+                    $order_amount = $model->order->account->order_amount;
+                    if($model->order->account->currency == \common\enums\CurrencyEnum::TWD) {
+                        $order_amount = intval($order_amount);
+                    }
+                ?>
+                ?>
+                <input type="text" class="form-control" value="<?= \common\helpers\AmountHelper::outputAmount($order_amount,2,$model->order->account->currency) ?>" readonly="true">
                 <div class="help-block"></div>
             </div>
         </div>
