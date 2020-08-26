@@ -191,6 +191,10 @@ class OrderInvoiceService extends OrderBaseService
         $result['order_paid_amount'] = $order->account->paid_amount;//bcsub($result['order_amount'],$result['gift_card_amount'],2);
         $result['order_pay_amount'] = $order->account->pay_amount;//bcsub($result['order_amount'],$result['gift_card_amount'],2);
 
+        if($result['currency'] == CurrencyEnum::TWD) {
+            $result['order_pay_amount'] = intval($result['order_pay_amount']);
+        }
+
         $order_invoice_exe_model = OrderInvoiceEle::find()
             ->where(['order_id'=>$order->id])
             ->one();

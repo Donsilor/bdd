@@ -75,7 +75,13 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             [
                                 'label' => '优惠后金额',
                                 'value' => function ($model) {
-                                    return sprintf('(%s)%s', $model->currency, bcsub($model->order_amount, $model->discount_amount, 2));
+                                    $order_amount = bcsub($model->order_amount, $model->discount_amount, 2);
+
+                                    if($model->currency == \common\enums\CurrencyEnum::TWD) {
+                                        $order_amount = intval($order_amount);
+                                    }
+
+                                    return sprintf('(%s)%s', $model->currency, $order_amount);
                                 }
                             ],
                             [
