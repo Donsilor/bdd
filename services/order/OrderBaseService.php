@@ -203,6 +203,7 @@ class OrderBaseService extends Service
 
             $orderGoods['group_id'] = $item['group_id'];//组ID
             $orderGoods['group_type'] = $item['group_type'];//分组类型
+            $orderGoods['cart_goods_attr'] = $item['goods_attr'];//分组类型
 
             $orderGoods['goods_attr'] = $goods['goods_attr'];//商品规格   这个参数需处理
             $orderGoods['goods_spec'] = $goods['goods_spec'];//商品规格
