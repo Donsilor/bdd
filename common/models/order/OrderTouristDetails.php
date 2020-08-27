@@ -24,6 +24,7 @@ use Yii;
  * @property int $group_type 分组类型 1对戒 2定制 0单品
  * @property string $goods_spec 商品规格
  * @property string $goods_attr
+ * @property string $cart_goods_attr
  * @property int $created_at 创建时间
  * @property int $updated_at 更新时间
  */
@@ -46,7 +47,7 @@ class OrderTouristDetails extends \common\models\base\BaseModel
             [['order_tourist_id'], 'required'],
             [['order_tourist_id', 'goods_id','style_id', 'goods_type', 'goods_num', 'coupon_id', 'group_id', 'group_type', 'created_at', 'updated_at'], 'integer'],
             [['goods_price', 'goods_pay_price'], 'number'],
-            [['goods_spec', 'goods_attr'], 'string'],
+            [['goods_spec', 'cart_goods_attr', 'goods_attr'], 'string'],
             [['goods_sn'], 'string', 'max' => 50],
             [['goods_name'], 'string', 'max' => 300],
             [['goods_image'], 'string', 'max' => 100],
@@ -75,6 +76,7 @@ class OrderTouristDetails extends \common\models\base\BaseModel
             'group_type' => Yii::t('app', '分组类型 1对戒 2定制 0单品'),
             'goods_spec' => Yii::t('app', '商品规格'),
             'goods_attr' => Yii::t('app', 'Goods Attr'),
+            'cart_goods_attr' => Yii::t('app', 'Cart Goods Attr'),
             'created_at' => Yii::t('app', '创建时间'),
             'updated_at' => Yii::t('app', '更新时间'),
         ];

@@ -23,8 +23,9 @@ class CardController extends Controller
 
     public function actionTest()
     {
-        $goods = \Yii::$app->services->goods->getGoodsInfo(672, 2);
-        var_dump($goods['goods_attr']);
+        $goods = \Yii::$app->services->goods->getGoodsInfo(2372, 2);
+        $goods_attr = \GuzzleHttp\json_decode($goods['goods_attr'], true);
+        var_dump($goods_attr);
     }
 
     /**
