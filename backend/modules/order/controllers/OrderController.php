@@ -1024,7 +1024,6 @@ class OrderController extends BaseController
         $list = [];
         $specList = [];
         foreach ($_list as $order) {
-            $list += $order->goods;
             foreach ($order->goods as $goods) {
                 $list[] = $goods;
 
@@ -1051,7 +1050,11 @@ class OrderController extends BaseController
                 return $row->order->address->email;
             }],
             ['客户手机号', 'id', 'function', function ($row) {
-                return $row->order->address->mobile;
+                $html = "";
+                if($row->order->address->mobile) {
+                    $html .= $row->order->address->mobile_code.'-'.$row->order->address->mobile;
+                }
+                return $html;
             }],
             ['是否测试', 'id', 'function', function ($row) {
                 return OrderStatusEnum::getValue($row->order->is_test, 'testStatus');
@@ -1069,16 +1072,16 @@ class OrderController extends BaseController
                 return $row->order->buyer_remark;
             }],
             ['快递公司', 'id', 'function', function ($row) {
-                return ExpressEnum::getValue($row->order->express_id);
+                return \Yii::$app->services->express->getExressName($row->order->express_id);
             }],
             ['快递单号', 'id', 'function', function ($row) {
                 return $row->order->express_no;
             }],
             ['订单总金额', 'id', 'function', function ($row) {
-                return $row->order->account->order_amount;
+                return $row->order->account->currency . ' ' . $row->order->account->order_amount;
             }],
             ['优惠后金额', 'id', 'function', function ($row) {
-                return $row->order->account->pay_amount;
+                return $row->order->account->currency . ' ' . $row->order->account->pay_amount;
             }],
 
             ['商品款号', 'id', 'function', function ($row) {
@@ -1107,10 +1110,10 @@ class OrderController extends BaseController
 
 
             ['商品原价', 'id', 'function', function ($row) {
-                return $row->goods_price;
+                return $row->order->account->currency . ' ' . $row->goods_price;
             }],
             ['商品实际成交价', 'id', 'function', function ($row) {
-                return $row->goods_pay_price;
+                return $row->order->account->currency . ' ' . $row->goods_pay_price;
             }],
         ];
 
