@@ -180,7 +180,7 @@ class CartController extends UserAuthController
     
                 $cart->goods_type = $goods['type_id'];
                 $cart->goods_price = $goods['sale_price'];
-                $cart->goods_spec = json_encode($goods['goods_spec']);//商品规格
+                $cart->goods_spec = $goods['goods_spec'];//商品规格
                 $cart->goods_attr = json_encode($model['goods_attr']);//商品属性
 
                 //款式
