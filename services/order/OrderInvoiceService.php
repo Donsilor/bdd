@@ -233,7 +233,7 @@ class OrderInvoiceService extends OrderBaseService
         //商品明细
         $order_goods = OrderGoods::find()->alias('m')
             ->leftJoin(OrderGoodsLang::tableName().'lang','m.id=lang.master_id and lang.language="'.$language.'"')
-            ->where(['order_id'=>$order_id])
+            ->where(['order_id'=>$order->id])
             ->select(['lang.goods_name','m.goods_sn','m.goods_num','m.goods_pay_price','m.goods_price','m.currency'])
             ->asArray()
             ->all();
