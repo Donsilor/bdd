@@ -54,12 +54,14 @@ class CartForm extends Model
             foreach ($this->goods_attr as $item) {
                 if(!isset($item['config_id']) || !isset($item['config_attr_id'])) {
                     $this->addError($attribute, '验证错误');
+                    return;
                 }
 
                 $attr = \Yii::$app->services->goodsAttribute->getValuesByAttrId($item['config_id']);
 
-                if(!$attr && !isset($attr[$item['config_attr_id']])) {
+                if(!$attr || !isset($attr[$item['config_attr_id']])) {
                     $this->addError($attribute, '验证错误');
+                    return;
                 }
             }
         }
