@@ -114,7 +114,7 @@ class OrderController extends UserAuthController
                    foreach ($goods_attr as $vo){
                        $baseConfig[] = [
                                'configId' =>$vo['id'],
-                               'configAttrId' =>implode('/',$vo['value_id']),
+                               'configAttrId' =>0,
                                'configVal' =>$vo['attr_name'],
                                'configAttrIVal' =>implode('/',$vo['value']),
                        ];
