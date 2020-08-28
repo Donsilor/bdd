@@ -125,13 +125,13 @@ class OrderController extends UserAuthController
                    $detailSpecs = [];
                    $goods_spec = \Yii::$app->services->goods->formatGoodsSpec($orderGoods->goods_spec);
                    $ring = [];
-                   foreach ($goods_spec as $vo){                       
+                   foreach ($goods_spec as $vo){
                        $detailSpecs[] = [
                                'name' =>$vo['attr_name'],
-                               'value' =>$vo['attr_value'],                               
+                               'value' =>$vo['attr_value'],
                        ];
                        if(in_array($vo['attr_id'], ['61', '62'])) {
-                           $ring[] = \Yii::$app->services->goods->getGoodsInfo($vo['value_id']);;
+                           $ring[] = \Yii::$app->services->goods->getGoodsInfo($vo['value_id']);
                        }
                    }
                    $orderDetail['detailSpecs'] = json_encode($detailSpecs);
@@ -279,7 +279,7 @@ class OrderController extends UserAuthController
                 foreach ($goods_attr as $vo) {
                     $baseConfig[] = [
                         'configId' =>$vo['id'],
-                        'configAttrId' =>implode('/',$vo['value_id']),
+                        'configAttrId' =>0,
                         'configVal' =>$vo['attr_name'],
                         'configAttrIVal' =>implode('/',$vo['value']),
                     ];

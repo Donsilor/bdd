@@ -94,10 +94,10 @@ class CartController extends UserAuthController
             //return $goods['goods_attr'];
             if(!empty($goods['lang']['goods_attr'])) {
                 $baseConfig = [];
-                foreach ($goods['lang']['goods_attr'] as $vo){                    
+                foreach ($goods['lang']['goods_attr'] as $vo){
                     $baseConfig[] = [
                             'configId' =>$vo['id'],
-                            'configAttrId' =>implode('/',$vo['value_id']),
+                            'configAttrId' =>0,
                             'configVal' =>$vo['attr_name'],
                             'configAttrIVal' =>implode('/',$vo['value']),
                     ];                    
@@ -110,7 +110,7 @@ class CartController extends UserAuthController
                     
                     $detailConfig[] = [
                             'configId' =>$vo['attr_id'],
-                            'configAttrId' =>$vo['value_id'],
+                            'configAttrId' =>0,
                             'configVal' =>$vo['attr_name'],
                             'configAttrIVal' =>$vo['attr_value'],
                     ];
