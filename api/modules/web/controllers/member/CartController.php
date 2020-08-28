@@ -315,6 +315,7 @@ class CartController extends UserAuthController
             $cart['groupType'] = $model->group_type;
             $cart['goodsType'] = $model->goods_type;
             $cart['groupId'] = $model->group_id;
+            $cart['goodsAttr'] = $model->goods_attr;
 
             $cart['coupon'] = [
                 'type_id' => $model->goods_type,//产品线ID
