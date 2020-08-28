@@ -53,6 +53,8 @@ use common\enums\DeliveryStatusEnum;
 
 use kartik\mpdf\Pdf;
 use yii\web\Response;
+use function Clue\StreamFilter\fun;
+use function foo\func;
 
 /**
  * Default controller for the `order` module
@@ -850,7 +852,13 @@ class OrderController extends BaseController
             ['折扣金额', 'account.discount_amount', 'text'],
             ['优惠券金额', 'account.coupon_amount', 'text'],
             ['购物卡金额', 'account.card_amount', 'text'],
-            ['实付金额', 'account.pay_amount', 'text'],
+            ['实付金额', 'account.pay_amount', 'function', function($row) {
+                $pay_amount = $row->account->pay_amount;
+                if($row->account->currency==CurrencyEnum::TWD) {
+                    $pay_amount = sprintf("%.2f", intval($pay_amount));
+                }
+                return $pay_amount;
+            }],
             ['货币', 'account.currency', 'text'],
             ['购物卡号', 'id', 'function',function($model){
                 $rows = MarketCardDetails::find()->alias('card_detail')
