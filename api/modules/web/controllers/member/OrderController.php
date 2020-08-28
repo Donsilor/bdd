@@ -108,6 +108,7 @@ class OrderController extends UserAuthController
                    'baseConfig'=>null,
                    'ring'=>[]
                ];
+               $orderDetail['goodsAttr'] = \Yii::$app->services->goodsAttribute->getCartGoodsAttr($orderDetail['goodsAttr']);
                if(!empty($orderGoods->goods_attr)) {
                    $goods_attr = \Yii::$app->services->goods->formatGoodsAttr($orderGoods->goods_attr, $orderGoods->goods_type);
                    $baseConfig = [];
@@ -273,6 +274,7 @@ class OrderController extends UserAuthController
                 'baseConfig'=>null,
                 'ring'=>[]
             ];
+            $orderDetail['goodsAttr'] = \Yii::$app->services->goodsAttribute->getCartGoodsAttr($orderDetail['goodsAttr']);
             if(!empty($orderGoods->goods_attr)) {
                 $goods_attr = \Yii::$app->services->goods->formatGoodsAttr($orderGoods->goods_attr, $orderGoods->goods_type);
                 $baseConfig = [];

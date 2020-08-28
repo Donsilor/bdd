@@ -247,4 +247,19 @@ class AttributeService extends Service
         return $models->image;
     }
 
+    public function getCartGoodsAttr($goodsAttrs=[])
+    {
+        $result = [];
+        foreach ($goodsAttrs as $goodsAttr) {
+            $result[] = [
+                "goodsId" => $goodsAttr['goods_id']??null,
+                "configId" => $goodsAttr['config_id'],
+                "configAttrId" => $goodsAttr['config_attr_id'],
+                "configVal" => \Yii::$app->attr->attrName($goodsAttr['config_id']),
+                "configAttrIVal" => \Yii::$app->attr->valueName($goodsAttr['config_attr_id'])
+            ];
+        }
+        return $result;
+    }
+
 }
