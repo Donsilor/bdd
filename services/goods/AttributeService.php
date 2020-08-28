@@ -250,6 +250,7 @@ class AttributeService extends Service
     public function getCartGoodsAttr($goodsAttrs=[])
     {
         $result = [];
+        if(is_array($goodsAttrs))
         foreach ($goodsAttrs as $goodsAttr) {
             $result[] = [
                 "goodsId" => $goodsAttr['goods_id']??null,
