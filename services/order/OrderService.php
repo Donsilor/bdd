@@ -386,7 +386,7 @@ class OrderService extends OrderBaseService
             CardService::deFrozen($order_id);
 
             //退款通知
-            \Yii::$app->services->order->sendOrderNotification($order->id);
+            \Yii::$app->services->order->sendOrderNotificationByOrder($order);
         }
 
         $order->save(false);
