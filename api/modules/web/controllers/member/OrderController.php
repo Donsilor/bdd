@@ -104,7 +104,7 @@ class OrderController extends UserAuthController
                    'mainGoodsCode'=>null,
                    'ringName'=>"",
                    'ringImg'=>"",
-                   'goodsAttr'=>@\GuzzleHttp\json_decode($orderGoods->cart_goods_attr),
+                   'goodsAttr'=>$orderGoods->cart_goods_attr?@\GuzzleHttp\json_decode($orderGoods->cart_goods_attr, true):[],
                    'baseConfig'=>null,
                    'ring'=>[]
                ];
@@ -269,7 +269,7 @@ class OrderController extends UserAuthController
                 'mainGoodsCode'=>null,
                 'ringName'=>"",
                 'ringImg'=>"",
-                'goodsAttr'=>@\GuzzleHttp\json_decode($orderGoods->cart_goods_attr),
+                'goodsAttr'=>$orderGoods->cart_goods_attr?@\GuzzleHttp\json_decode($orderGoods->cart_goods_attr, true):[],
                 'baseConfig'=>null,
                 'ring'=>[]
             ];

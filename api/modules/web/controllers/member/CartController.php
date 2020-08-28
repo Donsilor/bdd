@@ -66,7 +66,7 @@ class CartController extends UserAuthController
             $cart['groupType'] = $model->group_type;
             $cart['goodsType'] = $model->goods_type;
             $cart['groupId'] = $model->group_id;
-            $cart['goodsAttr'] = @\GuzzleHttp\json_decode($model->goods_attr);
+            $cart['goodsAttr'] = $model->cart_goods_attr?@\GuzzleHttp\json_decode($model->cart_goods_attr, true):[];
 
             $cart['coupon'] = [
                 'type_id' => $model->goods_type,//产品线ID
