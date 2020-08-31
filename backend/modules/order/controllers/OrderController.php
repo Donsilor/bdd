@@ -1247,7 +1247,11 @@ DOM;
                 return $row->order->account->currency . ' ' . $row->order->account->order_amount;
             }],
             ['优惠后金额', 'id', 'function', function ($row) {
-                return $row->order->account->currency . ' ' . $row->order->account->pay_amount;
+                $pay_amount = $row->order->account->pay_amount;
+                if($row->order->account->currency == CurrencyEnum::TWD) {
+                    $pay_amount = sprintf("%.2f", intval($pay_amount));
+                }
+                return $row->order->account->currency . ' ' . $pay_amount;
             }],
 
             ['商品款号', 'id', 'function', function ($row) {
@@ -1279,7 +1283,11 @@ DOM;
                 return $row->order->account->currency . ' ' . $row->goods_price;
             }],
             ['商品实际成交价', 'id', 'function', function ($row) {
-                return $row->order->account->currency . ' ' . $row->goods_pay_price;
+                $goods_pay_price = $row->goods_pay_price;
+                if($row->order->account->currency == CurrencyEnum::TWD) {
+                    $goods_pay_price = sprintf("%.2f", intval($goods_pay_price));
+                }
+                return $row->order->account->currency . ' ' . $goods_pay_price;
             }],
         ];
 
