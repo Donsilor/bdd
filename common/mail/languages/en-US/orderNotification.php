@@ -113,12 +113,20 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
                                             <dd class="num"><span>Gift Card (<?= $card->card->sn ?>)：</span><em>-<?= AmountHelper::outputAmount(abs($card->use_amount),2,$currency)?></em></dd>
                                         <?php }} ?>
 									<?php if($order->order_status == OrderStatusEnum::ORDER_PAID || $order->refund_status) {?>
-									<dt class="count"><span>Pay Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
+									<dt class="count"><span>Pay Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->paid_amount,2, $order->account->paid_currency)?></em></dt>
                                     <?php } elseif($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>
-                                        <dt class="count"><span>Total Amount：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
+                                        <dt class="count"><span>Total Amount：</span><em class="total"><?php
+                                                if($currency==\common\enums\CurrencyEnum::TWD) {
+                                                    ?><?= AmountHelper::outputAmount(intval($order->account->pay_amount),2,$currency)?><?php
+                                                } else {
+                                                    ?><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?><?php } ?></em></dt>
                                     <?php }?>
                                     <?php if($order->refund_status) { ?>
-                                        <dt class="count"><span>Refunded：</span><em class="total"><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?></em></dt>
+                                        <dt class="count"><span>Refunded：</span><em class="total"><?php
+                                                if($currency==\common\enums\CurrencyEnum::TWD) {
+                                                    ?><?= AmountHelper::outputAmount(intval($order->account->pay_amount),2,$currency)?><?php
+                                                } else {
+                                                    ?><?= AmountHelper::outputAmount($order->account->pay_amount,2,$currency)?><?php } ?></em></dt>
                                     <?php } ?>
 								</dl>
 								<?php if($order->order_status == OrderStatusEnum::ORDER_UNPAID) {?>

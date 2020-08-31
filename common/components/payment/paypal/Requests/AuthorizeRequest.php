@@ -151,7 +151,20 @@ class AuthorizeRequest extends AbstractPaypalRequest
             $result = null;
         }
 
-        return new AuthorizeResponse($this, ['result' => $result]);
+        $data = [
+            'result' => $result,
+        ];
+
+        if($result) {
+            $amount = $order->getAmount();
+            $data = [
+                'result' => $result,
+                'total' => $amount->getTotal(),
+                'currency' => $amount->getCurrency(),
+            ];
+        }
+
+        return new AuthorizeResponse($this, $data);
     }
 
     /**

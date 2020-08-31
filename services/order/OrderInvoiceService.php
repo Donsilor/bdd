@@ -206,6 +206,10 @@ class OrderInvoiceService extends OrderBaseService
                 ->one();
         }
 
+        if($result['currency'] == CurrencyEnum::TWD) {
+            $result['order_pay_amount'] = sprintf('%.2f', intval($result['order_pay_amount']));
+        }
+
         if($order_invoice_exe_model){
             $order_invoice_exe = $order_invoice_exe_model->toArray();
             $result['invoice_date'] = $order_invoice_exe['invoice_date'] ? $order_invoice_exe['invoice_date'] : $result['invoice_date'];
