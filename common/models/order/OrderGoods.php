@@ -52,7 +52,8 @@ class OrderGoods extends \common\models\base\BaseModel
             [['goods_attr'], 'string'],
             [['goods_sn'], 'string', 'max' => 50],
             [['goods_image'], 'string', 'max' => 100],
-            [['cart_goods_attr','goods_attr','goods_spec','goods_name'], 'string', 'max' => 300],
+            [['goods_spec','goods_name'], 'string', 'max' => 300],
+            [['cart_goods_attr','goods_attr'], 'string', 'max' => 1024],
             [['currency'], 'string','max'=>5],
         ];
     }
