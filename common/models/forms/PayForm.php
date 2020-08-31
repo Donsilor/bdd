@@ -135,7 +135,13 @@ class PayForm extends Model
 
         //如果订单金额为零，则直接更新订单状态。否则调用支付接口
         if($this->payType == PayEnum::PAY_TYPE_CARD) {
-            if($baseOrder['total_fee']==0) {
+            $totalFee = $baseOrder['total_fee'];
+
+            if($baseOrder['currency']==CurrencyEnum::TWD) {
+                $totalFee = intval($totalFee);
+            }
+
+            if($totalFee==0) {
                 $model = PayLog::findOne(['out_trade_no'=>$baseOrder['out_trade_no']]);
 
                 $update = [

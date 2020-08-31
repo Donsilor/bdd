@@ -109,4 +109,13 @@ class OrderGoods extends \common\models\base\BaseModel
     {
         return $this->hasOne(MarketCoupon::class, ['id'=>'coupon_id']);
     }
+
+    /**
+     * 对应快递模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrder()
+    {
+        return $this->hasOne(Order::class, ['id'=>'order_id']);
+    }
 }
