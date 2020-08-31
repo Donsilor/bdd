@@ -151,7 +151,7 @@ class OrderInvoiceService extends OrderBaseService
         ],
     ];
 
-    public function getEleInvoiceInfo($order_id, $setLanguage=null) {
+    public function getEleInvoiceInfo($order_id, $setLanguage=null, $type=null) {
         $order = Order::find()
             ->where(['id'=>$order_id])
             ->one();
@@ -199,13 +199,17 @@ class OrderInvoiceService extends OrderBaseService
         $result['order_paid_amount'] = $order->account->paid_amount;//bcsub($result['order_amount'],$result['gift_card_amount'],2);
         $result['order_pay_amount'] = $order->account->pay_amount;//bcsub($result['order_amount'],$result['gift_card_amount'],2);
 
+        $order_invoice_exe_model = null;
+        if($type == 'pdf') {
+            $order_invoice_exe_model = OrderInvoiceEle::find()
+                ->where(['order_id'=>$order->id])
+                ->one();
+        }
+
         if($result['currency'] == CurrencyEnum::TWD) {
             $result['order_pay_amount'] = sprintf('%.2f', intval($result['order_pay_amount']));
         }
 
-        $order_invoice_exe_model = OrderInvoiceEle::find()
-            ->where(['order_id'=>$order->id])
-            ->one();
         if($order_invoice_exe_model){
             $order_invoice_exe = $order_invoice_exe_model->toArray();
             $result['invoice_date'] = $order_invoice_exe['invoice_date'] ? $order_invoice_exe['invoice_date'] : $result['invoice_date'];
@@ -227,7 +231,7 @@ class OrderInvoiceService extends OrderBaseService
             $result['express_no'] = $order_invoice_exe['express_no'] ? $order_invoice_exe['express_no'] : $result['express_no'];
         }
 
-        $sendAddressInfo = $this->getSendAddressByOrder($order, $language);
+        $sendAddressInfo = $this->getSendAddressByOrder($order, $language, $type);
 
         $result['sender_area'] = $result['sender_area']?:($sendAddressInfo['name']??'');
         $result['sender_address'] = $result['sender_address']?:($sendAddressInfo['detailed']??'');
@@ -296,9 +300,12 @@ class OrderInvoiceService extends OrderBaseService
         return $this->sendAddress;
     }
 
-    private function getSendAddressByOrder($order, $language=null)
+    private function getSendAddressByOrder($order, $language=null, $type=null)
     {
         $orderFrom = $order->order_from;
+        if($type == 'pdf') {
+            $orderFrom = OrderFromEnum::WEB_HK;
+        }
 
         $platformGroup = OrderFromEnum::platformToGroup($orderFrom);
 
