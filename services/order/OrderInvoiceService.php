@@ -151,14 +151,22 @@ class OrderInvoiceService extends OrderBaseService
         ],
     ];
 
-    public function getEleInvoiceInfo($order_id){
+    public function getEleInvoiceInfo($order_id, $setLanguage=null) {
         $order = Order::find()
             ->where(['id'=>$order_id])
             ->one();
         if(empty($order)) {
             throw new UnprocessableEntityHttpException("订单不存在");
         }
-        \Yii::$app->params['language'] = $language = 'en-US';// $order->language;
+
+        if($setLanguage) {
+            $language = $setLanguage;
+        }
+        else {
+            $language = LanguageEnum::EN_US;
+        }
+
+        \Yii::$app->params['language'] = $language;// $order->language;
 
         $result = array(
             'invoice_date' => $order->delivery_time,
@@ -191,6 +199,10 @@ class OrderInvoiceService extends OrderBaseService
         $result['order_paid_amount'] = $order->account->paid_amount;//bcsub($result['order_amount'],$result['gift_card_amount'],2);
         $result['order_pay_amount'] = $order->account->pay_amount;//bcsub($result['order_amount'],$result['gift_card_amount'],2);
 
+        if($result['currency'] == CurrencyEnum::TWD) {
+            $result['order_pay_amount'] = sprintf('%.2f', intval($result['order_pay_amount']));
+        }
+
         $order_invoice_exe_model = OrderInvoiceEle::find()
             ->where(['order_id'=>$order->id])
             ->one();
@@ -205,9 +217,12 @@ class OrderInvoiceService extends OrderBaseService
             $result['delivery_time'] = $order_invoice_exe['delivery_time'] ? $order_invoice_exe['delivery_time'] : $result['delivery_time'];
             $result['delivery_time'] = $order_invoice_exe['delivery_time'] ? $order_invoice_exe['delivery_time'] : $result['delivery_time'];
             $result['email'] = $order_invoice_exe['email'] ? $order_invoice_exe['email'] : $result['email'];
-            $language = $order_invoice_exe['language'] ? $order_invoice_exe['language'] : $language;
 
-            \Yii::$app->params['language'] = $language; //设置语言
+            if(!$setLanguage) {
+                $language = $order_invoice_exe['language'] ? $order_invoice_exe['language'] : $language;
+                \Yii::$app->params['language'] = $language; //设置语言
+            }
+
             $result['express_company_name'] = $order_invoice_exe['express_id'] ? $order_invoice_exe_model->express->lang->express_name : '';
             $result['express_no'] = $order_invoice_exe['express_no'] ? $order_invoice_exe['express_no'] : $result['express_no'];
         }
@@ -229,7 +244,7 @@ class OrderInvoiceService extends OrderBaseService
         $order_goods = OrderGoods::find()->alias('m')
             ->leftJoin(OrderGoodsLang::tableName().'lang','m.id=lang.master_id and lang.language="'.$language.'"')
             ->where(['order_id'=>$order_id])
-            ->select(['lang.goods_name','m.goods_sn','m.goods_num','m.goods_pay_price','m.goods_price','m.currency'])
+            ->select(['lang.goods_name','m.goods_sn','m.goods_num','m.goods_pay_price','m.goods_price','m.currency', 'm.goods_spec', 'm.goods_type'])
             ->asArray()
             ->all();
         $result['order_goods'] = $order_goods;

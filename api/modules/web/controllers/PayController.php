@@ -296,9 +296,7 @@ class PayController extends OnAuthController
             }          
           
             $update = [
-                'pay_fee' => $model->total_fee,
                 'pay_status' => PayStatusEnum::PAID,
-                'pay_time' => time(),
             ];
             $updated = PayLog::updateAll($update, ['pay_status'=>PayStatusEnum::UNPAID, 'id'=>$model->id]);
 
@@ -307,14 +305,24 @@ class PayController extends OnAuthController
             }
 
             $model->refresh();
-
-            //更新订单状态
-            Yii::$app->services->pay->notify($model, null);
            
             $response = Yii::$app->services->pay->getPayByType($model->pay_type)->verify(['model'=>$model]);
             $payCode = method_exists($response, 'getCode') ? $response->getCode() : 'failed';
             //支付成功
             if($response->isPaid()) {
+
+                $data = $response->getData();
+
+                if(isset($data['total']) && isset($data['currency'])) {
+                    $model->total_fee = $data['total'];
+                    $model->pay_fee = $data['total'];
+                    $model->fee_type = $data['currency'];
+                    $model->pay_time = time();
+                    $model->save();
+                }
+
+                //更新订单状态
+                Yii::$app->services->pay->notify($model, null);
 
                 $result['verification_status'] = 'completed';
 

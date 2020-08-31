@@ -266,6 +266,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                             'data-target' => '#ajaxModalLg',
                                         ])?>
                                     <?php } ?>
+                                    <?= Html::a('导出',['export-excel-invoice','order_id'=>$model->id],  [
+                                        'class' => 'btn btn-info btn-sm','target'=>'blank',
+                                    ])?>
                                 </div>
                             </div>
                         <?php } else {?>
@@ -291,8 +294,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'data-target' => '#ajaxModalLg',
                                     ])?>
                                     <?php } ?>
-
-
+                                    <?= Html::a('导出',['export-excel-invoice','order_id'=>$model->id],  [
+                                        'class' => 'btn btn-info btn-sm','target'=>'blank',
+                                    ])?>
                                 </div>
 
 
@@ -615,6 +619,11 @@ DOM;
             <div class="modal-footer">
                 <div class="text-center">
                     <span class="btn btn-white"  onclick="$('.active.J_menuTab i', window.parent.document).click()">关闭</span>
+                    <?= Html::edit(['edit-follower', 'id' => $model->id], '跟进', [
+                    'data-toggle' => 'modal',
+                    'data-target' => '#ajaxModal',
+                    'class'=>'btn btn-default btn-sm'
+                    ]);?>
                 </div>
             </div>
         </div>

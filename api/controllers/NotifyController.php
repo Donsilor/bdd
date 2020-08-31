@@ -251,9 +251,7 @@ class NotifyController extends Controller
 
                 //更新支付记录
                 $update = [
-                    'pay_fee' => $model->total_fee,
                     'pay_status' => PayStatusEnum::PAID,
-                    'pay_time' => time(),
                 ];
                 $updated = PayLog::updateAll($update, ['id'=>$model->id,'pay_status'=>PayStatusEnum::UNPAID]);
                 if(!$updated) {
@@ -262,12 +260,24 @@ class NotifyController extends Controller
                 }
                 
                 $model->refresh();
-                //更新订单记录
-                Yii::$app->services->pay->notify($model, $this->payment);
+
 
                 $response = Yii::$app->pay->Paypal()->notify(['model'=>$model]);
 
                 if ($response->isPaid()) {
+
+                    $data = $response->getData();
+
+                    if(isset($data['total']) && isset($data['currency'])) {
+                        $model->total_fee = $data['total'];
+                        $model->pay_fee = $data['total'];
+                        $model->fee_type = $data['currency'];
+                        $model->pay_time = time();
+                        $model->save();
+                    }
+
+	                //更新订单记录
+	                Yii::$app->services->pay->notify($model, $this->payment);
 
                     $transaction->commit();
 
