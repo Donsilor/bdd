@@ -1031,25 +1031,11 @@ class OrderController extends BaseController
             'zsdx' => $zsdx,
         ];
     }
-
-    public function getExportGoods($_list) {
-
-        $list = [];
-        $specList = [];
-        foreach ($_list as $order) {
-            foreach ($order->goods as $goods) {
-                $list[] = $goods;
-
-                $specs = \Yii::$app->services->goods->formatGoodsSpec($goods->goods_spec);
-
-                $specList[$goods->id] = $this->fun($specs);
-            }
-        }
-
-//序号，订单号，客户姓名，客户邮箱，客户手机号，是否测试，订单状态，支付状态，下单时间，客户备注，快递公司，快递单号，订单总金额，优惠后金额
-//
-//
-//商品款号，商品名称，成色，手寸，镶口，主石类型，主石大小，商品原价，商品实际成交价
+    
+    //序号，订单号，客户姓名，客户邮箱，客户手机号，是否测试，订单状态，支付状态，下单时间，客户备注，快递公司，快递单号，订单总金额，优惠后金额
+    //
+    //
+    //商品款号，商品名称，成色，手寸，镶口，主石类型，主石大小，商品原价，商品实际成交价
     public function actionExportExcelInvoice()
     {
         $order_id = Yii::$app->request->get('order_id');
@@ -1057,12 +1043,12 @@ class OrderController extends BaseController
             return ResultHelper::json(422, '非法调用');
         }
         $result = Yii::$app->services->orderInvoice->getEleInvoiceInfo($order_id, LanguageEnum::EN_US);
-
+        
         $template = Yii::getAlias('@storage') . '/backend/excels/order_invoice.xlsx';
-
+        
         $spreadsheet = IOFactory::load($template);
         $sheet = $spreadsheet->getActiveSheet();
-
+        
         $sheet->setCellValue('A2', 'Address: '.$result['sender_address']);
         $sheet->setCellValue('B4', '');
         $sheet->setCellValue('F4', $result['order_sn']);
@@ -1072,28 +1058,28 @@ class OrderController extends BaseController
         $sheet->setCellValue('F6', Yii::t('pay', \common\enums\PayEnum::getValue($result['payment_type'], "payTypeName"), [], $result['language']));
         $sheet->setCellValue('B7', $result['address_details']);
         $sheet->setCellValue('F7', $result['zip_code']);
-
+        
         $startRowNum = 9;
         $rowsNum = count($result['order_goods']);
         $row=$key = 0;
         $sum = 0;
-
+        
         if($rowsNum > 1) {
             $sheet->insertNewRowBefore($startRowNum+1, $rowsNum - 1);
         }
-
+        
         $html = <<<DOM
 %s
 %s %s
 DOM;
-
+        
         foreach ($result['order_goods'] as $key => $val) {
             $row = $startRowNum + $key;
             $sheet->setCellValue("A{$row}", $key+1);
             $sheet->setCellValue("B{$row}", $val['goods_sn']);
-//            $sheet->setCellValue("C{$row}", '');
+            //            $sheet->setCellValue("C{$row}", '');
             $sheet->setCellValue("D{$row}", $val['goods_name']);
-
+            
             $value = '';
             $goods_spec = '';
             if($val['goods_type']==19) {
@@ -1107,41 +1093,41 @@ DOM;
                     foreach ($val['goods_spec'] as $vo) {
                         if($vo['attr_id']==61) {
                             $goods = Yii::$app->services->goods->getGoodsInfo($vo['value_id']);
-
+                            
                             foreach ($goods['lang']['goods_spec'] as $spec) {
                                 $goods_spec1 .= $spec['attr_name'].":".$spec['attr_value']." ";
                             }
-
+                            
                             $value1 .= sprintf($html,
-                                $vo['attr_name'] . '：' . $goods['goods_name'],
-                                $goods['goods_sn'],
-                                $goods_spec1
-                            );
+                                    $vo['attr_name'] . '：' . $goods['goods_name'],
+                                    $goods['goods_sn'],
+                                    $goods_spec1
+                                    );
                             continue;
                         }
                         if($vo['attr_id']==62) {
                             $goods = Yii::$app->services->goods->getGoodsInfo($vo['value_id']);
-
+                            
                             foreach ($goods['lang']['goods_spec'] as $spec) {
                                 $goods_spec2 .= $spec['attr_name'].":".$spec['attr_value']." ";
                             }
-
+                            
                             $value2 .= sprintf($html,
-                                $vo['attr_name'] . '：' . $goods['goods_name'],
-                                $goods['goods_sn'],
-                                $goods_spec2
-                            );
+                                    $vo['attr_name'] . '：' . $goods['goods_name'],
+                                    $goods['goods_sn'],
+                                    $goods_spec2
+                                    );
                             continue;
                         }
                         $goods_spec .= $vo['attr_name'].":".$vo['attr_value']." ";
                     }
                 }
                 $value .= sprintf($html,
-                    '',
-                    '',
-                    $goods_spec
-                );
-
+                        '',
+                        '',
+                        $goods_spec
+                        );
+                
                 $value .= $value1;
                 $value .= $value2;
             }
@@ -1163,13 +1149,13 @@ DOM;
                 }
                 $value = $goods_spec;
             }
-
+            
             $sheet->setCellValue("E{$row}", $value);
             $sheet->setCellValue("F{$row}", $val['goods_price']. " ".$val['currency']);
             $sheet->setCellValue("G{$row}", $val['goods_num']);
             $sheet->setCellValue("H{$row}", $val['goods_price']*$val['goods_num'] . " ".$val['currency']);
         }
-
+        
         $row++;
         $sheet->setCellValue("H{$row}", $result['coupon_amount'] . " ".$val['currency']);
         $row++;
@@ -1177,25 +1163,38 @@ DOM;
         $row++;
         $sheet->setCellValue("G{$row}", ($key+1));
         $sheet->setCellValue("H{$row}", $result['order_pay_amount'] . " ".$val['currency']);
-
+        
         // 清除之前的错误输出
         ob_end_clean();
         ob_start();
-
+        
         header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8;");
         header("Content-Disposition: inline;filename=invoice-{$result['order_sn']}.xlsx");
         header('Cache-Control: max-age=0');
-
+        
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save('php://output');
-
+        
         $spreadsheet->disconnectWorksheets();
-
+        
         unset($spreadsheet);
         ob_end_flush();
-
+        
         exit();
     }
+    public function getExportGoods($_list) {
+
+        $list = [];
+        $specList = [];
+        foreach ($_list as $order) {
+            foreach ($order->goods as $goods) {
+                $list[] = $goods;
+
+                $specs = \Yii::$app->services->goods->formatGoodsSpec($goods->goods_spec);
+
+                $specList[$goods->id] = $this->fun($specs);
+            }
+        }
 
         $header = [
             ['序号', 'id'],
