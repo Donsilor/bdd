@@ -683,7 +683,7 @@ class OrderController extends BaseController
         if(!$order_id){
             return ResultHelper::json(422, '非法调用');
         }
-        $result = Yii::$app->services->orderInvoice->getEleInvoiceInfo($order_id);
+        $result = Yii::$app->services->orderInvoice->getEleInvoiceInfo($order_id, null, 'pdf');
         $content = $this->renderPartial($result['template'],['result'=>$result]);
         if(!Yii::$app->request->get('is_pdf', true)) return $content;
         $usage = 'order-invoice';
