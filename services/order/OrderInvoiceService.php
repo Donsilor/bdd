@@ -333,7 +333,7 @@ class OrderInvoiceService extends OrderBaseService
      * @return string
      */
     public function generatePdfFile($view, $order) {
-        $result = $this->getEleInvoiceInfo($order);
+        $result = $this->getEleInvoiceInfo($order, null, 'pdf');
 
         $content = $view->render($result['template'], ['result'=>$result]);
 

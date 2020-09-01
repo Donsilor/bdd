@@ -743,7 +743,7 @@ class OrderController extends BaseController
         if(!$order_id){
             return ResultHelper::json(422, '非法调用');
         }
-        $result = Yii::$app->services->orderInvoice->getEleInvoiceInfo($order_id);
+        $result = Yii::$app->services->orderInvoice->getEleInvoiceInfo($order_id, null, 'pdf');
         if($result['is_electronic'] != InvoiceElectronicEnum::YES){
             return ResultHelper::json(422, '此订单没有电子发票');
         }
