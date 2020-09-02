@@ -38,6 +38,7 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                     <div class="box-header box-tools">
                         <?= Html::a('订单商品统计',['export-goods']+$params) ?>
                         <?= Html::a('订单导出',['export']+$params) ?>
+                        <?= Html::a('导出发票文件',['export-invoice-file']+$params) ?>
                     </div>
                 </li>
 

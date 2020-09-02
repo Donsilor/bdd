@@ -19,6 +19,7 @@ use common\enums\PayStatusEnum;
 use common\helpers\ExcelHelper;
 use common\helpers\Html;
 use common\helpers\ResultHelper;
+use common\helpers\Url;
 use common\models\common\EmailLog;
 use common\models\goods\Goods;
 use common\models\market\MarketCard;
@@ -188,11 +189,17 @@ class OrderController extends BaseController
             $dataProvider->setPagination(false);
             $list = $dataProvider->models;
 
-            if($this->export=='order') {
-                $this->getExport($list);
+            if($this->export=='export-invoice-file') {
+                return $this->getExportInvoiceFile($list);
             }
+
+            elseif($this->export=='order') {
+                return $this->getExport($list);
+            }
+
             elseif ($this->export=='goods') {
-                $this->getExportGoods($list);
+                return $this->getExportGoods($list);
+
             }
         }
 
@@ -205,6 +212,11 @@ class OrderController extends BaseController
     public $export = null;
     public function actionExport() {
         $this->export = 'order';
+        return $this->actionIndex();
+    }
+
+    public function actionExportInvoiceFile() {
+        $this->export = 'export-invoice-file';
         return $this->actionIndex();
     }
 
@@ -680,9 +692,9 @@ class OrderController extends BaseController
     }
 
    //电子发票预览（PDF）
-    public function actionEleInvoicePdf(){
+    public function actionEleInvoicePdf() {
         $order_id = Yii::$app->request->get('order_id');
-        if(!$order_id){
+        if(!$order_id) {
             return ResultHelper::json(422, '非法调用');
         }
         $result = Yii::$app->services->orderInvoice->getEleInvoiceInfo($order_id, null, 'pdf');
@@ -733,7 +745,7 @@ class OrderController extends BaseController
         if(!$order_id){
             return ResultHelper::json(422, '非法调用');
         }
-        $result = Yii::$app->services->orderInvoice->getEleInvoiceInfo($order_id);
+        $result = Yii::$app->services->orderInvoice->getEleInvoiceInfo($order_id, null, 'pdf');
         if($result['is_electronic'] != InvoiceElectronicEnum::YES){
             return ResultHelper::json(422, '此订单没有电子发票');
         }
@@ -937,6 +949,35 @@ class OrderController extends BaseController
         ];
 
         return ExcelHelper::exportData($list, $header, '订单数据导出_' . date('YmdHis',time()));
+    }
+
+    public function getExportInvoiceFile($list) {
+        if(!is_array($list) || empty($list)) {
+            return $this->message("数据为空", $this->redirect(Yii::$app->request->referrer), 'error');
+        }
+
+        $service = Yii::$app->services->orderInvoice;
+
+        $filename = sprintf("invoice-zip/发票压缩包-%s.zip", time());
+        $zip = new \ZipArchive();
+        $zip->open($filename, \ZipArchive::CREATE);   //打开压缩包
+
+        foreach ($list as $item) {
+            $file= $service->generatePdfFile($this, $item);
+
+            if(file_exists($file)) {
+                $zip->addFile($file, basename($file));   //向压缩包中添加文件
+            }
+
+        }
+        $zip->close();  //关闭压缩包
+
+        //下载文件
+        if(file_exists($filename)) {
+            return $this->redirect(Url::to(Url::base() . '/' . $filename));
+        }
+
+        return $this->message("压缩包文件不存在", $this->redirect(Yii::$app->request->referrer), 'error');
     }
 
     public function actionEditAddress()
