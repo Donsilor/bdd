@@ -245,7 +245,11 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                                     if($model->account->paid_currency) {
                                         return sprintf('(%s)%s', $model->account->paid_currency, $model->account->paid_amount);
                                     } else {
-                                        return sprintf('(%s)%s', $model->account->currency, $model->account->pay_amount);//bcsub($model->account->order_amount-$model->account->coupon_amount-$model->account->card_amount, $model->account->discount_amount, 2));
+                                        $pay_amount = $model->account->pay_amount;
+                                        if($model->account->currency==\common\enums\CurrencyEnum::TWD) {
+                                            $pay_amount = sprintf("%.2f", intval($pay_amount));
+                                        }
+                                        return sprintf('(%s)%s', $model->account->currency, $pay_amount);//bcsub($model->account->order_amount-$model->account->coupon_amount-$model->account->card_amount, $model->account->discount_amount, 2));
                                     }
                                 }
                             ],
