@@ -33,9 +33,15 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             ],
                             [
                                 'label' => '产品名称',
+                                'value' => function($row) {
+                                    return $row->style->lang->style_name;
+                                }
                             ],
                             [
                                 'label' => '款号',
+                                'value' => function($row) {
+                                    return $row->style->style_sn;
+                                }
                             ],
 //                            [
 //                                'attribute' => 'order_sn',
@@ -142,7 +148,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'template' => '{audit}',
                                 'buttons' => [
                                     'audit' => function ($url, $model, $key) {
-                                        if($model->order_status == \common\enums\OrderStatusEnum::ORDER_PAID) {
+                                        if($model->status == \common\enums\OrderStatusEnum::ORDER_PAID) {
 //                                            return Html::batchAudit(['ajax-batch-audit'], '审核', [
                                             //'class'=>'label bg-green'
 //                                            ]);

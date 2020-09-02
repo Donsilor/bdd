@@ -3,6 +3,7 @@
 namespace common\models\order;
 
 use common\models\base\BaseModel;
+use common\models\goods\Style;
 use Yii;
 
 /**
@@ -68,5 +69,10 @@ class OrderComment extends BaseModel
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
+    }
+
+    public function getStyle()
+    {
+        return $this->hasOne(Style::class, ['id'=>'style_id']);//->alias('lang')->where(['lang.language' => Yii::$app->params['language']]);
     }
 }
