@@ -32,6 +32,29 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'attribute' => 'id',
                             ],
                             [
+                                'label' => '产品名称',
+                            ],
+                            [
+                                'label' => '款号',
+                            ],
+//                            [
+//                                'attribute' => 'order_sn',
+//                                'filter' => Html::activeTextInput($searchModel, 'order_sn', [
+//                                    'class' => 'form-control',
+//                                ]),
+//                                'format' => 'raw',
+//                                'value' => function($model) {
+//                                    return Html::a($model->order_sn, ['view', 'id' => $model->id], ['style'=>"text-decoration:underline;color:#3c8dbc"]);
+//                                }
+//                            ],
+//                            [
+//                                'attribute' => 'order_amount',
+//                                'value' => function ($model) {
+//                                    return sprintf('(%s)%s', $model->currency, $model->order_amount);
+//                                }
+//                            ],
+                            [
+                                'label' => '评价时间',
                                 'attribute' => 'created_at',
                                 'filter' => DateRangePicker::widget([    // 日期组件
                                     'model' => $searchModel,
@@ -56,22 +79,6 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 },
                                 'format' => 'raw',
                             ],
-//                            [
-//                                'attribute' => 'order_sn',
-//                                'filter' => Html::activeTextInput($searchModel, 'order_sn', [
-//                                    'class' => 'form-control',
-//                                ]),
-//                                'format' => 'raw',
-//                                'value' => function($model) {
-//                                    return Html::a($model->order_sn, ['view', 'id' => $model->id], ['style'=>"text-decoration:underline;color:#3c8dbc"]);
-//                                }
-//                            ],
-//                            [
-//                                'attribute' => 'order_amount',
-//                                'value' => function ($model) {
-//                                    return sprintf('(%s)%s', $model->currency, $model->order_amount);
-//                                }
-//                            ],
                             [
                                 'attribute' => 'from',
                                 'headerOptions' => ['class' => 'col-md-1'],
@@ -85,35 +92,70 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'format' => 'raw',
                             ],
                             [
-                                'attribute' => 'ip',
+                                'label' => '评价内容',
+                                'attribute' => 'content',
                                 'value' => function ($model) {
-                                    return $model->ip."(".$model->ip_location.")";
+                                    return $model->content;
                                 },
                             ],
                             [
-                                'attribute' => 'ip_area_id',
-                                'headerOptions' => ['class' => 'col-md-1'],
-                                'filter' => Html::activeDropDownList($searchModel, 'ip_area_id', \common\enums\AreaEnum::getMap(), [
-                                    'prompt' => '全部',
-                                    'class' => 'form-control',
-                                ]),
+                                'filter' => false,
+                                'label' => '审核人',
+                                'attribute' => 'admin_id',
                                 'value' => function ($model) {
-                                    return \common\enums\AreaEnum::getValue($model->ip_area_id);
+                                    return $model->admin_id;
                                 },
-                                'format' => 'raw',
                             ],
 //                            [
-//                                'attribute' => 'status',
+//                                'attribute' => 'ip',
+//                                'value' => function ($model) {
+//                                    return $model->ip."(".$model->ip_location.")";
+//                                },
+//                            ],
+//                            [
+//                                'attribute' => 'ip_area_id',
 //                                'headerOptions' => ['class' => 'col-md-1'],
-//                                'filter' => Html::activeDropDownList($searchModel, 'status', ['未支付', '已支付'], [
+//                                'filter' => Html::activeDropDownList($searchModel, 'ip_area_id', \common\enums\AreaEnum::getMap(), [
 //                                    'prompt' => '全部',
 //                                    'class' => 'form-control',
 //                                ]),
 //                                'value' => function ($model) {
-//                                    return array_get(['未支付', '已支付'], $model->status);
+//                                    return \common\enums\AreaEnum::getValue($model->ip_area_id);
 //                                },
 //                                'format' => 'raw',
 //                            ],
+                            [
+                                'attribute' => 'status',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'status', \common\enums\OrderCommentStatusEnum::getMap(), [
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    return \common\enums\OrderCommentStatusEnum::getValue($model->status);
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
+                                'header' => "操作",
+                                //'headerOptions' => ['class' => 'col-md-1'],
+                                'class' => 'yii\grid\ActionColumn',
+                                'template' => '{audit}',
+                                'buttons' => [
+                                    'audit' => function ($url, $model, $key) {
+                                        if($model->order_status == \common\enums\OrderStatusEnum::ORDER_PAID) {
+//                                            return Html::batchAudit(['ajax-batch-audit'], '审核', [
+                                            //'class'=>'label bg-green'
+//                                            ]);
+                                            return Html::edit(['edit-audit', 'id' => $model->id], '审核', [
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#ajaxModal',
+                                                'class'=>'btn bg-green btn-sm'
+                                            ]);
+                                        }
+                                        return null;
+                                    },
+                                ],
+                            ],
                         ],
                     ]);
                   ?>
