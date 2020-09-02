@@ -2,6 +2,7 @@
 
 namespace common\models\order;
 
+use common\models\base\BaseModel;
 use Yii;
 
 /**
@@ -22,7 +23,7 @@ use Yii;
  * @property int $created_at 创建时间
  * @property int $updated_at 更新时间
  */
-class OrderComment extends \yii\db\ActiveRecord
+class OrderComment extends BaseModel
 {
     /**
      * {@inheritdoc}
