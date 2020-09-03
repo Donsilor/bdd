@@ -63,23 +63,13 @@ class OrderCommentController extends BaseController
     public function actionEditAudit()
     {
         $id = Yii::$app->request->get('id', null);
-        $order = Yii::$app->request->post('OrderAuditForm', []);
-
-//        $this->modelClass = OrderAuditForm::class;
 
         $model = $this->findModel($id);
 
         // ajax 校验
         $this->activeFormValidate($model);
 
-        if (Yii::$app->request->isPost) {
-
-//            try {
-//                Yii::$app->services->order->changeOrderStatusAudit($id, $order['audit_status'], $order['audit_remark']??'');
-//            } catch (\Exception $exception) {
-//                $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
-//            }
-
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(Yii::$app->request->referrer);
         }
 

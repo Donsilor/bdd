@@ -134,6 +134,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'attribute' => 'status',
                                 'headerOptions' => ['class' => 'col-md-1'],
                                 'filter' => Html::activeDropDownList($searchModel, 'status', \common\enums\OrderCommentStatusEnum::getMap(), [
+                                    'prompt' => '所有',
                                     'class' => 'form-control',
                                 ]),
                                 'value' => function ($model) {
@@ -169,28 +170,28 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 </div>
 
 <script>
-    function audit(id) {
-        let _id = [];
-        if(id===undefined) {
-            _id= []
-        }
-        else {
-            _id.push(id)
-        }
-    }
-
-    (function ($) {
-        /**
-         * 头部文本框触发列表过滤事件
-         */
-        $(".top-form input,select").change(function () {
-            $(".filters input[name='" + $(this).attr('name') + "']").val($(this).val()).trigger('change');
-        });
-
-        $("[data-krajee-daterangepicker]").on("cancel.daterangepicker", function () {
-            $(this).val("").trigger("change");
-        });
-
-
-    })(window.jQuery);
+    // function audit(id) {
+    //     let _id = [];
+    //     if(id===undefined) {
+    //         _id= []
+    //     }
+    //     else {
+    //         _id.push(id)
+    //     }
+    // }
+    //
+    // (function ($) {
+    //     /**
+    //      * 头部文本框触发列表过滤事件
+    //      */
+    //     $(".top-form input,select").change(function () {
+    //         $(".filters input[name='" + $(this).attr('name') + "']").val($(this).val()).trigger('change');
+    //     });
+    //
+    //     $("[data-krajee-daterangepicker]").on("cancel.daterangepicker", function () {
+    //         $(this).val("").trigger("change");
+    //     });
+    //
+    //
+    // })(window.jQuery);
 </script>
