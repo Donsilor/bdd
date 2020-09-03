@@ -148,10 +148,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'template' => '{audit}',
                                 'buttons' => [
                                     'audit' => function ($url, $model, $key) {
-                                        if($model->status == \common\enums\OrderStatusEnum::ORDER_PAID) {
-//                                            return Html::batchAudit(['ajax-batch-audit'], '审核', [
-                                            //'class'=>'label bg-green'
-//                                            ]);
+                                        if($model->status == \common\enums\OrderCommentStatusEnum::PENDING) {
                                             return Html::edit(['edit-audit', 'id' => $model->id], '审核', [
                                                 'data-toggle' => 'modal',
                                                 'data-target' => '#ajaxModal',

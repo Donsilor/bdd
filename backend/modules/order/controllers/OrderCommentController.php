@@ -3,15 +3,17 @@
 
 namespace backend\modules\order\controllers;
 
+use common\components\Curd;
 use Yii;
 use backend\controllers\BaseController;
-use common\enums\OrderFromEnum;
 use common\models\base\SearchModel;
 use common\models\order\OrderComment;
 use common\models\order\OrderTourist;
 
 class OrderCommentController extends BaseController
 {
+    use Curd;
+
     /**
      * @var OrderTourist
      */
@@ -53,6 +55,36 @@ class OrderCommentController extends BaseController
         return $this->render($this->action->id, [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
+        ]);
+    }
+
+
+
+    public function actionEditAudit()
+    {
+        $id = Yii::$app->request->get('id', null);
+        $order = Yii::$app->request->post('OrderAuditForm', []);
+
+//        $this->modelClass = OrderAuditForm::class;
+
+        $model = $this->findModel($id);
+
+        // ajax 校验
+        $this->activeFormValidate($model);
+
+        if (Yii::$app->request->isPost) {
+
+//            try {
+//                Yii::$app->services->order->changeOrderStatusAudit($id, $order['audit_status'], $order['audit_remark']??'');
+//            } catch (\Exception $exception) {
+//                $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
+//            }
+
+            return $this->redirect(Yii::$app->request->referrer);
+        }
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
         ]);
     }
 }

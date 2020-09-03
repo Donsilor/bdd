@@ -14,8 +14,10 @@ use Yii;
  * @property int $style_id
  * @property int $status 状态：0待审核，1审核通过，-1审核不通过
  * @property int $admin_id 审核管理员ID
+ * @property string $remark 审核备注
  * @property int $is_import 是否导入：0否，1是
  * @property string $content 评价内容
+ * @property string $images 评价内容
  * @property int $user_id 用户ID
  * @property int $from 来路站点
  * @property string $ip 客户IP
@@ -44,7 +46,7 @@ class OrderComment extends BaseModel
             [['style_id', 'created_at', 'updated_at'], 'required'],
             [['content'], 'string', 'max' => 45],
             [['ip'], 'string', 'max' => 10],
-            [['ip_location'], 'string', 'max' => 255],
+            [['ip_location', 'remark'], 'string', 'max' => 255],
         ];
     }
 
@@ -59,8 +61,10 @@ class OrderComment extends BaseModel
             'style_id' => Yii::t('app', '款式ID'),
             'status' => Yii::t('app', '状态'),
             'admin_id' => Yii::t('app', '管理员ID'),
+            'remark' => Yii::t('app', '审核备注'),
             'is_import' => Yii::t('app', '是否导入'),
             'content' => Yii::t('app', '评价内容'),
+            'images' => Yii::t('app', '评价图片'),
             'user_id' => Yii::t('app', '客户ID'),
             'from' => Yii::t('app', '站点'),
             'ip' => Yii::t('app', 'Ip'),
