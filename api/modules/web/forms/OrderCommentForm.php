@@ -15,8 +15,8 @@ class OrderCommentForm extends OrderComment
     public function rules()
     {
         return [
-            [['order_id', 'style_id', 'status', 'admin_id', 'is_import', 'user_id', 'from', 'ip_area_id', 'created_at', 'updated_at'], 'integer'],
-            [['platform', 'user_id', 'order_id', 'style_id', 'grade', 'content'], 'required'],
+            [['order_id', 'type_id', 'style_id', 'status', 'admin_id', 'is_import', 'user_id', 'from', 'ip_area_id', 'created_at', 'updated_at'], 'integer'],
+            [['platform', 'user_id', 'order_id', 'type_id', 'style_id', 'grade', 'content'], 'required'],
             [['ip', 'ip_location', 'remark', 'content'], 'string', 'max' => 255],
             [['content'], 'safe'],
             ['images', 'validateImages'],
@@ -30,6 +30,7 @@ class OrderCommentForm extends OrderComment
     {
         return [
             'order_id' => Yii::t('app', '订单ID'),
+            'type_id' => Yii::t('app', '产品线ID'),
             'style_id' => Yii::t('app', '款式ID'),
             'grade' => Yii::t('app', '评价等级'),
             'content' => Yii::t('app', '评价内容'),
