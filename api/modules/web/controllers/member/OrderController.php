@@ -532,14 +532,14 @@ class OrderController extends UserAuthController
         ];
     }
 
-    public function comment()
+    public function actionComment()
     {
 
         try {
 
             $trans = \Yii::$app->db->beginTransaction();
 
-            $datas = \Yii::$app->request->post();
+            $datas = \Yii::$app->request->post('params');
 
             $result = [];
 
@@ -557,7 +557,7 @@ class OrderController extends UserAuthController
                 $model->setAttributes($data);
                 $model->setAttributes($attr);
 
-                if($model->save()) {
+                if(!$model->save()) {
                     throw new UnprocessableEntityHttpException($this->getError($model));
                 }
 

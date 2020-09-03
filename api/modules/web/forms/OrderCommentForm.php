@@ -3,9 +3,11 @@
 
 namespace api\modules\web\forms;
 
+use common\models\order\Order;
 use Yii;
 use common\models\order\OrderComment;
 use yii\validators\ImageValidator;
+use yii\validators\UrlValidator;
 
 class OrderCommentForm extends OrderComment
 {
@@ -15,11 +17,14 @@ class OrderCommentForm extends OrderComment
     public function rules()
     {
         return [
-            [['order_id', 'type_id', 'style_id', 'status', 'admin_id', 'is_import', 'user_id', 'from', 'ip_area_id', 'created_at', 'updated_at'], 'integer'],
+            [['order_id', 'type_id', 'style_id', 'status', 'admin_id', 'is_import', 'user_id', 'platform', 'ip_area_id', 'created_at', 'updated_at'], 'integer'],
             [['platform', 'user_id', 'order_id', 'type_id', 'style_id', 'grade', 'content'], 'required'],
             [['ip', 'ip_location', 'remark', 'content'], 'string', 'max' => 255],
             [['content'], 'safe'],
+            ['order_id', 'validateOrderId'],
+            [['style_id', 'type_id'], 'validateStyleId'],
             ['images', 'validateImages'],
+            ['grade', 'in', 'range' => [0,1,2,3,4,5,]],
         ];
     }
 
@@ -44,6 +49,33 @@ class OrderCommentForm extends OrderComment
         ];
     }
 
+    public function validateOrderId($attribute)
+    {
+        $where = [];
+        $where['id'] = $this->getAttribute($attribute);
+        $where['member_id'] = $this->user_id;
+        if($this->hasErrors()) {
+            return;
+        }
+
+        if(!Order::findOne($where)) {
+            $this->addError($attribute, '订单ID错误');
+        }
+    }
+
+    public function validateStyleId($attribute)
+    {
+        if($this->hasErrors()) {
+            return;
+        }
+
+        $goods = \Yii::$app->services->goods->getGoodsInfo($this->style_id, $this->type_id);
+
+        if(!($goods && $goods['type_id']==$this->type_id)) {
+            $this->addError($attribute, '错品信息错误');
+        }
+    }
+
     public function validateImages($attribute)
     {
         $values = $this->getAttribute($attribute);
@@ -57,7 +89,7 @@ class OrderCommentForm extends OrderComment
             $this->addError($attribute, '不是数组');
         }
 
-        $validator = new ImageValidator();
+        $validator = new UrlValidator();
 
         foreach ($values as $value) {
             if(!$validator->validate($value)) {
