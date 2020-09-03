@@ -65,6 +65,7 @@ class OrderCommentController extends BaseController
         $id = Yii::$app->request->get('id', null);
 
         $model = $this->findModel($id);
+        $model->admin_id = Yii::$app->user->getIdentity()->id;
 
         // ajax 校验
         $this->activeFormValidate($model);

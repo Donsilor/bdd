@@ -34,13 +34,13 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             [
                                 'label' => '产品名称',
                                 'value' => function($row) {
-                                    return $row->style->lang->style_name;
+                                    return $row->style->lang->style_name??'';
                                 }
                             ],
                             [
                                 'label' => '款号',
                                 'value' => function($row) {
-                                    return $row->style->style_sn;
+                                    return $row->style->style_sn??'';
                                 }
                             ],
 //                            [
@@ -109,7 +109,11 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'label' => '审核人',
                                 'attribute' => 'admin_id',
                                 'value' => function ($model) {
-                                    return $model->admin_id;
+                                    $row = \common\models\backend\Member::find()->where(['id'=>$model->admin_id])->one();
+                                    if($row){
+                                        return $row->username;
+                                    }
+                                    return '';
                                 },
                             ],
 //                            [
