@@ -3,6 +3,7 @@
 namespace api\modules\web\controllers\member;
 
 use api\modules\web\forms\CardForm;
+use api\modules\web\forms\OrderCommentForm;
 use common\enums\CurrencyEnum;
 use common\enums\PayEnum;
 use common\helpers\ImageHelper;
@@ -529,6 +530,50 @@ class OrderController extends UserAuthController
             'myCoupons' => $myCoupons,
             'cards'=> $taxInfo['cards'],
         ];
+    }
+
+    public function comment()
+    {
+
+        try {
+
+            $trans = \Yii::$app->db->beginTransaction();
+
+            $datas = \Yii::$app->request->post();
+
+            $result = [];
+
+            $attr = [
+                'user_id' => $this->member_id,
+                'platform' => $this->platform,
+            ];
+
+            if(empty($datas)) {
+                throw new UnprocessableEntityHttpException('提交数据为空');
+            }
+
+            foreach ($datas as $data) {
+                $model = new OrderCommentForm();
+                $model->setAttributes($data);
+                $model->setAttributes($attr);
+
+                if($model->save()) {
+                    throw new UnprocessableEntityHttpException($this->getError($model));
+                }
+
+                $result[] = $model;
+            }
+
+            $trans->commit();
+
+        } catch (\Exception $e) {
+
+            $trans->rollBack();
+
+            throw $e;
+        }
+
+        return $result;
     }
     
 }
