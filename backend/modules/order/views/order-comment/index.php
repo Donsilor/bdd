@@ -86,14 +86,14 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'format' => 'raw',
                             ],
                             [
-                                'attribute' => 'from',
+                                'attribute' => 'platform',
                                 'headerOptions' => ['class' => 'col-md-1'],
-                                'filter' => Html::activeDropDownList($searchModel, 'from', \common\enums\OrderFromEnum::getMap(), [
+                                'filter' => Html::activeDropDownList($searchModel, 'platform', \common\enums\OrderFromEnum::getMap(), [
                                     'prompt' => '全部',
                                     'class' => 'form-control',
                                 ]),
                                 'value' => function ($model) {
-                                    return \common\enums\OrderFromEnum::getValue($model->from);
+                                    return \common\enums\OrderFromEnum::getValue($model->platform);
                                 },
                                 'format' => 'raw',
                             ],

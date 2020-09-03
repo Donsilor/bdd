@@ -19,7 +19,7 @@ use Yii;
  * @property string $content 评价内容
  * @property string $images 评价内容
  * @property int $user_id 用户ID
- * @property int $from 来路站点
+ * @property int $platform 来路站点
  * @property string $ip 客户IP
  * @property int $ip_area_id
  * @property string $ip_location
@@ -42,7 +42,7 @@ class OrderComment extends BaseModel
     public function rules()
     {
         return [
-            [['order_id', 'style_id', 'status', 'admin_id', 'is_import', 'user_id', 'from', 'ip_area_id', 'created_at', 'updated_at'], 'integer'],
+            [['order_id', 'style_id', 'status', 'admin_id', 'is_import', 'user_id', 'platform', 'ip_area_id', 'created_at', 'updated_at'], 'integer'],
             [['style_id', 'created_at', 'updated_at'], 'required'],
             [['content'], 'string', 'max' => 45],
             [['ip'], 'string', 'max' => 10],
@@ -66,7 +66,7 @@ class OrderComment extends BaseModel
             'content' => Yii::t('app', '评价内容'),
             'images' => Yii::t('app', '评价图片'),
             'user_id' => Yii::t('app', '客户ID'),
-            'from' => Yii::t('app', '站点'),
+            'platform' => Yii::t('app', '站点'),
             'ip' => Yii::t('app', 'Ip'),
             'ip_area_id' => Yii::t('app', 'Ip Area ID'),
             'ip_location' => Yii::t('app', 'Ip Location'),
