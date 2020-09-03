@@ -544,9 +544,12 @@ class OrderController extends UserAuthController
             $result = [];
 
             $attr = [
-                'user_id' => $this->member_id,
+                'member_id' => $this->member_id,
                 'platform' => $this->platform,
+                'ip' => \Yii::$app->request->userIP
             ];
+
+            list($attr['ip_area_id'],$attr['ip_location']) = \Yii::$app->ipLocation->getLocation($attr['ip']);
 
             if(empty($datas)) {
                 throw new UnprocessableEntityHttpException('提交数据为空');
