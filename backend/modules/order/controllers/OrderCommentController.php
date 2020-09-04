@@ -113,7 +113,7 @@ class OrderCommentController extends BaseController
                         ]);
 
                         if(!$comment->save()) {
-                            throw new \Exception(sprintf('第[%d]行，%s', $key+2, $this->getError($comment)));
+                            throw new \Exception(sprintf('第[%d]行，%s', $key, $this->getError($comment)));
                         }
                     }
 
