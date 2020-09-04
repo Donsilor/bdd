@@ -10,6 +10,7 @@ use backend\controllers\BaseController;
 use common\models\base\SearchModel;
 use common\models\order\OrderComment;
 use common\models\order\OrderTourist;
+use yii\web\UploadedFile;
 
 class OrderCommentController extends BaseController
 {
@@ -88,6 +89,11 @@ class OrderCommentController extends BaseController
         $model = new UploadCommentForm();
 
         if (Yii::$app->request->isPost) {
+            $model->file = UploadedFile::getInstance($model, 'file');
+            if ($model->upload()) {
+                // 文件上传成功
+                return;
+            }
             return $this->redirect(Yii::$app->request->referrer);
         }
 
