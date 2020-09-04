@@ -329,7 +329,6 @@ class StyleController extends OnAuthController
         $result = $this->pagination($query, $this->page, $this->pageSize);
 
         foreach ($result['data'] as &$datum) {
-//            $datum['created_at'] = \Yii::$app->formatter->asDatetime($datum['created_at']);
             $datum['username'] = $this->gr_asterisk($datum['username']);
             $datum['ip'] = preg_replace('/(\d+)([.])(\d+)([.])(\d+)([.])(\d+)/', '$1.*.*.$7', $datum['ip']);
         }
