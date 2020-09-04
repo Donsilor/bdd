@@ -32,6 +32,15 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'attribute' => 'id',
                             ],
                             [
+                                'label' => '评价人',
+                                'filter' => Html::activeTextInput($searchModel, 'member.username', [
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function($row) {
+                                    return $row->member->username??'';
+                                }
+                            ],
+                            [
                                 'label' => '产品名称',
                                 'value' => function($row) {
                                     return $row->style->lang->style_name??'';
@@ -39,6 +48,9 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             ],
                             [
                                 'label' => '款号',
+                                'filter' => Html::activeTextInput($searchModel, 'style.style_sn', [
+                                    'class' => 'form-control',
+                                ]),
                                 'value' => function($row) {
                                     return $row->style->style_sn??'';
                                 }

@@ -4,6 +4,7 @@ namespace common\models\order;
 
 use common\models\base\BaseModel;
 use common\models\goods\Style;
+use common\models\member\Member;
 use Yii;
 
 /**
@@ -82,5 +83,15 @@ class OrderComment extends BaseModel
     public function getStyle()
     {
         return $this->hasOne(Style::class, ['id'=>'style_id']);//->alias('lang')->where(['lang.language' => Yii::$app->params['language']]);
+    }
+
+
+    /**
+     * 对应买家模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMember()
+    {
+        return $this->hasOne(Member::class, ['id'=>'member_id']);
     }
 }

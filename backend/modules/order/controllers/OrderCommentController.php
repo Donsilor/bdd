@@ -30,7 +30,10 @@ class OrderCommentController extends BaseController
                 'id' => SORT_DESC,
             ],
             'pageSize' => $this->pageSize,
-            'relations' => []
+            'relations' => [
+                'member' => ['username'],
+                'style' => ['style_sn'],
+            ]
         ]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at']);
 
