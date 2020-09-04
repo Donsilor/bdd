@@ -17,6 +17,7 @@ use Yii;
  * @property int $admin_id 审核管理员ID
  * @property string $remark 审核备注
  * @property int $is_import 是否导入：0否，1是
+ * @property int $grade 评价星级
  * @property string $content 评价内容
  * @property string $images 评价内容
  * @property int $member_id 用户ID
@@ -43,7 +44,7 @@ class OrderComment extends BaseModel
     public function rules()
     {
         return [
-            [['order_id', 'style_id', 'type_id', 'status', 'admin_id', 'is_import', 'member_id', 'platform', 'ip_area_id', 'created_at', 'updated_at'], 'integer'],
+            [['order_id', 'style_id', 'type_id', 'status', 'admin_id', 'is_import', 'member_id', 'platform', 'ip_area_id', 'created_at', 'updated_at', 'grade'], 'integer'],
             [['style_id', 'remark', 'updated_at'], 'required'],
             [['content'], 'string', 'max' => 45],
             [['ip'], 'string', 'max' => 10],
@@ -65,6 +66,7 @@ class OrderComment extends BaseModel
             'admin_id' => Yii::t('app', '管理员ID'),
             'remark' => Yii::t('app', '审核备注'),
             'is_import' => Yii::t('app', '是否导入'),
+            'grade' => Yii::t('app', '评价星级'),
             'content' => Yii::t('app', '评价内容'),
             'images' => Yii::t('app', '评价图片'),
             'member_id' => Yii::t('app', '客户ID'),

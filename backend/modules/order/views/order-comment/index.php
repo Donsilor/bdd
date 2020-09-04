@@ -98,6 +98,18 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'format' => 'raw',
                             ],
                             [
+                                'label' => '评价星级',
+                                'attribute' => 'grade',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'grade', [0,1,2,3,4,5], [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    return $model->grade;
+                                },
+                            ],
+                            [
                                 'label' => '评价内容',
                                 'attribute' => 'content',
                                 'value' => function ($model) {
