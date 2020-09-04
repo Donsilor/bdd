@@ -32,7 +32,7 @@ class UploadCommentForm extends Model
     public function upload()
     {
         if ($this->validate()) {
-            $this->file->saveAs('uploads/' . $this->file->baseName . '.' . $this->file->extension);
+            $this->file->saveAs(\Yii::getAlias('@storage').             'backend/orderComment/' . $this->file->baseName . '.' . $this->file->extension);
             return true;
         } else {
             return false;
