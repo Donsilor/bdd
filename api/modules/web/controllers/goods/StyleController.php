@@ -10,6 +10,8 @@ use common\models\goods\Style;
 use common\helpers\ResultHelper;
 use common\models\goods\StyleLang;
 use common\models\goods\StyleMarkup;
+use common\models\member\Member;
+use common\models\order\OrderComment;
 use services\market\CouponService;
 use yii\db\Exception;
 use yii\db\Expression;
@@ -319,7 +321,43 @@ class StyleController extends OnAuthController
 
     }
 
-    
+    public function actionComment()
+    {
+        $query = OrderComment::find()->alias('m')->select(['member.username', 'm.images', 'm.content', 'm.grade', 'm.remark', 'm.ip', 'm.ip_location', 'm.created_at'])
+            ->leftJoin(Member::tableName().' member', 'm.member_id=member.id')
+            ->orderBy('m.id desc');
+        $result = $this->pagination($query, $this->page, $this->pageSize);
+
+        foreach ($result['data'] as &$datum) {
+//            $datum['created_at'] = \Yii::$app->formatter->asDatetime($datum['created_at']);
+            $datum['username'] = $this->gr_asterisk($datum['username']);
+            $datum['ip'] = preg_replace('/(\d+)([.])(\d+)([.])(\d+)([.])(\d+)/', '$1.*.*.$7', $datum['ip']);
+        }
+
+        return $result;
+    }
+
+    /**
+     * 添加星号
+     * @param string $str 目标字符串
+     * @param int $l 左侧留存长度
+     * @param int $r 右侧留存长度
+     * @param int $chr_len 星号数目
+     * @param string $chr 星号或者其他自定义的字符
+     * @return mixed 返回
+     */
+    public function gr_asterisk($str = '',$l = 2,$r = 4,$chr_len = 3,$chr = '*') {
+        if (empty($str)) {
+            return false;
+        }
+        $len_min = $l + $r;
+        if (mb_strlen($str, 'utf-8') <= $len_min) {
+            return str_repeat($chr, $chr_len);
+        }
+
+        $new_str = mb_substr($str, 0, $l, 'utf-8') . str_repeat($chr, $chr_len) . mb_substr($str, mb_strlen($str, 'utf-8') - $r, $r);
+        return $new_str;
+    }
     
     
 }
