@@ -3,6 +3,7 @@
 
 namespace backend\modules\order\controllers;
 
+use backend\modules\order\forms\UploadCommentForm;
 use common\components\Curd;
 use Yii;
 use backend\controllers\BaseController;
@@ -74,6 +75,19 @@ class OrderCommentController extends BaseController
         $this->activeFormValidate($model);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(Yii::$app->request->referrer);
+        }
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionImport()
+    {
+        $model = new UploadCommentForm();
+
+        if (Yii::$app->request->isPost) {
             return $this->redirect(Yii::$app->request->referrer);
         }
 

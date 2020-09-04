@@ -14,6 +14,15 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 <div class="row">
     <div class="col-sm-12">
         <div class="nav-tabs-custom">
+            <div class="box-header">
+                <h3 class="box-title"><?= Html::encode($this->title) ?></h3>
+                <div class="box-tools">
+                    <?= Html::create(['import'], '导入评价', [
+                        'data-toggle' => 'modal',
+                        'data-target' => '#ajaxModalLg',
+                    ])?>
+                </div>
+            </div>
             <div class="tab-content">
                 <div class="active tab-pane">
                     <?= GridView::widget([
