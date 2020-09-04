@@ -323,9 +323,22 @@ class StyleController extends OnAuthController
 
     public function actionComment()
     {
+        $type_id = \Yii::$app->request->get('type_id', 19);
+        $style_id = \Yii::$app->request->get('style_id', 2279);
+
+        $where = ['or'];
+        $where['member_id'] = $this->member_id;
+        $where[1]['m.status'] = 1;
+        $where[1]['platform'] = $this->platform;
+        $where[2]['m.status'] = 1;
+        $where[2]['platform'] = null;
+
         $query = OrderComment::find()->alias('m')->select(['member.username', 'm.images', 'm.content', 'm.grade', 'm.remark', 'm.ip', 'm.ip_location', 'm.created_at'])
             ->leftJoin(Member::tableName().' member', 'm.member_id=member.id')
-            ->orderBy('m.id desc');
+            ->orderBy('m.id desc')
+            ->andWhere($where)
+            ->andWhere(['style_id'=>$style_id, 'type_id'=>$type_id]);
+
         $result = $this->pagination($query, $this->page, $this->pageSize);
 
         foreach ($result['data'] as &$datum) {
