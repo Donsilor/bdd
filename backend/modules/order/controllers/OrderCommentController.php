@@ -100,6 +100,11 @@ class OrderCommentController extends BaseController
                     $trans = Yii::$app->db->beginTransaction();
 
                     foreach ($data as $key => $datum) {
+                        if(empty(trim($datum[0]))) {
+                            continue;
+                        }
+
+                        $created_at = 0;
                         $comment = new OrderCommentForm();
                         $comment->setAttributes([
                             'type_id' => $datum[1]??'',
@@ -110,6 +115,9 @@ class OrderCommentController extends BaseController
                             'username' => $datum[6]??'',
                             'platform' => $datum[7]??'',
                             'remark' => $datum[8]??'',
+                            'created_at' => $created_at,
+                            'updated_at' => $created_at,
+                            'is_import' => 1,
                         ]);
 
                         if(!$comment->save()) {
@@ -120,7 +128,7 @@ class OrderCommentController extends BaseController
                     $trans->commit();
                 } catch (\Exception $exception) {
                     $trans->rollBack();
-
+                    print_r($exception->getMessage());exit;
                     return $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
                 }
 

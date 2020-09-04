@@ -72,7 +72,7 @@ class OrderCommentForm extends OrderComment
         $goods = \Yii::$app->services->goods->getGoodsInfo($this->style_id, $this->type_id);
 
         if(!($goods && $goods['type_id']==$this->type_id)) {
-            $this->addError($attribute, '错品信息错误');
+            $this->addError($attribute, '产品信息错误');
         }
     }
 
