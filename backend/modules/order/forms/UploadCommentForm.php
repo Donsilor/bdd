@@ -15,7 +15,7 @@ class UploadCommentForm extends Model
     public function rules()
     {
         return [
-            [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => 'xlsx'],
+            [['file'], 'file', 'skipOnEmpty' => false, 'checkExtensionByMimeType' => false, 'extensions' => ['xlsx']],
         ];
     }
 
@@ -31,9 +31,16 @@ class UploadCommentForm extends Model
 
     public function upload()
     {
+        $file = \Yii::getAlias('@storage').'/backend/orderComment/' . $this->file->baseName . '.' . $this->file->extension;
+
+        if(file_exists($file)) {
+            $this->addError('file', '有相同文件名文件已经上传');
+            return false;
+        }
+
         if ($this->validate()) {
-            $this->file->saveAs(\Yii::getAlias('@storage').             'backend/orderComment/' . $this->file->baseName . '.' . $this->file->extension);
-            return true;
+            $this->file->saveAs($file);
+            return $file;
         } else {
             return false;
         }

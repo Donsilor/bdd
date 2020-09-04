@@ -14,7 +14,7 @@ $form = ActiveForm::begin([
 ?>
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-        <h4 class="modal-title">审核备注</h4>
+        <h4 class="modal-title">评价审核</h4>
     </div>
     <div class="modal-body">
         <?= $form->field($model, 'status')->dropDownList(\common\enums\OrderCommentStatusEnum::getMap(), [

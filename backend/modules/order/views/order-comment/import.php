@@ -8,7 +8,8 @@ $form = ActiveForm::begin([
     'enableAjaxValidation' => false,
     'fieldConfig' => [
         'template' => "<div class='col-sm-3 text-right'>{label}</div><div class='col-sm-9'>{input}\n{hint}\n{error}</div>",
-    ]
+    ],
+    'options' => ['enctype' => 'multipart/form-data']
 ]);
 ?>
     <div class="modal-header">

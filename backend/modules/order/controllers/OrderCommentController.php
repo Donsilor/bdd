@@ -3,8 +3,10 @@
 
 namespace backend\modules\order\controllers;
 
+use backend\modules\order\forms\OrderCommentForm;
 use backend\modules\order\forms\UploadCommentForm;
 use common\components\Curd;
+use common\helpers\ExcelHelper;
 use Yii;
 use backend\controllers\BaseController;
 use common\models\base\SearchModel;
@@ -90,11 +92,42 @@ class OrderCommentController extends BaseController
 
         if (Yii::$app->request->isPost) {
             $model->file = UploadedFile::getInstance($model, 'file');
-            if ($model->upload()) {
-                // 文件上传成功
-                return;
+            if ($file = $model->upload()) {
+
+                $data = ExcelHelper::import($file, 2);
+
+                try {
+                    $trans = Yii::$app->db->beginTransaction();
+
+                    foreach ($data as $key => $datum) {
+                        $comment = new OrderCommentForm();
+                        $comment->setAttributes([
+                            'type_id' => $datum[1]??'',
+                            'style_id' => $datum[2]??'',
+                            'grade' => $datum[3]??'',
+                            'content' => $datum[4]??'',
+                            'images' => $datum[5]??'',
+                            'username' => $datum[6]??'',
+                            'platform' => $datum[7]??'',
+                            'remark' => $datum[8]??'',
+                        ]);
+
+                        if(!$comment->save()) {
+                            throw new \Exception(sprintf('第[%d]行，%s', $key+2, $this->getError($comment)));
+                        }
+                    }
+
+                    $trans->commit();
+                } catch (\Exception $exception) {
+                    $trans->rollBack();
+
+                    return $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
+                }
+
+                return $this->redirect(Yii::$app->request->referrer);
             }
-            return $this->redirect(Yii::$app->request->referrer);
+
+            return $this->message($this->getError($model), $this->redirect(Yii::$app->request->referrer), 'error');
         }
 
         return $this->renderAjax($this->action->id, [

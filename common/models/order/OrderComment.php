@@ -65,7 +65,7 @@ class OrderComment extends BaseModel
             'style_id' => Yii::t('app', '款式ID'),
             'status' => Yii::t('app', '状态'),
             'admin_id' => Yii::t('app', '管理员ID'),
-            'remark' => Yii::t('app', '审核备注'),
+            'remark' => Yii::t('app', '审核回复'),
             'is_import' => Yii::t('app', '是否导入'),
             'grade' => Yii::t('app', '评价星级'),
             'content' => Yii::t('app', '评价内容'),
