@@ -104,7 +104,7 @@ class OrderCommentController extends BaseController
                             continue;
                         }
 
-                        $created_at = 0;
+                        $created_at = $datum[9]??'';
                         $comment = new OrderCommentForm();
                         $comment->setAttributes([
                             'type_id' => $datum[1]??'',
