@@ -196,8 +196,8 @@ class PayController extends OnAuthController
         }
 
         //alipay
-        if(!empty($query['out_trade_no'])) {
-            $where['out_trade_no'] = $query['out_trade_no'];
+        if(!empty($query['bdd_out_trade_no'])) {
+            $where['out_trade_no'] = $query['bdd_out_trade_no'];
         }
 
         //alipay
@@ -231,8 +231,6 @@ class PayController extends OnAuthController
 
         $urlInfo = parse_url($returnUrl);
         $query = parse_query($urlInfo['query']);
-        //记录验证日志
-        $orderSn = $query['order_sn']??($query['orderId']??'');
         
         //获取支付记录模型
         /**
@@ -241,8 +239,30 @@ class PayController extends OnAuthController
         $model = $this->getPayModelByReturnUrlQuery($query);
 
         if(empty($model)) {
-            Yii::$app->services->actionLog->create('用户支付校验','订单号：'.$orderSn."<br/>支付状态：查询支付记录失败");
-            $result['verification_status'] = 'failed';
+
+            $where = [];
+            $where['payment_status'] = 1;
+
+            $order = null;
+            if(isset($query['order_sn'])) {
+                $where['order_sn'] = $query['order_sn'];
+                $order = Order::findOne($where);
+            }
+            if(isset($query['orderId'])) {
+                $where['id'] = $query['orderId'];
+                $order = Order::findOne($where);
+            }
+
+            if($order) {
+                $result['verification_status'] = 'completed';
+            }
+            else {
+                //记录验证日志
+                $orderSn = $query['order_sn']??($query['orderId']??'');
+                Yii::$app->services->actionLog->create('用户支付校验','订单号：'.$orderSn."<br/>支付状态：查询支付记录失败");
+                $result['verification_status'] = 'failed';
+            }
+
             return $result;
         }
         $logMessage = "订单号：".$model->order_sn.'<br/>支付编号：'.$model->out_trade_no;
@@ -276,9 +296,7 @@ class PayController extends OnAuthController
             }          
           
             $update = [
-                'pay_fee' => $model->total_fee,
                 'pay_status' => PayStatusEnum::PAID,
-                'pay_time' => time(),
             ];
             $updated = PayLog::updateAll($update, ['pay_status'=>PayStatusEnum::UNPAID, 'id'=>$model->id]);
 
@@ -287,14 +305,24 @@ class PayController extends OnAuthController
             }
 
             $model->refresh();
-
-            //更新订单状态
-            Yii::$app->services->pay->notify($model, null);
            
             $response = Yii::$app->services->pay->getPayByType($model->pay_type)->verify(['model'=>$model]);
-            $payCode = $response->getCode() ?? 'error';
+            $payCode = method_exists($response, 'getCode') ? $response->getCode() : 'failed';
             //支付成功
             if($response->isPaid()) {
+
+                $data = $response->getData();
+
+                if(isset($data['total']) && isset($data['currency'])) {
+                    $model->total_fee = $data['total'];
+                    $model->pay_fee = $data['total'];
+                    $model->fee_type = $data['currency'];
+                    $model->pay_time = time();
+                    $model->save();
+                }
+
+                //更新订单状态
+                Yii::$app->services->pay->notify($model, null);
 
                 $result['verification_status'] = 'completed';
 

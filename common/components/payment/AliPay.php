@@ -7,6 +7,7 @@ use Omnipay\Omnipay;
 use Omnipay\Alipay\Responses\AopTradeAppPayResponse;
 use Omnipay\Alipay\Responses\AopTradePreCreateResponse;
 use Omnipay\Alipay\Responses\AopTradeWapPayResponse;
+use function GuzzleHttp\Psr7\parse_query;
 
 /**
  * Class AliPay
@@ -208,7 +209,13 @@ class AliPay
     {
         $gateway = $this->create();
         $request = $gateway->completePurchase();
-        $request->setParams(array_merge(Yii::$app->request->post(), Yii::$app->request->get(), $info)); // Optional
+
+        $query = array_merge(Yii::$app->request->post(), Yii::$app->request->get(), $info);
+
+        if (isset($query['bdd_out_trade_no'])) unset($query['bdd_out_trade_no']);
+        if (isset($query['orderId'])) unset($query['orderId']);
+
+        $request->setParams($query); // Optional
         return $request->send();
     }
 
@@ -225,8 +232,21 @@ class AliPay
         $gateway = $this->create();
         $request = $gateway->completePurchase();
         $request->setAlipayPublicKey(Yii::$app->debris->config('alipay_notification_cert_path'));
-        $request->setParams($info); // Optional
-        $response = $request->send();
-        return $response->isPaid();
+
+        //获取操作实例
+        $returnUrl = Yii::$app->request->post('return_url', null);
+
+        if($returnUrl) {
+            $urlInfo = parse_url($returnUrl);
+            $query = parse_query($urlInfo['query']);
+            if (isset($query['bdd_out_trade_no'])) unset($query['bdd_out_trade_no']);
+            if (isset($query['orderId'])) unset($query['orderId']);
+            $request->setParams($query);
+        }
+        else {
+            $request->setParams($info); // Optional
+        }
+
+        return $request->send();
     }
 }

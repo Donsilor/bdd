@@ -266,6 +266,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                             'data-target' => '#ajaxModalLg',
                                         ])?>
                                     <?php } ?>
+                                    <?= Html::a('导出',['export-excel-invoice','order_id'=>$model->id],  [
+                                        'class' => 'btn btn-info btn-sm','target'=>'blank',
+                                    ])?>
                                 </div>
                             </div>
                         <?php } else {?>
@@ -291,8 +294,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'data-target' => '#ajaxModalLg',
                                     ])?>
                                     <?php } ?>
-
-
+                                    <?= Html::a('导出',['export-excel-invoice','order_id'=>$model->id],  [
+                                        'class' => 'btn btn-info btn-sm','target'=>'blank',
+                                    ])?>
                                 </div>
 
 
@@ -515,21 +519,16 @@ DOM;
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label style="font-weight:bold">应付款：</label></div>
                                     <?php
-                                    $receivable = $model->account->pay_amount;//bcadd($model->account->order_amount, $cardUseAmount, 2) + $model->account->discount_amount;
+                                    $pay_amount = $model->account->pay_amount;
+                                    if($model->account->currency == CurrencyEnum::TWD) {
+                                        $pay_amount = sprintf("%.2f", intval($pay_amount));
+                                    }
                                     ?>
-                                    <?php if($model->account->currency == \common\enums\CurrencyEnum::CNY) { ?>
-                                        <div class="col-lg-7 text-red"><?= \common\enums\CurrencyEnum::HKD ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount(\Yii::$app->services->currency->exchangeAmount($model->account->pay_amount, 2, \common\enums\CurrencyEnum::HKD, CurrencyEnum::CNY), 2, ',') ?> (<?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($model->account->pay_amount, 2, ',') ?>)</div>
-                                    <?php } else { ?>
-                                        <div class="col-lg-7 text-red"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($model->account->pay_amount, 2, ',') ?></div>
-                                    <?php } ?>
+                                    <div class="col-lg-7 text-red"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($pay_amount, 2, ',') ?></div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label style="font-weight:bold"><?= $model->getAttributeLabel('account.paid_currency') ?>：</label></div>
-                                    <?php if($model->account->currency == \common\enums\CurrencyEnum::CNY) { ?>
-                                        <div class="col-lg-7 text-red"><?= $model->account->paid_currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->paid_amount, 1, 2, ',') ?> (<?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount(\Yii::$app->services->currency->exchangeAmount($model->account->paid_amount, 2, $model->account->currency, $model->account->paid_currency), 1, 2, ',') ?>)</div>
-                                    <?php } else { ?>
-                                        <div class="col-lg-7 text-red"><?= $model->account->paid_currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->paid_amount, 1, 2, ',') ?></div>
-                                    <?php } ?>
+                                    <div class="col-lg-7 text-red"><?= $model->account->paid_currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->paid_amount, 1, 2, ',') ?></div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label style="font-weight:bold">参考支付RMB金额：</label></div>
@@ -623,6 +622,11 @@ DOM;
             <div class="modal-footer">
                 <div class="text-center">
                     <span class="btn btn-white"  onclick="$('.active.J_menuTab i', window.parent.document).click()">关闭</span>
+                    <?= Html::edit(['edit-follower', 'id' => $model->id], '跟进', [
+                    'data-toggle' => 'modal',
+                    'data-target' => '#ajaxModal',
+                    'class'=>'btn btn-default btn-sm'
+                    ]);?>
                 </div>
             </div>
         </div>

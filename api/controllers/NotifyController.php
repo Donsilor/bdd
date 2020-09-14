@@ -104,7 +104,9 @@ class NotifyController extends Controller
      */
     public function actionAlipay()
     {
-        $this->payment = 'ali';
+        $this->payment = 'alipay';
+
+        Yii::$app->services->actionLog->create(__CLASS__,__FUNCTION__, ArrayHelper::merge($_GET, $_POST));
 
         $response = Yii::$app->pay->alipay([
             'ali_public_key' => Yii::$app->debris->config('alipay_notification_cert_path'),
@@ -249,9 +251,7 @@ class NotifyController extends Controller
 
                 //更新支付记录
                 $update = [
-                    'pay_fee' => $model->total_fee,
                     'pay_status' => PayStatusEnum::PAID,
-                    'pay_time' => time(),
                 ];
                 $updated = PayLog::updateAll($update, ['id'=>$model->id,'pay_status'=>PayStatusEnum::UNPAID]);
                 if(!$updated) {
@@ -260,12 +260,24 @@ class NotifyController extends Controller
                 }
                 
                 $model->refresh();
-                //更新订单记录
-                Yii::$app->services->pay->notify($model, $this->payment);
+
 
                 $response = Yii::$app->pay->Paypal()->notify(['model'=>$model]);
 
                 if ($response->isPaid()) {
+
+                    $data = $response->getData();
+
+                    if(isset($data['total']) && isset($data['currency'])) {
+                        $model->total_fee = $data['total'];
+                        $model->pay_fee = $data['total'];
+                        $model->fee_type = $data['currency'];
+                        $model->pay_time = time();
+                        $model->save();
+                    }
+
+	                //更新订单记录
+	                Yii::$app->services->pay->notify($model, $this->payment);
 
                     $transaction->commit();
 
@@ -309,6 +321,9 @@ class NotifyController extends Controller
     {
         $this->payment = 'wechat';
 
+
+        Yii::$app->services->actionLog->create(__CLASS__,__FUNCTION__, ArrayHelper::merge($_GET, $_POST));
+
         $response = Yii::$app->pay->wechat->notify();
         if ($response->isPaid()) {
             $message = $response->getRequestData();
@@ -316,13 +331,14 @@ class NotifyController extends Controller
             FileHelper::writeLog($logPath, Json::encode(ArrayHelper::toArray($message)));
 
             //pay success 注意微信会发二次消息过来 需要判断是通知还是回调
+            $message['total_fee'] = bcdiv($message['total_fee'], 100, 2);
             if ($this->pay($message)) {
-                return WechatHelper::success();
+                exit( WechatHelper::success() );
             }
 
-            return WechatHelper::fail();
+            exit( WechatHelper::fail() );
         } else {
-            return WechatHelper::fail();
+            exit( WechatHelper::fail() );
         }
     }
 

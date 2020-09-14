@@ -17,7 +17,7 @@ class OrderRefundForm extends \common\models\order\Order
     {
         return [
             [['id','refund_status', 'refund_remark'], 'required'],
-            [['id','refund_status'], 'integer'],
+            [['id','refund_status'], 'in', 'range' => array_keys(OrderStatusEnum::refundStatus())],
             [['refund_remark'], 'string', 'max' => 500],
             ['refund_status', 'validateRefundStatus']
         ];
@@ -25,9 +25,5 @@ class OrderRefundForm extends \common\models\order\Order
 
     public function validateRefundStatus($attribute)
     {
-        if($this->refund_status != OrderStatusEnum::ORDER_REFUND_YES) {
-            $this->addError($attribute,"请选择是否退款");
-            return false;
-        }
     }
 }
