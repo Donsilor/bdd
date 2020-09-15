@@ -336,6 +336,16 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col-lg-11">%s<br/>SKU：%s&nbsp;%s</div>
         </div>
 DOM;
+
+                                            $attrs = [];
+                                            if($model->cart_goods_attr) {
+                                                $cart_goods_attr = \GuzzleHttp\json_decode($model->cart_goods_attr, true);
+                                                foreach ($cart_goods_attr as $k => $item) {
+                                                    $key = $item['goods_id']??0;
+                                                    $attrs[$key][$item['config_id']] = $item['config_attr_id'];
+                                                }
+                                            }
+
                                             $value = '';
                                             if($model->goods_type==19) {
                                                 $value1 = '';
@@ -353,6 +363,13 @@ DOM;
                                                                 $goods_spec1 .= $spec['attr_name'].":".$spec['attr_value']."&nbsp;";
                                                             }
 
+                                                            if(isset($attrs[$goods['id']])) {
+                                                                $cart_goods_attr2 = \Yii::$app->services->goods->formatGoodsAttr($attrs[$goods['id']], $goods['type_id']);
+                                                                foreach ($cart_goods_attr2 as $vo2) {
+                                                                    $goods_spec1 .= $vo2['attr_name'].":".implode(',', $vo2['value'])."&nbsp;";
+                                                                }
+                                                            }
+
                                                             $value1 .= sprintf($html,
                                                                 $vo['attr_name'] . '：' . $goods['goods_name'],
                                                                 $goods['goods_sn'],
@@ -365,6 +382,13 @@ DOM;
 
                                                             foreach ($goods['lang']['goods_spec'] as $spec) {
                                                                 $goods_spec2 .= $spec['attr_name'].":".$spec['attr_value']."&nbsp;";
+                                                            }
+
+                                                            if(isset($attrs[$goods['id']])) {
+                                                                $cart_goods_attr2 = \Yii::$app->services->goods->formatGoodsAttr($attrs[$goods['id']], $goods['type_id']);
+                                                                foreach ($cart_goods_attr2 as $vo2) {
+                                                                    $goods_spec2 .= $vo2['attr_name'].":".implode(',', $vo2['value'])."&nbsp;";
+                                                                }
                                                             }
 
                                                             $value2 .= sprintf($html,
@@ -394,6 +418,14 @@ DOM;
                                                         $goods_spec .= $vo['attr_name'].":".$vo['attr_value']."&nbsp;";
                                                     }
                                                 }
+
+                                                if(isset($attrs[0])) {
+                                                    $model->cart_goods_attr = \Yii::$app->services->goods->formatGoodsAttr($attrs[0], $model->goods_type);
+                                                    foreach ($model->cart_goods_attr as $vo) {
+                                                        $goods_spec .= $vo['attr_name'].":".implode(',', $vo['value'])."&nbsp;";
+                                                    }
+                                                }
+
                                                 $value .= sprintf($html,
                                                     $model->goods_name,
                                                     $model->goods_sn,
