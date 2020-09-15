@@ -1352,8 +1352,9 @@ DOM;
             ['主石大小', 'id', 'function', function ($row) use($specList) {
                 return $specList[$row->id]['zsdx'];
             }],
-
-
+            ['主石色彩', 'id', 'function', function ($row) use($specList) {
+                return $specList[$row->id]['zssc'];
+            }],
             ['商品原价', 'id', 'function', function ($row) {
                 return $row->order->account->currency . ' ' . $row->goods_price;
             }],
