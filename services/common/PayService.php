@@ -156,6 +156,10 @@ class PayService extends Service
             'currency' => $baseOrder['currency'],
         ];
 
+        if($order['currency'] == CurrencyEnum::TWD) {
+            $order['total_amount'] = intval($order['total_amount']);
+        }
+
         //扩展支付
         switch ($payForm->payType) {
             case '61':
@@ -296,6 +300,10 @@ class PayService extends Service
      */
     public function getOutTradeNo($totalFee, string $orderSn, int $payType, $tradeType = 'JSAPI', $orderGroup = 1,$currency = null,$exchangeRate = null)
     {
+        //台币支付金额是整数
+        if($currency == CurrencyEnum::TWD) {
+            $totalFee = intval($totalFee);
+        }
 
         $payModel = new PayLog();
         $payModel->out_trade_no = StringHelper::randomNum(time());
@@ -343,7 +351,7 @@ class PayService extends Service
 
                     if($result) {
                         $accountUpdata = [
-                            'pay_amount'=> $pay_amount,
+//                            'pay_amount'=> $pay_amount,
                             'paid_amount'=> $log->total_fee,
                             'paid_currency'=> $log->currency,
                         ];
@@ -380,13 +388,13 @@ class PayService extends Service
 
                     //保存游客支付订单状态
                     $orderTourist->status = OrderTouristStatusEnum::ORDER_PAID;
-                    $orderTourist->pay_amount = \Yii::$app->services->currency->exchangeAmount($log->total_fee, 2, $orderTourist->currency, $log->currency);
+//                    $orderTourist->pay_amount = \Yii::$app->services->currency->exchangeAmount($log->total_fee, 2, $orderTourist->currency, $log->currency);
                     $orderTourist->paid_amount = $log->total_fee;
                     $orderTourist->paid_currency = $log->currency;
 
                     $update = [
                         'status' => OrderTouristStatusEnum::ORDER_PAID,
-                        'pay_amount' => $orderTourist->pay_amount,
+//                        'pay_amount' => $orderTourist->pay_amount,
                         'paid_amount' => $log->total_fee,
                         'paid_currency' => $log->currency,
                     ];

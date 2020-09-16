@@ -11,7 +11,9 @@ use common\models\order\OrderCart;
 use common\models\order\OrderGoodsLang;
 use common\models\order\OrderInvoice;
 use common\models\order\OrderInvoiceEle;
+use kartik\mpdf\Pdf;
 use services\market\CardService;
+use yii\base\Controller;
 use yii\web\UnprocessableEntityHttpException;
 use common\models\order\OrderGoods;
 use common\models\order\Order;
@@ -151,14 +153,25 @@ class OrderInvoiceService extends OrderBaseService
         ],
     ];
 
-    public function getEleInvoiceInfo($order_id){
-        $order = Order::find()
-            ->where(['id'=>$order_id])
-            ->one();
+    public function getEleInvoiceInfo($order, $setLanguage=null, $type=null) {
+        if(!($order instanceof Order)) {
+            $order = Order::find()
+                ->where(['id'=>$order])
+                ->one();
+        }
+
         if(empty($order)) {
             throw new UnprocessableEntityHttpException("订单不存在");
         }
-        \Yii::$app->params['language'] = $language = 'en-US';// $order->language;
+
+        if($setLanguage) {
+            $language = $setLanguage;
+        }
+        else {
+            $language = LanguageEnum::EN_US;
+        }
+
+        \Yii::$app->params['language'] = $language;// $order->language;
 
         $result = array(
             'invoice_date' => $order->delivery_time,
@@ -191,9 +204,17 @@ class OrderInvoiceService extends OrderBaseService
         $result['order_paid_amount'] = $order->account->paid_amount;//bcsub($result['order_amount'],$result['gift_card_amount'],2);
         $result['order_pay_amount'] = $order->account->pay_amount;//bcsub($result['order_amount'],$result['gift_card_amount'],2);
 
-        $order_invoice_exe_model = OrderInvoiceEle::find()
-            ->where(['order_id'=>$order->id])
-            ->one();
+        $order_invoice_exe_model = null;
+        if($type == 'pdf') {
+            $order_invoice_exe_model = OrderInvoiceEle::find()
+                ->where(['order_id'=>$order->id])
+                ->one();
+        }
+
+        if($result['currency'] == CurrencyEnum::TWD) {
+            $result['order_pay_amount'] = sprintf('%.2f', intval($result['order_pay_amount']));
+        }
+
         if($order_invoice_exe_model){
             $order_invoice_exe = $order_invoice_exe_model->toArray();
             $result['invoice_date'] = $order_invoice_exe['invoice_date'] ? $order_invoice_exe['invoice_date'] : $result['invoice_date'];
@@ -205,14 +226,17 @@ class OrderInvoiceService extends OrderBaseService
             $result['delivery_time'] = $order_invoice_exe['delivery_time'] ? $order_invoice_exe['delivery_time'] : $result['delivery_time'];
             $result['delivery_time'] = $order_invoice_exe['delivery_time'] ? $order_invoice_exe['delivery_time'] : $result['delivery_time'];
             $result['email'] = $order_invoice_exe['email'] ? $order_invoice_exe['email'] : $result['email'];
-            $language = $order_invoice_exe['language'] ? $order_invoice_exe['language'] : $language;
 
-            \Yii::$app->params['language'] = $language; //设置语言
+            if(!$setLanguage) {
+                $language = $order_invoice_exe['language'] ? $order_invoice_exe['language'] : $language;
+                \Yii::$app->params['language'] = $language; //设置语言
+            }
+
             $result['express_company_name'] = $order_invoice_exe['express_id'] ? $order_invoice_exe_model->express->lang->express_name : '';
             $result['express_no'] = $order_invoice_exe['express_no'] ? $order_invoice_exe['express_no'] : $result['express_no'];
         }
 
-        $sendAddressInfo = $this->getSendAddressByOrder($order, $language);
+        $sendAddressInfo = $this->getSendAddressByOrder($order, $language, $type);
 
         $result['sender_area'] = $result['sender_area']?:($sendAddressInfo['name']??'');
         $result['sender_address'] = $result['sender_address']?:($sendAddressInfo['detailed']??'');
@@ -228,8 +252,8 @@ class OrderInvoiceService extends OrderBaseService
         //商品明细
         $order_goods = OrderGoods::find()->alias('m')
             ->leftJoin(OrderGoodsLang::tableName().'lang','m.id=lang.master_id and lang.language="'.$language.'"')
-            ->where(['order_id'=>$order_id])
-            ->select(['lang.goods_name','m.goods_sn','m.goods_num','m.goods_pay_price','m.goods_price','m.currency'])
+            ->where(['order_id'=>$order->id])
+            ->select(['lang.goods_name','m.goods_sn','m.goods_num','m.goods_pay_price','m.goods_price','m.currency', 'm.goods_spec', 'm.goods_type'])
             ->asArray()
             ->all();
         $result['order_goods'] = $order_goods;
@@ -281,9 +305,12 @@ class OrderInvoiceService extends OrderBaseService
         return $this->sendAddress;
     }
 
-    private function getSendAddressByOrder($order, $language=null)
+    private function getSendAddressByOrder($order, $language=null, $type=null)
     {
         $orderFrom = $order->order_from;
+        if($type == 'pdf') {
+            $orderFrom = OrderFromEnum::WEB_HK;
+        }
 
         $platformGroup = OrderFromEnum::platformToGroup($orderFrom);
 
@@ -292,6 +319,62 @@ class OrderInvoiceService extends OrderBaseService
         $language = $language ? $language : $order->language;
 
         return $sendAddress[$language]??[];
+    }
+
+    /**
+     * @param $view
+     * @param $order
+     * @throws UnprocessableEntityHttpException
+     * @throws \Mpdf\MpdfException
+     * @throws \setasign\Fpdi\PdfParser\CrossReference\CrossReferenceException
+     * @throws \setasign\Fpdi\PdfParser\PdfParserException
+     * @throws \setasign\Fpdi\PdfParser\Type\PdfTypeException
+     * @throws \yii\base\InvalidConfigException
+     * @return string
+     */
+    public function generatePdfFile($view, $order) {
+        $result = $this->getEleInvoiceInfo($order, null, 'pdf');
+
+        $content = $view->render($result['template'], ['result'=>$result]);
+
+        $file = \Yii::getAlias('@storage') . sprintf('/backend/pdfInvoice/%s.pdf', $result['order_sn']);
+
+        $pdf = new Pdf([
+            //
+            'filename' => $file,
+            // set to use core fonts only
+            'mode' => Pdf::MODE_UTF8,
+            // A4 paper format
+            'format' => Pdf::FORMAT_A4,
+            // portrait orientation
+            'orientation' => Pdf::ORIENT_PORTRAIT,
+            // stream to browser inline
+            'destination' => Pdf::DEST_FILE,
+            // your html content input
+            'content' => $content,
+            // format content from your own css file if needed or use the
+            // enhanced bootstrap css built by Krajee for mPDF formatting
+            'cssFile' => \Yii::getAlias('@webroot').'/resources/css/invoice.css',
+            // any css to be embedded if required
+            'cssInline' => '.kv-heading-1{font-size:18px}',
+            // set mPDF properties on the fly
+            'options' => [
+                'title' => '中文',
+                'autoLangToFont' => true,    //这几个配置加上可以显示中文
+                'autoScriptToLang' => true,  //这几个配置加上可以显示中文
+                'autoVietnamese' => true,    //这几个配置加上可以显示中文
+                'autoArabic' => true,        //这几个配置加上可以显示中文
+            ],
+            // call mPDF methods on the fly
+            'methods' => [
+//                'SetHeader'=>[$subject],
+                'SetFooter'=>['{PAGENO}'],
+            ]
+        ]);
+
+        $pdf->render();
+
+        return $file;
     }
     
 }

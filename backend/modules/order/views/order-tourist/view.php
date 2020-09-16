@@ -299,21 +299,16 @@ DOM;
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label style="font-weight:bold">应付款：</label></div>
                                     <?php
-                                    $receivable = $model->pay_amount;
+                                    $pay_amount = $model->pay_amount;
+                                    if($model->currency == CurrencyEnum::TWD) {
+                                        $pay_amount = sprintf("%.2f", intval($pay_amount));
+                                    }
                                     ?>
-                                    <?php if($model->currency == \common\enums\CurrencyEnum::CNY) { ?>
-                                        <div class="col-lg-7 text-red"><?= \common\enums\CurrencyEnum::HKD ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount(\Yii::$app->services->currency->exchangeAmount($model->pay_amount, 2, \common\enums\CurrencyEnum::HKD, CurrencyEnum::CNY), 2, ',') ?> (<?= $model->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($model->pay_amount, 2, ',') ?>)</div>
-                                    <?php } else { ?>
-                                        <div class="col-lg-7 text-red"><?= $model->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($model->pay_amount, 2, ',') ?></div>
-                                    <?php } ?>
+                                    <div class="col-lg-7 text-red"><?= $model->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($pay_amount, 2, ',') ?></div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label style="font-weight:bold"><?= $model->getAttributeLabel('paid_currency') ?>：</label></div>
-                                    <?php if($model->currency == \common\enums\CurrencyEnum::CNY) { ?>
-                                        <div class="col-lg-7 text-red"><?= $model->paid_currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->paid_amount, 1, 2, ',') ?> (<?= $model->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount(\Yii::$app->services->currency->exchangeAmount($model->paid_amount, 2, $model->currency, $model->paid_currency), 1, 2, ',') ?>)</div>
-                                    <?php } else { ?>
-                                        <div class="col-lg-7 text-red"><?= $model->paid_currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->paid_amount, 1, 2, ',') ?></div>
-                                    <?php } ?>
+                                    <div class="col-lg-7 text-red"><?= $model->paid_currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->paid_amount, 1, 2, ',') ?></div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label style="font-weight:bold">参考支付RMB金额：</label></div>
