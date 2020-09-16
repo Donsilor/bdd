@@ -718,7 +718,7 @@ class GoodsService extends Service
      * @param unknown $new_goods_info  操作后数据
      */
     public function recordGoodsLog($new_goods_info, $old_goods_info){
-        $not_labdata = ['onsale_time','sale_services','goods_3ds','parame_images','goods_gia_image', 'updated_at', 'goods_storage', 'style_attr', 'goods_images'];
+        $not_labdata = ['id','onsale_time','sale_services','goods_3ds','parame_images','goods_gia_image', 'created_at', 'updated_at', 'goods_storage', 'style_attr', 'goods_images'];
         $new_goods = ArrayHelper::toArray($new_goods_info);
         $diff_info = array_diff_assoc($new_goods, $old_goods_info);
         $diamondModel = new Diamond();
@@ -736,6 +736,10 @@ class GoodsService extends Service
                     $lab = isset($style_attrLab[$k])?$style_attrLab[$k]:"";
                 }
                 $old_val = $old_goods_info[$k]??'';
+                if('type_id' == $k ) {
+                    $old_val = TypeService::getTypeNameById($old_val);
+                    $new_val = TypeService::getTypeNameById($new_val);
+                }
                 if('status' == $k ){
                     $old_val = FrameEnum::getValue($old_val);
                     $new_val = FrameEnum::getValue($new_val);
@@ -889,11 +893,26 @@ class GoodsService extends Service
                                 $log_msg_lsit = '';
                                 $new_status = isset($new_val[$i]['status'])?$new_val[$i]['status']:'';
                                 $old_status = isset($old_val[$i]['status'])?$old_val[$i]['status']:'';
-                                if('sale_policy' == $k || 'style_salepolicy' == $k){
-                                    $new_markup_rate = isset($new_val[$i]['markup_rate'])?$new_val[$i]['markup_rate']:'';
-                                    $old_markup_rate = isset($old_val[$i]['markup_rate'])?$old_val[$i]['markup_rate']:'';
-                                    $new_markup_value = isset($new_val[$i]['markup_value'])?$new_val[$i]['markup_value']:'';
-                                    $old_markup_value = isset($old_val[$i]['markup_value'])?$old_val[$i]['markup_value']:'';
+                                if('sale_policy' == $k || 'style_salepolicy' == $k) {
+
+                                    //解决添加时，旧数据没有地区ID的异常
+                                    if(!isset($obj->area_id)) {
+                                        continue;
+                                    }
+
+                                    //解决编辑时，有两条数据的问题
+                                    static $areas_p = [];
+                                    if(in_array($obj->area_id, $areas_p)) {
+                                        continue;
+                                    }
+                                    $areas_p[] = $obj->area_id;
+
+                                    $new_markup_rate = isset($new_val[$obj->area_id]['markup_rate'])?$new_val[$obj->area_id]['markup_rate']:'';
+                                    $old_markup_rate = isset($old_val[$obj->area_id]['markup_rate'])?$old_val[$obj->area_id]['markup_rate']:'';
+                                    $new_markup_value = isset($new_val[$obj->area_id]['markup_value'])?$new_val[$obj->area_id]['markup_value']:'';
+                                    $old_markup_value = isset($old_val[$obj->area_id]['markup_value'])?$old_val[$obj->area_id]['markup_value']:'';
+                                    $new_status = isset($new_val[$obj->area_id]['status'])?$new_val[$obj->area_id]['status']:'';
+                                    $old_status = isset($old_val[$obj->area_id]['status'])?$old_val[$obj->area_id]['status']:'';
                                     if($new_markup_rate != $old_markup_rate){
                                         $log_msg_lsit.="加价率：\"".$old_markup_rate."\" 变更为 ".$new_markup_rate.",";
                                     }
@@ -903,11 +922,33 @@ class GoodsService extends Service
                                     if($new_status != $old_status){
                                         $log_msg_lsit.="状态：\"".StatusEnum::getValue($old_status)."\" 变更为 ".StatusEnum::getValue($new_status).",";
                                     }
-                                    if($log_msg_lsit != ''){
+                                    if($log_msg_lsit != '') {
                                         $log_msg.= $k == 'sale_policy' ? $obj->area_name."：" : $area_arr[$obj->area_id]."：";
-                                        $log_msg.= '【'.rtrim($log_msg_lsit, ',');
+                                        $log_msg.= '【'.rtrim($log_msg_lsit, ',').'】';
                                     }
-                                }else{
+                                }
+//                                elseif ('sale_policy' == $k || 'style_salepolicy' == $k) {
+//                                    $new_markup_rate = isset($new_val[$obj->area_id]['markup_rate'])?$new_val[$obj->area_id]['markup_rate']:'';
+//                                    $old_markup_rate = isset($old_val[$obj->area_id]['markup_rate'])?$old_val[$obj->area_id]['markup_rate']:'';
+//                                    $new_markup_value = isset($new_val[$obj->area_id]['markup_value'])?$new_val[$obj->area_id]['markup_value']:'';
+//                                    $old_markup_value = isset($old_val[$obj->area_id]['markup_value'])?$old_val[$obj->area_id]['markup_value']:'';
+//                                    $new_status = isset($new_val[$obj->area_id]['status'])?$new_val[$obj->area_id]['status']:'';
+//                                    $old_status = isset($old_val[$obj->area_id]['status'])?$old_val[$obj->area_id]['status']:'';
+//                                    if($new_markup_rate != $old_markup_rate){
+//                                        $log_msg_lsit.="加价率：\"".$old_markup_rate."\" 变更为 ".$new_markup_rate.",";
+//                                    }
+//                                    if($new_markup_value != $old_markup_value){
+//                                        $log_msg_lsit.="固定值：\"".$old_markup_value."\" 变更为 ".$new_markup_value.",";
+//                                    }
+//                                    if($new_status != $old_status){
+//                                        $log_msg_lsit.="状态：\"".StatusEnum::getValue($old_status)."\" 变更为 ".StatusEnum::getValue($new_status).",";
+//                                    }
+//                                    if($log_msg_lsit != ''){
+//                                        $log_msg.= $k == 'sale_policy' ? $obj->area_name."：" : $area_arr[$obj->area_id]."：";
+//                                        $log_msg.= '【'.rtrim($log_msg_lsit, ',').'】';
+//                                    }
+//                                }
+                                else {
                                     $new_sale_price = isset($new_val[$i]['sale_price'])?$new_val[$i]['sale_price']:'';
                                     $old_sale_price = isset($old_val[$i]['sale_price'])?$old_val[$i]['sale_price']:'';
                                     $new_goods_storage = isset($new_val[$i]['goods_storage'])?$new_val[$i]['goods_storage']:'';
@@ -922,7 +963,7 @@ class GoodsService extends Service
                                         $log_msg_lsit.="状态：\"".StatusEnum::getValue($old_status)."\" 变更为 ".StatusEnum::getValue($new_status).",";
                                     }
                                     if($log_msg_lsit != ''){
-                                        $log_msg.='【'.$obj->goods_sn."：".rtrim($log_msg_lsit, ',');
+                                        $log_msg.='【'.$obj->goods_sn."：".rtrim($log_msg_lsit, ',').'】';
                                     }
                                 }
                             }
