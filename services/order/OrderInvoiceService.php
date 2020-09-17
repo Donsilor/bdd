@@ -253,7 +253,7 @@ class OrderInvoiceService extends OrderBaseService
         $order_goods = OrderGoods::find()->alias('m')
             ->leftJoin(OrderGoodsLang::tableName().'lang','m.id=lang.master_id and lang.language="'.$language.'"')
             ->where(['order_id'=>$order->id])
-            ->select(['lang.goods_name','m.goods_sn','m.goods_num','m.goods_pay_price','m.goods_price','m.currency', 'm.goods_spec', 'm.goods_type'])
+            ->select(['lang.goods_name','m.goods_sn','m.goods_num','m.goods_pay_price','m.goods_price','m.currency', 'm.goods_spec', 'm.goods_type', 'm.cart_goods_attr'])
             ->asArray()
             ->all();
         $result['order_goods'] = $order_goods;
