@@ -1140,6 +1140,7 @@ DOM;
             $attrs = [];
             if($val['cart_goods_attr']) {
                 $cart_goods_attr = \GuzzleHttp\json_decode($val['cart_goods_attr'], true);
+                if(!empty($cart_goods_attr) && is_array($cart_goods_attr))
                 foreach ($cart_goods_attr as $k => $item) {
                     $key = $item['goods_id']??0;
                     $attrs[$key][$item['config_id']] = $item['config_attr_id'];
@@ -1274,6 +1275,7 @@ DOM;
                 $attrs = [];
                 if($goods->cart_goods_attr) {
                     $cart_goods_attr = \GuzzleHttp\json_decode($goods->cart_goods_attr, true);
+                    if(!empty($cart_goods_attr) && is_array($cart_goods_attr))
                     foreach ($cart_goods_attr as $k => $item) {
 
                         $key = $item['goods_id']??$goods->goods_id;

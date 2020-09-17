@@ -340,6 +340,7 @@ DOM;
                                             $attrs = [];
                                             if($model->cart_goods_attr) {
                                                 $cart_goods_attr = \GuzzleHttp\json_decode($model->cart_goods_attr, true);
+                                                if(!empty($cart_goods_attr) && is_array($cart_goods_attr))
                                                 foreach ($cart_goods_attr as $k => $item) {
                                                     $key = $item['goods_id']??0;
                                                     $attrs[$key][$item['config_id']] = $item['config_attr_id'];
