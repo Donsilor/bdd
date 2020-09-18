@@ -100,14 +100,14 @@ DOM;
 
                                              foreach ($goods2['lang']['goods_spec'] as $spec) {
 //                                                 $goods_spec1 .= $spec['attr_name'].":".$spec['attr_value']."&nbsp;";
-                                                 $goods_spec1 .= $spec['attr_value']."&nbsp/&nbsp;";
+                                                 $goods_spec1 .= $spec['attr_value']."&nbsp/&nbsp";
                                              }
 
                                              if(isset($attrs[$goods2['id']])) {
                                                  $cart_goods_attr2 = \Yii::$app->services->goods->formatGoodsAttr($attrs[$goods2['id']], $goods2['type_id']);
                                                  foreach ($cart_goods_attr2 as $vo2) {
 //                                                     $goods_spec1 .= $vo2['attr_name'].":".implode(',', $vo2['value'])."&nbsp;";
-                                                     $goods_spec1 .= implode(',', $vo2['value'])."&nbsp/&nbsp;";
+                                                     $goods_spec1 .= implode(',', $vo2['value'])."&nbsp/&nbsp";
                                                  }
                                              }
 
@@ -123,14 +123,14 @@ DOM;
 
                                              foreach ($goods2['lang']['goods_spec'] as $spec) {
 //                                                 $goods_spec2 .= $spec['attr_name'].":".$spec['attr_value']."&nbsp;";
-                                                 $goods_spec2 .= $spec['attr_value']."&nbsp/&nbsp;";
+                                                 $goods_spec2 .= $spec['attr_value']."&nbsp/&nbsp";
                                              }
 
                                              if(isset($attrs[$goods2['id']])) {
                                                  $cart_goods_attr2 = \Yii::$app->services->goods->formatGoodsAttr($attrs[$goods2['id']], $goods2['type_id']);
                                                  foreach ($cart_goods_attr2 as $vo2) {
 //                                                     $goods_spec2 .= $vo2['attr_name'].":".implode(',', $vo2['value'])."&nbsp;";
-                                                     $goods_spec2 .= implode(',', $vo2['value'])."&nbsp/&nbsp;";
+                                                     $goods_spec2 .= implode(',', $vo2['value'])."&nbsp/&nbsp";
                                                  }
                                              }
 
@@ -159,7 +159,7 @@ DOM;
                                      $goods->goods_spec = \Yii::$app->services->goods->formatGoodsSpec($goods->goods_spec);
                                      foreach ($goods->goods_spec as $vo){
 //                                         $goods_spec .= $vo['attr_name'].":".$vo['attr_value']."&nbsp;";
-                                         $goods_spec .= $vo['attr_value']."&nbsp/&nbsp;";
+                                         $goods_spec .= $vo['attr_value']."&nbsp/&nbsp";
                                      }
                                  }
 
@@ -167,7 +167,7 @@ DOM;
                                      $goods->cart_goods_attr = \Yii::$app->services->goods->formatGoodsAttr($attrs[0], $goods->goods_type);
                                      foreach ($goods->cart_goods_attr as $vo) {
 //                                         $goods_spec .= $vo['attr_name'].":".implode(',', $vo['value'])."&nbsp;";
-                                         $goods_spec .= implode(',', $vo['value'])."&nbsp/&nbsp;";
+                                         $goods_spec .= implode(',', $vo['value'])."&nbsp/&nbsp";
                                      }
                                  }
 
