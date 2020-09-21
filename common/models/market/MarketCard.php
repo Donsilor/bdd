@@ -46,6 +46,7 @@ class MarketCard extends \common\models\base\BaseModel
             [['status', 'created_at', 'updated_at','user_id', 'first_use_time','max_use_time'], 'integer'],
             [['sn', 'password'], 'string', 'max' => 255],
             [['batch'], 'string', 'max' => 50],
+            [['area_attach'], 'safe'],
         ];
     }
 
