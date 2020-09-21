@@ -19,6 +19,7 @@ use Yii;
  * @property int $end_time 结束时间
  * @property int $status 状态：1=启用，0=禁用
  * @property int $user_id 用户ID
+ * @property array $area_attach 活动站点地区
  * @property int $created_at 创建时间
  * @property int $updated_at 更新时间
  */
@@ -67,6 +68,7 @@ class MarketCard extends \common\models\base\BaseModel
             'max_use_time' => '最长使用时间',
             'status' => '状态',
             'user_id' => '操作人',
+            'area_attach' => '活动站点地区',
             'created_at' => '创建时间',
             'updated_at' => '更新时间',
         ];
