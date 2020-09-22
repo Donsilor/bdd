@@ -248,7 +248,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                     </div>
                                     <div class="row" style="margin-top:15px; ">
                                         <?= Html::a('预览',['ele-invoice-pdf','order_id'=>$model->id],  [
-                                            'class' => 'btn btn-info btn-sm','target'=>'blank',
+                                            'class' => 'btn btn-info btn-sm',
+                                            'target'=>'blank',
                                             'style'=>'height:25px;font-size:10px;'
                                         ])?>
 
@@ -261,14 +262,20 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <!--                                </div>-->
 
                                     <?php if($model->order_status>=\common\enums\OrderStatusEnum::ORDER_PAID) { ?>
+
+                                    <div class="row" style="margin-top:15px; ">
                                         <?= Html::edit(['edit-send-paid-email', 'order_id' => $model->id,'returnUrl' => Url::getReturnUrl()],sprintf('发送付款邮件(%d)', $model->send_paid_email_time), [
                                             'data-toggle' => 'modal',
                                             'data-target' => '#ajaxModalLg',
                                         ])?>
+                                    </div>
                                     <?php } ?>
+
+                                    <div class="row" style="margin-top:15px; ">
                                     <?= Html::a('导出',['export-excel-invoice','order_id'=>$model->id],  [
                                         'class' => 'btn btn-info btn-sm','target'=>'blank',
                                     ])?>
+                                    </div>
                                 </div>
                             </div>
                         <?php } else {?>
