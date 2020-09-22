@@ -55,28 +55,10 @@ class CardController extends UserAuthController
 
         $model = new CardValidateForm();
         $model->setAttributes($post);
+        $model->area_attach = $this->getAreaId();
 
         if(!$model->validate()) {
             return ResultHelper::api(422, $this->getError($model));
-        }
-
-        if(!empty($post['test'])) {
-            //状态，是否过期，是否有余额
-            $a = '1081.04';
-            $b = '14941.19';
-            $s = bcsub(0.53,0.50,2);
-            var_dump($s);
-            $s = 0.03 - $s;
-            var_dump(($s));
-
-  /*          $num1 = round($num, 2);//0.98999999999999999
-            $num2 = floatval($num);//0.98999999999999999
-            var_dump($num1);
-            var_dump($num2);*/
-            exit;
-
-
-            return;
         }
 
         $data = [
