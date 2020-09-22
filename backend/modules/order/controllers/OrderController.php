@@ -1038,8 +1038,8 @@ class OrderController extends BaseController
         return $str;
     }
 
-    private function fun($specs) {
-        $cs = $sc = $xk = $zs = $zsdx = '';
+    private function fun($specs, $attrs=[]) {
+        $cs = $sc = $xk = $zs = $zsdx = $zssc = '';
         foreach ($specs as $spec) {
 
             switch ($spec['attr_id']) {
@@ -1067,6 +1067,13 @@ class OrderController extends BaseController
                         $$key = $$key ? $$key.'/'.$value : $value;
                     }
 
+                    if(isset($attrs[$goods['id']])) {
+                        $attr2 = \Yii::$app->services->goods->formatGoodsAttr($attrs[$goods['id']], $goods['type_id']);
+                        foreach ($attr2 as $vo2) {
+                            $zssc = $zssc ? $zssc.'/'.implode('/', $vo2['value']) : implode('/', $vo2['value']);
+                        }
+                    }
+
                     break;
                 default:
             }
@@ -1078,6 +1085,7 @@ class OrderController extends BaseController
             'xk' => $xk,
             'zs' => $zs,
             'zsdx' => $zsdx,
+            'zssc' => $zssc,
         ];
     }
     
@@ -1128,7 +1136,17 @@ DOM;
             $sheet->setCellValue("B{$row}", $val['goods_sn']);
             //            $sheet->setCellValue("C{$row}", '');
             $sheet->setCellValue("D{$row}", $val['goods_name']);
-            
+
+            $attrs = [];
+            if($val['cart_goods_attr']) {
+                $cart_goods_attr = \GuzzleHttp\json_decode($val['cart_goods_attr'], true);
+                if(!empty($cart_goods_attr) && is_array($cart_goods_attr))
+                foreach ($cart_goods_attr as $k => $item) {
+                    $key = $item['goods_id']??0;
+                    $attrs[$key][$item['config_id']] = $item['config_attr_id'];
+                }
+            }
+
             $value = '';
             $goods_spec = '';
             if($val['goods_type']==19) {
@@ -1146,6 +1164,13 @@ DOM;
                             foreach ($goods['lang']['goods_spec'] as $spec) {
                                 $goods_spec1 .= $spec['attr_name'].":".$spec['attr_value']." ";
                             }
+
+                            if(isset($attrs[$goods['id']])) {
+                                $cart_goods_attr2 = \Yii::$app->services->goods->formatGoodsAttr($attrs[$goods['id']], $goods['type_id']);
+                                foreach ($cart_goods_attr2 as $vo2) {
+                                    $goods_spec1 .= $vo2['attr_name'].":".implode(',', $vo2['value'])." ";
+                                }
+                            }
                             
                             $value1 .= sprintf($html,
                                     $vo['attr_name'] . '：' . $goods['goods_name'],
@@ -1159,6 +1184,13 @@ DOM;
                             
                             foreach ($goods['lang']['goods_spec'] as $spec) {
                                 $goods_spec2 .= $spec['attr_name'].":".$spec['attr_value']." ";
+                            }
+
+                            if(isset($attrs[$goods['id']])) {
+                                $cart_goods_attr2 = \Yii::$app->services->goods->formatGoodsAttr($attrs[$goods['id']], $goods['type_id']);
+                                foreach ($cart_goods_attr2 as $vo2) {
+                                    $goods_spec2 .= $vo2['attr_name'].":".implode(',', $vo2['value'])." ";
+                                }
                             }
                             
                             $value2 .= sprintf($html,
@@ -1180,22 +1212,21 @@ DOM;
                 $value .= $value1;
                 $value .= $value2;
             }
-            elseif($val['goods_type']==2) {
+            else {
                 if($val['goods_spec']) {
                     $val['goods_spec'] = \Yii::$app->services->goods->formatGoodsSpec($val['goods_spec']);
                     foreach ($val['goods_spec'] as $vo) {
                         $goods_spec .= $vo['attr_name'].":".$vo['attr_value']." ";
                     }
                 }
-                $value = $goods_spec;
-            }
-            elseif($val['goods_type']==4) {
-                if($val['goods_spec']) {
-                    $val['goods_spec'] = \Yii::$app->services->goods->formatGoodsSpec($val['goods_spec']);
-                    foreach ($val['goods_spec'] as $vo) {
-                        $goods_spec .= $vo['attr_name'].":".$vo['attr_value']." ";
+
+                if(isset($attrs[0])) {
+                    $val['cart_goods_attr'] = \Yii::$app->services->goods->formatGoodsAttr($attrs[0], $val['goods_type']);
+                    foreach ($val['cart_goods_attr'] as $vo) {
+                        $goods_spec .= $vo['attr_name'].":".implode(',', $vo['value'])." ";
                     }
                 }
+
                 $value = $goods_spec;
             }
             
@@ -1241,7 +1272,34 @@ DOM;
 
                 $specs = \Yii::$app->services->goods->formatGoodsSpec($goods->goods_spec);
 
-                $specList[$goods->id] = $this->fun($specs);
+                $attrs = [];
+                if($goods->cart_goods_attr) {
+                    $cart_goods_attr = \GuzzleHttp\json_decode($goods->cart_goods_attr, true);
+                    if(!empty($cart_goods_attr) && is_array($cart_goods_attr))
+                    foreach ($cart_goods_attr as $k => $item) {
+
+                        $key = $item['goods_id']??$goods->goods_id;
+                        $attrs[$key][$item['config_id']] = $item['config_attr_id'];
+
+                    }
+                }
+
+                $zssc = '';
+                foreach ($attrs as $key => $attr) {
+                    if($key==$goods->goods_id) {
+                        $attr2 = \Yii::$app->services->goods->formatGoodsAttr($attr, $goods->goods_type);
+                        foreach ($attr2 as $vo2) {
+                            $zssc = $zssc ? $zssc.'/'.implode('/', $vo2['value']) : implode('/', $vo2['value']);
+                        }
+                    }
+                }
+
+                $specList[$goods->id] = $this->fun($specs, $attrs);
+
+                if($zssc) {
+                    $specList[$goods->id]['zssc'] = $zssc;
+                }
+
             }
         }
 
@@ -1318,8 +1376,9 @@ DOM;
             ['主石大小', 'id', 'function', function ($row) use($specList) {
                 return $specList[$row->id]['zsdx'];
             }],
-
-
+            ['主石色彩', 'id', 'function', function ($row) use($specList) {
+                return $specList[$row->id]['zssc'];
+            }],
             ['商品原价', 'id', 'function', function ($row) {
                 return $row->order->account->currency . ' ' . $row->goods_price;
             }],

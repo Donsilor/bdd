@@ -66,6 +66,8 @@ class CartController extends UserAuthController
             $cart['groupType'] = $model->group_type;
             $cart['goodsType'] = $model->goods_type;
             $cart['groupId'] = $model->group_id;
+            $cart['goodsAttr'] = $model->goods_attr?@\GuzzleHttp\json_decode($model->goods_attr, true):[];
+            $cart['goodsAttr'] = \Yii::$app->services->goodsAttribute->getCartGoodsAttr($cart['goodsAttr']);
 
             $cart['coupon'] = [
                 'type_id' => $model->goods_type,//产品线ID
@@ -93,7 +95,7 @@ class CartController extends UserAuthController
             //return $goods['goods_attr'];
             if(!empty($goods['lang']['goods_attr'])) {
                 $baseConfig = [];
-                foreach ($goods['lang']['goods_attr'] as $vo){                    
+                foreach ($goods['lang']['goods_attr'] as $vo){
                     $baseConfig[] = [
                             'configId' =>$vo['id'],
                             'configAttrId' =>0,
@@ -109,7 +111,7 @@ class CartController extends UserAuthController
                     
                     $detailConfig[] = [
                             'configId' =>$vo['attr_id'],
-                            'configAttrId' =>$vo['value_id'],
+                            'configAttrId' =>0,
                             'configVal' =>$vo['attr_name'],
                             'configAttrIVal' =>$vo['attr_value'],
                     ];
@@ -180,7 +182,8 @@ class CartController extends UserAuthController
     
                 $cart->goods_type = $goods['type_id'];
                 $cart->goods_price = $goods['sale_price'];
-                $cart->goods_spec = json_encode($goods['goods_spec']);//商品规格
+                $cart->goods_spec = $goods['goods_spec'];//商品规格
+                $cart->goods_attr = json_encode($model['goods_attr']);//商品属性
 
                 //款式
                 $cart->style_id = $goods['style_id'];
@@ -313,6 +316,7 @@ class CartController extends UserAuthController
             $cart['groupType'] = $model->group_type;
             $cart['goodsType'] = $model->goods_type;
             $cart['groupId'] = $model->group_id;
+            $cart['goodsAttr'] = \Yii::$app->services->goodsAttribute->getCartGoodsAttr($model->goods_attr);
 
             $cart['coupon'] = [
                 'type_id' => $model->goods_type,//产品线ID

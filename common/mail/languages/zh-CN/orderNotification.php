@@ -67,14 +67,114 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 
 					  $goods_list = $order->goods;
 					  if(is_array($goods_list) && !empty($goods_list)) {
-					     foreach ($goods_list as $goods){
-					         $goods_attr = '';
-					         if($goods->goods_spec){
-					             $goods->goods_spec = \Yii::$app->services->goods->formatGoodsSpec($goods->goods_spec);
-					             foreach ($goods->goods_spec as $vo){
-					                 $goods_attr .= $vo['attr_name'].":".$vo['attr_value']."&nbsp;";
-					             }
-					         }
+
+                          $html = <<<DOM
+<div class="row" style="padding: 6px -15px;">
+    <div class="col-lg-11">
+        <p style="padding:2px 0px;">SKU：%s</p>
+        <p style="padding:2px 0px;">%s</p>
+    </div>
+</div>
+DOM;
+                          $html2 = <<<DOM
+<div class="row" style="padding: 6px -15px;">
+    <div class="col-lg-11">
+        <p style="padding:2px 0px;">%s</p>
+    </div>
+</div>
+DOM;
+                        foreach ($goods_list as $goods){
+                             $attrs = [];
+                             if($goods->cart_goods_attr) {
+                                 $cart_goods_attr = \GuzzleHttp\json_decode($goods->cart_goods_attr, true);
+                                 if(!empty($cart_goods_attr) && is_array($cart_goods_attr))
+                                 foreach ($cart_goods_attr as $k => $item) {
+                                     $key = $item['goods_id']??0;
+                                     $attrs[$key][$item['config_id']] = $item['config_attr_id'];
+                                 }
+                             }
+
+                             $value = '';
+                             if($goods->goods_type==19) {
+                                 $value1 = '';
+                                 $value2 = '';
+                                 $goods_spec = '';
+                                 $goods_spec1 = '';
+                                 $goods_spec2 = '';
+                                 if($goods->goods_spec) {
+                                     $goods->goods_spec = \Yii::$app->services->goods->formatGoodsSpec($goods->goods_spec);
+                                     foreach ($goods->goods_spec as $vo) {
+                                         if($vo['attr_id']==61) {
+                                             $goods2 = Yii::$app->services->goods->getGoodsInfo($vo['value_id']);
+
+                                             foreach ($goods2['lang']['goods_spec'] as $spec) {
+                                                 $goods_spec1 .= $spec['attr_value']." / ";
+                                             }
+
+                                             if(isset($attrs[$goods2['id']])) {
+                                                 $cart_goods_attr2 = \Yii::$app->services->goods->formatGoodsAttr($attrs[$goods2['id']], $goods2['type_id']);
+                                                 foreach ($cart_goods_attr2 as $vo2) {
+                                                     $goods_spec1 .= implode(',', $vo2['value'])." / ";
+                                                 }
+                                             }
+
+                                             $value1 .= sprintf($html2,
+                                                 $goods_spec1
+                                             );
+                                             continue;
+                                         }
+                                         if($vo['attr_id']==62) {
+                                             $goods2 = Yii::$app->services->goods->getGoodsInfo($vo['value_id']);
+
+                                             foreach ($goods2['lang']['goods_spec'] as $spec) {
+                                                 $goods_spec2 .= $spec['attr_value']." / ";
+                                             }
+
+                                             if(isset($attrs[$goods2['id']])) {
+                                                 $cart_goods_attr2 = \Yii::$app->services->goods->formatGoodsAttr($attrs[$goods2['id']], $goods2['type_id']);
+                                                 foreach ($cart_goods_attr2 as $vo2) {
+                                                     $goods_spec2 .= implode(',', $vo2['value'])." / ";
+                                                 }
+                                             }
+
+                                             $value2 .= sprintf($html2,
+                                                 $goods_spec2
+                                             );
+                                             continue;
+                                         }
+                                         $goods_spec .= $vo['attr_name'].":".$vo['attr_value']." ;";
+                                     }
+                                 }
+
+                                 $value .= sprintf($html2,
+                                     'SKU：' . $goods->goods_sn
+                                 );
+
+                                 $value .= $value1;
+                                 $value .= $value2;
+                             }
+                             else {
+                                 $goods_spec = '';
+                                 if($goods->goods_spec){
+                                     $goods->goods_spec = \Yii::$app->services->goods->formatGoodsSpec($goods->goods_spec);
+                                     foreach ($goods->goods_spec as $vo){
+                                         $goods_spec .= $vo['attr_value']." / ";
+                                     }
+                                 }
+
+                                 if(isset($attrs[0])) {
+                                     $goods->cart_goods_attr = \Yii::$app->services->goods->formatGoodsAttr($attrs[0], $goods->goods_type);
+                                     foreach ($goods->cart_goods_attr as $vo) {
+                                         $goods_spec .= implode(',', $vo['value'])." / ";
+                                     }
+                                 }
+
+                                 $value .= sprintf($html,
+                                     $goods->goods_sn,
+                                     $goods_spec
+                                 );
+                             }
+
 					      ?>
 					      <ul>
 						  <li>
@@ -83,7 +183,7 @@ body{font-family:"microsoft yahei";}.qmbox *{margin:0;padding:0;box-sizing:borde
 								</dl>
 								<dl>
 									<dd class="good"><?= $goods->lang->goods_name?></dd>
-									<dd class="attr"><?= $goods_attr?></dd>
+									<dd class="attr"><?= $value ?></dd>
 									<dd class="price"><?= AmountHelper::outputAmount($goods->goods_price,2,$currency)?></dd>
 								</dl>
 							</li>

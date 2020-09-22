@@ -23,20 +23,9 @@ class CardController extends Controller
 
     public function actionTest()
     {
-        $order = \Yii::$app->logistics->kd100('SF1074705590534', '顺丰', true);
-        var_dump(is_array($order));
-        echo("\r\n");
-        echo $order->getCode(); // 状态码
-        echo("\r\n");
-        echo $order->getMsg(); // 状态信息
-        echo("\r\n");
-        echo $order->getCompany(); // 物流公司简称
-        echo("\r\n");
-        echo $order->getNo(); // 物流单号
-        echo("\r\n");
-        echo $order->getStatus(); // 当前物流单状态
-        echo("\r\n");
-
+        $goods = \Yii::$app->services->goods->getGoodsInfo(2372, 2);
+        $goods_attr = \GuzzleHttp\json_decode($goods['goods_attr'], true);
+        var_dump($goods_attr);
     }
 
     /**

@@ -23,6 +23,7 @@ use Yii;
  * @property int $coupon_id
  * @property string $goods_spec 商品规格
  * @property string $goods_attr 商品属性
+ * @property string $cart_goods_attr 商品属性
  * @property float $exchange_rate 交易汇率
  * @property string $currency 货币
  * @property int $created_at 创建时间
@@ -52,6 +53,7 @@ class OrderGoods extends \common\models\base\BaseModel
             [['goods_sn'], 'string', 'max' => 50],
             [['goods_image'], 'string', 'max' => 100],
             [['goods_spec','goods_name'], 'string', 'max' => 300],
+            [['cart_goods_attr','goods_attr'], 'string', 'max' => 1024],
             [['currency'], 'string','max'=>5],
         ];
     }
@@ -80,6 +82,7 @@ class OrderGoods extends \common\models\base\BaseModel
             'currency' => '货币',
             'goods_spec' => '商品规格',
             'goods_attr' => 'Goods Attr',
+            'cart_goods_attr' => 'Goods Attr',
             'created_at' => '创建时间',
             'updated_at' => '更新时间',
         ];

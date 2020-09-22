@@ -104,9 +104,11 @@ class OrderController extends UserAuthController
                    'mainGoodsCode'=>null,
                    'ringName'=>"",
                    'ringImg'=>"",
+                   'goodsAttr'=>$orderGoods->cart_goods_attr?@\GuzzleHttp\json_decode($orderGoods->cart_goods_attr, true):[],
                    'baseConfig'=>null,
                    'ring'=>[]
                ];
+               $orderDetail['goodsAttr'] = \Yii::$app->services->goodsAttribute->getCartGoodsAttr($orderDetail['goodsAttr']);
                if(!empty($orderGoods->goods_attr)) {
                    $goods_attr = \Yii::$app->services->goods->formatGoodsAttr($orderGoods->goods_attr, $orderGoods->goods_type);
                    $baseConfig = [];
@@ -124,13 +126,13 @@ class OrderController extends UserAuthController
                    $detailSpecs = [];
                    $goods_spec = \Yii::$app->services->goods->formatGoodsSpec($orderGoods->goods_spec);
                    $ring = [];
-                   foreach ($goods_spec as $vo){                       
+                   foreach ($goods_spec as $vo){
                        $detailSpecs[] = [
                                'name' =>$vo['attr_name'],
-                               'value' =>$vo['attr_value'],                               
+                               'value' =>$vo['attr_value'],
                        ];
                        if(in_array($vo['attr_id'], ['61', '62'])) {
-                           $ring[] = \Yii::$app->services->goods->getGoodsInfo($vo['value_id']);;
+                           $ring[] = \Yii::$app->services->goods->getGoodsInfo($vo['value_id']);
                        }
                    }
                    $orderDetail['detailSpecs'] = json_encode($detailSpecs);
@@ -268,9 +270,11 @@ class OrderController extends UserAuthController
                 'mainGoodsCode'=>null,
                 'ringName'=>"",
                 'ringImg'=>"",
+                'goodsAttr'=>$orderGoods->cart_goods_attr?@\GuzzleHttp\json_decode($orderGoods->cart_goods_attr, true):[],
                 'baseConfig'=>null,
                 'ring'=>[]
             ];
+            $orderDetail['goodsAttr'] = \Yii::$app->services->goodsAttribute->getCartGoodsAttr($orderDetail['goodsAttr']);
             if(!empty($orderGoods->goods_attr)) {
                 $goods_attr = \Yii::$app->services->goods->formatGoodsAttr($orderGoods->goods_attr, $orderGoods->goods_type);
                 $baseConfig = [];

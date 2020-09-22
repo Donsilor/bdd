@@ -97,6 +97,7 @@ class OrderTouristService extends OrderBaseService
 
             $detail = new OrderTouristDetails();
             $detail->attributes = $goods;
+            $detail->cart_goods_attr = \GuzzleHttp\json_encode($goods['cart_goods_attr']);
 
             //订单ID
             $detail->order_tourist_id = $order->id;
@@ -296,6 +297,7 @@ class OrderTouristService extends OrderBaseService
                 'coupon_id' => $detail->coupon_id,
                 'goods_spec' => $detail->goods_spec,
                 'goods_attr' => $detail->goods_attr,
+                'cart_goods_attr' => $detail->cart_goods_attr,
                 'currency' => $orderTourist->currency,
                 'exchange_rate' => $orderTourist->exchange_rate,
             ];
