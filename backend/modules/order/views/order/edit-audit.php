@@ -19,7 +19,7 @@ $form = ActiveForm::begin([
     <div class="modal-body">
         <?= $form->field($model, 'audit_status')->dropDownList(\common\enums\OrderStatusEnum::auditStatus(),[
             'prompt' => '请选择',
-        ])->label('订单是否取消') ?>
+        ])->label('订单是否审核') ?>
         <?= $form->field($model, 'audit_remark')->textarea() ?>
     </div>
     <div class="modal-footer">
