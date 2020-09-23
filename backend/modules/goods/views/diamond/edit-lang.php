@@ -108,15 +108,25 @@ $this->params['breadcrumbs'][] = $this->title;
 
     		    <!-- ./nav-tabs-custom -->
             </div>
-           <div class="col-lg-3">
-               <?= $form->field($model, 'goods_image')->widget(common\widgets\webuploader\Files::class, [
-                   'config' => [
-                       'pick' => [
-                           'multiple' => false,
-                       ],
-
-                   ]
-               ]); ?>
+           <div class="col-lg-3" style="padding: 20px;">
+               <div class="form-group field-diamond-goods_image">
+                   <label class="control-label" for="diamond-goods_image">主图</label>
+                   <div class="rf-row">
+                       <div class="col-sm-12">
+                           <div class="upload-list">
+                               <ul >
+                                   <li>
+                                       <div class="img-box">
+                                           <a href="<?= $model->goods_image ?>" data-fancybox="rfUploadImg">
+                                               <div class="bg-cover" style="background-image: url(<?= $model->goods_image ?>);"></div>
+                                           </a>
+                                       </div>
+                                   </li>
+                               </ul>
+                           </div>
+                       </div>
+                   </div>
+               </div>
            </div>
            <style type="text/css">
                #tab_1 .upload-list ul li {
@@ -216,6 +226,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
 
             </div>
+              <?= $form->field($model, 'goods_image')->widget(common\widgets\webuploader\Files::class, [
+                    'config' => [
+                        'pick' => [
+                            'multiple' => false,
+                        ],
+
+                    ]
+                ]); ?>
 
               <?php $model->parame_images = !empty($model->parame_images)?explode(',', $model->parame_images):null;?>
               <?= $form->field($model, 'parame_images')->widget(common\widgets\webuploader\Files::class, [

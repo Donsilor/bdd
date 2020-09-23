@@ -67,29 +67,29 @@ $model->style_spec = $style_spec;
             <ul class="nav nav-tabs pull-right">
               <li class="pull-left header"><i class="fa fa-th"></i> <?= $tab_list[1]??'';?></li>
             </ul>
-            <div class="box-body" style="margin-left:9px">
+            <div class="box-body col-lg-8" style="">
                 <?php 
                 $type_id = Yii::$app->request->get("type_id");
                 $_type_id = Yii::$app->request->get("_type_id",$type_id);
                 $model->type_id = $model->type_id?? $_type_id;
                 ?> 
                  <div class="row">
-                 <div class="col-lg-4">         
+                 <div class="col-lg-6">
         			<?= $form->field($model, 'type_id')->dropDownList(\Yii::$app->services->goodsType->getGrpDropDown($type_id),[
         			        'prompt' => '请选择',
         			        'onchange'=>"location.href='?_type_id='+this.value+'&type_id={$type_id}'",
         			        'disabled'=>$model->isNewRecord?null:'disabled',
         			]) ?> 
     			</div>
-    			<div class="col-lg-4"><?= $form->field($model, 'style_sn')->textInput(['maxlength'=>true]) ?></div>
+    			<div class="col-lg-6"><?= $form->field($model, 'style_sn')->textInput(['maxlength'=>true]) ?></div>
                 </div>                
                 <div class="row">
-                    <div class="col-lg-4"><?= $form->field($model, 'sale_volume')->textInput(['maxlength'=>true,'disabled'=>true]) ?></div>
-                    <div class="col-lg-4"><?= $form->field($model, 'virtual_volume')->textInput(['maxlength'=>true]) ?></div>
+                    <div class="col-lg-6"><?= $form->field($model, 'sale_volume')->textInput(['maxlength'=>true,'disabled'=>true]) ?></div>
+                    <div class="col-lg-6"><?= $form->field($model, 'virtual_volume')->textInput(['maxlength'=>true]) ?></div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-4"><?= $form->field($model, 'goods_clicks')->textInput(['maxlength'=>true,'disabled'=>true]) ?></div>
-                    <div class="col-lg-4"><?= $form->field($model, 'virtual_clicks')->textInput(['maxlength'=>true]) ?></div>
+                    <div class="col-lg-6"><?= $form->field($model, 'goods_clicks')->textInput(['maxlength'=>true,'disabled'=>true]) ?></div>
+                    <div class="col-lg-6"><?= $form->field($model, 'virtual_clicks')->textInput(['maxlength'=>true]) ?></div>
                 </div>                                  
     			<div class="nav-tabs-custom ">
     		        <?php echo Html::langTab("tab1")?>    			      
@@ -108,6 +108,29 @@ $model->style_spec = $style_spec;
 
     		    <!-- ./nav-tabs-custom -->
             </div>
+           <div class="col-lg-4">
+               <div class="form-group field-diamond-goods_image">
+                   <label class="control-label" for="diamond-goods_image">主图</label>
+                   <div class="rf-row">
+                       <div class="col-sm-12">
+                           <div class="upload-list">
+                               <ul >
+                                   <li>
+                                       <div class="img-box">
+                                           <?php
+                                           $goods_image = explode(',', $model->goods_images);
+                                           ?>
+                                           <a href="<?= $goods_image[0]??'' ?>" data-fancybox="rfUploadImg">
+                                               <div class="bg-cover" style="background-image: url(<?= $goods_image[0]??'' ?>);"></div>
+                                           </a>
+                                       </div>
+                                   </li>
+                               </ul>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
         <!-- ./box-body -->
       </div>            
       <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_2">
