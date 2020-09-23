@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <ul class="nav nav-tabs pull-right">
               <li class="pull-left header"><i class="fa fa-th"></i> <?= $tab_list[1]??''?></li>
             </ul>
-            <div class="box-body col-lg-9" style="margin-left:9px">
+            <div class="box-body col-lg-9">
                 <div class="row">
                     <div class="col-lg-4">
                         <?= $form->field($model, 'cert_type')->dropDownList(\common\enums\DiamondEnum::getCertTypeList(),['prompt'=>Yii::t("common",'请选择')]) ?>
@@ -108,6 +108,25 @@ $this->params['breadcrumbs'][] = $this->title;
 
     		    <!-- ./nav-tabs-custom -->
             </div>
+           <div class="col-lg-3">
+               <?= $form->field($model, 'goods_image')->widget(common\widgets\webuploader\Files::class, [
+                   'config' => [
+                       'pick' => [
+                           'multiple' => false,
+                       ],
+
+                   ]
+               ]); ?>
+           </div>
+           <style type="text/css">
+               #tab_1 .upload-list ul li {
+                   width: 210px;
+                   height: 210px;
+               }
+               #tab_1 .upload-list ul li .img-box .bg-cover {
+                   height: 208px;
+               }
+           </style>
         <!-- ./box-body -->
       </div>            
       <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_2">
@@ -197,14 +216,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
 
             </div>
-              <?= $form->field($model, 'goods_image')->widget(common\widgets\webuploader\Files::class, [
-                    'config' => [
-                        'pick' => [
-                            'multiple' => false,
-                        ],
-
-                    ]
-                ]); ?>
 
               <?php $model->parame_images = !empty($model->parame_images)?explode(',', $model->parame_images):null;?>
               <?= $form->field($model, 'parame_images')->widget(common\widgets\webuploader\Files::class, [
