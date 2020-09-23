@@ -68,7 +68,7 @@ $yesOrNo = \common\enums\StatusEnum::getYesOrNo();
             [
                 'attribute' => 'style_image',
                 'value' => function ($model) {
-                    return ImageHelper::fancyBox($model->style_image);
+                    return ImageHelper::fancyBox($model->style_image, 100, 100);
                 },
                 'filter' => false,
                 'format' => 'raw',
