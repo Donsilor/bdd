@@ -79,7 +79,7 @@ $type_id = Yii::$app->request->get('type_id', 0);
                         <?php
                         $area_attach_html = [];
                         foreach (\common\enums\AreaEnum::getMap() as $key => $item) {
-                            if(empty($model->area_attach) || in_array($key, $model->area_attach))
+                            if(empty($cardModel->area_attach) || in_array($key, $cardModel->area_attach))
                                 $area_attach_html[] = $item;
                         }
 
