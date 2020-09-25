@@ -76,8 +76,21 @@ $type_id = Yii::$app->request->get('type_id', 0);
                         </td>
                     </tr>
                     <tr>
-                        <td align="center"> </td>
-                        <td> </td>
+                        <?php
+                        $area_attach_html = [];
+                        foreach (\common\enums\AreaEnum::getMap() as $key => $item) {
+                            if(empty($model->area_attach) || in_array($key, $model->area_attach))
+                                $area_attach_html[] = $item;
+                        }
+
+                        $area_attach_html = implode('/', $area_attach_html);
+                        ?>
+                        <td align="center">
+                            活动地区：
+                        </td>
+                        <td>
+                            <?= $area_attach_html ?>
+                        </td>
                         <td align="center">最大可用时长：</td>
                         <td>
                             <?= intval($cardModel->max_use_time/86400); ?>（天）

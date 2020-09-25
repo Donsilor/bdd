@@ -98,6 +98,20 @@ $type_id = Yii::$app->request->get('type_id', 0);
                             }
                         ],
                         [
+                            'label' => '活动地区',
+                            'value' => function($model) {
+
+                                $html = [];
+                                foreach (\common\enums\AreaEnum::getMap() as $key => $item) {
+                                    if(empty($model->area_attach) || in_array($key, $model->area_attach))
+                                        $html[] = $item;
+                                }
+
+                                return implode('/', $html);
+                            },
+                            'filter' => false,
+                        ],
+                        [
                             'label' => '总金额 （CNY）',
                             'filter' => false,
                             'attribute' => 'amount',
