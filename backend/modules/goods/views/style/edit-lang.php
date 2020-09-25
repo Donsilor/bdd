@@ -129,6 +129,15 @@ $model->style_spec = $style_spec;
                            </div>
                        </div>
                    </div>
+                   <style type="text/css">
+                       #tab_1 .upload-list ul li {
+                           width: 210px;
+                           height: 210px;
+                       }
+                       #tab_1 .upload-list ul li .img-box .bg-cover {
+                           height: 208px;
+                       }
+                   </style>
                </div>
            </div>
         <!-- ./box-body -->
