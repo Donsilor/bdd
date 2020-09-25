@@ -94,8 +94,11 @@ class OrderController extends BaseController
                 'member' => ['username', 'realname', 'mobile', 'email'],
                 'follower' => ['username'],
                 'wireTransfer' => ['collection_status'],
-            ]
+            ],
+
         ]);
+
+        $searchModel->setAttributes(['is_test' => 0]);
 
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at', 'address.mobile', 'address.email', 'order_status', 'discount_type']);
 
