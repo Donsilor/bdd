@@ -409,7 +409,7 @@ class OrderController extends BaseController
 
         // ajax 校验
         $this->activeFormValidate($model);
-        if ($model->load(Yii::$app->request->post())) {
+        if (Yii::$app->request->isPost) {
 
             foreach ($id as $item) {
                 Yii::$app->services->order->changeOrderStatusFollower($item, Yii::$app->request->post());

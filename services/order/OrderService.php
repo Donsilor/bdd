@@ -2,6 +2,7 @@
 
 namespace services\order;
 
+use backend\modules\order\forms\OrderFollowerForm;
 use common\enums\FollowStatusEnum;
 use common\enums\LogisticsEnum;
 use common\models\market\MarketCouponDetails;
@@ -493,11 +494,11 @@ class OrderService extends OrderBaseService
 
     public function changeOrderStatusFollower($order_id, $post) {
 
-        $model = Order::findOne($order_id);
-
-        $model->load($post);
+        $model = OrderFollowerForm::findOne($order_id);
 
         $sellerRemark = $model->seller_remark;
+
+        $model->load($post);
 
         $model->followed_status = $model->follower_id ? FollowStatusEnum::YES : FollowStatusEnum::NO;
 
