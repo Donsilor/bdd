@@ -401,7 +401,11 @@ class OrderController extends BaseController
 
         $id = Yii::$app->request->get('id', null);
 
-        $model = $this->findModel($id);
+        if(!is_array($id)) {
+            $id = [$id];
+        }
+
+        $model = $this->findModel($id[0]);
 
         // ajax 校验
         $this->activeFormValidate($model);
