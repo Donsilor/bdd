@@ -288,8 +288,7 @@ class OrderController extends BaseController
                 Yii::$app->services->order->changeOrderStatusCancel($item, $order['cancel_remark']??'', 'admin', Yii::$app->getUser()->id);
             }
 
-            $returnUrl = Yii::$app->request->referrer;
-            return $this->redirect($returnUrl);
+            return $this->redirect(Yii::$app->request->referrer);
         }
 
         return $this->renderAjax($this->action->id, [
@@ -404,24 +403,15 @@ class OrderController extends BaseController
 
         $model = $this->findModel($id);
 
-        $sellerRemark = $model->seller_remark;
-
         // ajax 校验
         $this->activeFormValidate($model);
         if ($model->load(Yii::$app->request->post())) {
-            
-            $model->followed_status = $model->follower_id ? FollowStatusEnum::YES : FollowStatusEnum::NO;
 
-            OrderLogService::follower($model);
-
-            if(!empty($sellerRemark)) {
-                $model->seller_remark = $sellerRemark . "\r\n--------------------\r\n" . $model->seller_remark;
+            foreach ($id as $item) {
+                Yii::$app->services->order->changeOrderStatusFollower($item, Yii::$app->request->post());
             }
 
-            $result = $model->save();
-
-            $returnUrl = Yii::$app->request->referrer;
-            return $result ? $this->redirect($returnUrl) : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
+            return $this->redirect(Yii::$app->request->referrer);
         }
 
         $where = [];
@@ -483,7 +473,11 @@ class OrderController extends BaseController
 
         $this->modelClass = OrderAuditForm::class;
 
-        $model = $this->findModel($id);
+        if(!is_array($id)) {
+            $id = [$id];
+        }
+
+        $model = $this->findModel($id[0]);
 
         // ajax 校验
         $this->activeFormValidate($model);
@@ -491,7 +485,9 @@ class OrderController extends BaseController
         if (Yii::$app->request->isPost) {
 
             try {
-                Yii::$app->services->order->changeOrderStatusAudit($id, $order['audit_status'], $order['audit_remark']??'');
+                foreach ($id as $item) {
+                    Yii::$app->services->order->changeOrderStatusAudit($item, $order['audit_status'], $order['audit_remark']??'');
+                }
             } catch (Exception $exception) {
                 $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
             }

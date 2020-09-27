@@ -2,6 +2,7 @@
 
 namespace services\order;
 
+use common\enums\FollowStatusEnum;
 use common\enums\LogisticsEnum;
 use common\models\market\MarketCouponDetails;
 use services\market\CouponService;
@@ -488,6 +489,25 @@ class OrderService extends OrderBaseService
             'audit_status'=>OrderStatusEnum::getValue($audit_status, 'auditStatus')
         ]]);
 
+    }
+
+    public function changeOrderStatusFollower($order_id, $post) {
+
+        $model = Order::findOne($order_id);
+
+        $model->load($post);
+
+        $sellerRemark = $model->seller_remark;
+
+        $model->followed_status = $model->follower_id ? FollowStatusEnum::YES : FollowStatusEnum::NO;
+
+        OrderLogService::follower($model);
+
+        if(!empty($sellerRemark)) {
+            $model->seller_remark = $sellerRemark . "\r\n--------------------\r\n" . $model->seller_remark;
+        }
+
+        return $model->save();
     }
     
     /**
