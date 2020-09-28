@@ -286,7 +286,7 @@ class OrderController extends BaseController
                 Yii::$app->services->order->changeOrderStatusCancel($item, $order['cancel_remark']??'', 'admin', Yii::$app->getUser()->id);
             }
 
-            return $this->redirect(Yii::$app->request->referrer);
+            return $this->message("操作成功", $this->redirect(Yii::$app->request->referrer), 'success');
         }
 
         return $this->renderAjax($this->action->id, [
@@ -411,7 +411,7 @@ class OrderController extends BaseController
                 Yii::$app->services->order->changeOrderStatusFollower($item, Yii::$app->request->post());
             }
 
-            return $this->redirect(Yii::$app->request->referrer);
+            return $this->message("操作成功", $this->redirect(Yii::$app->request->referrer), 'success');
         }
 
         $where = [];
@@ -490,7 +490,7 @@ class OrderController extends BaseController
                 $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
             }
 
-            return $this->redirect(Yii::$app->request->referrer);
+            return $this->message("操作成功", $this->redirect(Yii::$app->request->referrer), 'success');
         }
 
         return $this->renderAjax($this->action->id, [
