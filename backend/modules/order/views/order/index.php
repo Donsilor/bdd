@@ -101,6 +101,7 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                             <?= Html::a('取消',['export-goods']+$params, ['class' => 'btn btn-info btn-sm']) ?>
                             <?= Html::a('跟进',['export']+$params, ['class' => 'btn btn-info btn-sm']) ?>
                             <?= Html::a('审核',['export-invoice-file']+$params, ['class' => 'btn btn-info btn-sm']) ?>
+							<?= Html::batchEdit(['edit-cancel'], '取消') ?>
                         </div>
                     </div>
                 </div>

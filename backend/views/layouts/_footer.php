@@ -181,6 +181,58 @@ $this->registerJs($script);
         });
     }
 
+    function batchEdit(obj)
+    {
+        let grid = $("#"+$(obj).attr('data-grid'));
+        let url = $(obj).attr('href');
+
+        let id = $(obj).closest("tr").data("key");
+
+        let _ids = [];
+        if(id) {
+            _ids.push(id);
+        }
+        else if(grid.length>0) {
+            _ids = grid.yiiGridView("getSelectedRows");
+        }
+
+        if(_ids.length<1 || !_ids) {
+            rfInfo('未选中数据！','');
+            return false;
+        }
+
+        let ids = [];
+        grid.find("tr").each(function (i,item) {
+            let tr = $(item);
+
+            if(tr.data("key")===undefined) {
+                return true;
+            }
+
+            if(_ids.indexOf(tr.data("key"))>=0) {
+                tr.find("a").each(function(i2, item2) {
+                    if($(item2).attr("href").indexOf(url)===0) {
+                        ids.push(tr.data("key"));
+                    }
+                });
+            }
+        });
+
+        for(let i=0; i<_ids.length; i++) {
+            if(ids.indexOf(_ids[i])<0) {
+                rfInfo(_ids[i]+' 不能操作！','');
+                return false;
+            }
+        }
+
+        url = url + '?id=' +ids.join(',')
+
+        let uuid = $(obj).data("but-id");
+        $("#"+uuid).attr("href", url).click();
+
+        return false;
+    }
+
     // 启用状态 status 1:启用;0禁用;
     function rfStatus(obj) {
         let id = $(obj).attr('data-id');
