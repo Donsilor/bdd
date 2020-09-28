@@ -274,9 +274,7 @@ class OrderController extends BaseController
 
         $this->modelClass = OrderCancelForm::class;
 
-        if(!is_array($id)) {
-            $id = [$id];
-        }
+        $id = explode(',', $id);
 
         $model = $this->findModel($id[0]);
 
@@ -401,9 +399,7 @@ class OrderController extends BaseController
 
         $id = Yii::$app->request->get('id', null);
 
-        if(!is_array($id)) {
-            $id = [$id];
-        }
+        $id = explode(',', $id);
 
         $model = $this->findModel($id[0]);
 
@@ -477,9 +473,7 @@ class OrderController extends BaseController
 
         $this->modelClass = OrderAuditForm::class;
 
-        if(!is_array($id)) {
-            $id = [$id];
-        }
+        $id = explode(',', $id);
 
         $model = $this->findModel($id[0]);
 
