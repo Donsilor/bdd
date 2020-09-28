@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <ul class="nav nav-tabs pull-right">
               <li class="pull-left header"><i class="fa fa-th"></i> <?= $tab_list[1]??''?></li>
             </ul>
-            <div class="box-body col-lg-9" style="margin-left:9px">
+            <div class="box-body col-lg-9">
                 <div class="row">
                     <div class="col-lg-4">
                         <?= $form->field($model, 'cert_type')->dropDownList(\common\enums\DiamondEnum::getCertTypeList(),['prompt'=>Yii::t("common",'请选择')]) ?>
@@ -108,6 +108,35 @@ $this->params['breadcrumbs'][] = $this->title;
 
     		    <!-- ./nav-tabs-custom -->
             </div>
+           <div class="col-lg-3" style="padding: 20px;">
+               <div class="form-group field-diamond-goods_image">
+                   <label class="control-label" for="diamond-goods_image">主图</label>
+                   <div class="rf-row">
+                       <div class="col-sm-12">
+                           <div class="upload-list">
+                               <ul >
+                                   <li>
+                                       <div class="img-box">
+                                           <a href="<?= $model->goods_image ?>" data-fancybox="rfUploadImg">
+                                               <div class="bg-cover" style="background-image: url(<?= $model->goods_image ?>);"></div>
+                                           </a>
+                                       </div>
+                                   </li>
+                               </ul>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           <style type="text/css">
+               #tab_1 .upload-list ul li {
+                   width: 210px;
+                   height: 210px;
+               }
+               #tab_1 .upload-list ul li .img-box .bg-cover {
+                   height: 208px;
+               }
+           </style>
         <!-- ./box-body -->
       </div>            
       <div class="row nav-tabs-custom tab-pane tab0 active" id="tab_2">

@@ -63,7 +63,7 @@ $yesOrNo = \common\enums\StatusEnum::getYesOrNo();
             [
                 'attribute' => 'goods_image',
                 'value' => function ($model) {
-                    return ImageHelper::fancyBox($model->goods_image);
+                    return ImageHelper::fancyBox($model->goods_image, 100, 100);
                 },
                 'filter' => false,
                 'format' => 'raw',
