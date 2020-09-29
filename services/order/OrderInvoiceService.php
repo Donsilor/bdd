@@ -259,21 +259,21 @@ class OrderInvoiceService extends OrderBaseService
         $result['order_goods'] = $order_goods;
 
         if($order->address->city_id) {
-            $city_name = \Yii::$app->services->area->getAreaName($order->address->city_id, $language);
+            $city_name = ','.\Yii::$app->services->area->getAreaName($order->address->city_id, $language);
         }
         else {
             $city_name = $order->address->city_name ? ','.$order->address->city_name : '';
         }
 
         if($order->address->province_id) {
-            $province_name = \Yii::$app->services->area->getAreaName($order->address->province_id, $language);
+            $province_name = ','.\Yii::$app->services->area->getAreaName($order->address->province_id, $language);
         }
         else {
             $province_name = $order->address->province_name ? ','.$order->address->province_name : '';
         }
 
         if($order->address->country_id) {
-            $country_name = \Yii::$app->services->area->getAreaName($order->address->country_id, $language);
+            $country_name = ','.\Yii::$app->services->area->getAreaName($order->address->country_id, $language);
         }
         else {
             $country_name = $order->address->country_name ? ','.$order->address->country_name : '';
