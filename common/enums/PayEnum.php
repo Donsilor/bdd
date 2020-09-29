@@ -84,6 +84,7 @@ class PayEnum extends BaseEnum
             self::PAY_TYPE_PAYDOLLAR_1 => 'Union',
             self::PAY_TYPE_PAYDOLLAR_2 => 'AliPay',
             self::PAY_TYPE_PAYDOLLAR_3 => 'Wechat',
+            self::PAY_TYPE_PAYDOLLAR_4 => 'AliPayHK',
             self::PAY_TYPE_CARD => 'Card',
             self::PAY_TYPE_WIRE_TRANSFER => 'WireTransfer',
         ];
