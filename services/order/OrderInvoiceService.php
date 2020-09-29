@@ -279,6 +279,8 @@ class OrderInvoiceService extends OrderBaseService
             $country_name = $order->address->country_name ?: '';
         }
 
+        $result['country'] = $country_name;
+
         //不同语言差异代码
         if($language == 'en-US'){
             $result['invoice_date'] = $result['invoice_date'] ? date('d-m-Y',$result['invoice_date']):date('d-m-Y',time());
@@ -299,8 +301,6 @@ class OrderInvoiceService extends OrderBaseService
 
             $result['address_details'] = $country_name . $province_name . $city_name . $order->address->address_details;
         }
-
-        $result['country'] = $country_name;
 
         switch ($language) {
             case 'en-US':
