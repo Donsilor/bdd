@@ -189,7 +189,7 @@ class OrderInvoiceService extends OrderBaseService
             'express_no' => $order->express_no,
             'express_company_name' => '',
             'delivery_time' => $order->delivery_time,
-            'country' => $order->address->country_name,
+//            'country' => $order->address->country_name,
             'currency' => $order->account->currency,
             'order_amount' => $order->account->order_amount,
             'email' => $order->invoice->email ?? '',
@@ -258,26 +258,41 @@ class OrderInvoiceService extends OrderBaseService
             ->all();
         $result['order_goods'] = $order_goods;
 
+        if($order->address->city_id) {
+            $city_name = \Yii::$app->services->area->getAreaName($order->address->city_id, $language);
+        }
+        else {
+            $city_name = $order->address->city_name ? ','.$order->address->city_name : '';
+        }
 
+        if($order->address->province_id) {
+            $province_name = \Yii::$app->services->area->getAreaName($order->address->province_id, $language);
+        }
+        else {
+            $province_name = $order->address->province_name ? ','.$order->address->province_name : '';
+        }
+
+        if($order->address->country_id) {
+            $country_name = \Yii::$app->services->area->getAreaName($order->address->country_id, $language);
+        }
+        else {
+            $country_name = $order->address->country_name ? ','.$order->address->country_name : '';
+        }
 
         //不同语言差异代码
         if($language == 'en-US'){
             $result['invoice_date'] = $result['invoice_date'] ? date('d-m-Y',$result['invoice_date']):date('d-m-Y',time());
             $result['delivery_time'] = $result['delivery_time'] ? date('d-m-Y',$result['delivery_time']):'';
 
-            $city_name = $order->address->city_name ? ','.$order->address->city_name : '';
-            $province_name = $order->address->province_name ? ','.$order->address->province_name : '';
-            $country_name = $order->address->country_name ? ','.$order->address->country_name : '';
             $result['address_details'] = $order->address->address_details .$city_name.$province_name.$country_name ;
         }else{
             $result['invoice_date'] = $result['invoice_date'] ? date('d-M-Y',$result['invoice_date']):date('d-M-Y',time());
             $result['delivery_time'] = $result['delivery_time'] ? date('Y-m-d',$result['delivery_time']):'';
 
-            $city_name = $order->address->city_name ? $order->address->city_name . ' ' : '';
-            $province_name = $order->address->province_name ? $order->address->province_name . ' ' : '';
-            $country_name = $order->address->country_name ? $order->address->country_name .' ' : '';
             $result['address_details'] = $country_name . $province_name . $city_name . $order->address->address_details ;
         }
+
+        $result['country'] = $country_name;
 
         switch ($language) {
             case 'en-US':
