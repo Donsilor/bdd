@@ -292,7 +292,7 @@ class OrderInvoiceService extends OrderBaseService
             $result['address_details'] = $country_name . $province_name . $city_name . $order->address->address_details ;
         }
 
-        $result['country'] = $country_name;
+        $result['country'] = trim($country_name, ',');
 
         switch ($language) {
             case 'en-US':
