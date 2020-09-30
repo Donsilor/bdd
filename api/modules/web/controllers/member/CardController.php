@@ -4,6 +4,7 @@ namespace api\modules\web\controllers\member;
 
 use api\modules\web\forms\CardForm;
 use api\modules\web\forms\CardValidateForm;
+use common\enums\AreaEnum;
 use common\helpers\ImageHelper;
 use common\models\forms\PayForm;
 use common\models\goods\Ring;
@@ -61,6 +62,17 @@ class CardController extends UserAuthController
             return ResultHelper::api(422, $this->getError($model));
         }
 
+        $card = $model->getCard();
+        if(empty($card->area_attach)) {
+            $area_names = AreaEnum::getMap();
+        }
+        else {
+            $area_names = [];
+            foreach ($card->area_attach as $area_attach) {
+                $area_names[] = AreaEnum::getValue($area_attach);
+            }
+        }
+
         $data = [
             'sn' => $model->getCard()->sn,
             'currency' => $this->getCurrency(),
@@ -75,6 +87,7 @@ class CardController extends UserAuthController
             'maxUseTime' => $model->getCard()->max_use_time,
             'maxUseDay' => round($model->getCard()->max_use_time/86400),
             'limitedUseTime' => $model->getCard()->max_use_time && $model->getCard()->first_use_time ? $model->getCard()->max_use_time+$model->getCard()->first_use_time:null,
+            'areaNames' =>  array_values($area_names)
         ];
 
         $goodsTypes = [];

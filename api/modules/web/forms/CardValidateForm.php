@@ -52,24 +52,24 @@ class CardValidateForm extends Model
 
     public function validateAreaAttach($attribute)
     {
-        if (!$this->hasErrors()) {
-            /* @var $user MarketCard */
-            $card = $this->getCard();
-            if (!$card || !empty($card->area_attach) && is_array($card->area_attach) && !in_array($this->area_attach, $card->area_attach)) {
-                if(empty($card->area_attach)) {
-                    $area_names = AreaEnum::getMap();
-                }
-                else {
-                    $area_names = [];
-                    foreach ($card->area_attach as $area_attach) {
-                        $area_names[] = AreaEnum::getValue($area_attach);
-                    }
-                }
-
-
-                $this->addError($attribute, sprintf('该购物卡仅限[%s]站点使用', implode(',', $area_names)));
-            }
-        }
+//        if (!$this->hasErrors()) {
+//            /* @var $user MarketCard */
+//            $card = $this->getCard();
+//            if (!$card || !empty($card->area_attach) && is_array($card->area_attach) && !in_array($this->area_attach, $card->area_attach)) {
+//                if(empty($card->area_attach)) {
+//                    $area_names = AreaEnum::getMap();
+//                }
+//                else {
+//                    $area_names = [];
+//                    foreach ($card->area_attach as $area_attach) {
+//                        $area_names[] = AreaEnum::getValue($area_attach);
+//                    }
+//                }
+//
+//
+//                $this->addError($attribute, sprintf('该购物卡仅限[%s]站点使用', implode(',', $area_names)));
+//            }
+//        }
     }
 
     /**
