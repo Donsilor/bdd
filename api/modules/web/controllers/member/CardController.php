@@ -69,7 +69,7 @@ class CardController extends UserAuthController
         else {
             $area_names = [];
             foreach ($card->area_attach as $area_attach) {
-                $area_names[] = AreaEnum::getValue($area_attach);
+                $area_names[$area_attach] = AreaEnum::getValue($area_attach);
             }
         }
 
@@ -87,7 +87,8 @@ class CardController extends UserAuthController
             'maxUseTime' => $model->getCard()->max_use_time,
             'maxUseDay' => round($model->getCard()->max_use_time/86400),
             'limitedUseTime' => $model->getCard()->max_use_time && $model->getCard()->first_use_time ? $model->getCard()->max_use_time+$model->getCard()->first_use_time:null,
-            'areaNames' =>  array_values($area_names)
+            'areaNames' =>  array_values($area_names),
+            'areaUse' => isset($area_names[$model->area_attach])
         ];
 
         $goodsTypes = [];
