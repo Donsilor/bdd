@@ -3,6 +3,7 @@
 namespace api\modules\web\forms;
 
 
+use common\enums\AreaEnum;
 use common\models\market\MarketCard;
 use yii\base\Model;
 
@@ -55,7 +56,18 @@ class CardValidateForm extends Model
             /* @var $user MarketCard */
             $card = $this->getCard();
             if (!$card || !empty($card->area_attach) && is_array($card->area_attach) && !in_array($this->area_attach, $card->area_attach)) {
-                $this->addError($attribute, '不在可使用地区');
+                if(empty($card->area_attach)) {
+                    $area_names = AreaEnum::getValue();
+                }
+                else {
+                    $area_names = [];
+                    foreach ($card->area_attach as $area_attach) {
+                        $area_names[] = AreaEnum::getValue($area_attach);
+                    }
+                }
+
+
+                $this->addError($attribute, sprintf('该购物卡仅限[%s]站点使用', implode(',', $area_names)));
             }
         }
     }
