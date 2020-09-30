@@ -73,6 +73,10 @@ class CardController extends UserAuthController
             }
         }
 
+        foreach ($area_names as &$area_name) {
+            $area_name = \Yii::t('card', $area_name);
+        }
+
         $data = [
             'sn' => $model->getCard()->sn,
             'currency' => $this->getCurrency(),
@@ -88,6 +92,7 @@ class CardController extends UserAuthController
             'maxUseDay' => round($model->getCard()->max_use_time/86400),
             'limitedUseTime' => $model->getCard()->max_use_time && $model->getCard()->first_use_time ? $model->getCard()->max_use_time+$model->getCard()->first_use_time:null,
             'areaNames' =>  array_values($area_names),
+            'areaTips' =>  sprintf(\Yii::t('card', '仅限[%s]站点使用'), implode(',', $area_names)),
             'areaUse' => isset($area_names[$model->area_attach])
         ];
 
