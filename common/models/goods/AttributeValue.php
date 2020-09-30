@@ -89,4 +89,20 @@ class AttributeValue extends BaseModel
     {
         return $this->hasOne(AttributeValueLang::class, ['master_id'=>'id']);
     }
+    /**
+     * 关联语言一对一
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLang2()
+    {
+        return $this->hasOne(AttributeValueLang::class, ['master_id'=>'id']);
+    }
+    /**
+     * 关联语言一对一
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLang3()
+    {
+        return $this->hasOne(AttributeValueLang::class, ['master_id'=>'id']);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace backend\modules\goods\controllers;
 
+use common\enums\LanguageEnum;
 use Yii;
 use common\models\goods\Attribute;
 use common\components\Curd;
@@ -103,8 +104,16 @@ class AttributeController extends BaseController
             
             $dataProvider = $searchModel
               ->search(Yii::$app->request->queryParams);
-            
-            $dataProvider->query->with(['lang']);
+
+            $dataProvider->query->with(['lang' => function($query) {
+                $query->where(['language' => LanguageEnum::ZH_CN]);
+            }]);
+            $dataProvider->query->with(['lang2' => function($query) {
+                $query->where(['language' => LanguageEnum::ZH_HK]);
+            }]);
+            $dataProvider->query->with(['lang3' => function($query) {
+                $query->where(['language' => LanguageEnum::EN_US]);
+            }]);
             $dataProvider->query->andWhere(['attr_id'=>$id]);
             $dataProvider->query->andWhere(['>','status',-1]);            
             
