@@ -57,7 +57,7 @@ class CardValidateForm extends Model
             $card = $this->getCard();
             if (!$card || !empty($card->area_attach) && is_array($card->area_attach) && !in_array($this->area_attach, $card->area_attach)) {
                 if(empty($card->area_attach)) {
-                    $area_names = AreaEnum::getValue();
+                    $area_names = AreaEnum::getMap();
                 }
                 else {
                     $area_names = [];
