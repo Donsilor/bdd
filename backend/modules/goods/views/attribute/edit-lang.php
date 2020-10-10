@@ -98,6 +98,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute'=>'lang.attr_value_name',
             ], 
             [
+                'attribute'=>'lang2.attr_value_name',
+            ],
+            [
+                'attribute'=>'lang3.attr_value_name',
+            ],
+            [
                 'attribute' => 'sort',
                 'format' => 'raw',
                 'headerOptions' => ['class' => 'col-md-1'],
