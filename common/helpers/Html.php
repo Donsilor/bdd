@@ -2,6 +2,7 @@
 
 namespace common\helpers;
 
+use Faker\Provider\Uuid;
 use Yii;
 use yii\helpers\BaseHtml;
 use common\enums\StatusEnum;
@@ -431,5 +432,24 @@ Css
             }     
         }
         return $buttonHtml;
+    }
+
+    public static function batchEdit($url = ['batch-edit'], $content = '批量编辑', $options = [])
+    {
+        $uuid = Uuid::uuid();
+        $options1 = ArrayHelper::merge([
+            'data-but-id' => $uuid,
+            'class' => "btn btn-primary btn-sm",
+            "data-grid"=>"grid",
+            'onclick' => "batchEdit(this);return false;"
+        ], $options);
+        $options2 = ArrayHelper::merge([
+            'id' => $uuid,
+            'class' => "hide",
+            'data-toggle' => 'modal',
+            'data-target' => '#ajaxModal',
+        ], $options);
+
+        return self::a($content, $url, $options1).self::a($content, $url, $options2);
     }
 }

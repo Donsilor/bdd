@@ -277,16 +277,19 @@ class OrderController extends BaseController
 
         $this->modelClass = OrderCancelForm::class;
 
-        $model = $this->findModel($id);
+        $id = explode(',', $id);
+
+        $model = $this->findModel($id[0]);
 
         // ajax 校验
         $this->activeFormValidate($model);
         if (Yii::$app->request->isPost) {
 
-            Yii::$app->services->order->changeOrderStatusCancel($id, $order['cancel_remark']??'', 'admin', Yii::$app->getUser()->id);
+            foreach ($id as $item) {
+                Yii::$app->services->order->changeOrderStatusCancel($item, $order['cancel_remark']??'', 'admin', Yii::$app->getUser()->id);
+            }
 
-            $returnUrl = Yii::$app->request->referrer;
-            return $this->redirect($returnUrl);
+            return $this->message("操作成功", $this->redirect(Yii::$app->request->referrer), 'success');
         }
 
         return $this->renderAjax($this->action->id, [
@@ -399,26 +402,19 @@ class OrderController extends BaseController
 
         $id = Yii::$app->request->get('id', null);
 
-        $model = $this->findModel($id);
+        $id = explode(',', $id);
 
-        $sellerRemark = $model->seller_remark;
+        $model = $this->findModel($id[0]);
 
         // ajax 校验
         $this->activeFormValidate($model);
-        if ($model->load(Yii::$app->request->post())) {
-            
-            $model->followed_status = $model->follower_id ? FollowStatusEnum::YES : FollowStatusEnum::NO;
+        if (Yii::$app->request->isPost) {
 
-            OrderLogService::follower($model);
-
-            if(!empty($sellerRemark)) {
-                $model->seller_remark = $sellerRemark . "\r\n--------------------\r\n" . $model->seller_remark;
+            foreach ($id as $item) {
+                Yii::$app->services->order->changeOrderStatusFollower($item, Yii::$app->request->post());
             }
 
-            $result = $model->save();
-
-            $returnUrl = Yii::$app->request->referrer;
-            return $result ? $this->redirect($returnUrl) : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
+            return $this->message("操作成功", $this->redirect(Yii::$app->request->referrer), 'success');
         }
 
         $where = [];
@@ -480,7 +476,9 @@ class OrderController extends BaseController
 
         $this->modelClass = OrderAuditForm::class;
 
-        $model = $this->findModel($id);
+        $id = explode(',', $id);
+
+        $model = $this->findModel($id[0]);
 
         // ajax 校验
         $this->activeFormValidate($model);
@@ -488,12 +486,14 @@ class OrderController extends BaseController
         if (Yii::$app->request->isPost) {
 
             try {
-                Yii::$app->services->order->changeOrderStatusAudit($id, $order['audit_status'], $order['audit_remark']??'');
+                foreach ($id as $item) {
+                    Yii::$app->services->order->changeOrderStatusAudit($item, $order['audit_status'], $order['audit_remark']??'');
+                }
             } catch (Exception $exception) {
                 $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
             }
 
-            return $this->redirect(Yii::$app->request->referrer);
+            return $this->message("操作成功", $this->redirect(Yii::$app->request->referrer), 'success');
         }
 
         return $this->renderAjax($this->action->id, [

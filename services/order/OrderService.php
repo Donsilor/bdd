@@ -2,6 +2,8 @@
 
 namespace services\order;
 
+use backend\modules\order\forms\OrderFollowerForm;
+use common\enums\FollowStatusEnum;
 use common\enums\LogisticsEnum;
 use common\models\market\MarketCouponDetails;
 use services\market\CouponService;
@@ -343,10 +345,10 @@ class OrderService extends OrderBaseService
         if($order->order_status !== OrderStatusEnum::ORDER_UNPAID) {
             return true;
         }
-        $order_goods_list = OrderGoods::find()->select(['id','goods_id','goods_type','goods_num'])->where(['order_id'=>$order_id])->all();
-        foreach ($order_goods_list as $goods) {
+//        $order_goods_list = OrderGoods::find()->select(['id','goods_id','goods_type','goods_num'])->where(['order_id'=>$order_id])->all();
+//        foreach ($order_goods_list as $goods) {
             //\Yii::$app->services->goods->updateGoodsStorageForOrder($goods->goods_id, $goods->goods_num, $goods->goods_type);
-        }
+//        }
         //更改订单状态
         $order->cancel_remark = $remark;
 
@@ -488,6 +490,25 @@ class OrderService extends OrderBaseService
             'audit_status'=>OrderStatusEnum::getValue($audit_status, 'auditStatus')
         ]]);
 
+    }
+
+    public function changeOrderStatusFollower($order_id, $post) {
+
+        $model = OrderFollowerForm::findOne($order_id);
+
+        $sellerRemark = $model->seller_remark;
+
+        $model->load($post);
+
+        $model->followed_status = $model->follower_id ? FollowStatusEnum::YES : FollowStatusEnum::NO;
+
+        OrderLogService::follower($model);
+
+        if(!empty($sellerRemark)) {
+            $model->seller_remark = $sellerRemark . "\r\n--------------------\r\n" . $model->seller_remark;
+        }
+
+        return $model->save();
     }
     
     /**

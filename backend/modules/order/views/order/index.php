@@ -96,6 +96,13 @@ $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审�
                             ?>
                         </div>
                     </div>
+                    <div class="row col-sm-12">
+                        <div class="pull-right">
+                            <?= Html::batchEdit(['edit-cancel'], '取消') ?>
+                            <?= Html::batchEdit(['edit-follower'], '跟进') ?>
+                            <?= Html::batchEdit(['edit-audit'], '审核') ?>
+                        </div>
+                    </div>
                 </div>
             </div>
                 <div class="active tab-pane">
