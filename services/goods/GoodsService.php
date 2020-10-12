@@ -990,7 +990,7 @@ class GoodsService extends Service
             $goodsLogModel->log_msg = $log_msg;
             $goodsLogModel->log_time = time();
             $goodsLogModel->log_role = 'buyer';
-            $goodsLogModel->log_user = Yii::$app->user->identity->username;
+            $goodsLogModel->log_user = Yii::$app->user->identity->username??'console';
             $goodsLogModel->save();
         }
     }
