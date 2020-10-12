@@ -77,7 +77,9 @@ class OrderCommentController extends BaseController
         // ajax 校验
         $this->activeFormValidate($model);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            if(!$model->save())
+            return $this->message($this->getError($model), $this->redirect(Yii::$app->request->referrer), 'error');
             return $this->redirect(Yii::$app->request->referrer);
         }
 

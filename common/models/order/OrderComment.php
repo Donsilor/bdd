@@ -48,7 +48,7 @@ class OrderComment extends BaseModel
             [['order_id', 'style_id', 'type_id', 'status', 'admin_id', 'is_import', 'member_id', 'platform', 'ip_area_id', 'created_at', 'updated_at', 'grade'], 'integer'],
             [['style_id', 'remark', 'updated_at'], 'required'],
             [['content'], 'string', 'max' => 45],
-            [['ip'], 'string', 'max' => 10],
+            [['ip'], 'string', 'max' => 255],
             [['ip_location', 'remark'], 'string', 'max' => 255],
         ];
     }
