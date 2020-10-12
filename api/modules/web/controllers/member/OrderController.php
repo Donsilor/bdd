@@ -492,6 +492,7 @@ class OrderController extends UserAuthController
             foreach ($cards as $card) {
                 $model = new CardForm();
                 $model->setAttributes($card);
+                $model->area_attach = $this->getAreaId();
 
                 if (!$model->validate()) {
                     return ResultHelper::api(422, $this->getError($model));
