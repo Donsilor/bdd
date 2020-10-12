@@ -323,8 +323,8 @@ class StyleController extends OnAuthController
 
     public function actionComment()
     {
-        $type_id = \Yii::$app->request->get('type_id', 19);
-        $style_id = \Yii::$app->request->get('style_id', 2279);
+        $type_id = \Yii::$app->request->get('type_id', 0);
+        $style_id = \Yii::$app->request->get('style_id', 0);
 
         $where = ['or'];
         $where['member_id'] = $this->member_id;
