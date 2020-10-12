@@ -131,6 +131,7 @@ $type_id = Yii::$app->request->get('type_id', 0);
                         ],
                         [
                             'label' => '有效时间',
+                            'headerOptions' => ['width' => '100'],
                             'format' => 'raw',
                             'value' => function($model) {
                                 return Yii::$app->formatter->asDatetime($model->start_time, 'Y-M-d')."<br />".Yii::$app->formatter->asDatetime($model->end_time-1, 'Y-M-d');
