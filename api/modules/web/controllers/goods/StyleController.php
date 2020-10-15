@@ -28,7 +28,7 @@ class StyleController extends OnAuthController
      * @var Provinces
      */
     public $modelClass = Style::class;
-    protected $authOptional = ['search','web-site','detail','guess-list'];
+    protected $authOptional = ['search','web-site','detail','guess-list','comment'];
 
 
     /**
