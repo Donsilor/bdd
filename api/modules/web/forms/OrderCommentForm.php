@@ -4,6 +4,7 @@
 namespace api\modules\web\forms;
 
 use common\models\order\Order;
+use common\models\order\OrderGoods;
 use Yii;
 use common\models\order\OrderComment;
 use yii\validators\ImageValidator;
@@ -69,9 +70,11 @@ class OrderCommentForm extends OrderComment
             return;
         }
 
-        $goods = \Yii::$app->services->goods->getGoodsInfo($this->style_id, $this->type_id);
+        $where = [];
+        $where['order_id'] = $this->order_id;
+        $where['style_id'] = $this->style_id;
 
-        if(!($goods && $goods['type_id']==$this->type_id)) {
+        if(!OrderGoods::findOne($where)) {
             $this->addError($attribute, '产品信息错误');
         }
     }
