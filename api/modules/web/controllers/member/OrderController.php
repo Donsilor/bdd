@@ -604,5 +604,27 @@ class OrderController extends UserAuthController
         return $result;
     }
 
+    /**
+     * 添加星号
+     * @param string $str 目标字符串
+     * @param int $l 左侧留存长度
+     * @param int $r 右侧留存长度
+     * @param int $chr_len 星号数目
+     * @param string $chr 星号或者其他自定义的字符
+     * @return mixed 返回
+     */
+    public function gr_asterisk($str = '',$l = 2,$r = 4,$chr_len = 3,$chr = '*') {
+        if (empty($str)) {
+            return false;
+        }
+        $len_min = $l + $r;
+        if (mb_strlen($str, 'utf-8') <= $len_min) {
+            return str_repeat($chr, $chr_len);
+        }
+
+        $new_str = mb_substr($str, 0, $l, 'utf-8') . str_repeat($chr, $chr_len) . mb_substr($str, mb_strlen($str, 'utf-8') - $r, $r);
+        return $new_str;
+    }
+
 
 }
