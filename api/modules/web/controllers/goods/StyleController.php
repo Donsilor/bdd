@@ -327,7 +327,8 @@ class StyleController extends OnAuthController
         $style_id = \Yii::$app->request->get('style_id', 0);
 
         $where = ['or'];
-        $where['member_id'] = $this->member_id;
+        if($this->member_id)
+            $where['member_id'] = $this->member_id;
         $where[1]['m.status'] = 1;
         $where[1]['platform'] = $this->platform;
         $where[2]['m.status'] = 1;
