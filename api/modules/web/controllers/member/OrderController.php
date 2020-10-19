@@ -13,6 +13,7 @@ use common\models\market\MarketCouponDetails;
 use common\helpers\Url;
 use common\models\forms\PayForm;
 use common\models\member\Member;
+use common\models\order\OrderComment;
 use services\market\CardService;
 use services\order\OrderLogService;
 use yii\base\Exception;
@@ -578,5 +579,30 @@ class OrderController extends UserAuthController
 
         return $result;
     }
-    
+
+    public function actionCommentList()
+    {
+        $order_id = \Yii::$app->request->get('order_id', 0);
+
+        $where = [];
+        $where['member_id'] = $this->member_id;
+        $where['order_id'] = $order_id;
+
+        $query = OrderComment::find()->alias('m')->select(['member.username', 'm.images', 'm.content', 'm.grade', 'm.remark', 'm.ip', 'm.ip_location', 'm.created_at'])
+            ->leftJoin(Member::tableName().' member', 'm.member_id=member.id')
+            ->orderBy('m.id desc')
+            ->andWhere($where);
+//            ->andWhere(['style_id'=>$style_id, 'type_id'=>$type_id]);
+
+        $result = $this->pagination($query, $this->page, $this->pageSize);
+
+        foreach ($result['data'] as &$datum) {
+            $datum['username'] = $this->gr_asterisk($datum['username']);
+            $datum['ip'] = preg_replace('/(\d+)([.])(\d+)([.])(\d+)([.])(\d+)/', '$1.*.*.$7', $datum['ip']);
+        }
+
+        return $result;
+    }
+
+
 }
