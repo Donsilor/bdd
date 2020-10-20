@@ -73,6 +73,7 @@ class OrderController extends UserAuthController
                 'orderTime' =>$order->created_at,
                 'details'=>[],
                 'paymentType'=>$order->payment_type,
+                'isComment' => OrderComment::find()->where(['order_id' => $order->id])->count() > 0,
             ];
            $orderGoodsList = OrderGoods::find()->where(['order_id'=>$order->id])->all();
            foreach ($orderGoodsList as $key =>$orderGoods) {
