@@ -588,7 +588,7 @@ class OrderController extends UserAuthController
         $where['member_id'] = $this->member_id;
         $where['order_id'] = $order_id;
 
-        $query = OrderComment::find()->alias('m')->select(['member.username', 'm.images', 'm.content', 'm.grade', 'm.remark', 'm.ip', 'm.ip_location', 'm.created_at'])
+        $query = OrderComment::find()->alias('m')->select(['member.username', 'm.type_id', 'm.style_id', 'm.images', 'm.content', 'm.grade', 'm.remark', 'm.ip', 'm.ip_location', 'm.created_at'])
             ->leftJoin(Member::tableName().' member', 'm.member_id=member.id')
             ->orderBy('m.id desc')
             ->andWhere($where);
