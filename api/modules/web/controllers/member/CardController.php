@@ -4,6 +4,7 @@ namespace api\modules\web\controllers\member;
 
 use api\modules\web\forms\CardForm;
 use api\modules\web\forms\CardValidateForm;
+use common\enums\AreaEnum;
 use common\helpers\ImageHelper;
 use common\models\forms\PayForm;
 use common\models\goods\Ring;
@@ -55,28 +56,25 @@ class CardController extends UserAuthController
 
         $model = new CardValidateForm();
         $model->setAttributes($post);
+        $model->area_attach = $this->getAreaId();
 
         if(!$model->validate()) {
             return ResultHelper::api(422, $this->getError($model));
         }
 
-        if(!empty($post['test'])) {
-            //状态，是否过期，是否有余额
-            $a = '1081.04';
-            $b = '14941.19';
-            $s = bcsub(0.53,0.50,2);
-            var_dump($s);
-            $s = 0.03 - $s;
-            var_dump(($s));
+        $card = $model->getCard();
+        if(empty($card->area_attach)) {
+            $area_names = AreaEnum::getMap();
+        }
+        else {
+            $area_names = [];
+            foreach ($card->area_attach as $area_attach) {
+                $area_names[$area_attach] = AreaEnum::getValue($area_attach);
+            }
+        }
 
-  /*          $num1 = round($num, 2);//0.98999999999999999
-            $num2 = floatval($num);//0.98999999999999999
-            var_dump($num1);
-            var_dump($num2);*/
-            exit;
-
-
-            return;
+        foreach ($area_names as &$area_name) {
+            $area_name = \Yii::t('card', $area_name);
         }
 
         $data = [
@@ -93,6 +91,9 @@ class CardController extends UserAuthController
             'maxUseTime' => $model->getCard()->max_use_time,
             'maxUseDay' => round($model->getCard()->max_use_time/86400),
             'limitedUseTime' => $model->getCard()->max_use_time && $model->getCard()->first_use_time ? $model->getCard()->max_use_time+$model->getCard()->first_use_time:null,
+            'areaNames' =>  array_values($area_names),
+            'areaTips' =>  sprintf(\Yii::t('card', '仅限[%s]站点使用'), implode(',', $area_names)),
+            'areaUse' => isset($area_names[$model->area_attach])
         ];
 
         $goodsTypes = [];

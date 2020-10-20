@@ -168,6 +168,7 @@ class OrderController extends UserAuthController
             foreach ($cards as $card) {
                 $cardForm = new CardForm();
                 $cardForm->setAttributes($card);
+                $cardForm->area_attach = $this->getAreaId();
 
                 if(!$cardForm->validate()) {
                     throw new \Exception($this->getError($cardForm),500);
@@ -495,6 +496,7 @@ class OrderController extends UserAuthController
             foreach ($cards as $card) {
                 $model = new CardForm();
                 $model->setAttributes($card);
+                $model->area_attach = $this->getAreaId();
 
                 if (!$model->validate()) {
                     return ResultHelper::api(422, $this->getError($model));

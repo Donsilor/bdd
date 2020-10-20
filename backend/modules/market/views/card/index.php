@@ -98,6 +98,20 @@ $type_id = Yii::$app->request->get('type_id', 0);
                             }
                         ],
                         [
+                            'label' => '活动地区',
+                            'value' => function($model) {
+
+                                $html = [];
+                                foreach (\common\enums\AreaEnum::getMap() as $key => $item) {
+                                    if(empty($model->area_attach) || in_array($key, $model->area_attach))
+                                        $html[] = $item;
+                                }
+
+                                return implode('/', $html);
+                            },
+                            'filter' => false,
+                        ],
+                        [
                             'label' => '总金额 （CNY）',
                             'filter' => false,
                             'attribute' => 'amount',
@@ -117,6 +131,7 @@ $type_id = Yii::$app->request->get('type_id', 0);
                         ],
                         [
                             'label' => '有效时间',
+                            'headerOptions' => ['width' => '100'],
                             'format' => 'raw',
                             'value' => function($model) {
                                 return Yii::$app->formatter->asDatetime($model->start_time, 'Y-M-d')."<br />".Yii::$app->formatter->asDatetime($model->end_time-1, 'Y-M-d');

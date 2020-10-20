@@ -3,6 +3,7 @@
 namespace api\modules\web\forms;
 
 
+use common\enums\AreaEnum;
 use common\models\market\MarketCard;
 use yii\base\Model;
 
@@ -15,6 +16,7 @@ class CardValidateForm extends Model
     public $sn;//卡号
     public $pw;//卡密码
     public $card;//卡对象
+    public $area_attach;//地区
     
     /**
      * @inheritdoc
@@ -22,8 +24,9 @@ class CardValidateForm extends Model
     public function rules()
     {
         return [
-            [['sn','pw'], 'required'],
+            [['sn','pw', 'area_attach'], 'required'],
             ['pw', 'validatePassword'],
+            ['area_attach', 'validateAreaAttach'],
         ];
     }
     
@@ -32,6 +35,7 @@ class CardValidateForm extends Model
         return [
             'sn' => 'sn',
             'pw' => 'pw',
+            'area_attach' => '地区',
         ];
     }
 
@@ -44,6 +48,28 @@ class CardValidateForm extends Model
                 $this->addError($attribute, '验证错误');
             }
         }
+    }
+
+    public function validateAreaAttach($attribute)
+    {
+//        if (!$this->hasErrors()) {
+//            /* @var $user MarketCard */
+//            $card = $this->getCard();
+//            if (!$card || !empty($card->area_attach) && is_array($card->area_attach) && !in_array($this->area_attach, $card->area_attach)) {
+//                if(empty($card->area_attach)) {
+//                    $area_names = AreaEnum::getMap();
+//                }
+//                else {
+//                    $area_names = [];
+//                    foreach ($card->area_attach as $area_attach) {
+//                        $area_names[] = AreaEnum::getValue($area_attach);
+//                    }
+//                }
+//
+//
+//                $this->addError($attribute, sprintf('该购物卡仅限[%s]站点使用', implode(',', $area_names)));
+//            }
+//        }
     }
 
     /**

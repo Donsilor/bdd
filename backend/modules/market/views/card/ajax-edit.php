@@ -1,9 +1,12 @@
 <?php
+
 use common\widgets\webuploader\Files;
 use yii\widgets\ActiveForm;
 use common\helpers\Url;
 use common\enums\StatusEnum;
 use common\helpers\Html;
+use common\enums\AreaEnum;
+
 $form = ActiveForm::begin([
     'id' => $model->formName(),
     'enableAjaxValidation' => true,
@@ -23,6 +26,7 @@ $form = ActiveForm::begin([
         <?= $form->field($model, 'batch')->textInput()->label('生成批次'); ?>
         <?= $form->field($model, 'count')->textInput()->label('生成数量'); ?>
         <?= $form->field($model, 'amount')->textInput()->label('购物卡金额'); ?>
+        <?= $form->field($model, 'area_attach')->checkboxList(AreaEnum::getMap()); ?>
         <?= $form->field($model, 'start_time')->widget('kartik\date\DatePicker', [
             'language' => 'zh-CN',
             'layout' => '{picker}{input}',

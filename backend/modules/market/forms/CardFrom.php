@@ -16,11 +16,11 @@ class CardFrom extends MarketCard
     public function rules()
     {
         return [
-            [['count', 'amount','start_time', 'end_time', 'goods_type_attach', 'batch'], 'required'],
+            [['count', 'amount','start_time', 'end_time', 'goods_type_attach', 'batch', 'area_attach'], 'required'],
             [['count', 'amount', 'max_use_time'], 'integer'],
             [['batch'], 'string', 'max' => 50],
             [['batch'], 'validateBatch'],
-            [['batch'], 'safe'],
+            [['batch','area_attach'], 'safe'],
             [['start_time','end_time'], 'date'],
             [['start_time', 'end_time'], 'validateEndTime'],
             [['show_max_use_time'], 'validateMaxUseTime'],
@@ -40,6 +40,7 @@ class CardFrom extends MarketCard
             'start_time' => '开始时间',
             'end_time' => '结束时间',
             'max_use_time' => '最长使用时间',
+            'area_attach' => '活动站点地区',
         ];
     }
 
