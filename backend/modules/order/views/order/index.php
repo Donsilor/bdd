@@ -18,12 +18,11 @@ $OrderStatusEnum = common\enums\OrderStatusEnum::getMap();
 unset($OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_FINISH]);
 
 $OrderStatusEnum['1'] = '已退款';
+
 $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审核';
 
-array_splice($OrderStatusEnum, 3, 0, [
-    '12' => '已退款',
-]);
-print_r($OrderStatusEnum);exit;
+$OrderStatusEnum['12'] = '不需发货';
+
 ?>
 
 <div class="row">

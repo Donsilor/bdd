@@ -145,7 +145,7 @@ class Order extends \common\models\base\BaseModel
                 $where[]['id'] = $subQuery;
             }
             elseif($orderStatus==12) {
-                $where[]['refund_status'] = 1;
+                $where[]['no_delivery'] = 1;
             }
             elseif($orderStatus==1) {
                 $where[]['refund_status'] = 1;
