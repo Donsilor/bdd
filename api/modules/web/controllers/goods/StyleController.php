@@ -2,6 +2,7 @@
 
 namespace api\modules\web\controllers\goods;
 
+use common\enums\OrderFromEnum;
 use common\enums\StatusEnum;
 use api\controllers\OnAuthController;
 use common\helpers\ImageHelper;
@@ -330,7 +331,7 @@ class StyleController extends OnAuthController
         if($this->member_id)
             $where['member_id'] = $this->member_id;
         $where[1]['m.status'] = 1;
-        $where[1]['platform'] = $this->platform;
+        $where[1]['platform'] = OrderFromEnum::platformToPlatforms($this->platform);
         $where[2]['m.status'] = 1;
         $where[2]['platform'] = null;
 

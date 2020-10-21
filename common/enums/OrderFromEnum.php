@@ -137,4 +137,10 @@ class OrderFromEnum extends BaseEnum
         return self::platformsForGroup($group);
         
     }
+
+    public static function platformToPlatforms($platform)
+    {
+        $group = self::platformToGroup($platform);
+        return self::platformsForGroup($group);
+    }
 }
