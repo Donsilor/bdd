@@ -11,8 +11,18 @@ use yii\behaviors\TimestampBehavior;
   */
 class DeliveryForm extends \common\models\order\Order
 {
+    const ONDELIVERY = 'no_delivery';
 
     public $send_now;
+//    public $on_delivery;
+
+    public function scenarios()
+    {
+        return [
+            'no_delivery' => ['no_delivery'],
+            'default' => ['id','express_id', 'express_no','delivery_time','delivery_status', 'send_now','order_status'],
+        ];
+    }
 
     public function rules()
     {
@@ -20,6 +30,8 @@ class DeliveryForm extends \common\models\order\Order
                 [['id','express_id', 'express_no','delivery_time'], 'required'],
                 [['order_status','updated_at','delivery_status', 'send_now'], 'integer'],
                 [['express_no'], 'validateOrderStatus'],
+            [['id','no_delivery'], 'required', 'on'=>['no_delivery']],
+            [['id','no_delivery'], 'integer', 'on'=>['no_delivery']],
         ];
     }
     /**
