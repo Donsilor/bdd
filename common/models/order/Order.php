@@ -144,6 +144,9 @@ class Order extends \common\models\base\BaseModel
                 $subQuery = WireTransfer::find()->where(['in', 'collection_status',['0','2']])->select(['order_id']);
                 $where[]['id'] = $subQuery;
             }
+            elseif($orderStatus==12) {
+                $where[]['refund_status'] = 1;
+            }
             elseif($orderStatus==1) {
                 $where[]['refund_status'] = 1;
             }
