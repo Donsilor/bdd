@@ -328,8 +328,8 @@ class StyleController extends OnAuthController
         $style_id = \Yii::$app->request->get('style_id', 0);
 
         $where = ['or'];
-        if($this->member_id)
-            $where['member_id'] = $this->member_id;
+//        if($this->member_id)
+//            $where[3]['member_id'] = $this->member_id;
         $where[1]['m.status'] = 1;
         $where[1]['platform'] = OrderFromEnum::platformToPlatforms($this->platform);
         $where[2]['m.status'] = 1;
