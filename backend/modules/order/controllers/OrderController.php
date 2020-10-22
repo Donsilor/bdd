@@ -449,7 +449,7 @@ class OrderController extends BaseController
 
         $model = DeliveryForm::find()->where(['id'=>$id])->one();
 
-        if($post['DeliveryForm']['no_delivery']) {
+        if(!empty($post['DeliveryForm']['no_delivery'])) {
             $model->setScenario(DeliveryForm::ONDELIVERY);
         }
 
