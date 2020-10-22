@@ -138,6 +138,20 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 },
                             ],
                             [
+                                'attribute' => 'images',
+                                'value' => function ($model) {
+                                    $images = explode(',', $model->images);
+                                    $value = '';
+                                    foreach ($images as $image) {
+                                        $value .= common\helpers\ImageHelper::fancyBox($image);
+                                    }
+                                    return $value;
+                                },
+                                'filter' => false,
+                                'format' => 'raw',
+                                'headerOptions' => ['width'=>'80'],
+                            ],
+                            [
                                 'filter' => false,
                                 'label' => '审核人',
                                 'attribute' => 'admin_id',

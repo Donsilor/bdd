@@ -17,9 +17,7 @@ $form = ActiveForm::begin([
         <h4 class="modal-title">评价审核</h4>
     </div>
     <div class="modal-body">
-        <?= $form->field($model, 'status')->dropDownList(\common\enums\OrderCommentStatusEnum::getMap(), [
-            'prompt' => '请选择',
-        ]) ?>
+        <?= $form->field($model, 'status')->dropDownList(\common\enums\OrderCommentStatusEnum::getMap()) ?>
         <?= $form->field($model, 'remark')->textarea() ?>
     </div>
     <div class="modal-footer">
