@@ -20,10 +20,10 @@ class OrderController extends BaseController
 
     public function actionIndex()
     {
-//        $time = time();
+        $time = time();
 
-//        $start_time = 0;
-//        $end_time = $time;
+        $start_time = strtotime(date('Y-m-01'));
+        $end_time = $time;
 
 //        $order = <<<DOM
 //(SELECT `og`.`style_id`,COUNT(`og`.`style_id`) AS count,(CASE `o`.`order_from` WHEN 10 THEN 'HK'
@@ -53,43 +53,37 @@ class OrderController extends BaseController
         $queryParams = Yii::$app->request->queryParams;
 
         //站点地区
-//        if(isset($queryParams['SearchModel']['platform_group']) && !empty($queryParams['SearchModel']['platform_group'])) {
-//            $queryParams['SearchModel']['platform_group'] = implode(',', $queryParams['SearchModel']['platform_group']);
-//        }
+        if(isset($queryParams['SearchModel']['platform_group']) && !empty($queryParams['SearchModel']['platform_group'])) {
+            $queryParams['SearchModel']['platform_group'] = implode(',', $queryParams['SearchModel']['platform_group']);
+        }
+
+        //PC与移动
+        if(isset($queryParams['SearchModel']['platform_id'])) {
+            $platform_ids = [
+                '1' => '10,20,30,40',
+                '2' => '11,21,31,41',
+            ];
+
+            if(isset($platform_ids[$queryParams['SearchModel']['platform_id']])) {
+                $queryParams['SearchModel']['platform_id'] = $platform_ids[$queryParams['SearchModel']['platform_id']];
+            }
+            else {
+                unset($queryParams['SearchModel']['platform_id']);
+            }
+        }
 
         //时间
-//        if(isset($queryParams['SearchModel']['datetime']) && !empty($queryParams['SearchModel']['datetime'])) {
-//            list($start_time, $end_time) = explode('/', $queryParams['SearchModel']['datetime']);
-//            $start_time = strtotime($start_time);
-//            $end_time = strtotime($end_time)+86400;
-//        }
+        if(isset($queryParams['SearchModel']['datetime']) && !empty($queryParams['SearchModel']['datetime'])) {
+            list($start_time, $end_time) = explode('/', $queryParams['SearchModel']['datetime']);
+            $start_time = strtotime($start_time);
+            $end_time = strtotime($end_time);
+        }
 
         $dataProvider = $searchModel->search($queryParams, ['datetime']);
 
-//        $dataProvider->query->leftJoin($order, 'statistics_style_view.style_id=og.style_id and og.order_from=statistics_style_view.platform_group', ['start_time'=>$start_time, 'end_time'=>$end_time]);
-//        $dataProvider->query->leftJoin($orderCart, 'statistics_style_view.style_id=oc.style_id and oc.platform_group=statistics_style_view.platform_group', ['start_time'=>$start_time, 'end_time'=>$end_time]);
+//        $dataProvider->query->select(['statistics_order_view.*']);
 
-        $dataProvider->query->select(['statistics_order_view.*']);
-
-//        $dataProvider->query->andWhere(['or', ['>','og.count','0'], ['>','oc.count','0']]);
-
-        $dataProvider->query->asArray();
-
-//        $dataProvider->setSort([
-//            'attributes' => [
-//                'count',
-//                'cart_count',
-//                'style_id',
-//                'type_id',
-//                'style_name',
-//                'platform_group',
-//                'name',
-//            ],
-//            'defaultOrder' => [
-//                'style_id' => 'desc',
-//                'platform_group' => 'desc',
-//            ],
-//        ]);
+//        $dataProvider->query->asArray();
 
         //导出
 //        if(Yii::$app->request->get('action') === 'export'){
@@ -103,7 +97,9 @@ class OrderController extends BaseController
 //            $this->getExport($list);
 //        }
 
-//        $searchModel->platform_group = Yii::$app->request->queryParams['SearchModel']['platform_group']??[];
+        $searchModel->platform_group = Yii::$app->request->queryParams['SearchModel']['platform_group']??[];
+        $searchModel->platform_id = Yii::$app->request->queryParams['SearchModel']['platform_id']??[];
+        $searchModel->datetime = date('Y-m-d', $start_time) . '/' . date('Y-m-d', $end_time);
 
         return $this->render($this->action->id, [
             'dataProvider' => $dataProvider,

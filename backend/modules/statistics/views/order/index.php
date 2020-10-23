@@ -12,6 +12,18 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 $params = Yii::$app->request->queryParams;
 $params = $params ? "&".http_build_query($params) : '';
 
+$status = [
+    '1' => '未付款',
+    '2' => '已销售',
+    '3' => '已关闭',
+];
+
+$platform_ids = [
+    '0' => '全部',
+    '1' => 'PC端',
+    '2' => '移动端',
+];
+
 ?>
 
 <div class="row">
@@ -56,7 +68,15 @@ $params = $params ? "&".http_build_query($params) : '';
                             <?= Html::activeCheckboxList($searchModel, 'platform_group', \common\enums\OrderFromEnum::groups(), [
                                 'prompt' => '全部',
                                 'class' => 'form-control',
-//                                'value' => Yii::$app->request->get("s")
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+                    <div class="row col-sm-12">
+                        <div class="col-sm-3">
+                            <?= $searchModel->model->getAttributeLabel('platform_id') ?>：<br/>
+                            <?= Html::activeRadioList($searchModel, 'platform_id', $platform_ids, [
+                                'class' => 'form-control',
                             ]);
                             ?>
                         </div>
@@ -87,6 +107,9 @@ $params = $params ? "&".http_build_query($params) : '';
                                     Html::activeCheckboxList($searchModel, 'platform_group', \common\enums\OrderFromEnum::groups(),[
                                         'class' => 'hidden',
                                     ]) .
+                                    Html::activeTextInput($searchModel, 'platform_id', [
+                                        'class' => 'hidden',
+                                    ]) .
                                     Html::activeTextInput($searchModel, 'datetime', [
                                         'class' => 'hidden',
                                     ])
@@ -94,25 +117,71 @@ $params = $params ? "&".http_build_query($params) : '';
                             [
                                 'label' => '客户端',
                                 'attribute' => 'platform_id',
+                                'value' => function($model) {
+                                    return \common\enums\OrderFromEnum::getValue($model['platform_id']);
+                                },
+                                'filter' => false
                             ],
                             [
                                 'label' => '状态',
                                 'attribute' => 'status',
+                                'filter' => Html::activeDropDownList($searchModel, 'status', $status, [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function($model) use($status) {
+                                    return $status[$model['status']]??'';
+                                }
                             ],
                             [
                                 'label' => '订单总数量',
+                                'value' => function($model) use($searchModel) {
+                                    return $model->getOrderCount($searchModel);
+                                }
                             ],
                             [
                                 'label' => '订单总额（CNY）',
+                                'value' => function($model) use($searchModel) {
+                                    return $model->getOrderMoneySum($searchModel);
+                                }
                             ],
                             [
                                 'label' => '各产品线总额（CNY）',
+                                'format' => 'raw',
+                                'value' => function($model) use($searchModel) {
+                                    $typeList = Yii::$app->services->goodsType->getTypeList();
+                                    $data = $model->getOrderProductTypeGroupData($searchModel);
+
+                                    $value = '';
+                                    if($data) {
+                                        foreach ($data as $datum) {
+                                            $value .= sprintf("%s：%.2f<br />", $typeList[$datum['goods_type']]??'未知', $datum['sum']);
+                                        }
+                                    }
+                                    return $value;
+                                }
                             ],
                             [
                                 'label' => '商品总数量',
+                                'value' => function($model) use($searchModel) {
+                                    return $model->getOrderProductCount($searchModel);
+                                }
                             ],
                             [
                                 'label' => '各产品线商品总数量',
+                                'format' => 'raw',
+                                'value' => function($model) use($searchModel) {
+                                    $typeList = Yii::$app->services->goodsType->getTypeList();
+                                    $data = $model->getOrderProductTypeGroupData($searchModel);
+
+                                    $value = '';
+                                    if($data) {
+                                        foreach ($data as $datum) {
+                                            $value .= sprintf("%s：%d<br />", $typeList[$datum['goods_type']]??'未知', $datum['count']);
+                                        }
+                                    }
+                                    return $value;
+                                }
                             ],
 //                            [
 //                                'label' => '产品线',
@@ -156,23 +225,23 @@ $params = $params ? "&".http_build_query($params) : '';
         /**
          * 头部文本框触发列表过滤事件
          */
-        // $(".top-form input,select").change(function () {
-        //     var $input = $(".top-form input[name='" + $(this).attr('name') + "']");
-        //
-        //     let type = $input.attr('type');
-        //
-        //     if(type==='checkbox') {
-        //         $input.each(function (i, v) {
-        //             let checkbox = $(".filters input[name='" + $(this).attr('name') + "']").eq(i).attr("checked", $(this).prop("checked"));
-        //             if($input.length===i+1) {
-        //                 checkbox.trigger('change');
-        //             }
-        //         });
-        //     }
-        //     else {
-        //         $(".filters input[name='" + $(this).attr('name') + "']").val($(this).val()).trigger('change');
-        //     }
-        // });
+        $(".top-form input,select").change(function () {
+            var $input = $(".top-form input[name='" + $(this).attr('name') + "']");
+
+            let type = $input.attr('type');
+
+            if(type==='checkbox') {
+                $input.each(function (i, v) {
+                    let checkbox = $(".filters input[name='" + $(this).attr('name') + "']").eq(i).attr("checked", $(this).prop("checked"));
+                    if($input.length===i+1) {
+                        checkbox.trigger('change');
+                    }
+                });
+            }
+            else {
+                $(".filters input[name='" + $(this).attr('name') + "']").val($(this).val()).trigger('change');
+            }
+        });
 
     })(window.jQuery);
 </script>

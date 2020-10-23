@@ -2,6 +2,7 @@
 
 namespace common\models\statistics;
 
+use common\models\order\Order;
 use common\models\order\OrderAccount;
 use Yii;
 
@@ -52,6 +53,86 @@ class OrderView extends \common\models\base\BaseModel
             'status' => '状态'
         ];
     }
+
+    private function getOrderRelation($searchModel)
+    {
+
+        list($start_time, $end_time) = explode('/', $searchModel->datetime);
+        $start_time = strtotime($start_time);
+        $end_time = strtotime($end_time) + 86400;
+
+        $where = ['and'];
+        $where[] = ['>=', 'order.created_at', $start_time];
+        $where[] = ['<', 'order.created_at', $end_time];
+        $where[] = ['=', 'is_test', 0];
+        $where[] = ['=', 'order_from', $this->platform_id];
+
+        //未付款
+        if ($this->status == 1) {
+            $where[] = [
+                'or',
+                ['=', 'payment_status', 0],
+                ['=', 'cancel_status', 1],
+            ];
+        }
+
+        //已销售
+        if ($this->status == 2) {
+            $where[] = ['=', 'cancel_status', 0];
+            $where[] = ['=', 'refund_status', 0];
+
+            $where[] = ['>=', 'order_status', '20'];
+        }
+
+        //已退款
+        if ($this->status == 3) {
+            $where[] = ['=', 'refund_status', 1];
+        }
+
+        return Order::find()->where($where);
+    }
+
+    public function getOrderCount($searchModel)
+    {
+        return $this->getOrderRelation($searchModel)->count('id');
+    }
+
+    public function getOrderMoneySum($searchModel)
+    {
+        return round($this->getOrderRelation($searchModel)
+            ->joinWith('account')
+            ->sum('order_account.goods_amount/order_account.exchange_rate'), 2);
+    }
+
+    public function getOrderProductCount($searchModel)
+    {
+        return $this->getOrderRelation($searchModel)
+            ->joinWith('goods')
+            ->count('order_goods.id');
+    }
+
+    public function getOrderProductTypeGroupData($searchModel)
+    {
+        static $data;
+
+        if(!isset($data[$this->id])) {
+            $data[$this->id] = $this->getOrderRelation($searchModel)
+                ->joinWith('goods')
+                ->groupBy('order_goods.goods_type')
+                ->select(['order_goods.goods_type as goods_type', 'count(order_goods.id) as count', 'sum(order_goods.goods_pay_price/order_goods.exchange_rate) as sum'])
+                ->asArray()
+                ->all();
+        }
+
+        return $data[$this->id];
+    }
+
+//    public function getOrderProductTypeMoneySum($searchModel)
+//    {
+//        return $this->getOrderRelation($searchModel)
+//            ->joinWith('goods')
+//            ->groupBy('order_goods.goods_type');
+//    }
 
 //    public static function primaryKey()
 //    {
