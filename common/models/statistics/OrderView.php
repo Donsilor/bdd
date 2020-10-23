@@ -41,6 +41,11 @@ class OrderView extends \common\models\base\BaseModel
         ];
     }
 
+    public static function primaryKey()
+    {
+        return ['id'];
+    }
+
     /**
      * {@inheritdoc}
      */
