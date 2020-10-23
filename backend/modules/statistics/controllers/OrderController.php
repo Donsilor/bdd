@@ -46,7 +46,7 @@ class OrderController extends BaseController
             'model' => $this->modelClass,
             'scenario' => 'default',
             'partialMatchAttributes' => [], // 模糊查询
-            'pageSize' => $this->pageSize,
+            'pageSize' => 100,
             'relations' => []
         ]);
 

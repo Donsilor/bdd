@@ -99,6 +99,21 @@ $params = $params ? "&".http_build_query($params) : '';
                                 'label' => '状态',
                                 'attribute' => 'status',
                             ],
+                            [
+                                'label' => '订单总数量',
+                            ],
+                            [
+                                'label' => '订单总额（CNY）',
+                            ],
+                            [
+                                'label' => '各产品线总额（CNY）',
+                            ],
+                            [
+                                'label' => '商品总数量',
+                            ],
+                            [
+                                'label' => '各产品线商品总数量',
+                            ],
 //                            [
 //                                'label' => '产品线',
 //                                'attribute' => 'type_id',
