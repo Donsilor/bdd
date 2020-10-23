@@ -6,7 +6,7 @@ use yii\grid\GridView;
 use common\enums\OrderStatusEnum;
 use kartik\daterange\DateRangePicker;
 
-$this->title = Yii::t('order', '游客订单');
+$this->title = Yii::t('order', '订单统计');
 $this->params['breadcrumbs'][] = ['label' => $this->title];
 
 $params = Yii::$app->request->queryParams;
@@ -23,6 +23,10 @@ $platform_ids = [
     '1' => 'PC端',
     '2' => '移动端',
 ];
+
+$orderCount = 0;
+$orderMoney = 0;
+$orderProductCount = 0;
 
 ?>
 
@@ -87,6 +91,12 @@ $platform_ids = [
                         'id'=>'grid',
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
+                        'showFooter'=> true,
+                        'footerRowOptions'=> [
+                            'class' => 'footerRowOptions',
+                            'style' => 'background: #ecf0f5;'
+                        ],
+
                         //重新定义分页样式
                         'tableOptions' => ['class' => 'table table-hover'],
                         'columns' => [
@@ -96,6 +106,7 @@ $platform_ids = [
                                 'contentOptions' => [
                                     'class' => 'limit-width',
                                 ],
+                                'footer' => '总计'
                             ],
                             [
                                 'label' => '站点地区',
@@ -135,15 +146,21 @@ $platform_ids = [
                             ],
                             [
                                 'label' => '订单总数量',
-                                'value' => function($model) use($searchModel) {
-                                    return $model->getOrderCount($searchModel);
-                                }
+                                'value' => function($model) use($searchModel, &$orderCount) {
+                                    $value = $model->getOrderCount($searchModel);
+                                    $orderCount += $value;
+                                    return $value;
+                                },
+                                'footer' => $orderCount
                             ],
                             [
                                 'label' => '订单总额（CNY）',
-                                'value' => function($model) use($searchModel) {
-                                    return $model->getOrderMoneySum($searchModel);
-                                }
+                                'value' => function($model) use($searchModel, &$orderMoney) {
+                                    $value = $model->getOrderMoneySum($searchModel);
+                                    $orderMoney += $value;
+                                    return $value;
+                                },
+                                'footer' => $orderMoney
                             ],
                             [
                                 'label' => '各产品线总额（CNY）',
@@ -159,13 +176,16 @@ $platform_ids = [
                                         }
                                     }
                                     return $value;
-                                }
+                                },
                             ],
                             [
                                 'label' => '商品总数量',
-                                'value' => function($model) use($searchModel) {
-                                    return $model->getOrderProductCount($searchModel);
-                                }
+                                'value' => function($model) use($searchModel, &$orderProductCount) {
+                                    $value = $model->getOrderProductCount($searchModel);
+                                    $orderProductCount += $value;
+                                    return $value;
+                                },
+                                'footer' => $orderProductCount
                             ],
                             [
                                 'label' => '各产品线商品总数量',
@@ -242,6 +262,10 @@ $platform_ids = [
                 $(".filters input[name='" + $(this).attr('name') + "']").val($(this).val()).trigger('change');
             }
         });
+
+        $(".footerRowOptions td").eq(4).text("<?= $orderCount ?>");
+        $(".footerRowOptions td").eq(5).text("<?= $orderMoney ?>");
+        $(".footerRowOptions td").eq(7).text("<?= $orderProductCount ?>");
 
     })(window.jQuery);
 </script>
