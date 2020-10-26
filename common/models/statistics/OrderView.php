@@ -124,12 +124,12 @@ class OrderView extends \common\models\base\BaseModel
             $data[$this->id] = $this->getOrderRelation($searchModel)
                 ->joinWith('goods')
                 ->groupBy('order_goods.goods_type')
-                ->select(['order_goods.goods_type as goods_type', 'count(order_goods.id) as count', 'sum(order_goods.goods_pay_price/order_goods.exchange_rate) as sum'])
+                ->select(['order_goods.goods_type as id', 'order_goods.goods_type as goods_type', 'count(order_goods.id) as count', 'sum(order_goods.goods_pay_price/order_goods.exchange_rate) as sum'])
                 ->asArray()
                 ->all();
         }
 
-        return $data[$this->id];
+        return !empty($data[$this->id]) ? $data[$this->id] : [];
     }
 
 //    public function getOrderProductTypeMoneySum($searchModel)

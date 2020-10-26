@@ -98,7 +98,7 @@ class OrderController extends BaseController
 //        }
 
         $searchModel->platform_group = Yii::$app->request->queryParams['SearchModel']['platform_group']??[];
-        $searchModel->platform_id = Yii::$app->request->queryParams['SearchModel']['platform_id']??[];
+        $searchModel->platform_id = Yii::$app->request->queryParams['SearchModel']['platform_id']??'';
         $searchModel->datetime = date('Y-m-d', $start_time) . '/' . date('Y-m-d', $end_time);
 
         return $this->render($this->action->id, [
