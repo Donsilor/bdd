@@ -3,6 +3,7 @@
 namespace api\modules\web\controllers\member;
 
 use api\modules\web\forms\CardForm;
+use api\modules\web\forms\OrderCommentForm;
 use common\enums\CurrencyEnum;
 use common\enums\PayEnum;
 use common\helpers\ImageHelper;
@@ -12,6 +13,7 @@ use common\models\market\MarketCouponDetails;
 use common\helpers\Url;
 use common\models\forms\PayForm;
 use common\models\member\Member;
+use common\models\order\OrderComment;
 use services\market\CardService;
 use services\order\OrderLogService;
 use yii\base\Exception;
@@ -71,6 +73,7 @@ class OrderController extends UserAuthController
                 'orderTime' =>$order->created_at,
                 'details'=>[],
                 'paymentType'=>$order->payment_type,
+                'isComment' => OrderComment::find()->where(['order_id' => $order->id])->count() > 0,
             ];
            $orderGoodsList = OrderGoods::find()->where(['order_id'=>$order->id])->all();
            foreach ($orderGoodsList as $key =>$orderGoods) {
@@ -536,5 +539,99 @@ class OrderController extends UserAuthController
             'cards'=> $taxInfo['cards'],
         ];
     }
-    
+
+    public function actionComment()
+    {
+
+        try {
+
+            $trans = \Yii::$app->db->beginTransaction();
+
+            $datas = \Yii::$app->request->post('params');
+
+            $result = [];
+
+            $attr = [
+                'member_id' => $this->member_id,
+                'platform' => $this->platform,
+                'ip' => \Yii::$app->request->userIP
+            ];
+
+            list($attr['ip_area_id'],$attr['ip_location']) = \Yii::$app->ipLocation->getLocation($attr['ip']);
+
+            if(empty($datas)) {
+                throw new UnprocessableEntityHttpException('提交数据为空');
+            }
+
+            foreach ($datas as $data) {
+                $model = new OrderCommentForm();
+                $model->setAttributes($data);
+                $model->setAttributes($attr);
+
+                if(!$model->save()) {
+                    throw new UnprocessableEntityHttpException($this->getError($model));
+                }
+
+                $result[] = $model;
+            }
+
+            $trans->commit();
+
+        } catch (\Exception $e) {
+
+            $trans->rollBack();
+
+            throw $e;
+        }
+
+        return $result;
+    }
+
+    public function actionCommentList()
+    {
+        $order_id = \Yii::$app->request->get('order_id', 0);
+
+        $where = [];
+        $where['member_id'] = $this->member_id;
+        $where['order_id'] = $order_id;
+
+        $query = OrderComment::find()->alias('m')->select(['member.username', 'm.type_id', 'm.style_id', 'm.images', 'm.content', 'm.grade', 'm.remark', 'm.ip', 'm.ip_location', 'm.created_at'])
+            ->leftJoin(Member::tableName().' member', 'm.member_id=member.id')
+            ->orderBy('m.id desc')
+            ->andWhere($where);
+//            ->andWhere(['style_id'=>$style_id, 'type_id'=>$type_id]);
+
+        $result = $this->pagination($query, $this->page, $this->pageSize);
+
+        foreach ($result['data'] as &$datum) {
+            $datum['username'] = $this->gr_asterisk($datum['username']);
+            $datum['ip'] = preg_replace('/(\d+)([.])(\d+)([.])(\d+)([.])(\d+)/', '$1.*.*.$7', $datum['ip']);
+        }
+
+        return $result;
+    }
+
+    /**
+     * 添加星号
+     * @param string $str 目标字符串
+     * @param int $l 左侧留存长度
+     * @param int $r 右侧留存长度
+     * @param int $chr_len 星号数目
+     * @param string $chr 星号或者其他自定义的字符
+     * @return mixed 返回
+     */
+    public function gr_asterisk($str = '',$l = 2,$r = 4,$chr_len = 3,$chr = '*') {
+        if (empty($str)) {
+            return false;
+        }
+        $len_min = $l + $r;
+        if (mb_strlen($str, 'utf-8') <= $len_min) {
+            return str_repeat($chr, $chr_len);
+        }
+
+        $new_str = mb_substr($str, 0, $l, 'utf-8') . str_repeat($chr, $chr_len) . mb_substr($str, mb_strlen($str, 'utf-8') - $r, $r);
+        return $new_str;
+    }
+
+
 }
