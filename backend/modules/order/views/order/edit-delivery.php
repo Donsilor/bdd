@@ -7,6 +7,7 @@ use kartik\datetime\DateTimePicker;
 $form = ActiveForm::begin([
     'id' => $model->formName(),
     'enableAjaxValidation' => true,
+    'enableClientValidation'=>false,
     'validationUrl' => Url::to(['edit-delivery', 'id' => $model['id']]),
     'fieldConfig' => [
         'template' => "{label}{input}{hint}",

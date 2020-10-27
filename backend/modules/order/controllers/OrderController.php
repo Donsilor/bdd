@@ -487,7 +487,7 @@ class OrderController extends BaseController
             return $result ? $this->redirect($returnUrl) : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
         }
 
-        $model->setScenario(DeliveryForm::ONDELIVERY);
+//        $model->setScenario(DeliveryForm::ONDELIVERY);
 
         return $this->renderAjax($this->action->id, [
             'model' => $model,
