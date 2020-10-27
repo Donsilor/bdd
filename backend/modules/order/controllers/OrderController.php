@@ -105,9 +105,9 @@ class OrderController extends BaseController
         //订单状态
         if ($orderStatus !== -1) {
 
-//            if($orderStatus==30) {
-//                $dataProvider->query->andWhere(['in', 'no_delievery', [0, null]]);
-//            }
+            if($orderStatus==30) {
+                $dataProvider->query->andWhere(['<>', 'no_delivery', 1]);
+            }
 
             if($orderStatus==11) {
                 $dataProvider->query->andWhere('common_pay_wire_transfer.id is not null');

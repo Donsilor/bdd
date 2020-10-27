@@ -141,6 +141,9 @@ class Order extends \common\models\base\BaseModel
         $where = ['and'];
 
         if(!is_null($orderStatus)) {
+            if($orderStatus==30) {
+                $where[] = ['<>', 'no_delivery', 1];
+            }
             if($orderStatus==11) {
                 $subQuery = WireTransfer::find()->where(['in', 'collection_status',['0','2']])->select(['order_id']);
                 $where[]['id'] = $subQuery;
