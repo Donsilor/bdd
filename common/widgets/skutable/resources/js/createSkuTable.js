@@ -281,6 +281,11 @@ function checkSkuInputData(){
 
 	function cacheRing($input) {
 		let tip = true;
+
+		if ($input.length < 1) {
+			return true;
+		}
+
 		$input.each(function(i, v) {
 			if($(this).prop("checked")) {
 				tip = false;
