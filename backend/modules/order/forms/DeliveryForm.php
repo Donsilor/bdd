@@ -20,7 +20,7 @@ class DeliveryForm extends \common\models\order\Order
     {
         return [
             'no_delivery' => ['no_delivery'],
-            'default' => ['id','express_id', 'express_no','delivery_time','delivery_status', 'send_now','order_status'],
+            'default' => ['id','express_id', 'express_no','delivery_time','delivery_status', 'send_now','order_status', 'no_delivery'],
         ];
     }
 
