@@ -150,6 +150,7 @@ class Order extends \common\models\base\BaseModel
             }
             elseif($orderStatus==12) {
                 $where[]['no_delivery'] = 1;
+                $where[]['order_status'] = 30;
             }
             elseif($orderStatus==1) {
                 $where[]['refund_status'] = 1;

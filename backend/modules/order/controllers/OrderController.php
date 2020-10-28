@@ -114,6 +114,7 @@ class OrderController extends BaseController
             }
             elseif($orderStatus==12) {
                 $dataProvider->query->andWhere(['=', 'no_delivery', 1]);
+                $dataProvider->query->andWhere(['=', 'order_status', 30]);
             }
             elseif($orderStatus==1) {
                 $orderStatus2 = $orderStatus;
