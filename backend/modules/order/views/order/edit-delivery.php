@@ -7,6 +7,7 @@ use kartik\datetime\DateTimePicker;
 $form = ActiveForm::begin([
     'id' => $model->formName(),
     'enableAjaxValidation' => true,
+    'enableClientValidation'=>false,
     'validationUrl' => Url::to(['edit-delivery', 'id' => $model['id']]),
     'fieldConfig' => [
         'template' => "{label}{input}{hint}",
@@ -19,6 +20,12 @@ $form = ActiveForm::begin([
         <h4 class="modal-title">发货 跟进</h4>
     </div>
     <div class="modal-body">
+        <?= $form->field($model, 'no_delivery')->dropDownList([
+                '0' => '发货',
+                '1' => '不需发货',
+            ]);?>
+        <div class="box no-delivery <?= $model->no_delivery ? 'hide' : '' ?>">
+
         <?= $form->field($model, 'express_id')->widget(kartik\select2\Select2::class, [
             'data' => Yii::$app->services->express->getDropDown(),
             'options' => ['placeholder' => '请选择'],
@@ -41,6 +48,8 @@ $form = ActiveForm::begin([
         ]);?>
         <?= $form->field($model->address, 'email')->textInput()->label('收件邮箱') ?>
         <?= $form->field($model, 'send_now')->radioList(['0'=>'否', '1'=>'是'], ['value'=>0])->label('是否立即发送“发货邮件”') ?>
+
+        </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
@@ -48,6 +57,14 @@ $form = ActiveForm::begin([
     </div>
 <?php ActiveForm::end(); ?>
 <script>
+    $("#deliveryform-no_delivery").change(function (e) {
+        if($(this).val()==1) {
+            $(".no-delivery").addClass('hide');
+        }
+        else {
+            $(".no-delivery").removeClass('hide');
+        }
+    });
     $("#deliveryform-express_no").change(function (e) {
         $(this).val($(this).val().trim());
     });

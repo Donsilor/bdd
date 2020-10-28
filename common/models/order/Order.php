@@ -68,7 +68,7 @@ class Order extends \common\models\base\BaseModel
     public function rules()
     {
         return [
-            [['audit_status', 'merchant_id','ip_area_id','payment_type','payment_status', 'payment_time', 'member_id', 'finished_time', 'evaluation_status', 'evaluation_again_status', 'order_status', 'refund_status', 'cancel_status', 'order_from', 'order_type', 'is_tourist', 'is_invoice','api_pay_time', 'status', 'created_at', 'updated_at', 'follower_id','followed_status' ,'followed_time', 'express_id','delivery_time','delivery_status', 'refund_status', 'send_paid_email_time', 'is_test'], 'integer'],
+            [['no_delivery', 'audit_status', 'merchant_id','ip_area_id','payment_type','payment_status', 'payment_time', 'member_id', 'finished_time', 'evaluation_status', 'evaluation_again_status', 'order_status', 'refund_status', 'cancel_status', 'order_from', 'order_type', 'is_tourist', 'is_invoice','api_pay_time', 'status', 'created_at', 'updated_at', 'follower_id','followed_status' ,'followed_time', 'express_id','delivery_time','delivery_status', 'refund_status', 'send_paid_email_time', 'is_test'], 'integer'],
             [['language', 'discount_type'], 'safe'],
             [['order_sn','pay_sn'], 'string', 'max' => 20],
             [['express_no', 'trade_no'], 'string', 'max' => 50],
@@ -127,6 +127,7 @@ class Order extends \common\models\base\BaseModel
             'send_paid_email_time' => '发送支付成功邮件次数',
             'is_test' => '测试',
             'discount_type' => '优惠类型',
+            'no_delivery' => '是否需发货',
         ];
     }
 
@@ -140,9 +141,16 @@ class Order extends \common\models\base\BaseModel
         $where = ['and'];
 
         if(!is_null($orderStatus)) {
+            if($orderStatus==30) {
+                $where[] = ['<>', 'no_delivery', 1];
+            }
             if($orderStatus==11) {
                 $subQuery = WireTransfer::find()->where(['in', 'collection_status',['0','2']])->select(['order_id']);
                 $where[]['id'] = $subQuery;
+            }
+            elseif($orderStatus==12) {
+                $where[]['no_delivery'] = 1;
+                $where[]['order_status'] = 30;
             }
             elseif($orderStatus==1) {
                 $where[]['refund_status'] = 1;

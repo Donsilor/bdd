@@ -104,8 +104,17 @@ class OrderController extends BaseController
 
         //订单状态
         if ($orderStatus !== -1) {
+
+            if($orderStatus==30) {
+                $dataProvider->query->andWhere(['<>', 'no_delivery', 1]);
+            }
+
             if($orderStatus==11) {
                 $dataProvider->query->andWhere('common_pay_wire_transfer.id is not null');
+            }
+            elseif($orderStatus==12) {
+                $dataProvider->query->andWhere(['=', 'no_delivery', 1]);
+                $dataProvider->query->andWhere(['=', 'order_status', 30]);
             }
             elseif($orderStatus==1) {
                 $orderStatus2 = $orderStatus;
@@ -436,12 +445,27 @@ class OrderController extends BaseController
      */
     public function actionEditDelivery()
     {
+        $post = Yii::$app->request->post();
         $id = Yii::$app->request->get('id');
 
         $model = DeliveryForm::find()->where(['id'=>$id])->one();
+
+        if(!empty($post['DeliveryForm']['no_delivery'])) {
+            $model->setScenario(DeliveryForm::ONDELIVERY);
+        }
+
         // ajax 校验
         $this->activeFormValidate($model);
         if ($model->load(Yii::$app->request->post())) {
+
+            if($model->no_delivery) {
+
+                $model->refresh();
+                $model->no_delivery = 1;
+                $result = $model->save();
+
+                return $result ? $this->redirect(Yii::$app->request->referrer) : $this->message($this->getError($model), $this->redirect(Yii::$app->request->referrer), 'error');
+            }
 
             if($model->delivery_status != DeliveryStatusEnum::SEND) {
                 $model->delivery_status = DeliveryStatusEnum::SEND;
@@ -463,6 +487,8 @@ class OrderController extends BaseController
 
             return $result ? $this->redirect($returnUrl) : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
         }
+
+//        $model->setScenario(DeliveryForm::ONDELIVERY);
 
         return $this->renderAjax($this->action->id, [
             'model' => $model,

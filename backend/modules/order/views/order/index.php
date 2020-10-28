@@ -18,7 +18,10 @@ $OrderStatusEnum = common\enums\OrderStatusEnum::getMap();
 unset($OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_FINISH]);
 
 $OrderStatusEnum['1'] = '已退款';
+
 $OrderStatusEnum[common\enums\OrderStatusEnum::ORDER_PAID] = '已付款/待审核';
+
+$OrderStatusEnum['12'] = '不需发货';
 
 ?>
 
