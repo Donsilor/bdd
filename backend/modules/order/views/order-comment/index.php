@@ -178,12 +178,12 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             ],
                             [
                                 'label' => '评价类型',
-                                'attribute' => 'is_virtual',
+                                'attribute' => 'is_import',
                                 'headerOptions' => ['class' => 'col-md-1'],
                                 'value' => function($model) {
-                                    return \common\enums\OrderCommentStatusEnum::getValue($model->is_virtual, 'virtualStatus');
+                                    return \common\enums\OrderCommentStatusEnum::getValue($model->is_import, 'virtualStatus');
                                 },
-                                'filter' => Html::activeDropDownList($searchModel, 'is_virtual', \common\enums\OrderCommentStatusEnum::virtualStatus(), [
+                                'filter' => Html::activeDropDownList($searchModel, 'is_import', \common\enums\OrderCommentStatusEnum::virtualStatus(), [
                                     'prompt' => '全部',
                                     'class' => 'form-control',
                                 ]),

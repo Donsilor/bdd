@@ -6,7 +6,9 @@ namespace backend\modules\order\controllers;
 use backend\modules\order\forms\OrderCommentForm;
 use backend\modules\order\forms\UploadCommentForm;
 use common\components\Curd;
+use common\enums\OrderFromEnum;
 use common\helpers\ExcelHelper;
+use common\models\goods\Style;
 use Yii;
 use backend\controllers\BaseController;
 use common\models\base\SearchModel;
@@ -101,25 +103,37 @@ class OrderCommentController extends BaseController
                 try {
                     $trans = Yii::$app->db->beginTransaction();
 
+                    $platforms = OrderFromEnum::getMap();
+                    $platforms2 = [];
+                    foreach ($platforms as $platform_id => $platform) {
+                        $platforms2[$platform] = $platform_id;
+                    }
+
                     foreach ($data as $key => $datum) {
-                        if(empty(trim($datum[0]))) {
-                            continue;
+
+                        $styleInfo = Style::findOne(['style_sn'=>$datum[1]]);
+                        if(!$styleInfo) {
+                            throw new \Exception(sprintf('第[%d]行，%s', $key, '款式信息未找到'));
                         }
 
-                        $created_at = $datum[9]??'';
+                        if(!isset($platforms2[$datum[3]])) {
+                            throw new \Exception(sprintf('第[%d]行，%s', $key, $datum[3].'站点不存在'));
+                        }
+
                         $comment = new OrderCommentForm();
                         $comment->setAttributes([
-                            'type_id' => $datum[1]??'',
-                            'style_id' => $datum[2]??'',
-                            'grade' => $datum[3]??'',
-                            'content' => $datum[4]??'',
-                            'images' => $datum[5]??'',
-                            'username' => $datum[6]??'',
-                            'platform' => $datum[7]??'',
-                            'remark' => $datum[8]??'',
-                            'created_at' => $created_at,
-                            'updated_at' => $created_at,
+                            'username' => $datum[0]??'',
+                            'type_id' => $styleInfo['type_id'],
+                            'style_id' => $styleInfo['id'],
+                            'created_at' => $datum[2]??'',
+                            'updated_at' => $datum[2]??'',
+                            'platform' => $platforms2[$datum[3]]??'',
+                            'grade' => $datum[4]??'',
+                            'content' => $datum[5]??'',
+                            'images' => $datum[6]??'',
+                            'remark' => $datum[7]??'',
                             'is_import' => 1,
+                            'status' => 1,
                         ]);
 
                         if(!$comment->save()) {
@@ -130,7 +144,9 @@ class OrderCommentController extends BaseController
                     $trans->commit();
                 } catch (\Exception $exception) {
                     $trans->rollBack();
-                    print_r($exception->getMessage());exit;
+                    print_r($datum);
+                    print_r($exception->getMessage());
+                    exit;
                     return $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
                 }
 
