@@ -152,6 +152,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             [
                                 'label' => '创建时间',
                                 'attribute' => 'created_at',
+                                'headerOptions' => ['class' => 'col-md-1'],
                                 'filter' => DateRangePicker::widget([    // 日期组件
                                     'model' => $searchModel,
                                     'attribute' => 'created_at',
@@ -178,7 +179,14 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             [
                                 'label' => '评价类型',
                                 'attribute' => 'is_virtual',
-
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'value' => function($model) {
+                                    return \common\enums\OrderCommentStatusEnum::getValue($model->is_virtual, 'virtualStatus');
+                                },
+                                'filter' => Html::activeDropDownList($searchModel, 'is_virtual', \common\enums\OrderCommentStatusEnum::virtualStatus(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
                             ],
 //                            [
 //                                'attribute' => 'ip',

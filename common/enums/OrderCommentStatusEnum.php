@@ -11,6 +11,9 @@ namespace common\enums;
  */
 class OrderCommentStatusEnum extends BaseEnum
 {
+    const VIRTUAL_NO = 0;
+    const VIRTUAL_YES = 1;
+
     const PASS = 1;
     const PENDING = 0;
     const FAIL = -1;
@@ -24,6 +27,14 @@ class OrderCommentStatusEnum extends BaseEnum
             self::PENDING => '待审核',
             self::PASS => '审核通过',
             self::FAIL => '审核不通过',
+        ];
+    }
+
+    public static function virtualStatus()
+    {
+        return [
+            self::VIRTUAL_NO => '真实',
+            self::VIRTUAL_YES => '虚拟',
         ];
     }
 }
