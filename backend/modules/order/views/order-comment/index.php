@@ -81,32 +81,6 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 //                                }
 //                            ],
                             [
-                                'label' => '评价时间',
-                                'attribute' => 'created_at',
-                                'filter' => DateRangePicker::widget([    // 日期组件
-                                    'model' => $searchModel,
-                                    'attribute' => 'created_at',
-                                    'value' => '',
-                                    'options' => ['readonly' => true, 'class' => 'form-control','style'=>'background-color:#fff;'],
-                                    'pluginOptions' => [
-                                        'format' => 'yyyy-mm-dd',
-                                        'locale' => [
-                                            'separator' => '/',
-                                            'cancelLabel'=> '清空',
-                                        ],
-                                        'endDate' => date('Y-m-d', time()),
-                                        'todayHighlight' => true,
-                                        'autoclose' => true,
-                                        'todayBtn' => 'linked',
-                                        'clearBtn' => true,
-                                    ],
-                                ]),
-                                'value' => function ($model) {
-                                    return Yii::$app->formatter->asDatetime($model->created_at);
-                                },
-                                'format' => 'raw',
-                            ],
-                            [
                                 'attribute' => 'platform',
                                 'headerOptions' => ['class' => 'col-md-1'],
                                 'filter' => Html::activeDropDownList($searchModel, 'platform', \common\enums\OrderFromEnum::getMap(), [
@@ -162,6 +136,49 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                     }
                                     return '';
                                 },
+                            ],
+                            [
+                                'label' => '创建人',
+                                'attribute' => 'username',
+                                'value' => function($model) {
+                                    $username = $model->username;
+                                    if(empty($username) && $model->member_id) {
+                                        $userInfo = \common\models\member\Member::findOne($model->member_id);
+                                        $username = $userInfo->username;
+                                    }
+                                    return $username;
+                                }
+                            ],
+                            [
+                                'label' => '创建时间',
+                                'attribute' => 'created_at',
+                                'filter' => DateRangePicker::widget([    // 日期组件
+                                    'model' => $searchModel,
+                                    'attribute' => 'created_at',
+                                    'value' => '',
+                                    'options' => ['readonly' => true, 'class' => 'form-control','style'=>'background-color:#fff;'],
+                                    'pluginOptions' => [
+                                        'format' => 'yyyy-mm-dd',
+                                        'locale' => [
+                                            'separator' => '/',
+                                            'cancelLabel'=> '清空',
+                                        ],
+                                        'endDate' => date('Y-m-d', time()),
+                                        'todayHighlight' => true,
+                                        'autoclose' => true,
+                                        'todayBtn' => 'linked',
+                                        'clearBtn' => true,
+                                    ],
+                                ]),
+                                'value' => function ($model) {
+                                    return Yii::$app->formatter->asDatetime($model->created_at, 'Y-MM-d HH:i');
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
+                                'label' => '评价类型',
+                                'attribute' => 'is_virtual',
+
                             ],
 //                            [
 //                                'attribute' => 'ip',
