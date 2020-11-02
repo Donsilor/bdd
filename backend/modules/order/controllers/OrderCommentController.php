@@ -111,6 +111,9 @@ class OrderCommentController extends BaseController
                     }
 
                     foreach ($data as $key => $datum) {
+                        if(empty($datum[1])) {
+                            continue;
+                        }
 
                         $styleInfo = Style::findOne(['style_sn'=>$datum[1]]);
                         if(!$styleInfo) {
@@ -121,7 +124,11 @@ class OrderCommentController extends BaseController
                             throw new \Exception(sprintf('第[%d]行，%s', $key, $datum[3].'站点不存在'));
                         }
 
-                        $created_at = Date::excelToDateTimeObject($datum[2]??null)->format('Y-m-d H:i:s');
+                        try {
+                            $created_at = Date::excelToDateTimeObject($datum[2]??null)->format('Y-m-d H:i:s');
+                        } catch (\Exception $exception) {
+                            throw new \Exception(sprintf('第[%d]行，%s', $key, $datum[3].'评价时间错误'));
+                        }
 
                         $comment = new OrderCommentForm();
                         $comment->setAttributes([
@@ -147,9 +154,6 @@ class OrderCommentController extends BaseController
                     $trans->commit();
                 } catch (\Exception $exception) {
                     $trans->rollBack();
-                    print_r($datum);
-                    print_r($exception->getMessage());
-                    exit;
                     return $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
                 }
 
