@@ -9,6 +9,7 @@ use common\components\Curd;
 use common\enums\OrderFromEnum;
 use common\helpers\ExcelHelper;
 use common\models\goods\Style;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yii;
 use backend\controllers\BaseController;
 use common\models\base\SearchModel;
@@ -120,13 +121,15 @@ class OrderCommentController extends BaseController
                             throw new \Exception(sprintf('第[%d]行，%s', $key, $datum[3].'站点不存在'));
                         }
 
+                        $created_at = Date::excelToDateTimeObject($datum[2]??null)->format('Y-m-d H:i:s');
+
                         $comment = new OrderCommentForm();
                         $comment->setAttributes([
                             'username' => $datum[0]??'',
                             'type_id' => $styleInfo['type_id'],
                             'style_id' => $styleInfo['id'],
-                            'created_at' => $datum[2]??'',
-                            'updated_at' => $datum[2]??'',
+                            'created_at' => $created_at,
+                            'updated_at' => $created_at,
                             'platform' => $platforms2[$datum[3]]??'',
                             'grade' => $datum[4]??'',
                             'content' => $datum[5]??'',
