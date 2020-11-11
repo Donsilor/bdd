@@ -7,6 +7,7 @@ use backend\modules\order\forms\OrderCommentForm;
 use backend\modules\order\forms\UploadCommentForm;
 use common\components\Curd;
 use common\enums\OrderFromEnum;
+use common\enums\StatusEnum;
 use common\helpers\ExcelHelper;
 use common\models\goods\Style;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -49,6 +50,8 @@ class OrderCommentController extends BaseController
             list($start_date, $end_date) = explode('/', Yii::$app->request->queryParams['SearchModel']['created_at']);
             $dataProvider->query->andFilterWhere(['between', 'order_comment.created_at', strtotime($start_date), strtotime($end_date) + 86400]);
         }
+
+        $dataProvider->query->andWhere(['=', 'is_destroy', 0]);
 
         //站点地区
 //        $sitesAttach = \Yii::$app->getUser()->identity->sites_attach;
@@ -132,6 +135,7 @@ class OrderCommentController extends BaseController
 
                         $comment = new OrderCommentForm();
                         $comment->setAttributes([
+                            'admin_id' => Yii::$app->user->getIdentity()->id,
                             'username' => $datum[0]??'',
                             'type_id' => $styleInfo['type_id'],
                             'style_id' => $styleInfo['id'],
@@ -154,10 +158,11 @@ class OrderCommentController extends BaseController
                     $trans->commit();
                 } catch (\Exception $exception) {
                     $trans->rollBack();
+                    unlink($file);
                     return $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
                 }
 
-                return $this->redirect(Yii::$app->request->referrer);
+                return $this->message("操作成功", $this->redirect(Yii::$app->request->referrer), 'success');
             }
 
             return $this->message($this->getError($model), $this->redirect(Yii::$app->request->referrer), 'error');
@@ -166,5 +171,26 @@ class OrderCommentController extends BaseController
         return $this->renderAjax($this->action->id, [
             'model' => $model,
         ]);
+    }
+
+
+    /**
+     * 伪删除
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function actionDestroy($id)
+    {
+        if (!($model = $this->modelClass::findOne($id))) {
+            return $this->message("找不到数据", $this->redirect(['index']), 'error');
+        }
+
+        $model->is_destroy = StatusEnum::DELETE;
+        if ($model->save()) {
+            return $this->message("删除成功", $this->redirect(['index']));
+        }
+
+        return $this->message("删除失败", $this->redirect(['index']), 'error');
     }
 }
