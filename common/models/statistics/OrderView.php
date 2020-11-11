@@ -106,7 +106,7 @@ class OrderView extends \common\models\base\BaseModel
     {
         return round($this->getOrderRelation($searchModel)
             ->joinWith('account')
-            ->sum('order_account.goods_amount/order_account.exchange_rate'), 2);
+            ->sum('order_account.pay_amount/order_account.exchange_rate'), 2);
     }
 
     public function getOrderProductCount($searchModel)

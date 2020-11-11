@@ -84,6 +84,14 @@ $orderProductCount = 0;
                             ]);
                             ?>
                         </div>
+                        <div class="col-sm-3">
+                            <?= $searchModel->model->getAttributeLabel('status') ?>：<br/>
+                            <?= Html::activeDropDownList($searchModel, 'status', $status, [
+                                'prompt' => '全部',
+                                'class' => 'form-control',
+                            ]);
+                            ?>
+                        </div>
                     </div>
                 </div>
                 <div class="active tab-pane">
@@ -123,6 +131,9 @@ $orderProductCount = 0;
                                     ]) .
                                     Html::activeTextInput($searchModel, 'datetime', [
                                         'class' => 'hidden',
+                                    ]) .
+                                    Html::activeTextInput($searchModel, 'status', [
+                                        'class' => 'hidden',
                                     ])
                             ],
                             [
@@ -136,10 +147,7 @@ $orderProductCount = 0;
                             [
                                 'label' => '状态',
                                 'attribute' => 'status',
-                                'filter' => Html::activeDropDownList($searchModel, 'status', $status, [
-                                    'prompt' => '全部',
-                                    'class' => 'form-control',
-                                ]),
+                                'filter' => false,
                                 'value' => function($model) use($status) {
                                     return $status[$model['status']]??'';
                                 }
