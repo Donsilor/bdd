@@ -925,7 +925,7 @@ class OrderController extends BaseController
 
             }],
             ['订单状态', 'order_status', 'function',function($row){
-                return \common\enums\OrderStatusEnum::getValue($row->order_status);
+                return $row->refund_status == OrderStatusEnum::ORDER_REFUND_YES ?'已关闭':\common\enums\OrderStatusEnum::getValue($row->order_status);
             }],
             ['订单来源', 'order_from', 'function',function($model){
                 if($model->order_from){
