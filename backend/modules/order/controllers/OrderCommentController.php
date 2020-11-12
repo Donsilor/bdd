@@ -3,6 +3,7 @@
 
 namespace backend\modules\order\controllers;
 
+use backend\modules\order\forms\OrderCommentEditForm;
 use backend\modules\order\forms\OrderCommentForm;
 use backend\modules\order\forms\UploadCommentForm;
 use common\components\Curd;
@@ -192,5 +193,32 @@ class OrderCommentController extends BaseController
         }
 
         return $this->message("删除失败", $this->redirect(['index']), 'error');
+    }
+
+    /**
+     * ajax编辑/创建
+     *
+     * @return mixed|string|\yii\web\Response
+     * @throws \yii\base\ExitException
+     */
+    public function actionAjaxEdit()
+    {
+        $this->modelClass = OrderCommentEditForm::class;
+
+        $id = Yii::$app->request->get('id');
+        $returnUrl = Yii::$app->request->get('returnUrl',['index']);
+        $model = $this->findModel($id);
+
+        // ajax 校验
+        $this->activeFormValidate($model);
+        if ($model->load(Yii::$app->request->post())) {
+            return $model->save()
+                ? $this->redirect($returnUrl)
+                : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
+        }
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+        ]);
     }
 }

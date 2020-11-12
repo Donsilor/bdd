@@ -19,8 +19,19 @@ $form = ActiveForm::begin([
     <h4 class="modal-title">基本信息</h4>
 </div>
 <div class="modal-body">
-
-    <?= $form->field($model, 'style_id')->textInput() ?>
+    <?= $form->field($model, 'style_sn')->textInput() ?>
+    <?= $form->field($model, 'platform')->textInput() ?>
+    <?= $form->field($model, 'created_at')->textInput() ?>
+    <?= $form->field($model, 'username')->textInput() ?>
+    <?= $form->field($model, 'grade')->textInput() ?>
+    <?= $form->field($model, 'content')->textarea() ?>
+    <?= $form->field($model, "images")->widget(common\widgets\webuploader\Files::class, [
+        'config' => [
+            'pick' => [
+                'multiple' => true,
+            ],
+        ]
+    ]); ?>
 
 </div>
 <div class="modal-footer">
