@@ -222,6 +222,8 @@ class OrderCommentController extends BaseController
             $model->style_sn = $style->style_sn;
         }
 
+        $model->images = explode(",", $model->images);
+
         return $this->renderAjax($this->action->id, [
             'model' => $model,
         ]);

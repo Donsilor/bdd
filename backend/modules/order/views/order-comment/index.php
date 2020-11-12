@@ -123,6 +123,9 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             [
                                 'attribute' => 'images',
                                 'value' => function ($model) {
+                                    if(empty($model->images)) {
+                                        return '';
+                                    }
                                     $images = explode(',', $model->images);
                                     $value = '';
                                     foreach ($images as $image) {
