@@ -217,6 +217,11 @@ class OrderCommentController extends BaseController
                 : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
         }
 
+        if($model->style_id) {
+            $style = Style::findOne($model->style_id);
+            $model->style_sn = $style->style_sn;
+        }
+
         return $this->renderAjax($this->action->id, [
             'model' => $model,
         ]);

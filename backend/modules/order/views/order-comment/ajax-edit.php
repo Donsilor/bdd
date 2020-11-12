@@ -20,10 +20,27 @@ $form = ActiveForm::begin([
 </div>
 <div class="modal-body">
     <?= $form->field($model, 'style_sn')->textInput() ?>
-    <?= $form->field($model, 'platform')->textInput() ?>
-    <?= $form->field($model, 'created_at')->textInput() ?>
+    <?= $form->field($model, 'platform')->dropDownList(\common\enums\OrderFromEnum::getMap(), [
+        'prompt' => '请选择',
+        'class' => 'form-control',
+    ]) ?>
+    <?= $form->field($model, 'created_at')->widget(\kartik\datetime\DateTimePicker::class, [
+        'language' => 'zh-CN',
+        'options' => [
+            'value' => \common\helpers\StringHelper::intToDate($model->created_at),
+        ],
+        'pluginOptions' => [
+            'format' => 'yyyy-mm-dd hh:ii:ss',
+            'todayHighlight' => true,//今日高亮
+            'autoclose' => true,//选择后自动关闭
+            'todayBtn' => true,//今日按钮显示
+        ],
+    ]); ?>
     <?= $form->field($model, 'username')->textInput() ?>
-    <?= $form->field($model, 'grade')->textInput() ?>
+    <?= $form->field($model, 'grade')->dropDownList([1=>1,2=>2,3=>3,4=>4,5=>5], [
+        'prompt' => '请选择',
+        'class' => 'form-control',
+    ]) ?>
     <?= $form->field($model, 'content')->textarea() ?>
     <?= $form->field($model, "images")->widget(common\widgets\webuploader\Files::class, [
         'config' => [

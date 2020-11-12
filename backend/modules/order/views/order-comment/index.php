@@ -231,7 +231,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'header' => "操作",
                                 //'headerOptions' => ['class' => 'col-md-1'],
                                 'class' => 'yii\grid\ActionColumn',
-                                'template' => '{audit} {destroy}',
+                                'template' => '{audit} {edit} {destroy}',
                                 'buttons' => [
                                     'audit' => function ($url, $model, $key) {
                                         if($model->status == \common\enums\OrderCommentStatusEnum::PENDING) {
@@ -242,6 +242,16 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                             ]);
                                         }
                                         return null;
+                                    },
+                                    'edit' => function($url, $model, $key) {
+                                        if(!$model->is_import) {
+                                            return '';
+                                        }
+                                        return Html::edit(['ajax-edit', 'id' => $model->id], '编辑', [
+                                            'data-toggle' => 'modal',
+                                            'data-target' => '#ajaxModalLg',
+                                            'class'=>'btn btn-primary btn-sm'
+                                        ]);
                                     },
                                     'destroy' => function ($url, $model, $key) {
                                         if($model->status == \common\enums\OrderCommentStatusEnum::PASS) {
