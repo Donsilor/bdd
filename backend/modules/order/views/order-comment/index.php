@@ -17,6 +17,10 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
             <div class="box-header">
                 <h3 class="box-title"><?= Html::encode($this->title) ?></h3>
                 <div class="box-tools">
+                    <?= Html::create(['ajax-edit'], '创建评价', [
+                        'data-toggle' => 'modal',
+                        'data-target' => '#ajaxModalLg',
+                    ])?>
                     <?= Html::create(['import'], '导入评价', [
                         'data-toggle' => 'modal',
                         'data-target' => '#ajaxModalLg',
@@ -45,8 +49,13 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'filter' => Html::activeTextInput($searchModel, 'member.username', [
                                     'class' => 'form-control',
                                 ]),
-                                'value' => function($row) {
-                                    return $row->member->username??'';
+                                'value' => function($model) {
+                                    $username = $model->username;
+                                    if(empty($username) && $model->member_id) {
+                                        $userInfo = \common\models\member\Member::findOne($model->member_id);
+                                        $username = $userInfo->username;
+                                    }
+                                    return $username;
                                 }
                             ],
                             [
@@ -114,6 +123,9 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             [
                                 'attribute' => 'images',
                                 'value' => function ($model) {
+                                    if(empty($model->images)) {
+                                        return '';
+                                    }
                                     $images = explode(',', $model->images);
                                     $value = '';
                                     foreach ($images as $image) {
@@ -126,31 +138,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'headerOptions' => ['width'=>'80'],
                             ],
                             [
-                                'filter' => false,
-                                'label' => '审核人',
-                                'attribute' => 'admin_id',
-                                'value' => function ($model) {
-                                    $row = \common\models\backend\Member::find()->where(['id'=>$model->admin_id])->one();
-                                    if($row){
-                                        return $row->username;
-                                    }
-                                    return '';
-                                },
-                            ],
-                            [
-                                'label' => '创建人',
-                                'attribute' => 'username',
-                                'value' => function($model) {
-                                    $username = $model->username;
-                                    if(empty($username) && $model->member_id) {
-                                        $userInfo = \common\models\member\Member::findOne($model->member_id);
-                                        $username = $userInfo->username;
-                                    }
-                                    return $username;
-                                }
-                            ],
-                            [
-                                'label' => '创建时间',
+                                'label' => '评价时间',
                                 'attribute' => 'created_at',
                                 'headerOptions' => ['class' => 'col-md-1'],
                                 'filter' => DateRangePicker::widget([    // 日期组件
@@ -172,9 +160,33 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                     ],
                                 ]),
                                 'value' => function ($model) {
-                                    return Yii::$app->formatter->asDatetime($model->created_at, 'Y-MM-d HH:i');
+                                    return Yii::$app->formatter->asDatetime($model->created_at, 'Y-MM-d');
                                 },
                                 'format' => 'raw',
+                            ],
+                            [
+                                'filter' => false,
+                                'label' => '审核人',
+                                'attribute' => 'admin_id',
+                                'value' => function ($model) {
+                                    $row = \common\models\backend\Member::find()->where(['id'=>$model->admin_id])->one();
+                                    if($row){
+                                        return $row->username;
+                                    }
+                                    return '';
+                                },
+                            ],
+                            [
+                                'label' => '创建人',
+                                'attribute' => 'username',
+                                'value' => function($model) {
+                                    if($model->is_import) {
+                                        if($row = \common\models\backend\Member::find()->where(['id'=>$model->admin_id])->one()){
+                                            return $row->username;
+                                        }
+                                    }
+                                    return '';
+                                }
                             ],
                             [
                                 'label' => '评价类型',
@@ -222,7 +234,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'header' => "操作",
                                 //'headerOptions' => ['class' => 'col-md-1'],
                                 'class' => 'yii\grid\ActionColumn',
-                                'template' => '{audit}',
+                                'template' => '{audit} {edit} {destroy}',
                                 'buttons' => [
                                     'audit' => function ($url, $model, $key) {
                                         if($model->status == \common\enums\OrderCommentStatusEnum::PENDING) {
@@ -231,6 +243,22 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                                 'data-target' => '#ajaxModal',
                                                 'class'=>'btn bg-green btn-sm'
                                             ]);
+                                        }
+                                        return null;
+                                    },
+                                    'edit' => function($url, $model, $key) {
+                                        if(!$model->is_import) {
+                                            return '';
+                                        }
+                                        return Html::edit(['ajax-edit', 'id' => $model->id], '编辑', [
+                                            'data-toggle' => 'modal',
+                                            'data-target' => '#ajaxModalLg',
+                                            'class'=>'btn btn-primary btn-sm'
+                                        ]);
+                                    },
+                                    'destroy' => function ($url, $model, $key) {
+                                        if($model->status == \common\enums\OrderCommentStatusEnum::PASS) {
+                                            return Html::delete(['destroy', 'id' => $model->id]);
                                         }
                                         return null;
                                     },

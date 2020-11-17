@@ -3,10 +3,12 @@
 
 namespace backend\modules\order\controllers;
 
+use backend\modules\order\forms\OrderCommentEditForm;
 use backend\modules\order\forms\OrderCommentForm;
 use backend\modules\order\forms\UploadCommentForm;
 use common\components\Curd;
 use common\enums\OrderFromEnum;
+use common\enums\StatusEnum;
 use common\helpers\ExcelHelper;
 use common\models\goods\Style;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -49,6 +51,8 @@ class OrderCommentController extends BaseController
             list($start_date, $end_date) = explode('/', Yii::$app->request->queryParams['SearchModel']['created_at']);
             $dataProvider->query->andFilterWhere(['between', 'order_comment.created_at', strtotime($start_date), strtotime($end_date) + 86400]);
         }
+
+        $dataProvider->query->andWhere(['=', 'is_destroy', 0]);
 
         //站点地区
 //        $sitesAttach = \Yii::$app->getUser()->identity->sites_attach;
@@ -132,6 +136,7 @@ class OrderCommentController extends BaseController
 
                         $comment = new OrderCommentForm();
                         $comment->setAttributes([
+                            'admin_id' => Yii::$app->user->getIdentity()->id,
                             'username' => $datum[0]??'',
                             'type_id' => $styleInfo['type_id'],
                             'style_id' => $styleInfo['id'],
@@ -154,13 +159,71 @@ class OrderCommentController extends BaseController
                     $trans->commit();
                 } catch (\Exception $exception) {
                     $trans->rollBack();
+                    unlink($file);
                     return $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
                 }
 
-                return $this->redirect(Yii::$app->request->referrer);
+                return $this->message("操作成功", $this->redirect(Yii::$app->request->referrer), 'success');
             }
 
             return $this->message($this->getError($model), $this->redirect(Yii::$app->request->referrer), 'error');
+        }
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+        ]);
+    }
+
+
+    /**
+     * 伪删除
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function actionDestroy($id)
+    {
+        if (!($model = $this->modelClass::findOne($id))) {
+            return $this->message("找不到数据", $this->redirect(['index']), 'error');
+        }
+
+        $model->is_destroy = StatusEnum::DELETE;
+        if ($model->save()) {
+            return $this->message("删除成功", $this->redirect(['index']));
+        }
+
+        return $this->message("删除失败", $this->redirect(['index']), 'error');
+    }
+
+    /**
+     * ajax编辑/创建
+     *
+     * @return mixed|string|\yii\web\Response
+     * @throws \yii\base\ExitException
+     */
+    public function actionAjaxEdit()
+    {
+        $this->modelClass = OrderCommentEditForm::class;
+
+        $id = Yii::$app->request->get('id');
+        $returnUrl = Yii::$app->request->get('returnUrl',['index']);
+        $model = $this->findModel($id);
+
+        // ajax 校验
+        $this->activeFormValidate($model);
+        if ($model->load(Yii::$app->request->post())) {
+            return $model->save()
+                ? $this->message("保存成功", $this->redirect($returnUrl), 'success')
+                : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
+        }
+
+        if($model->style_id) {
+            $style = Style::findOne($model->style_id);
+            $model->style_sn = $style->style_sn;
+        }
+
+        if(!empty($model->images)) {
+            $model->images = explode(",", $model->images);
         }
 
         return $this->renderAjax($this->action->id, [
