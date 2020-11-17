@@ -97,6 +97,7 @@ class OrderCommentEditForm extends OrderComment
 
     public function behaviors()
     {
+        $this->style_sn = trim($this->style_sn);
         return [];
     }
 }
