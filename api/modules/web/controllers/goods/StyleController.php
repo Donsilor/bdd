@@ -335,7 +335,7 @@ class StyleController extends OnAuthController
         $where[2]['m.status'] = 1;
         $where[2]['platform'] = null;
 
-        $query = OrderComment::find()->alias('m')->select(['member.username', 'm.images', 'm.content', 'm.grade', 'm.remark', 'm.ip', 'm.ip_location', 'm.created_at'])
+        $query = OrderComment::find()->alias('m')->select(["IFNULL(m.username, member.username) as username", 'm.images', 'm.content', 'm.grade', 'm.remark', 'm.ip', 'm.ip_location', 'm.created_at'])
             ->leftJoin(Member::tableName().' member', 'm.member_id=member.id')
             ->orderBy('m.id desc')
             ->andWhere($where)
