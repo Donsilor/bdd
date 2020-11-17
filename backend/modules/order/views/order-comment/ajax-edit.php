@@ -16,7 +16,7 @@ $form = ActiveForm::begin([
 
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-    <h4 class="modal-title">基本信息</h4>
+    <h4 class="modal-title">创建评价</h4>
 </div>
 <div class="modal-body">
     <?= $form->field($model, 'style_sn')->textInput() ?>
@@ -41,7 +41,7 @@ $form = ActiveForm::begin([
         'prompt' => '请选择',
         'class' => 'form-control',
     ]) ?>
-    <?= $form->field($model, 'content')->textarea() ?>
+    <?= $form->field($model, 'content')->textarea()->hint('*请仔细填写，创建完成后将即时展示', ['class'=>'red']) ?>
     <?= $form->field($model, "images")->widget(common\widgets\webuploader\Files::class, [
         'config' => [
             'pick' => [

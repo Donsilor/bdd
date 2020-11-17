@@ -87,7 +87,6 @@ class OrderCommentController extends BaseController
         if ($model->load(Yii::$app->request->post())) {
             if(!$model->save())
             return $this->message($this->getError($model), $this->redirect(Yii::$app->request->referrer), 'error');
-            return $this->redirect(Yii::$app->request->referrer);
         }
 
         return $this->renderAjax($this->action->id, [
@@ -222,7 +221,9 @@ class OrderCommentController extends BaseController
             $model->style_sn = $style->style_sn;
         }
 
-        $model->images = explode(",", $model->images);
+        if(!empty($model->images)) {
+            $model->images = explode(",", $model->images);
+        }
 
         return $this->renderAjax($this->action->id, [
             'model' => $model,
