@@ -87,6 +87,7 @@ class OrderCommentController extends BaseController
         if ($model->load(Yii::$app->request->post())) {
             if(!$model->save())
             return $this->message($this->getError($model), $this->redirect(Yii::$app->request->referrer), 'error');
+            return $this->redirect(Yii::$app->request->referrer);
         }
 
         return $this->renderAjax($this->action->id, [
@@ -212,7 +213,7 @@ class OrderCommentController extends BaseController
         $this->activeFormValidate($model);
         if ($model->load(Yii::$app->request->post())) {
             return $model->save()
-                ? $this->redirect($returnUrl)
+                ? $this->message("保存成功", $this->redirect($returnUrl), 'success')
                 : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
         }
 
