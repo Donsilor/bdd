@@ -339,7 +339,7 @@ class StyleController extends OnAuthController
             ->leftJoin(Member::tableName().' member', 'm.member_id=member.id')
             ->orderBy('m.id desc')
             ->andWhere($where)
-            ->andWhere(['style_id'=>$style_id, 'type_id'=>$type_id]);
+            ->andWhere(['style_id'=>$style_id, 'type_id'=>$type_id, 'is_destroy'=>0]);
 
         $result = $this->pagination($query, $this->page, $this->pageSize);
 
