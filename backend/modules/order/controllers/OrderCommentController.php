@@ -3,10 +3,15 @@
 
 namespace backend\modules\order\controllers;
 
+use backend\modules\order\forms\OrderCommentEditForm;
 use backend\modules\order\forms\OrderCommentForm;
 use backend\modules\order\forms\UploadCommentForm;
 use common\components\Curd;
+use common\enums\OrderFromEnum;
+use common\enums\StatusEnum;
 use common\helpers\ExcelHelper;
+use common\models\goods\Style;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yii;
 use backend\controllers\BaseController;
 use common\models\base\SearchModel;
@@ -44,8 +49,10 @@ class OrderCommentController extends BaseController
         //创建时间过滤
         if (!empty(Yii::$app->request->queryParams['SearchModel']['created_at'])) {
             list($start_date, $end_date) = explode('/', Yii::$app->request->queryParams['SearchModel']['created_at']);
-            $dataProvider->query->andFilterWhere(['between', 'created_at', strtotime($start_date), strtotime($end_date) + 86400]);
+            $dataProvider->query->andFilterWhere(['between', 'order_comment.created_at', strtotime($start_date), strtotime($end_date) + 86400]);
         }
+
+        $dataProvider->query->andWhere(['=', 'is_destroy', 0]);
 
         //站点地区
 //        $sitesAttach = \Yii::$app->getUser()->identity->sites_attach;
@@ -101,25 +108,47 @@ class OrderCommentController extends BaseController
                 try {
                     $trans = Yii::$app->db->beginTransaction();
 
+                    $platforms = OrderFromEnum::getMap();
+                    $platforms2 = [];
+                    foreach ($platforms as $platform_id => $platform) {
+                        $platforms2[$platform] = $platform_id;
+                    }
+
                     foreach ($data as $key => $datum) {
-                        if(empty(trim($datum[0]))) {
+                        if(empty($datum[1])) {
                             continue;
                         }
 
-                        $created_at = $datum[9]??'';
+                        $styleInfo = Style::findOne(['style_sn'=>$datum[1]]);
+                        if(!$styleInfo) {
+                            throw new \Exception(sprintf('第[%d]行，%s', $key, '款式信息未找到'));
+                        }
+
+                        if(!isset($platforms2[$datum[3]])) {
+                            throw new \Exception(sprintf('第[%d]行，%s', $key, $datum[3].'站点不存在'));
+                        }
+
+                        try {
+                            $created_at = Date::excelToDateTimeObject($datum[2]??null)->format('Y-m-d H:i:s');
+                        } catch (\Exception $exception) {
+                            throw new \Exception(sprintf('第[%d]行，%s', $key, $datum[3].'评价时间错误'));
+                        }
+
                         $comment = new OrderCommentForm();
                         $comment->setAttributes([
-                            'type_id' => $datum[1]??'',
-                            'style_id' => $datum[2]??'',
-                            'grade' => $datum[3]??'',
-                            'content' => $datum[4]??'',
-                            'images' => $datum[5]??'',
-                            'username' => $datum[6]??'',
-                            'platform' => $datum[7]??'',
-                            'remark' => $datum[8]??'',
+                            'admin_id' => Yii::$app->user->getIdentity()->id,
+                            'username' => $datum[0]??'',
+                            'type_id' => $styleInfo['type_id'],
+                            'style_id' => $styleInfo['id'],
                             'created_at' => $created_at,
                             'updated_at' => $created_at,
+                            'platform' => $platforms2[$datum[3]]??'',
+                            'grade' => $datum[4]??'',
+                            'content' => $datum[5]??'',
+                            'images' => $datum[6]??'',
+                            'remark' => $datum[7]??'',
                             'is_import' => 1,
+                            'status' => 1,
                         ]);
 
                         if(!$comment->save()) {
@@ -130,14 +159,71 @@ class OrderCommentController extends BaseController
                     $trans->commit();
                 } catch (\Exception $exception) {
                     $trans->rollBack();
-                    print_r($exception->getMessage());exit;
+                    unlink($file);
                     return $this->message($exception->getMessage(), $this->redirect(Yii::$app->request->referrer), 'error');
                 }
 
-                return $this->redirect(Yii::$app->request->referrer);
+                return $this->message("操作成功", $this->redirect(Yii::$app->request->referrer), 'success');
             }
 
             return $this->message($this->getError($model), $this->redirect(Yii::$app->request->referrer), 'error');
+        }
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+        ]);
+    }
+
+
+    /**
+     * 伪删除
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function actionDestroy($id)
+    {
+        if (!($model = $this->modelClass::findOne($id))) {
+            return $this->message("找不到数据", $this->redirect(['index']), 'error');
+        }
+
+        $model->is_destroy = StatusEnum::DELETE;
+        if ($model->save()) {
+            return $this->message("删除成功", $this->redirect(['index']));
+        }
+
+        return $this->message("删除失败", $this->redirect(['index']), 'error');
+    }
+
+    /**
+     * ajax编辑/创建
+     *
+     * @return mixed|string|\yii\web\Response
+     * @throws \yii\base\ExitException
+     */
+    public function actionAjaxEdit()
+    {
+        $this->modelClass = OrderCommentEditForm::class;
+
+        $id = Yii::$app->request->get('id');
+        $returnUrl = Yii::$app->request->get('returnUrl',['index']);
+        $model = $this->findModel($id);
+
+        // ajax 校验
+        $this->activeFormValidate($model);
+        if ($model->load(Yii::$app->request->post())) {
+            return $model->save()
+                ? $this->message("保存成功", $this->redirect($returnUrl), 'success')
+                : $this->message($this->getError($model), $this->redirect($returnUrl), 'error');
+        }
+
+        if($model->style_id) {
+            $style = Style::findOne($model->style_id);
+            $model->style_sn = $style->style_sn;
+        }
+
+        if(!empty($model->images)) {
+            $model->images = explode(",", $model->images);
         }
 
         return $this->renderAjax($this->action->id, [

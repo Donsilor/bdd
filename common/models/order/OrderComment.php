@@ -28,6 +28,7 @@ use Yii;
  * @property string $ip_location
  * @property int $created_at 创建时间
  * @property int $updated_at 更新时间
+ * @property int $is_destroy 是否删除
  */
 class OrderComment extends BaseModel
 {
@@ -45,11 +46,11 @@ class OrderComment extends BaseModel
     public function rules()
     {
         return [
-            [['order_id', 'style_id', 'type_id', 'status', 'admin_id', 'is_import', 'member_id', 'platform', 'ip_area_id', 'created_at', 'updated_at', 'grade'], 'integer'],
+            [['is_destroy', 'order_id', 'style_id', 'type_id', 'status', 'admin_id', 'is_import', 'member_id', 'platform', 'ip_area_id', 'created_at', 'updated_at', 'grade'], 'integer'],
             [['style_id', 'updated_at'], 'required'],
-            [['content'], 'string', 'max' => 45],
+            [['content', 'remark'], 'string', 'max' => 200],
             [['ip'], 'string', 'max' => 255],
-            [['ip_location', 'remark'], 'string', 'max' => 255],
+            [['ip_location'], 'string', 'max' => 255],
         ];
     }
 
@@ -77,6 +78,7 @@ class OrderComment extends BaseModel
             'ip_location' => Yii::t('app', 'Ip Location'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
+            'is_destroy' => Yii::t('app', '是否删除'),
         ];
     }
 

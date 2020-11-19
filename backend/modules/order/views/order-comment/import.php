@@ -17,7 +17,7 @@ $form = ActiveForm::begin([
         <h4 class="modal-title">导入评价</h4>
     </div>
     <div class="modal-body">
-        <?= $form->field($model, 'file')->fileInput()->hint("<br /><br />1、请严格按照以下模板文件导入评价<br />2、点击<a href='/backend/downloads/comments/orderComment.xlsx' class='red'>下载模板</a><br />") ?>
+        <?= $form->field($model, 'file')->fileInput()->hint("<br /><br />1、请严格按照以下模板文件导入评价<br />2、点击<a href='/backend/downloads/comments/orderComment.xlsx' class='red'>下载模板</a><br />")->label('') ?>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
