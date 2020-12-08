@@ -1,6 +1,7 @@
 <?php
 
 namespace services\goods;
+use common\enums\LanguageEnum;
 use Yii;
 use common\components\Attr;
 use common\components\Service;
@@ -725,6 +726,31 @@ class GoodsService extends Service
         $styleModel = new Style();
         $goodsLogModel = new GoodsLog();
         $log_msg = "";
+        $langs = [];
+
+        $langs_msg = '';
+        foreach ($new_goods_info->langs as $langModel) {
+            if(isset($langs[$langModel->id]))
+                continue;
+
+            $langs[$langModel->id] = $langModel->toArray();
+            $oldLang = $old_goods_info['langs'][$langModel->id];
+
+            $diff_lang = array_diff_assoc($langs[$langModel->id], $oldLang);
+
+            if(!empty($diff_lang)) {
+                $langAttrLab = $langModel->attributeLabels();
+                $langs_msg .= LanguageEnum::getValue($langModel->language).'：';
+                foreach ($diff_lang as $key => $item) {
+                    $langs_msg .= sprintf('%s："%s" 变更为："%s"；', $langAttrLab[$key], $oldLang[$key], $langs[$langModel->id][$key]);
+                }
+            }
+        }
+
+        if(!empty($langs_msg)) {
+            $log_msg .= $langs_msg;
+        }
+
         if(!empty($diff_info)){
             $diamond_attrLab = $diamondModel->attributeLabels();
             $style_attrLab = $styleModel->attributeLabels();
