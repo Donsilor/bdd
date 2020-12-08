@@ -161,6 +161,10 @@ DOM;
         
         $status = $model ? $model->status:0;
         $old_style_info = $model->toArray();
+        $old_style_info['langs'] = [];
+        foreach ($model->langs as $lang) {
+            $old_style_info['langs'][$lang->id] = $lang->toArray();
+        }
         if ($model->load(Yii::$app->request->post())) {
             
             try{
