@@ -5,6 +5,7 @@ namespace common\components;
 use common\components\payment\GlobalAlipayPay;
 use common\components\payment\PaydollarPay;
 use common\components\payment\PaypalPay;
+use common\components\payment\StripePay;
 use Yii;
 use yii\base\Component;
 use common\components\payment\AliPay;
@@ -145,6 +146,19 @@ class Pay extends Component
             'sandbox' => !empty($this->rfConfig['paydollar_sandbox']),
             'loginId' => $this->rfConfig['paydollar_login_id'],
             'password' => $this->rfConfig['paydollar_password']
+        ], $config));
+    }
+
+    public function stripe(array $config = [])
+    {
+        $apiKey = $this->rfConfig['stripe_api_key']??null;
+
+        if($apiKey) {
+            $config['apiKey'] = $apiKey;
+        }
+
+        return new StripePay(ArrayHelper::merge([
+            'apiKey' => 'sk_test_51Hh91GEg2ty3UyHNkc6aYtw29SoM4qSqlttaOQpwj5oMD9RJUKyZAYSWBxau3LZwbLULayfTsad1lGLcrhulVClK009rLNjmU7',
         ], $config));
     }
 

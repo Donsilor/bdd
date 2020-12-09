@@ -313,8 +313,16 @@ class PayController extends OnAuthController
 
                 $data = $response->getData();
 
+                //这段代码要移到stripe驱动里面。
+                if($model->pay_type==PayEnum::PAY_TYPE_STRIPE) {
+                    $data = $data['paymentIntent'];
+                    $data = [
+                        'currency' => strtoupper($data['currency']),
+                        'total' => $data['amount']/100
+                    ];
+                }
+
                 if(isset($data['total']) && isset($data['currency'])) {
-                    $model->total_fee = $data['total'];
                     $model->pay_fee = $data['total'];
                     $model->fee_type = $data['currency'];
                     $model->pay_time = time();
