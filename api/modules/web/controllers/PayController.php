@@ -38,7 +38,7 @@ use common\helpers\AmountHelper;
  */
 class PayController extends OnAuthController
 {
-    protected $authOptional = ['verify'];
+    protected $authOptional = ['verify', 'collection-account-info'];
 
     /**
      * @var PayForm
