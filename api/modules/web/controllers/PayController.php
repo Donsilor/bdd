@@ -85,13 +85,19 @@ class PayController extends OnAuthController
         try {
             $trans = \Yii::$app->db->beginTransaction();
 
-            $result = $this->add();
+            $model = new $this->modelClass;
+            $model->attributes = \Yii::$app->request->post();;
+//            $model->member_id  = $this->member_id;
+            if(false === $model->save()){
+                throw new UnprocessableEntityHttpException($this->getError($model));
+            }
+            $result = $model;
 
             $payForm = new PayForm();
             $payForm->orderId = $result['order_id'];
             $payForm->coinType = $this->getCurrency();
             $payForm->payType = PayEnum::PAY_TYPE_WIRE_TRANSFER;
-            $payForm->memberId = $this->member_id;
+//            $payForm->memberId = $this->member_id;
 
             //验证支付订单数据
             if (!$payForm->validate()) {
@@ -131,7 +137,6 @@ class PayController extends OnAuthController
                     \Yii::$app->services->mailer->queue(true)->send($email, EmailLog::USAGE_WIRE_TRANSFER_ORDER_NOTICE, $params, $this->language);
                 }
             }
-
 
             $trans->commit();
         } catch (\Exception $exception) {
