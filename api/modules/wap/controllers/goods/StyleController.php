@@ -55,7 +55,7 @@ class StyleController extends OnAuthController
         }
 
         $area_id = $this->getAreaId(); 
-        $fields = ['m.id','lang.style_name','m.goods_images','IFNULL(markup.sale_price,m.sale_price) as sale_price'];
+        $fields = ['m.id','m.type_id','lang.style_name','m.goods_images','IFNULL(markup.sale_price,m.sale_price) as sale_price'];
         $query = Style::find()->alias('m')->select($fields)
             ->leftJoin(StyleLang::tableName().' lang',"m.id=lang.master_id and lang.language='".$this->language."'")
             ->leftJoin(StyleMarkup::tableName().' markup', 'm.id=markup.style_id and markup.area_id='.$area_id)
@@ -120,22 +120,16 @@ class StyleController extends OnAuthController
                     $attr_id = 55;
                     if($param_value == -1){
                         continue;
-                        $marry_style_man_attr = \Yii::$app->attr->valueList(55);
-                        $param_value = array_column($marry_style_man_attr,'id');
                     }
                 }elseif ($param_name == 'marry_style_wom'){
                     $attr_id = 54;
                     if($param_value == -1){
                         continue;
-                        $marry_style_man_attr = \Yii::$app->attr->valueList(54);
-                        $param_value = array_column($marry_style_man_attr,'id');
                     }
                 }elseif($param_name == 'gender'){
                     $attr_id = 26;
                     if($param_value == -1){
                         continue;
-                        $marry_style_man_attr = \Yii::$app->attr->valueList(26);
-                        $param_value = array_column($marry_style_man_attr,'id');
                     }else{
                         //通用款在男戒、女戒里显示
                         $param_value = [$param_value,43];
@@ -145,8 +139,6 @@ class StyleController extends OnAuthController
                     $attr_id = 60;
                     if($param_value == -1){
                         continue;
-                        $marry_style_man_attr = \Yii::$app->attr->valueList(26);
-                        $param_value = array_column($marry_style_man_attr,'id');
                     }
 
                 }
@@ -155,6 +147,15 @@ class StyleController extends OnAuthController
                     if($param_value == -1){
                         continue;
                     }
+                }
+                elseif (is_numeric($param_name)) {
+                    $attr_id = $param_name;
+
+                    if($param_value == -1){
+                        continue;
+                    }
+
+                    $param_value = explode(',', $param_value);
                 }
                 else{
                     continue;
@@ -209,7 +210,7 @@ class StyleController extends OnAuthController
         foreach($result['data'] as & $val) {
             $arr = array();
             $arr['id'] = $val['id'];
-            $arr['categoryId'] = $type_id;
+            $arr['categoryId'] = $val['type_id'];
             $arr['coinType'] = $this->getCurrencySign();
             $arr['goodsImages'] =ImageHelper::goodsThumbs($val['goods_images'],'mid');
             $arr['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
@@ -219,7 +220,7 @@ class StyleController extends OnAuthController
             $arr['specsModels'] = null;
 
             $arr['coupon'] = [
-                'type_id' => $type_id,//产品线ID
+                'type_id' => $val['type_id'],//产品线ID
                 'style_id' => $val['id'],//款式ID
                 'price' => $arr['salePrice'],//价格
                 'num' =>1,//数量
