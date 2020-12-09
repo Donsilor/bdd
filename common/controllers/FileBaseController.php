@@ -62,6 +62,11 @@ class FileBaseController extends Controller
                         'allow' => true,
                         'roles' => ['@'],// 登录
                     ],
+                    [
+                        'allow' => true,
+                        'actions' => ['images'],
+                        'roles' => ['?'],// 游客
+                    ],
                 ],
             ],
         ];
