@@ -271,7 +271,7 @@ class Order extends \common\models\base\BaseModel
      */
     public function getWireTransfer()
     {
-        return $this->hasOne(WireTransfer::class, ['order_id'=>'id']);
+        return $this->hasOne(WireTransfer::class, ['order_id'=>'id'])->andWhere(['<>', 'common_pay_wire_transfer.member_id', 0]);
     }
 
 }

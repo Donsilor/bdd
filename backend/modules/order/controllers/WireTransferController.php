@@ -43,6 +43,9 @@ class WireTransferController extends BaseController
 
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, []);
 
+        if(!Yii::$app->request->get('test'))
+            $dataProvider->query->andWhere(['=', 'common_pay_wire_transfer.member_id', 0]);
+
         return $this->render($this->action->id, [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
