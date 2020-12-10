@@ -5,6 +5,7 @@ namespace api\modules\web\forms;
 
 
 use common\models\order\Order;
+use common\models\order\OrderTourist;
 use common\models\pay\WireTransfer;
 
 class WireTransferForm extends WireTransfer
@@ -64,12 +65,19 @@ class WireTransferForm extends WireTransfer
 
     public function validateOrderId($attribute)
     {
-        if(!Order::findOne(['id'=>$this->order_id])) {
-            $this->addError($attribute, '订单ID错误');
+        if($this->member_id) {
+            if(!Order::findOne(['id'=>$this->order_id, 'member_id'=>$this->member_id])) {
+                $this->addError($attribute, '订单ID错误');
+            }
+//            if(self::findOne(['order_id'=>$this->order_id, 'member_id'=>$this->member_id])) {
+//                $this->addError($attribute, '电汇支付审核中');
+//            }
         }
-//        if(self::findOne(['order_id'=>$this->order_id, 'member_id'=>$this->member_id])) {
-//            $this->addError($attribute, '电汇支付审核中');
-//        }
+        else {
+            if(!OrderTourist::findOne(['id'=>$this->order_id])) {
+                $this->addError($attribute, '游客订单ID错误');
+            }
+        }
     }
 
     public function afterSave($insert, $changedAttributes)
