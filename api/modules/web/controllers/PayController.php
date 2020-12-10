@@ -91,6 +91,8 @@ class PayController extends OnAuthController
             if(!empty($this->member_id)) {
                 $memberId = $this->member_id;
                 $orderGroup = PayEnum::ORDER_GROUP;
+                $order_id = Yii::$app->request->post('order_id');
+                $order = Order::findOne(['order_id'=>$order_id]);
             }
             else {
                 $memberId = 0;
@@ -127,7 +129,7 @@ class PayController extends OnAuthController
                 throw new UnprocessableEntityHttpException($this->getError($result));
             }
 
-            OrderLogService::wireTransfer($result->order);
+            OrderLogService::wireTransfer($order);
 
             $isDev = Yii::$app->debris->config('pay_wire_transfer_dev');
 

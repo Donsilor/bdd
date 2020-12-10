@@ -2,6 +2,7 @@
 
 namespace common\models\order;
 
+use common\models\pay\WireTransfer;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -138,6 +139,15 @@ class OrderTourist extends \common\models\base\BaseModel
     public function getAddress()
     {
         return $this->hasOne(OrderTouristAddress::class, ['order_tourist_id'=>'id']);
+    }
+
+    /**
+     * 对应快递模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getWireTransfer()
+    {
+        return $this->hasOne(WireTransfer::class, ['order_id'=>'id']);
     }
 
 }
