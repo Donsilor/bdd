@@ -64,12 +64,12 @@ class WireTransferForm extends WireTransfer
 
     public function validateOrderId($attribute)
     {
-        if(!Order::findOne(['id'=>$this->order_id, 'member_id'=>$this->member_id])) {
+        if(!Order::findOne(['id'=>$this->order_id])) {
             $this->addError($attribute, '订单ID错误');
         }
-        if(self::findOne(['order_id'=>$this->order_id, 'member_id'=>$this->member_id])) {
-            $this->addError($attribute, '电汇支付审核中');
-        }
+//        if(self::findOne(['order_id'=>$this->order_id, 'member_id'=>$this->member_id])) {
+//            $this->addError($attribute, '电汇支付审核中');
+//        }
     }
 
     public function afterSave($insert, $changedAttributes)
