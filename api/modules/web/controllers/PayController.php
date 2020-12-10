@@ -85,6 +85,9 @@ class PayController extends OnAuthController
         try {
             $trans = \Yii::$app->db->beginTransaction();
 
+            $model = new $this->modelClass;
+            $model->attributes = \Yii::$app->request->post();
+
             if(!empty($this->member_id)) {
                 $memberId = $this->member_id;
                 $orderGroup = PayEnum::ORDER_GROUP;
@@ -92,10 +95,11 @@ class PayController extends OnAuthController
             else {
                 $memberId = 0;
                 $orderGroup = PayEnum::ORDER_TOURIST;//游客订单
-            }
+                $order_sn = Yii::$app->request->post('order_sn');
+                $order = OrderTourist::findOne(['order_sn'=>$order_sn]);
 
-            $model = new $this->modelClass;
-            $model->attributes = \Yii::$app->request->post();;
+                $model->order_id = $order->id;
+            }
             $model->member_id  = $memberId;
             if(false === $model->save()){
                 throw new UnprocessableEntityHttpException($this->getError($model));
