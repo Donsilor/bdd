@@ -82,26 +82,33 @@ class OrderTouristController extends OnAuthController
                 }
             }
 
-            //调用支付接口
-            $payForm = new PayForm();
-            $payForm->attributes = \Yii::$app->request->post();
-            $payForm->orderId = $order->id;//订单ID
-            $payForm->payType = $payType;//支付方式使用paypal
-            $payForm->memberId = 0;//支付方式使用paypal
-            $payForm->notifyUrl = Url::removeMerchantIdUrl('toFront', ['notify/' . PayEnum::$payTypeAction[$payForm->payType]]);//支付通知URL,paypal不需要,加上只是为了数据的完整性
-            $payForm->orderGroup = PayEnum::ORDER_TOURIST;//游客订单
+            if($payType==PayEnum::PAY_TYPE_WIRE_TRANSFER) {
+                //电汇不调用支付API
+                $config = [];
+            }
+            else {
+                //调用支付接口
+                $payForm = new PayForm();
+                $payForm->attributes = \Yii::$app->request->post();
+                $payForm->orderId = $order->id;//订单ID
+                $payForm->payType = $payType;//支付方式使用paypal
+                $payForm->memberId = 0;//支付方式使用paypal
+                $payForm->notifyUrl = Url::removeMerchantIdUrl('toFront', ['notify/' . PayEnum::$payTypeAction[$payForm->payType]]);//支付通知URL,paypal不需要,加上只是为了数据的完整性
+                $payForm->orderGroup = PayEnum::ORDER_TOURIST;//游客订单
 
-            //验证支付订单数据
-            if (!$payForm->validate()) {
-                throw new UnprocessableEntityHttpException($this->getError($payForm));
+                //验证支付订单数据
+                if (!$payForm->validate()) {
+                    throw new UnprocessableEntityHttpException($this->getError($payForm));
+                }
+
+                $config = $payForm->getConfig();
+                if(!is_array($config)) {
+                    $config = [
+                        'config' => $config
+                    ];
+                }
             }
 
-            $config = $payForm->getConfig();
-            if(!is_array($config)) {
-                $config = [
-                    'config' => $config
-                ];
-            }
             $config['order_sn'] = $order->order_sn;
 
             $trans->commit();
