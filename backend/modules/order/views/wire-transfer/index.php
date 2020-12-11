@@ -42,15 +42,15 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                     return \common\helpers\AmountHelper::outputAmount($model->order->account->order_amount, 2, $model->order->account->currency);
                                 }
                             ],
-                            [
-                                'label' => '应支付金额',
-                                'attribute' => 'order.account.pay_amount',
-                                'value' => function($model) {
-                                    $cardUseAmount = \services\market\CardService::getUseAmount($model->order_id);
-                                    $receivable = bcsub(bcsub($model->order->account->order_amount, $cardUseAmount, 2), $model->order->account->discount_amount, 2);
-                                    return \common\helpers\AmountHelper::outputAmount($receivable, 2, $model->order->account->currency);
-                                }
-                            ],
+//                            [
+//                                'label' => '应支付金额',
+//                                'attribute' => 'order.account.pay_amount',
+//                                'value' => function($model) {
+//                                    $cardUseAmount = \services\market\CardService::getUseAmount($model->order_id);
+//                                    $receivable = bcsub(bcsub($model->order->account->order_amount, $cardUseAmount, 2), $model->order->account->discount_amount, 2);
+//                                    return \common\helpers\AmountHelper::outputAmount($receivable, 2, $model->order->account->currency);
+//                                }
+//                            ],
                             [
                                 'attribute' => 'order.order_status',
                                 'headerOptions' => ['class' => 'col-md-1'],
