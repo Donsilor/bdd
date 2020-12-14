@@ -32,38 +32,38 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'attribute' => 'id',
                             ],
                             [
-                                'attribute' => 'order.order_sn'
+                                'attribute' => 'orderTourist.order_sn'
                             ],
                             [
                                 'label' => '订单金额',
-                                'attribute' => 'order.account.order_amount',
+                                'attribute' => 'orderTourist.order_amount',
                                 'value' => function($model)
                                 {
-                                    return \common\helpers\AmountHelper::outputAmount($model->order->account->order_amount, 2, $model->order->account->currency);
+                                    return \common\helpers\AmountHelper::outputAmount($model->orderTourist->order_amount, 2, $model->orderTourist->currency);
                                 }
                             ],
 //                            [
 //                                'label' => '应支付金额',
-//                                'attribute' => 'order.account.pay_amount',
+//                                'attribute' => 'orderTourist.pay_amount',
 //                                'value' => function($model) {
 //                                    $cardUseAmount = \services\market\CardService::getUseAmount($model->order_id);
-//                                    $receivable = bcsub(bcsub($model->order->account->order_amount, $cardUseAmount, 2), $model->order->account->discount_amount, 2);
-//                                    return \common\helpers\AmountHelper::outputAmount($receivable, 2, $model->order->account->currency);
+//                                    $receivable = bcsub(bcsub($model->orderTourist->order_amount, $cardUseAmount, 2), $model->orderTourist->discount_amount, 2);
+//                                    return \common\helpers\AmountHelper::outputAmount($receivable, 2, $model->orderTourist->currency);
 //                                }
 //                            ],
-                            [
-                                'attribute' => 'order.order_status',
-                                'headerOptions' => ['class' => 'col-md-1'],
-                                'filter' => false,
-//                                'filter' => Html::activeDropDownList($searchModel, 'order_status', common\enums\OrderStatusEnum::getMap(), [
-//                                    'prompt' => '全部',
-//                                    'class' => 'form-control',
-//                                ]),
-                                'value' => function ($model) {
-                                    return common\enums\OrderStatusEnum::getValue($model->order->order_status);
-                                },
-                                'format' => 'raw',
-                            ],
+//                            [
+//                                'attribute' => 'orderTourist.order_status',
+//                                'headerOptions' => ['class' => 'col-md-1'],
+//                                'filter' => false,
+////                                'filter' => Html::activeDropDownList($searchModel, 'order_status', common\enums\OrderStatusEnum::getMap(), [
+////                                    'prompt' => '全部',
+////                                    'class' => 'form-control',
+////                                ]),
+//                                'value' => function ($model) {
+//                                    return common\enums\OrderStatusEnum::getValue($model->orderTourist->order_status);
+//                                },
+//                                'format' => 'raw',
+//                            ],
                             [
                                 'label' => '收款账号',
                                 'attribute' => 'account'
@@ -118,21 +118,21 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'template' => '{audit}',
                                 'buttons' => [
                                     'audit' => function ($url, $model, $key) {
-                                        if($model->collection_status == 1) {
-                                            //会计审核
-                                            return Html::edit(['ajax-edit', '33id' => 123], '会计审核', [
-                                                'data-toggle' => 'modal',
-                                                'data-target' => '#ajaxModalLg',
-                                            ]);
-                                        }
-                                        elseif (1) {
+//                                        if($model->collection_status == 1) {
+//                                            //会计审核
+//                                            return Html::edit(['ajax-edit2', '33id' => 123], '会计审核', [
+//                                                'data-toggle' => 'modal',
+//                                                'data-target' => '#ajaxModalLg',
+//                                            ]);
+//                                        }
+//                                        elseif (1) {
                                             //出纳审核
-                                            return Html::edit(['ajax-edit', 'id'=>$model->id], '审核', [
+                                            return Html::edit(['ajax-edit2', 'id'=>$model->id], '审核', [
                                                 'data-toggle' => 'modal',
                                                 'data-target' => '#ajaxModalLg',
                                             ]);
-                                        }
-                                        return null;
+//                                        }
+//                                        return null;
                                     },
                                 ],
                             ],

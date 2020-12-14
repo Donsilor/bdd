@@ -3,6 +3,7 @@
 namespace common\models\pay;
 
 use common\models\order\Order;
+use common\models\order\OrderTourist;
 use Yii;
 
 /**
@@ -85,5 +86,14 @@ class WireTransfer extends \common\models\base\BaseModel
     public function getOrder()
     {
         return $this->hasOne(Order::class, ['id'=>'order_id']);
+    }
+
+    /**
+     * 对应订单付款信息模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrderTourist()
+    {
+        return $this->hasOne(OrderTourist::class, ['id'=>'order_id']);
     }
 }

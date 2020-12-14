@@ -150,4 +150,13 @@ class OrderTourist extends \common\models\base\BaseModel
         return $this->hasOne(WireTransfer::class, ['order_id'=>'id'])->where(['common_pay_wire_transfer.member_id'=>0]);
     }
 
+    /**
+     * 对应的订单
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrder()
+    {
+        return $this->hasOne(Order::class, ['order_sn'=>'order_sn']);
+    }
+
 }
