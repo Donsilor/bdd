@@ -92,7 +92,7 @@ class PayController extends OnAuthController
                 $memberId = $this->member_id;
                 $orderGroup = PayEnum::ORDER_GROUP;
                 $order_id = Yii::$app->request->post('order_id');
-                $order = Order::findOne(['order_id'=>$order_id]);
+                $order = Order::findOne(['id'=>$order_id]);
             }
             else {
                 $memberId = 0;
