@@ -145,8 +145,8 @@ class Order extends \common\models\base\BaseModel
                 $where[] = ['<>', 'no_delivery', 1];
             }
             if($orderStatus==11) {
-                $subQuery = WireTransfer::find()->where(['in', 'collection_status',['0','2']])->select(['order_id']);
-                $where[]['id'] = $subQuery;
+                $subQuery = WireTransfer::find()->where(['in', 'collection_status',['0','2']])->select(['order_sn']);
+                $where[]['order_sn'] = $subQuery;
             }
             elseif($orderStatus==12) {
                 $where[]['no_delivery'] = 1;
@@ -271,7 +271,7 @@ class Order extends \common\models\base\BaseModel
      */
     public function getWireTransfer()
     {
-        return $this->hasOne(WireTransfer::class, ['order_id'=>'id'])->andWhere(['<>', 'common_pay_wire_transfer.member_id', 0]);
+        return $this->hasOne(WireTransfer::class, ['order_sn'=>'order_sn']);
     }
 
 }

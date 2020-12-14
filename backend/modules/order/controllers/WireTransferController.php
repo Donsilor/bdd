@@ -231,7 +231,7 @@ class WireTransferController extends BaseController
                 return $this->message($exception->getMessage(), $this->redirect($returnUrl), 'error');
             }
 
-            $this->redirect($returnUrl);
+            return $this->message("操作成功", $this->redirect($returnUrl), 'success');
         }
 
         return $this->renderAjax($this->action->id, [

@@ -118,21 +118,13 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'template' => '{audit}',
                                 'buttons' => [
                                     'audit' => function ($url, $model, $key) {
-//                                        if($model->collection_status == 1) {
-//                                            //会计审核
-//                                            return Html::edit(['ajax-edit2', '33id' => 123], '会计审核', [
-//                                                'data-toggle' => 'modal',
-//                                                'data-target' => '#ajaxModalLg',
-//                                            ]);
-//                                        }
-//                                        elseif (1) {
-                                            //出纳审核
+                                        if($model->collection_status != \common\enums\WireTransferEnum::CONFIRM) {
                                             return Html::edit(['ajax-edit2', 'id'=>$model->id], '审核', [
                                                 'data-toggle' => 'modal',
                                                 'data-target' => '#ajaxModalLg',
                                             ]);
-//                                        }
-//                                        return null;
+                                        }
+                                        return null;
                                     },
                                 ],
                             ],

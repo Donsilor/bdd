@@ -99,17 +99,18 @@ class PayController extends OnAuthController
                 $orderGroup = PayEnum::ORDER_TOURIST;//游客订单
                 $order_sn = Yii::$app->request->post('order_sn');
                 $order = OrderTourist::findOne(['order_sn'=>$order_sn]);
-
-                $model->order_id = $order->id;
             }
+
+            $model->order_id  = $order->order_id;
+            $model->order_sn = $order->order_sn;
             $model->member_id  = $memberId;
-            if(false === $model->save()){
+
+            if(false === $model->save()) {
                 throw new UnprocessableEntityHttpException($this->getError($model));
             }
-            $result = $model;
 
             $payForm = new PayForm();
-            $payForm->orderId = $result['order_id'];
+            $payForm->orderId = $model['order_id'];
             $payForm->coinType = $this->getCurrency();
             $payForm->payType = PayEnum::PAY_TYPE_WIRE_TRANSFER;
             $payForm->memberId = $memberId;
@@ -122,11 +123,11 @@ class PayController extends OnAuthController
 
             $pay = $payForm->getConfig();
 
-            $result->out_trade_no = $pay['out_trade_no'];
+            $model->out_trade_no = $pay['out_trade_no'];
 
             //验证支付订单数据
-            if (!$result->save(false)) {
-                throw new UnprocessableEntityHttpException($this->getError($result));
+            if (!$model->save(false)) {
+                throw new UnprocessableEntityHttpException($this->getError($model));
             }
 
             OrderLogService::wireTransfer($order);
@@ -161,7 +162,7 @@ class PayController extends OnAuthController
             throw $exception;
         }
 
-        return $result;
+        return $model;
     }
 
     /**
