@@ -17,7 +17,6 @@ class WireTransferForm extends WireTransfer
     {
         return [
             [['order_sn', 'account', 'payment_voucher'], 'required'],
-            [['order_sn','pay_sn'], 'string', 'max' => 20],
             ['order_sn', 'validateOrderSn'],
             [['account', 'payment_serial_number'], 'string', 'max' => 50],
             ['account', 'validateAccount'],

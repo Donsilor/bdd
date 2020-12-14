@@ -101,7 +101,6 @@ class PayController extends OnAuthController
                 $order = OrderTourist::findOne(['order_sn'=>$order_sn]);
             }
 
-            $model->order_id  = $order->order_id;
             $model->order_sn = $order->order_sn;
             $model->member_id  = $memberId;
 
@@ -110,7 +109,7 @@ class PayController extends OnAuthController
             }
 
             $payForm = new PayForm();
-            $payForm->orderId = $model['order_id'];
+            $payForm->orderId = $order->id;
             $payForm->coinType = $this->getCurrency();
             $payForm->payType = PayEnum::PAY_TYPE_WIRE_TRANSFER;
             $payForm->memberId = $memberId;
