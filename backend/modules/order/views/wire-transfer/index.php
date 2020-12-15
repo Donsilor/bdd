@@ -32,61 +32,6 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'attribute' => 'id',
                             ],
                             [
-                                'attribute' => 'orderTourist.order_sn'
-                            ],
-                            [
-                                'label' => '订单金额',
-                                'attribute' => 'orderTourist.order_amount',
-                                'value' => function($model)
-                                {
-                                    return \common\helpers\AmountHelper::outputAmount($model->orderTourist->order_amount, 2, $model->orderTourist->currency);
-                                }
-                            ],
-//                            [
-//                                'label' => '应支付金额',
-//                                'attribute' => 'orderTourist.pay_amount',
-//                                'value' => function($model) {
-//                                    $cardUseAmount = \services\market\CardService::getUseAmount($model->order_id);
-//                                    $receivable = bcsub(bcsub($model->orderTourist->order_amount, $cardUseAmount, 2), $model->orderTourist->discount_amount, 2);
-//                                    return \common\helpers\AmountHelper::outputAmount($receivable, 2, $model->orderTourist->currency);
-//                                }
-//                            ],
-//                            [
-//                                'attribute' => 'orderTourist.order_status',
-//                                'headerOptions' => ['class' => 'col-md-1'],
-//                                'filter' => false,
-////                                'filter' => Html::activeDropDownList($searchModel, 'order_status', common\enums\OrderStatusEnum::getMap(), [
-////                                    'prompt' => '全部',
-////                                    'class' => 'form-control',
-////                                ]),
-//                                'value' => function ($model) {
-//                                    return common\enums\OrderStatusEnum::getValue($model->orderTourist->order_status);
-//                                },
-//                                'format' => 'raw',
-//                            ],
-                            [
-                                'label' => '收款账号',
-                                'attribute' => 'account'
-                            ],
-                            [
-                                'label' => '审核状态',
-                                'headerOptions' => ['class' => 'col-md-1'],
-                                'filter' => Html::activeDropDownList($searchModel, 'collection_status',\common\enums\WireTransferEnum::getMap(), [
-                                    'prompt' => '全部',
-                                    'class' => 'form-control',
-                                ]),
-                                'value' => function ($model) {
-                                    return \common\enums\WireTransferEnum::getValue($model->collection_status);
-                                },
-                                'format' => 'raw',
-                            ],
-//                            [
-//                                'label' => '出纳审核状态'
-//                            ],
-//                            [
-//                                'label' => '会计审核状态'
-//                            ],
-                            [
                                 'attribute' => 'created_at',
                                 'filter' => false,
 //                                'filter' => DateRangePicker::widget([    // 日期组件
@@ -108,6 +53,71 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 //                                ]),
                                 'value' => function ($model) {
                                     return Yii::$app->formatter->asDatetime($model->created_at);
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
+                                'attribute' => 'orderTourist.order_sn'
+                            ],
+                            [
+                                'label' => '订单总金额',
+                                'attribute' => 'orderTourist.order_amount',
+                                'value' => function($model)
+                                {
+                                    return \common\helpers\AmountHelper::outputAmount($model->orderTourist->order_amount, 2, $model->orderTourist->currency);
+                                }
+                            ],
+                            [
+                                'label' => '收货人',
+                                'attribute' => 'orderTourist.address.realname',
+                            ],
+                            [
+                                'label' => '联系方式',
+                                'attribute' => 'orderTourist.address.mobile',
+                                'format' => 'raw',
+                                'value' => function($model) {
+                                    return $model->orderTourist->address->mobile . '<br />' . $model->orderTourist->address->email;
+                                }
+                            ],
+                            [
+                                'attribute' => 'orderTourist.order_from',
+                                'headerOptions' => ['class' => 'col-md-1'],
+//                                'filter' => Html::activeDropDownList($searchModel, 'orderTourist.order_from', \common\enums\OrderFromEnum::getMap(), [
+//                                    'prompt' => '全部',
+//                                    'class' => 'form-control',
+//                                ]),
+                                'value' => function ($model) {
+                                    return \common\enums\OrderFromEnum::getValue($model->orderTourist->order_from);
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
+                                'label' => '客户备注',
+                                'attribute' => 'orderTourist.buyer_remark',
+                            ],
+//                            [
+//                                'attribute' => 'orderTourist.order_status',
+//                                'headerOptions' => ['class' => 'col-md-1'],
+//                                'filter' => false,
+////                                'filter' => Html::activeDropDownList($searchModel, 'order_status', common\enums\OrderStatusEnum::getMap(), [
+////                                    'prompt' => '全部',
+////                                    'class' => 'form-control',
+////                                ]),
+//                                'value' => function ($model) {
+//                                    return common\enums\OrderStatusEnum::getValue($model->orderTourist->order_status);
+//                                },
+//                                'format' => 'raw',
+//                            ],
+//
+                            [
+                                'label' => '审核状态',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'collection_status',\common\enums\WireTransferEnum::getMap(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    return \common\enums\WireTransferEnum::getValue($model->collection_status);
                                 },
                                 'format' => 'raw',
                             ],
