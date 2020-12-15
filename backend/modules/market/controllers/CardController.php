@@ -92,6 +92,21 @@ class CardController extends BaseController
             }
         }
 
+        #过滤不显示的批次
+        $batch = [
+            '[2020/4/24]购物卡测试01批',
+            '[2020/4/24]购物卡测试01批',
+            '[2020/4/24]购物卡测试02批',
+            '[2020/4/24]购物卡测试03批',
+            '[2020/4/24]购物卡测试04',
+            '[2020/5/14]购物卡测试05',
+            '[2020/6/4]购物卡测试06-有效时长',
+            '[2020/6/4]购物卡测试07-固定时间',
+            '正式站-测试购物卡导入',
+            '正式站-测试购物卡导入2',
+        ];
+        $dataProvider->query->andWhere(['not in', 'batch', $batch]);
+
         //创建时间过滤
         if (!empty(\Yii::$app->request->queryParams['SearchModel']['created_at'])) {
             list($start_date, $end_date) = explode('/', \Yii::$app->request->queryParams['SearchModel']['created_at']);
