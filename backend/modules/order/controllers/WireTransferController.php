@@ -68,13 +68,13 @@ class WireTransferController extends BaseController
         $where = [];
 
         $id = Yii::$app->request->get('id', null);
-        $orderId = Yii::$app->request->get('order_id', null);
+        $orderSn = Yii::$app->request->get('order_sn', null);
 
         if($id) {
             $where['id'] = $id;
         }
-        if($orderId) {
-            $where['order_id'] = $orderId;
+        if($orderSn) {
+            $where['order_sn'] = $orderSn;
         }
 
         $model = WireTransferForm::findOne($where);

@@ -35,7 +35,7 @@ class WireTransferForm extends WireTransfer
 
     public function validateCollectionAmount($attribute)
     {
-        $pay_amount = OrderAccount::findOne($this->order_id)->pay_amount;
+        $pay_amount = $this->order->account->pay_amount;
         if($this->order->account->currency == \common\enums\CurrencyEnum::TWD) {
             $pay_amount = sprintf('%.2f', intval($pay_amount));
         }
