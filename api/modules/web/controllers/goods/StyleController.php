@@ -384,13 +384,13 @@ class StyleController extends OnAuthController
         $redis = \Yii::$app->redis;
         $key = sprintf("member:id_%s:recant_browsing", $this->member_id);
 
-        $data = [];
+        $_data = [];
         if($data_json = $redis->get($key)) {
-            $data = \GuzzleHttp\json_decode($data_json, true);
+            $_data = \GuzzleHttp\json_decode($data_json, true);
         }
 
         if(!empty($typeId) && !empty($styleId)) {
-            $data[] = [
+            $_data[] = [
                 'c' => $typeId,
                 's' => $styleId,
                 't' => $time
@@ -398,24 +398,17 @@ class StyleController extends OnAuthController
         }
 
         $_tmps = [];
-        $_ks = [];
-        while (count($_ks) < 5 && ($_tmp = array_pop($data)))
+        $data = [];
+        while (count($data) < 5 && ($_tmp = array_pop($_data)))
         {
             $k = sprintf("%s-%s", $_tmp['c'], $_tmp['s']);
-            if(!isset($_ks[$k])) {
-                $_ks[$k] = 1;
+            if(!isset($data[$k])) {
+                $data[$k] = $_tmp;
                 $_tmps[] = $_tmp;
             }
         }
 
-        $data = $_tmps;
-
-        $redis->set($key, \GuzzleHttp\json_encode($data));
-
-
-
-        //排序
-        $order = 'm.virtual_volume desc ,m.id desc';
+        $redis->set($key, \GuzzleHttp\json_encode($_tmps));
 
         $area_id = $this->getAreaId();
         $fields = ['m.id','m.type_id','lang.style_name','m.goods_images','IFNULL(markup.sale_price,m.sale_price) as sale_price'];
@@ -424,16 +417,16 @@ class StyleController extends OnAuthController
             ->leftJoin(StyleMarkup::tableName().' markup', 'm.id=markup.style_id and markup.area_id='.$area_id)
             ->where(['m.status'=>StatusEnum::ENABLED])
             ->andWhere(['or',['=','markup.status',1],['IS','markup.status',new \yii\db\Expression('NULL')]])
-            ->orderby($order);
+            ->orderby('m.id desc');
 
         foreach ($data as $datum) {
-
             $query ->orWhere(['and', ['=', 'm.type_id', $datum['c']], ['=', 'm.id', $datum['s']]]);
         }
 
-        $result = $this->pagination($query, $this->page, $this->pageSize);
+        $_result = $this->pagination($query, $this->page, $this->pageSize);
 
-        foreach($result['data'] as & $val) {
+        $_result2 = [];
+        foreach($_result['data'] as & $val) {
             $arr = array();
             $arr['id'] = $val['id'];
             $arr['categoryId'] = $val['type_id'];
@@ -452,11 +445,16 @@ class StyleController extends OnAuthController
                 'num' =>1,//数量
             ];
 
-            $val = $arr;
+            $k = sprintf("%s-%s", $arr['categoryId'], $arr['id']);
+            $_result2[$k] = $arr;
         }
 
-        CouponService::getCouponByList($this->getAreaId(), $result['data']);
+        CouponService::getCouponByList($this->getAreaId(), $_result2);
 
-        return $result['data'];
+        foreach ($data as $key => &$datum) {
+            $datum = $_result2[$key];
+        }
+
+        return $data;
     }
 }
