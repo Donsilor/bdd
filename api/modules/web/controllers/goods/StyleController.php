@@ -373,5 +373,45 @@ class StyleController extends OnAuthController
         return $new_str;
     }
     
-    
+    // 最近访问端口
+    public function actionRecentBrowsing()
+    {
+
+        $typeId = \Yii::$app->request->get('type_id');
+        $styleId = \Yii::$app->request->get('style_id');
+        $time = time();
+
+        $redis = \Yii::$app->redis;
+        $key = sprintf("member:id_%s:recant_browsing", $this->member_id);
+
+        $data = [];
+        if($data_json = $redis->get($key)) {
+            $data = \GuzzleHttp\json_decode($data_json, true);
+        }
+
+        if(!empty($typeId) && !empty($styleId)) {
+            $data[] = [
+                'c' => $typeId,
+                's' => $styleId,
+                't' => $time
+            ];
+        }
+
+        $_tmps = [];
+        $_ks = [];
+        while (count($_ks) < 5 && ($_tmp = array_pop($data)))
+        {
+            $k = sprintf("%s-%s", $_tmp['c'], $_tmp['s']);
+            if(!isset($_ks[$k])) {
+                $_ks[$k] = 1;
+                $_tmps[] = $_tmp;
+            }
+        }
+
+        $data = $_tmps;
+
+        $redis->set($key, \GuzzleHttp\json_encode($data));
+
+
+    }
 }
