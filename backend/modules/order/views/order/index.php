@@ -420,7 +420,7 @@ $OrderStatusEnum['12'] = '不需发货';
                                         }
 
                                         //出纳审核
-                                        return Html::edit(['wire-transfer/ajax-edit', 'order_id'=>$model->id], '审核', [
+                                        return Html::edit(['wire-transfer/ajax-edit', 'order_sn'=>$model->order_sn], '审核', [
                                             'data-toggle' => 'modal',
                                             'data-target' => '#ajaxModalLg',
                                         ]);

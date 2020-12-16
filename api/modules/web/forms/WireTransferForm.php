@@ -5,6 +5,7 @@ namespace api\modules\web\forms;
 
 
 use common\models\order\Order;
+use common\models\order\OrderTourist;
 use common\models\pay\WireTransfer;
 
 class WireTransferForm extends WireTransfer
@@ -15,9 +16,8 @@ class WireTransferForm extends WireTransfer
     public function rules()
     {
         return [
-            [['order_id', 'account', 'payment_voucher'], 'required'],
-            [['order_id'], 'integer'],
-            ['order_id', 'validateOrderId'],
+            [['order_sn', 'account', 'payment_voucher'], 'required'],
+            ['order_sn', 'validateOrderSn'],
             [['account', 'payment_serial_number'], 'string', 'max' => 50],
             ['account', 'validateAccount'],
             [['payment_voucher'], 'string', 'max' => 255],
@@ -31,7 +31,7 @@ class WireTransferForm extends WireTransfer
     public function attributeLabels()
     {
         return [
-            'order_id' => '订单ID',
+            'order_sn' => '订单编号',
             'member_id' => '订单ID',
             'account' => '收款账号',
             'payment_serial_number' => '付款流水号',//payment_serial_number
@@ -62,13 +62,17 @@ class WireTransferForm extends WireTransfer
         $this->opening_bank = $bankInfo['opening_bank'];
     }
 
-    public function validateOrderId($attribute)
+    public function validateOrderSn($attribute)
     {
-        if(!Order::findOne(['id'=>$this->order_id, 'member_id'=>$this->member_id])) {
-            $this->addError($attribute, '订单ID错误');
+        if($this->member_id) {
+            if(!Order::findOne(['order_sn'=>$this->order_sn, 'member_id'=>$this->member_id])) {
+                $this->addError($attribute, '订单ID错误');
+            }
         }
-        if(self::findOne(['order_id'=>$this->order_id, 'member_id'=>$this->member_id])) {
-            $this->addError($attribute, '电汇支付审核中');
+        else {
+            if(!OrderTourist::findOne(['order_sn'=>$this->order_sn])) {
+                $this->addError($attribute, '游客订单ID错误');
+            }
         }
     }
 

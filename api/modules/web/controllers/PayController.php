@@ -38,7 +38,7 @@ use common\helpers\AmountHelper;
  */
 class PayController extends OnAuthController
 {
-    protected $authOptional = ['verify'];
+    protected $authOptional = ['verify', 'collection-account-info', 'wire-transfer'];
 
     /**
      * @var PayForm
@@ -85,13 +85,35 @@ class PayController extends OnAuthController
         try {
             $trans = \Yii::$app->db->beginTransaction();
 
-            $result = $this->add();
+            $model = new $this->modelClass;
+            $model->attributes = \Yii::$app->request->post();
+
+            if(!empty($this->member_id)) {
+                $memberId = $this->member_id;
+                $orderGroup = PayEnum::ORDER_GROUP;
+                $order_id = Yii::$app->request->post('order_id');
+                $order = Order::findOne(['id'=>$order_id]);
+            }
+            else {
+                $memberId = 0;
+                $orderGroup = PayEnum::ORDER_TOURIST;//游客订单
+                $order_sn = Yii::$app->request->post('order_sn');
+                $order = OrderTourist::findOne(['order_sn'=>$order_sn]);
+            }
+
+            $model->order_sn = $order->order_sn;
+            $model->member_id  = $memberId;
+
+            if(false === $model->save()) {
+                throw new UnprocessableEntityHttpException($this->getError($model));
+            }
 
             $payForm = new PayForm();
-            $payForm->orderId = $result['order_id'];
+            $payForm->orderId = $order->id;
             $payForm->coinType = $this->getCurrency();
             $payForm->payType = PayEnum::PAY_TYPE_WIRE_TRANSFER;
-            $payForm->memberId = $this->member_id;
+            $payForm->memberId = $memberId;
+            $payForm->orderGroup = $orderGroup;
 
             //验证支付订单数据
             if (!$payForm->validate()) {
@@ -100,20 +122,20 @@ class PayController extends OnAuthController
 
             $pay = $payForm->getConfig();
 
-            $result->out_trade_no = $pay['out_trade_no'];
+            $model->out_trade_no = $pay['out_trade_no'];
 
             //验证支付订单数据
-            if (!$result->save(false)) {
-                throw new UnprocessableEntityHttpException($this->getError($result));
+            if (!$model->save(false)) {
+                throw new UnprocessableEntityHttpException($this->getError($model));
             }
 
-            OrderLogService::wireTransfer($result->order);
+            OrderLogService::wireTransfer($order);
 
             $isDev = Yii::$app->debris->config('pay_wire_transfer_dev');
 
             $params = [
-                'order_sn' => (!empty($isDev)?'t-':'') . $result->order->order_sn,
-                'code' => $result->order->id,
+                'order_sn' => (!empty($isDev)?'t-':'') . $order->order_sn,
+                'code' => $order->id,
             ];
 
             $smss = \Yii::$app->debris->config('wire_transfer_order_notice_sms');
@@ -132,7 +154,6 @@ class PayController extends OnAuthController
                 }
             }
 
-
             $trans->commit();
         } catch (\Exception $exception) {
             $trans->rollBack();
@@ -140,7 +161,7 @@ class PayController extends OnAuthController
             throw $exception;
         }
 
-        return $result;
+        return $model;
     }
 
     /**
@@ -313,8 +334,16 @@ class PayController extends OnAuthController
 
                 $data = $response->getData();
 
+                //这段代码要移到stripe驱动里面。
+                if($model->pay_type==PayEnum::PAY_TYPE_STRIPE) {
+                    $data = $data['paymentIntent'];
+                    $data = [
+                        'currency' => strtoupper($data['currency']),
+                        'total' => $data['amount']/100
+                    ];
+                }
+
                 if(isset($data['total']) && isset($data['currency'])) {
-                    $model->total_fee = $data['total'];
                     $model->pay_fee = $data['total'];
                     $model->fee_type = $data['currency'];
                     $model->pay_time = time();

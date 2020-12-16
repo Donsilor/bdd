@@ -79,7 +79,7 @@ class Member extends User
             [['username','firstname','lastname'], 'string', 'max' => 100],
             [['email'], 'string', 'max' => 150],
             [['last_ip','first_ip'], 'string', 'max' => 16],
-            ['mobile', 'match', 'pattern' => RegularHelper::chinaMobile(),'message' => '不是一个有效的手机号码'],
+//            ['mobile', 'match', 'pattern' => RegularHelper::chinaMobile(),'message' => '不是一个有效的手机号码'],
         ];
     }
 

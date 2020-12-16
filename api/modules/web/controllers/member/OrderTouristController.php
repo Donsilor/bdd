@@ -4,6 +4,7 @@ namespace api\modules\web\controllers\member;
 
 use api\controllers\OnAuthController;
 use api\modules\web\forms\CartForm;
+use backend\modules\order\forms\OrderAddressForm;
 use common\enums\CurrencyEnum;
 use common\enums\OrderTouristStatusEnum;
 use common\enums\PayEnum;
@@ -41,6 +42,7 @@ class OrderTouristController extends OnAuthController
         $goodsCartList = \Yii::$app->request->post('goodsCartList');
         $invoiceInfo = \Yii::$app->request->post('invoice');
         $buyer_remark = \Yii::$app->request->post('buyer_remark');
+        $addressInfo = \Yii::$app->request->post('address', null);
 
         if(empty($orderSn)) {
             if (empty($goodsCartList)) {
@@ -59,11 +61,12 @@ class OrderTouristController extends OnAuthController
             }
         }
         $order_from = $this->platform;
+
         try {            
             $trans = \Yii::$app->db->beginTransaction();
             if(empty($orderSn)) {
                 //创建订单
-                $orderId = \Yii::$app->services->orderTourist->createOrder($cart_list, $buyer_remark, $invoiceInfo, $order_from);
+                $order = \Yii::$app->services->orderTourist->createOrder($cart_list, $buyer_remark, $invoiceInfo, $order_from, $addressInfo);
 
             }
             else {
@@ -77,34 +80,53 @@ class OrderTouristController extends OnAuthController
                 if($order->status==OrderTouristStatusEnum::ORDER_PAID) {
                     throw new UnprocessableEntityHttpException(\Yii::t('payment', 'ORDER_PAID'));
                 }
-                
-                $orderId = $order->id;
             }
 
-            //调用支付接口
-            $payForm = new PayForm();
-            $payForm->attributes = \Yii::$app->request->post();
-            $payForm->orderId = $orderId;//订单ID
-            $payForm->payType = $payType;//支付方式使用paypal
-            $payForm->memberId = 0;//支付方式使用paypal
-            $payForm->notifyUrl = Url::removeMerchantIdUrl('toFront', ['notify/' . PayEnum::$payTypeAction[$payForm->payType]]);//支付通知URL,paypal不需要,加上只是为了数据的完整性
-            $payForm->orderGroup = PayEnum::ORDER_TOURIST;//游客订单
-
-            //验证支付订单数据
-            if (!$payForm->validate()) {
-                throw new UnprocessableEntityHttpException($this->getError($payForm));
+            if($payType==PayEnum::PAY_TYPE_WIRE_TRANSFER) {
+                //电汇不调用支付API
+                $config = [];
             }
-            $config = $payForm->getConfig();
-            $config['orderId'] = $orderId;
+            else {
+                //调用支付接口
+                $payForm = new PayForm();
+                $payForm->attributes = \Yii::$app->request->post();
+                $payForm->orderId = $order->id;//订单ID
+                $payForm->payType = $payType;//支付方式使用paypal
+                $payForm->memberId = 0;//支付方式使用paypal
+                $payForm->notifyUrl = Url::removeMerchantIdUrl('toFront', ['notify/' . PayEnum::$payTypeAction[$payForm->payType]]);//支付通知URL,paypal不需要,加上只是为了数据的完整性
+                $payForm->orderGroup = PayEnum::ORDER_TOURIST;//游客订单
+
+                //验证支付订单数据
+                if (!$payForm->validate()) {
+                    throw new UnprocessableEntityHttpException($this->getError($payForm));
+                }
+
+                $config = $payForm->getConfig();
+                if(!is_array($config)) {
+                    $config = [
+                        'config' => $config
+                    ];
+                }
+            }
+
+            $config['order_sn'] = $order->order_sn;
 
             $trans->commit();
 
-            return $config;
-        } catch (\Exception $e) {
+        }
+        catch (UnprocessableEntityHttpException $e) {
             $trans->rollBack();
             \Yii::$app->services->actionLog->create('游客创建订单',$e->getMessage());
             throw $e;
         }
+        catch (\Exception $e) {
+            $trans->rollBack();
+            \Yii::$app->services->actionLog->create('游客创建订单',$e->getMessage());
+            throw $e;
+            throw new UnprocessableEntityHttpException('系统忙，请稍后再试~！');
+        }
+
+        return $config;
     }
 
     /**
@@ -220,7 +242,7 @@ class OrderTouristController extends OnAuthController
 //            'payAmount' => $order->pay_amount,
             'payAmount' => bcsub($order->order_amount, $order->discount_amount, 2),
 //            'orderType' => $order->order_type,
-            'payChannel' => 6,
+//            'payChannel' => 6,
 //            'productCount' => count($orderDetails),
             'productAmount' => $order->goods_amount,
             'preferFee' => $order->discount_amount, //优惠金额

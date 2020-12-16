@@ -39,6 +39,11 @@ class MobileRegisterForm extends Model
                         'unique',
                         'targetClass' => Member::class,
                         'targetAttribute' => 'mobile',
+                        'filter' => function($query) {
+                            $query->andWhere(
+                                ['=', 'is_tourist', 0]
+                            );
+                        },
                         'message' => '手机号已存在'
                 ],
                 ['code', SmsCodeValidator::class, 'usage' => SmsLog::USAGE_REGISTER],

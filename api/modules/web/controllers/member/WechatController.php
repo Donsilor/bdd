@@ -13,6 +13,8 @@ class WechatController extends UserAuthController
 
     public $modelClass = '';
 
+    protected $authOptional = ['user-info'];
+
     public function actionUserInfo()
     {
         try {
@@ -39,7 +41,7 @@ class WechatController extends UserAuthController
             return ['openid'=>$result['openid']];
         }
 
-        \Yii::$app->services->actionLog->create('获取微信openid','用户：'.\Yii::$app->getUser()->identity->member->username.'获取openid错误', $result);
+        \Yii::$app->services->actionLog->create('获取微信openid','用户：'.\Yii::$app->getUser()->identity->member->username??''.'获取openid错误', $result);
 
         throw new UnprocessableEntityHttpException('系统忙，请稍后再试');
     }

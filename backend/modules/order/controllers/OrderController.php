@@ -111,6 +111,7 @@ class OrderController extends BaseController
 
             if($orderStatus==11) {
                 $dataProvider->query->andWhere('common_pay_wire_transfer.id is not null');
+                $dataProvider->query->andWhere(['<>', 'common_pay_wire_transfer.member_id', 0]);
             }
             elseif($orderStatus==12) {
                 $dataProvider->query->andWhere(['=', 'no_delivery', 1]);

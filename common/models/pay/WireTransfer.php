@@ -3,6 +3,7 @@
 namespace common\models\pay;
 
 use common\models\order\Order;
+use common\models\order\OrderTourist;
 use Yii;
 
 /**
@@ -10,6 +11,7 @@ use Yii;
  *
  * @property int $id ID
  * @property int $order_id 订单ID
+ * @property int $order_sn 订单ID
  * @property int $member_id 买家id
  * @property string $account 收款账号
  * @property string $account_name 户名
@@ -42,13 +44,14 @@ class WireTransfer extends \common\models\base\BaseModel
     public function rules()
     {
         return [
-            [['order_id', 'account', 'account_name', 'opening_bank', 'bank_name', 'payment_voucher'], 'required'],
-            [['order_id', 'member_id', 'collection_status', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['order_sn', 'account', 'account_name', 'opening_bank', 'bank_name', 'payment_voucher'], 'required'],
+            [['member_id', 'collection_status', 'status', 'created_at', 'updated_at'], 'integer'],
             [['payment_amount', 'collection_amount'], 'number'],
             [['account', 'account_name', 'payment_serial_number'], 'string', 'max' => 50],
             [['opening_bank', 'bank_name'], 'string', 'max' => 80],
             [['payment_voucher', 'collection_voucher'], 'string', 'max' => 255],
             [['out_trade_no'], 'string', 'max' => 32],
+            [['order_sn'], 'string', 'max' => 20],
         ];
     }
 
@@ -59,7 +62,7 @@ class WireTransfer extends \common\models\base\BaseModel
     {
         return [
             'id' => 'ID',
-            'order_id' => '订单ID',
+            'order_sn' => '订单编号',
             'member_id' => '买家id',
             'account' => '收款账号',
             'account_name' => '户名',
@@ -84,6 +87,15 @@ class WireTransfer extends \common\models\base\BaseModel
      */
     public function getOrder()
     {
-        return $this->hasOne(Order::class, ['id'=>'order_id']);
+        return $this->hasOne(Order::class, ['order_sn'=>'order_sn']);
+    }
+
+    /**
+     * 对应订单付款信息模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrderTourist()
+    {
+        return $this->hasOne(OrderTourist::class, ['order_sn'=>'order_sn']);
     }
 }

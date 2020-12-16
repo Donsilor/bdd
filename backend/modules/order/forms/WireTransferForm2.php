@@ -4,6 +4,7 @@ namespace backend\modules\order\forms;
 use common\enums\AuditStatusEnum;
 use common\models\order\Order;
 use common\models\order\OrderAccount;
+use common\models\order\OrderTourist;
 use common\models\pay\WireTransfer;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
@@ -12,7 +13,7 @@ use yii\behaviors\TimestampBehavior;
  * Class DeliveryForm
  * @package backend\forms
   */
-class WireTransferForm extends WireTransfer
+class WireTransferForm2 extends WireTransfer
 {
 
     /**
@@ -35,8 +36,8 @@ class WireTransferForm extends WireTransfer
 
     public function validateCollectionAmount($attribute)
     {
-        $pay_amount = $this->order->account->pay_amount;
-        if($this->order->account->currency == \common\enums\CurrencyEnum::TWD) {
+        $pay_amount = $this->orderTourist->pay_amount;
+        if($this->orderTourist->currency == \common\enums\CurrencyEnum::TWD) {
             $pay_amount = sprintf('%.2f', intval($pay_amount));
         }
         if($this->collection_status == 1 && $pay_amount!=$this->collection_amount) {

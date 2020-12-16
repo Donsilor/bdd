@@ -2,6 +2,7 @@
 
 namespace common\models\order;
 
+use common\models\pay\WireTransfer;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -10,6 +11,7 @@ use yii\db\ActiveRecord;
  * This is the model class for table "{{%order_tourist}}".
  *
  * @property int $id 主键
+ * @property int $order_sn 商户ID
  * @property int $merchant_id 商户ID
  * @property int $store_id 店铺id
  * @property int $tourist_key 游客的KEY
@@ -128,6 +130,33 @@ class OrderTourist extends \common\models\base\BaseModel
     public function getInvoice()
     {
         return $this->hasOne(OrderTouristInvoice::class, ['order_tourist_id'=>'id']);
+    }
+
+    /**
+     * 对应订单付款信息模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAddress()
+    {
+        return $this->hasOne(OrderTouristAddress::class, ['order_tourist_id'=>'id']);
+    }
+
+    /**
+     * 对应快递模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getWireTransfer()
+    {
+        return $this->hasOne(WireTransfer::class, ['order_sn'=>'order_sn']);//->where(['common_pay_wire_transfer.member_id'=>0]);
+    }
+
+    /**
+     * 对应的订单
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrder()
+    {
+        return $this->hasOne(Order::class, ['order_sn'=>'order_sn']);
     }
 
 }
