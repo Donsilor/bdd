@@ -34,7 +34,7 @@ class CardDetailsController extends BaseController
             ],
             'pageSize' => $this->pageSize,
             'relations' => [
-                'card' => ['sn'],
+                'card' => ['sn', 'batch'],
                 'order' => ['order_sn'],
             ]
         ]);
@@ -44,7 +44,6 @@ class CardDetailsController extends BaseController
 
         #过滤不显示的批次
         $batch = [
-            '[2020/4/24]购物卡测试01批',
             '[2020/4/24]购物卡测试01批',
             '[2020/4/24]购物卡测试02批',
             '[2020/4/24]购物卡测试03批',

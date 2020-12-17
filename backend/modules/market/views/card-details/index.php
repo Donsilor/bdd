@@ -68,6 +68,11 @@ $type_id = Yii::$app->request->get('type_id', 0);
                             }
                         ],
                         [
+                            'label' => '批次',
+//                            'filter' => false,
+                            'attribute' => 'card.batch'
+                        ],
+                        [
                             'label' => '卡号',
 //                            'filter' => false,
                             'attribute' => 'card.sn',
