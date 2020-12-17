@@ -419,9 +419,14 @@ class StyleController extends OnAuthController
             ->andWhere(['or',['=','markup.status',1],['IS','markup.status',new \yii\db\Expression('NULL')]])
             ->orderby('m.id desc');
 
+        $wheres = ['or'];
         foreach ($data as $datum) {
-            $query ->orWhere(['and', ['=', 'm.type_id', $datum['c']], ['=', 'm.id', $datum['s']]]);
+            $where = ['and'];
+            $where[] = ['=', 'm.type_id', $datum['c']];
+            $where[] = ['=', 'm.id', $datum['s']];
+            $wheres[] = $where;
         }
+        $query ->andWhere($wheres);
 
         $_result = $this->pagination($query, $this->page, $this->pageSize);
 
@@ -451,10 +456,12 @@ class StyleController extends OnAuthController
 
         CouponService::getCouponByList($this->getAreaId(), $_result2);
 
-        foreach ($data as $key => &$datum) {
-            $datum = $_result2[$key];
+        $result = [];
+        foreach ($data as $key => $datum) {
+            if(isset($_result2[$key]))
+                $result[] = $_result2[$key];
         }
 
-        return $data;
+        return $result;
     }
 }
