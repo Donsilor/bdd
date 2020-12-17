@@ -70,7 +70,17 @@ $type_id = Yii::$app->request->get('type_id', 0);
                         [
                             'label' => '批次',
 //                            'filter' => false,
-                            'attribute' => 'card.batch'
+                            'attribute' => 'card.batch',
+                            'filter' => kartik\select2\Select2::widget([
+                                'model' => $searchModel,
+                                'attribute' => 'card.batch',
+                                'value' => '',
+                                'data' => Yii::$app->services->card->getBatch(),
+                                'options' => ['placeholder' => '请选择'],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
+                            ]),
                         ],
                         [
                             'label' => '卡号',

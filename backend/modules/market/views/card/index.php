@@ -84,6 +84,16 @@ $type_id = Yii::$app->request->get('type_id', 0);
                         [
                             'label' => '批次',
                             'attribute' => 'batch',
+                            'filter' => kartik\select2\Select2::widget([
+                                'model' => $searchModel,
+                                'attribute' => 'batch',
+                                'value' => '',
+                                'data' => Yii::$app->services->card->getBatch(),
+                                'options' => ['placeholder' => '请选择'],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
+                            ]),
 //                            'value' => function($model) {
 //                                return $model->batch;
 //                            }

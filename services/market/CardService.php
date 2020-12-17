@@ -360,5 +360,30 @@ class CardService extends Service
         return $result;
     }
 
-    //导出|导入数据
+    //获取不显示的批次号
+    public function getTestBatch()
+    {
+        return [
+            '[2020/4/24]购物卡测试01批',
+            '[2020/4/24]购物卡测试02批',
+            '[2020/4/24]购物卡测试03批',
+            '[2020/4/24]购物卡测试04',
+            '[2020/5/14]购物卡测试05',
+            '[2020/6/4]购物卡测试06-有效时长',
+            '[2020/6/4]购物卡测试07-固定时间',
+            '正式站-测试购物卡导入',
+            '正式站-测试购物卡导入2',
+        ];
+    }
+
+    //获取批次号，排除测试部份
+    public function getBatch()
+    {
+        $result = MarketCardGoodsType::find()->where(['not in', 'batch', $this->getTestBatch()])->groupBy('batch')->all();
+        $data = [];
+        foreach ($result as $item) {
+            $data[$item['batch']] = $item['batch'];
+        }
+        return $data;
+    }
 }
