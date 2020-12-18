@@ -89,7 +89,9 @@ class CardDetailsController extends BaseController
             ['批次', 'card.batch', 'text'],
             ['卡号', 'card.sn', 'text'],
             ['订单号', 'order.order_sn', 'text'],
-            ['余额变动', 'use_amount_cny', 'text'],
+            ['余额变动', 'use_amount_cny', 'function', function($model) {
+                return $model->currency . ' ' . $model->use_amount . ' ( CNY ' . $model->use_amount_cny . ')';
+            }],
             ['购物卡总金额（CNY）', 'card.amount', 'text'],
             ['剩余金额（CNY）', 'balance', 'text'],
             ['费用类型', 'type', 'function', function($model) {
