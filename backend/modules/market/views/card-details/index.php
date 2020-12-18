@@ -11,6 +11,7 @@ $card_title = Yii::t('card',  '购物卡发放列表');
 $this->title = Yii::t('card', '购物卡使用列表');
 $this->params['breadcrumbs'][] = $this->title;
 $type_id = Yii::$app->request->get('type_id', 0);
+$params = Yii::$app->request->queryParams;
 ?>
 
 <div class="row">
@@ -22,6 +23,12 @@ $type_id = Yii::$app->request->get('type_id', 0);
                 </li>
                 <li class="active">
                     <a href="<?= Url::to(['card-details/index']) ?>"> <?= Html::encode($this->title) ?></a>
+                </li>
+
+                <li class="pull-right">
+                    <div class="box-header box-tools">
+                        <?= Html::a('导出数据',['export']+$params, ['class' => 'btn btn-info btn-sm']) ?>
+                    </div>
                 </li>
             </ul>
             <div class="box-body table-responsive">

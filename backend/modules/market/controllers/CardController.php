@@ -152,7 +152,7 @@ class CardController extends BaseController
                 return $model->getFrozenAmount();
             }],
             ['有效时间', 'start_time', 'function', function($model) {
-                return \Yii::$app->formatter->asDatetime($model->start_time, 'Y-M-d')."<br />".Yii::$app->formatter->asDatetime($model->end_time-1, 'Y-M-d');
+                return \Yii::$app->formatter->asDatetime($model->start_time, 'Y-M-d')." - ".\Yii::$app->formatter->asDatetime($model->end_time-1, 'Y-M-d');
             }],
             ['最大使用时长（天）', 'max_use_time', 'function', function($model) {
                 $day = intval($model->max_use_time/86400);
