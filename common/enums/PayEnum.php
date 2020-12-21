@@ -112,7 +112,7 @@ class PayEnum extends BaseEnum
         self::PAY_TYPE_MINI_PROGRAM => '小程序',
         self::PAY_TYPE_USER_MONEY => '余额',
         self::PAY_TYPE_OFFLINE => '线下',
-        self::PAY_TYPE => '待支付',
+        self::PAY_TYPE => '待支付',//test
     ];
     
     /**
