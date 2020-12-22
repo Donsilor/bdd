@@ -300,6 +300,7 @@ class OrderTouristService extends OrderBaseService
                 'cart_goods_attr' => $detail->cart_goods_attr,
                 'currency' => $orderTourist->currency,
                 'exchange_rate' => $orderTourist->exchange_rate,
+                'lettering' => $orderTourist->lettering,
             ];
             if(false === $orderTouristDetails->save()) {
                 throw new UnprocessableEntityHttpException($this->getError($orderTouristDetails));
