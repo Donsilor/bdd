@@ -32,6 +32,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'attribute' => 'id',
                             ],
                             [
+                                'label' => '下单时间',
                                 'attribute' => 'created_at',
                                 'filter' => false,
 //                                'filter' => DateRangePicker::widget([    // 日期组件
