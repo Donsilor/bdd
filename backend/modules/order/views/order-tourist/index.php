@@ -57,6 +57,28 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'format' => 'raw',
                             ],
                             [
+                                'attribute' => 'is_test',
+                                'headerOptions' => [
+                                    'class' => 'col-md-1',
+                                    'style' => 'width:80px;'
+                                ],
+                                'filter' => Html::activeDropDownList($searchModel, 'is_test', OrderStatusEnum::testStatus(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                    'style' => 'width:78px;'
+                                ]),
+                                'value' => function ($model) {
+                                    if($model->is_test) {
+                                        $value = "<span class='red'>";
+                                        $value .= \common\enums\OrderStatusEnum::getValue($model->is_test, 'testStatus');
+                                        $value .= "</span>";
+                                        return $value;
+                                    }
+                                    return '';
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
                                 'attribute' => 'order_sn',
                                 'filter' => Html::activeTextInput($searchModel, 'order_sn', [
                                     'class' => 'form-control',

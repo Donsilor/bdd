@@ -36,6 +36,7 @@ use yii\db\ActiveRecord;
  * @property string $paid_amount 实付款
  * @property string $paid_currency 实际支付货币
  * @property string $buyer_remark 买家留言
+ * @property int $is_test 是否测试
  */
 class OrderTourist extends \common\models\base\BaseModel
 {
@@ -68,7 +69,7 @@ class OrderTourist extends \common\models\base\BaseModel
     public function rules()
     {
         return [
-            [['merchant_id', 'store_id', 'tourist_key', 'status', 'created_at', 'updated_at', 'ip_area_id','order_from'], 'integer'],
+            [['merchant_id', 'store_id', 'tourist_key', 'status', 'created_at', 'updated_at', 'ip_area_id','order_from', 'is_test'], 'integer'],
             [['order_amount', 'goods_amount', 'discount_amount', 'pay_amount', 'refund_amount', 'shipping_fee', 'tax_fee', 'safe_fee', 'other_fee', 'exchange_rate', 'paid_amount'], 'number'],
             [['currency', 'paid_currency'], 'string', 'max' => 3],
             [['order_sn'], 'string', 'max' => 20],
@@ -111,6 +112,7 @@ class OrderTourist extends \common\models\base\BaseModel
             'paid_amount' => \Yii::t('order','实际付款'),
             'paid_currency'=> \Yii::t('common','实际支付货币'),
             'buyer_remark' => '客户留言',
+            'is_test' => '测试',
         ];
     }
     

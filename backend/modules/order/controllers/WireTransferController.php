@@ -30,6 +30,7 @@ class WireTransferController extends BaseController
 
     public function actionIndex()
     {
+        $queryParams = Yii::$app->request->queryParams;
         $searchModel = new SearchModel([
             'model' => $this->modelClass,
             'scenario' => 'default',
@@ -39,10 +40,17 @@ class WireTransferController extends BaseController
             ],
             'pageSize' => $this->pageSize,
             'relations' => [
+                'orderTourist' => 'is_test'
             ]
         ]);
 
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, []);
+        if(!isset($queryParams['SearchModel']['orderTourist.is_test'])) {
+            $queryParams['SearchModel']['orderTourist.is_test'] = 0;
+        }
+
+        $searchModel->setAttributes(['orderTourist.is_test' => 0]);
+
+        $dataProvider = $searchModel->search($queryParams, []);
 
         if(!Yii::$app->request->get('test'))
             $dataProvider->query->andWhere(['=', 'common_pay_wire_transfer.member_id', 0]);

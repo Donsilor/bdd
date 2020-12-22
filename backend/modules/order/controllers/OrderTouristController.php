@@ -49,6 +49,9 @@ class OrderTouristController extends BaseController
             'pageSize' => $this->pageSize,
             'relations' => []
         ]);
+
+        $searchModel->setAttributes(['is_test' => 0]);
+
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, ['created_at']);
 
         //创建时间过滤
