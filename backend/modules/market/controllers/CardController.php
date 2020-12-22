@@ -138,7 +138,7 @@ class CardController extends BaseController
             ['发卡时间', 'created_at', 'date', 'Y-m-d H:i:s'],
             ['批次', 'batch', 'text'],
             ['卡号', 'sn', 'text'],
-            ['活动地区', 'area_attach', 'function', function($model) {
+            ['活动地区', 'sn', 'function', function($model) {
                 $html = [];
                 foreach (\common\enums\AreaEnum::getMap() as $key => $item) {
                     if(empty($model->area_attach) || in_array($key, $model->area_attach))
