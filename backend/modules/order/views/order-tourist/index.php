@@ -162,6 +162,21 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 },
                                 'format' => 'raw',
                             ],
+                            [
+                                'header' => "操作",
+                                //'headerOptions' => ['class' => 'col-md-1'],
+                                'class' => 'yii\grid\ActionColumn',
+                                'template' => '{follower}',
+                                'buttons' => [
+                                    'follower' => function ($url, $model, $key) {
+                                        return Html::edit(['edit-follower', 'id' => $model->id], '跟进', [
+                                            'data-toggle' => 'modal',
+                                            'data-target' => '#ajaxModal',
+                                            'class'=>'btn btn-default btn-sm'
+                                        ]);
+                                    }
+                                ],
+                            ],
                         ],
                     ]);
                   ?>

@@ -3,6 +3,7 @@
 namespace backend\modules\order\controllers;
 
 use backend\controllers\BaseController;
+use backend\modules\order\forms\OrderTouristFollowerForm;
 use common\enums\OrderFromEnum;
 use common\enums\OrderStatusEnum;
 use common\helpers\ResultHelper;
@@ -111,6 +112,46 @@ class OrderTouristController extends BaseController
         return $this->render($this->action->id, [
             'model' => $model,
             'dataProvider' => $dataProvider,
+        ]);
+    }
+
+
+
+    /**
+     * 跟进
+     * @return mixed|string|\yii\web\Response
+     * @throws \yii\base\ExitException
+     */
+    public function actionEditFollower()
+    {
+        $this->modelClass = OrderTouristFollowerForm::class;
+
+        $id = Yii::$app->request->get('id', null);
+
+        $id = explode(',', $id);
+
+        $model = $this->findModel($id[0]);
+
+        // ajax 校验
+        $this->activeFormValidate($model);
+        if (Yii::$app->request->isPost) {
+
+            foreach ($id as $item) {
+                Yii::$app->services->orderTourist->changeOrderStatusFollower($item, Yii::$app->request->post());
+            }
+
+            return $this->message("操作成功", $this->redirect(Yii::$app->request->referrer), 'success');
+        }
+
+//        $where = [];
+//        $where['order_sn'] = $model->order_sn;
+//        $where['action_name'] = 'FOLLOWER';
+//
+//        $orderLog = OrderLog::find()->where($where)->all();
+
+        return $this->renderAjax($this->action->id, [
+            'model' => $model,
+//            'orderLog' => $orderLog
         ]);
     }
 }
