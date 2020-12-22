@@ -20,6 +20,7 @@ class CartForm extends Model
     public $coupon_id;//折扣券ID
     public $goods_attr;//商品属性
     public $createTime;
+    public $lettering;
 
     
     /**
@@ -31,6 +32,7 @@ class CartForm extends Model
             [['goods_id','goods_type','goods_num','createTime'], 'required'],
             [['goods_id','goods_type','goods_num','group_type','group_id','coupon_id','createTime'], 'number'],
             ['goods_attr', 'validateGoodsAttr'],
+            ['lettering', 'string'],
         ];
     }
     
@@ -44,6 +46,7 @@ class CartForm extends Model
             'group_id' => 'group_id',
             'coupon_id' => 'coupon_id',
             'goods_attr' => 'goods_attr',
+            'lettering' => 'lettering',
             'createTime' => 'createTime'
         ];
     }

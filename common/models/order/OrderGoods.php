@@ -28,6 +28,7 @@ use Yii;
  * @property string $currency 货币
  * @property int $created_at 创建时间
  * @property int $updated_at 更新时间
+ * @property string $lettering 刻字
  */
 class OrderGoods extends \common\models\base\BaseModel
 {
@@ -49,7 +50,7 @@ class OrderGoods extends \common\models\base\BaseModel
             [['merchant_id', 'order_id','style_id', 'goods_id', 'goods_type', 'goods_num', 'coupon_id', 'created_at', 'updated_at'], 'integer'],
             [['order_id', 'goods_id'], 'required'],
             [['goods_price', 'goods_pay_price','exchange_rate'], 'number'],
-            [['goods_attr'], 'string'],
+            [['goods_attr', 'lettering'], 'string'],
             [['goods_sn'], 'string', 'max' => 50],
             [['goods_image'], 'string', 'max' => 100],
             [['goods_spec','goods_name'], 'string', 'max' => 300],
@@ -85,6 +86,7 @@ class OrderGoods extends \common\models\base\BaseModel
             'cart_goods_attr' => 'Goods Attr',
             'created_at' => '创建时间',
             'updated_at' => '更新时间',
+            'lettering' => Yii::t('app', '刻字')
         ];
     }
     

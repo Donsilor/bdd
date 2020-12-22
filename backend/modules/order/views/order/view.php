@@ -434,6 +434,9 @@ DOM;
                                                     }
                                                 }
 
+                                                if(!empty($model->lettering))
+                                                    $goods_spec .= sprintf('<br />刻字内容：%s', $model->lettering);
+
                                                 $value .= sprintf($html,
                                                     $model->goods_name,
                                                     $model->goods_sn,
