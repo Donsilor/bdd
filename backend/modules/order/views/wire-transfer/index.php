@@ -91,6 +91,18 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 }
                             ],
                             [
+                                'label' => '优惠后金额',
+                                'value' => function ($model) {
+                                    $order_amount = bcsub($model->orderTourist->order_amount, $model->orderTourist->discount_amount, 2);
+
+                                    if($model->orderTourist->currency == \common\enums\CurrencyEnum::TWD) {
+                                        $order_amount = sprintf('%.2f', intval($order_amount));
+                                    }
+
+                                    return sprintf('(%s)%s', $model->orderTourist->currency, $order_amount);
+                                }
+                            ],
+                            [
                                 'label' => '收货人',
                                 'attribute' => 'orderTourist.address.realname',
                             ],

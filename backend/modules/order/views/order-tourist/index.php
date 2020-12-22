@@ -148,6 +148,20 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 },
                                 'format' => 'raw',
                             ],
+                            [
+                                'label' => '跟进状态',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'followed_status',common\enums\FollowStatusEnum::getMap(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    $value = common\enums\FollowStatusEnum::getValue($model->followed_status);
+                                    $value .= $model->follower ? "<br />" . $model->follower->username : '';
+                                    return $value;
+                                },
+                                'format' => 'raw',
+                            ],
                         ],
                     ]);
                   ?>
