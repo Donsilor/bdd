@@ -278,6 +278,8 @@ class OrderTouristService extends OrderBaseService
             'ip_location' => $orderTourist->ip_location,
             'ip_area_id' => $orderTourist->ip_area_id,
 //            'status' => '',
+            'follower_id' => $orderTourist->follower_id,
+            'is_test' => $orderTourist->is_test,
         ];
         if(false === $order->save()) {
             throw new UnprocessableEntityHttpException($this->getError($order));
