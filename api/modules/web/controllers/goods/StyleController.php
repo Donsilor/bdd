@@ -483,6 +483,6 @@ class StyleController extends OnAuthController
             array_shift($result);
         }
 
-        return $result;
+        return array_reverse($result);
     }
 }
