@@ -399,7 +399,7 @@ class StyleController extends OnAuthController
 
         $_tmps = [];
         $data = [];
-        while (count($data) < 5 && ($_tmp = array_pop($_data)))
+        while (count($data) < 6 && ($_tmp = array_pop($_data)))
         {
             $k = sprintf("%s-%s", $_tmp['c'], $_tmp['s']);
             if(!isset($data[$k])) {
@@ -457,9 +457,19 @@ class StyleController extends OnAuthController
         CouponService::getCouponByList($this->getAreaId(), $_result2);
 
         $result = [];
-        foreach ($data as $key => $datum) {
-            if(isset($_result2[$key]))
-                $result[] = $_result2[$key];
+        foreach ($data as $k => $datum) {
+            if(isset($_result2[$k]))
+                $result[] = $_result2[$k];
+        }
+
+        //效验异常情况
+        if(count($result)!=count($data)) {
+            $redis->del($key);
+        }
+
+        //不返回第一条数据
+        if(!empty($typeId) && !empty($styleId)) {
+            array_pop($result);
         }
 
         return $result;
