@@ -469,7 +469,7 @@ class StyleController extends OnAuthController
 
         //不返回第一条数据
         if(!empty($typeId) && !empty($styleId)) {
-            array_pop($result);
+            unset($result[0]);
         }
 
         return $result;
