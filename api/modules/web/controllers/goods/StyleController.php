@@ -409,7 +409,7 @@ class StyleController extends OnAuthController
         }
 
         //限制最多6条
-        while (count($_tmps) <= 6)
+        while (count($_tmps) > 6)
         {
             array_shift($_tmps);
         }
