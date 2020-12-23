@@ -57,6 +57,28 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'format' => 'raw',
                             ],
                             [
+                                'attribute' => 'is_test',
+                                'headerOptions' => [
+                                    'class' => 'col-md-1',
+                                    'style' => 'width:80px;'
+                                ],
+                                'filter' => Html::activeDropDownList($searchModel, 'is_test', OrderStatusEnum::testStatus(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                    'style' => 'width:78px;'
+                                ]),
+                                'value' => function ($model) {
+                                    if($model->is_test) {
+                                        $value = "<span class='red'>";
+                                        $value .= \common\enums\OrderStatusEnum::getValue($model->is_test, 'testStatus');
+                                        $value .= "</span>";
+                                        return $value;
+                                    }
+                                    return '';
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
                                 'attribute' => 'order_sn',
                                 'filter' => Html::activeTextInput($searchModel, 'order_sn', [
                                     'class' => 'form-control',
@@ -125,6 +147,35 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                     return array_get(['未支付', '已支付'], $model->status);
                                 },
                                 'format' => 'raw',
+                            ],
+                            [
+                                'label' => '跟进状态',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'followed_status',common\enums\FollowStatusEnum::getMap(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    $value = common\enums\FollowStatusEnum::getValue($model->followed_status);
+                                    $value .= $model->follower ? "<br />" . $model->follower->username : '';
+                                    return $value;
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
+                                'header' => "操作",
+                                //'headerOptions' => ['class' => 'col-md-1'],
+                                'class' => 'yii\grid\ActionColumn',
+                                'template' => '{follower}',
+                                'buttons' => [
+                                    'follower' => function ($url, $model, $key) {
+                                        return Html::edit(['edit-follower', 'id' => $model->id], '跟进', [
+                                            'data-toggle' => 'modal',
+                                            'data-target' => '#ajaxModal',
+                                            'class'=>'btn btn-default btn-sm'
+                                        ]);
+                                    }
+                                ],
                             ],
                         ],
                     ]);

@@ -32,6 +32,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'attribute' => 'id',
                             ],
                             [
+                                'label' => '下单时间',
                                 'attribute' => 'created_at',
                                 'filter' => false,
 //                                'filter' => DateRangePicker::widget([    // 日期组件
@@ -57,6 +58,28 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'format' => 'raw',
                             ],
                             [
+                                'attribute' => 'orderTourist.is_test',
+                                'headerOptions' => [
+                                    'class' => 'col-md-1',
+                                    'style' => 'width:80px;'
+                                ],
+                                'filter' => Html::activeDropDownList($searchModel, 'orderTourist.is_test', OrderStatusEnum::testStatus(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                    'style' => 'width:78px;'
+                                ]),
+                                'value' => function ($model) {
+                                    if($model->orderTourist->is_test) {
+                                        $value = "<span class='red'>";
+                                        $value .= \common\enums\OrderStatusEnum::getValue($model->orderTourist->is_test, 'testStatus');
+                                        $value .= "</span>";
+                                        return $value;
+                                    }
+                                    return '';
+                                },
+                                'format' => 'raw',
+                            ],
+                            [
                                 'attribute' => 'orderTourist.order_sn'
                             ],
                             [
@@ -65,6 +88,18 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                                 'value' => function($model)
                                 {
                                     return \common\helpers\AmountHelper::outputAmount($model->orderTourist->order_amount, 2, $model->orderTourist->currency);
+                                }
+                            ],
+                            [
+                                'label' => '优惠后金额',
+                                'value' => function ($model) {
+                                    $order_amount = bcsub($model->orderTourist->order_amount, $model->orderTourist->discount_amount, 2);
+
+                                    if($model->orderTourist->currency == \common\enums\CurrencyEnum::TWD) {
+                                        $order_amount = sprintf('%.2f', intval($order_amount));
+                                    }
+
+                                    return sprintf('(%s)%s', $model->orderTourist->currency, $order_amount);
                                 }
                             ],
                             [

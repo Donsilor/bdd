@@ -2,8 +2,10 @@
 
 namespace services\order;
 
+use backend\modules\order\forms\OrderTouristFollowerForm;
 use common\components\Service;
 use common\enums\CouponStatusEnum;
+use common\enums\FollowStatusEnum;
 use common\enums\OrderFromEnum;
 use common\enums\OrderStatusEnum;
 use common\enums\OrderTouristStatusEnum;
@@ -276,6 +278,8 @@ class OrderTouristService extends OrderBaseService
             'ip_location' => $orderTourist->ip_location,
             'ip_area_id' => $orderTourist->ip_area_id,
 //            'status' => '',
+            'follower_id' => $orderTourist->follower_id,
+            'is_test' => $orderTourist->is_test,
         ];
         if(false === $order->save()) {
             throw new UnprocessableEntityHttpException($this->getError($order));
@@ -401,5 +405,24 @@ class OrderTouristService extends OrderBaseService
 
         //订单发送邮件
         $this->sendOrderNotification($order->id);
+    }
+
+    public function changeOrderStatusFollower($order_id, $post) {
+
+        $model = OrderTouristFollowerForm::findOne($order_id);
+
+//        $sellerRemark = $model->seller_remark;
+
+        $model->load($post);
+
+        $model->followed_status = $model->follower_id ? FollowStatusEnum::YES : FollowStatusEnum::NO;
+
+//        OrderLogService::follower($model);
+
+//        if(!empty($sellerRemark)) {
+//            $model->seller_remark = $sellerRemark . "\r\n--------------------\r\n" . $model->seller_remark;
+//        }
+
+        return $model->save();
     }
 }
