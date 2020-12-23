@@ -399,13 +399,19 @@ class StyleController extends OnAuthController
 
         $_tmps = [];
         $data = [];
-        while (count($data) < 6 && ($_tmp = array_pop($_data)))
+        while ($_tmp = array_shift($_data))
         {
             $k = sprintf("%s-%s", $_tmp['c'], $_tmp['s']);
             if(!isset($data[$k])) {
                 $data[$k] = $_tmp;
                 $_tmps[] = $_tmp;
             }
+        }
+
+        //限制最多6条
+        while (count($_tmps) <= 6)
+        {
+            array_shift($_tmps);
         }
 
         $redis->set($key, \GuzzleHttp\json_encode($_tmps));
@@ -469,6 +475,11 @@ class StyleController extends OnAuthController
 
         //不返回第一条数据
         if(!empty($typeId) && !empty($styleId)) {
+            array_shift($result);
+        }
+
+        //保存了6条数据，这里可能有6条数据，多出来的删掉
+        if(count($result)>5) {
             array_shift($result);
         }
 
