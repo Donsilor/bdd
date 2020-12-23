@@ -399,7 +399,7 @@ class StyleController extends OnAuthController
 
         $_tmps = [];
         $data = [];
-        while ($_tmp = array_shift($_data))
+        while (count($_tmps) < 5 && ($_tmp = array_pop($_data)))
         {
             $k = sprintf("%s-%s", $_tmp['c'], $_tmp['s']);
             if(!isset($data[$k])) {
@@ -408,13 +408,7 @@ class StyleController extends OnAuthController
             }
         }
 
-        //限制最多6条
-        while (count($_tmps) > 6)
-        {
-            array_shift($_tmps);
-        }
-
-        $redis->set($key, \GuzzleHttp\json_encode($_tmps));
+        $redis->set($key, \GuzzleHttp\json_encode(array_reverse($_tmps)));
 
         $area_id = $this->getAreaId();
         $fields = ['m.id','m.type_id','lang.style_name','m.goods_images','IFNULL(markup.sale_price,m.sale_price) as sale_price'];
@@ -473,16 +467,6 @@ class StyleController extends OnAuthController
             $redis->del($key);
         }
 
-        //不返回第一条数据
-        if(!empty($typeId) && !empty($styleId)) {
-            array_shift($result);
-        }
-
-        //保存了6条数据，这里可能有6条数据，多出来的删掉
-        if(count($result)>5) {
-            array_shift($result);
-        }
-
-        return array_reverse($result);
+        return $result;
     }
 }
