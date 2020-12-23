@@ -11,6 +11,7 @@ $this->title = Yii::t('card', '购物卡发放列表');
 $card_title = Yii::t('card',  '购物卡使用列表');
 $this->params['breadcrumbs'][] = $this->title;
 $type_id = Yii::$app->request->get('type_id', 0);
+$params = Yii::$app->request->queryParams;
 ?>
 
 <div class="row">
@@ -29,6 +30,7 @@ $type_id = Yii::$app->request->get('type_id', 0);
                             'data-toggle' => 'modal',
                             'data-target' => '#ajaxModalLg',
                         ])?>
+                        <?= Html::a('导出数据',['export']+$params, ['class' => 'btn btn-info btn-sm']) ?>
                     </div>
                 </li>
             </ul>
@@ -84,6 +86,16 @@ $type_id = Yii::$app->request->get('type_id', 0);
                         [
                             'label' => '批次',
                             'attribute' => 'batch',
+                            'filter' => kartik\select2\Select2::widget([
+                                'model' => $searchModel,
+                                'attribute' => 'batch',
+                                'value' => '',
+                                'data' => Yii::$app->services->card->getBatch(),
+                                'options' => ['placeholder' => '请选择'],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
+                            ]),
 //                            'value' => function($model) {
 //                                return $model->batch;
 //                            }
