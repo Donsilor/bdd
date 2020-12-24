@@ -151,6 +151,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?= $model->buyer_remark ?>
                             </div>
                             <div class="col-lg-4">
+                                <label class="text-right col-lg-4">下单类型 ：</label>
+                                <?= $model->orderTourist ? '游客' : '登录' ?>
                             </div>
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4">是否使用购物卡：</label>
