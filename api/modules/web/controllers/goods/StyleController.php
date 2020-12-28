@@ -373,5 +373,100 @@ class StyleController extends OnAuthController
         return $new_str;
     }
     
-    
+    // 最近访问端口
+    public function actionRecentBrowsing()
+    {
+
+        $typeId = \Yii::$app->request->get('type_id');
+        $styleId = \Yii::$app->request->get('style_id');
+        $time = time();
+
+        $redis = \Yii::$app->redis;
+        $key = sprintf("member:id_%s:recant_browsing", $this->member_id);
+
+        $_data = [];
+        if($data_json = $redis->get($key)) {
+            $_data = \GuzzleHttp\json_decode($data_json, true);
+        }
+
+        if(!empty($typeId) && !empty($styleId)) {
+            $_data[] = [
+                'c' => $typeId,
+                's' => $styleId,
+                't' => $time
+            ];
+        }
+
+        $_tmps = [];
+        $data = [];
+        while (count($_tmps) < 5 && ($_tmp = array_pop($_data)))
+        {
+            $k = sprintf("%s-%s", $_tmp['c'], $_tmp['s']);
+            if(!isset($data[$k])) {
+                $data[$k] = $_tmp;
+                $_tmps[] = $_tmp;
+            }
+        }
+
+        $redis->set($key, \GuzzleHttp\json_encode(array_reverse($_tmps)));
+
+        $area_id = $this->getAreaId();
+        $fields = ['m.id','m.type_id','lang.style_name','m.goods_images','IFNULL(markup.sale_price,m.sale_price) as sale_price'];
+        $query = Style::find()->alias('m')->select($fields)
+            ->leftJoin(StyleLang::tableName().' lang',"m.id=lang.master_id and lang.language='".$this->language."'")
+            ->leftJoin(StyleMarkup::tableName().' markup', 'm.id=markup.style_id and markup.area_id='.$area_id)
+            ->where(['m.status'=>StatusEnum::ENABLED])
+            ->andWhere(['or',['=','markup.status',1],['IS','markup.status',new \yii\db\Expression('NULL')]])
+            ->orderby('m.id desc');
+
+        $wheres = ['or'];
+        foreach ($data as $datum) {
+            $where = ['and'];
+            $where[] = ['=', 'm.type_id', $datum['c']];
+            $where[] = ['=', 'm.id', $datum['s']];
+            $wheres[] = $where;
+        }
+        $query ->andWhere($wheres);
+
+        $_result = $this->pagination($query, $this->page, $this->pageSize);
+
+        $_result2 = [];
+        foreach($_result['data'] as & $val) {
+            $arr = array();
+            $arr['id'] = $val['id'];
+            $arr['categoryId'] = $val['type_id'];
+            $arr['coinType'] = $this->getCurrencySign();
+            $arr['goodsImages'] = ImageHelper::goodsThumbs($val['goods_images'],'mid');
+            $arr['salePrice'] = $this->exchangeAmount($val['sale_price'],0);
+            $arr['goodsName'] = $val['style_name'];
+            $arr['isJoin'] = null;
+            $arr['showType'] = 2;
+            $arr['specsModels'] = null;
+
+            $arr['coupon'] = [
+                'type_id' => $val['type_id'],//产品线ID
+                'style_id' => $val['id'],//款式ID
+                'price' => $arr['salePrice'],//价格
+                'num' =>1,//数量
+            ];
+
+            $k = sprintf("%s-%s", $arr['categoryId'], $arr['id']);
+            $_result2[$k] = $arr;
+        }
+
+        CouponService::getCouponByList($this->getAreaId(), $_result2);
+
+        $result = [];
+        foreach ($data as $k => $datum) {
+            if(isset($_result2[$k]))
+                $result[] = $_result2[$k];
+        }
+
+        //效验异常情况
+        if(count($result)!=count($data)) {
+            $redis->del($key);
+        }
+
+        return $result;
+    }
 }
