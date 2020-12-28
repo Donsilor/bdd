@@ -109,7 +109,8 @@ class OrderController extends UserAuthController
                    'ringImg'=>"",
                    'goodsAttr'=>$orderGoods->cart_goods_attr?@\GuzzleHttp\json_decode($orderGoods->cart_goods_attr, true):[],
                    'baseConfig'=>null,
-                   'ring'=>[]
+                   'ring'=>[],
+                   'lettering'=>$orderGoods->lettering,
                ];
                $orderDetail['goodsAttr'] = \Yii::$app->services->goodsAttribute->getCartGoodsAttr($orderDetail['goodsAttr']);
                if(!empty($orderGoods->goods_attr)) {
@@ -276,7 +277,8 @@ class OrderController extends UserAuthController
                 'ringImg'=>"",
                 'goodsAttr'=>$orderGoods->cart_goods_attr?@\GuzzleHttp\json_decode($orderGoods->cart_goods_attr, true):[],
                 'baseConfig'=>null,
-                'ring'=>[]
+                'ring'=>[],
+                'lettering'=>$orderGoods->lettering,
             ];
             $orderDetail['goodsAttr'] = \Yii::$app->services->goodsAttribute->getCartGoodsAttr($orderDetail['goodsAttr']);
             if(!empty($orderGoods->goods_attr)) {

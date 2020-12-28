@@ -24,6 +24,7 @@ use common\models\base\BaseModel;
  * @property int $style_id 款式ID
  * @property string $platform_group 订单来源
  * @property string $sign 游客订单签名
+ * @property string $lettering 刻字
  * @property int $created_at 创建时间
  * @property int $updated_at 更新时间
  */
@@ -45,7 +46,7 @@ class OrderCart extends BaseModel
         return [
             [['merchant_id', 'member_id', 'store_id', 'goods_id', 'goods_type', 'goods_num', 'group_id', 'group_type', 'style_id',  'status', 'created_at', 'updated_at'], 'integer'],
             [['goods_price'], 'number'],
-            [['goods_spec', 'goods_attr', 'platform_group', 'sign'], 'string'],
+            [['goods_spec', 'goods_attr', 'platform_group', 'sign', 'lettering'], 'string'],
         ];
     }
 
@@ -71,6 +72,7 @@ class OrderCart extends BaseModel
             'style_id' => '款式ID',
             'platform_group' => '订单来源',
             'sign' => '签名',
+            'lettering' => '刻字',
             'created_at' => '创建时间',
             'updated_at' => '更新时间',
         ];

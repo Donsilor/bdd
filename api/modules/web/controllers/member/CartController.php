@@ -68,6 +68,7 @@ class CartController extends UserAuthController
             $cart['groupId'] = $model->group_id;
             $cart['goodsAttr'] = $model->goods_attr?@\GuzzleHttp\json_decode($model->goods_attr, true):[];
             $cart['goodsAttr'] = \Yii::$app->services->goodsAttribute->getCartGoodsAttr($cart['goodsAttr']);
+            $cart['lettering'] = $model->lettering;
 
             $cart['coupon'] = [
                 'type_id' => $model->goods_type,//产品线ID
@@ -317,6 +318,7 @@ class CartController extends UserAuthController
             $cart['goodsType'] = $model->goods_type;
             $cart['groupId'] = $model->group_id;
             $cart['goodsAttr'] = \Yii::$app->services->goodsAttribute->getCartGoodsAttr($model->goods_attr);
+            $cart['lettering'] = $model->lettering;
 
             $cart['coupon'] = [
                 'type_id' => $model->goods_type,//产品线ID

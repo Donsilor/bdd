@@ -27,6 +27,7 @@ use Yii;
  * @property string $cart_goods_attr
  * @property int $created_at 创建时间
  * @property int $updated_at 更新时间
+ * @property string $lettering 刻字
  */
 class OrderTouristDetails extends \common\models\base\BaseModel
 {
@@ -47,7 +48,7 @@ class OrderTouristDetails extends \common\models\base\BaseModel
             [['order_tourist_id'], 'required'],
             [['order_tourist_id', 'goods_id','style_id', 'goods_type', 'goods_num', 'coupon_id', 'group_id', 'group_type', 'created_at', 'updated_at'], 'integer'],
             [['goods_price', 'goods_pay_price'], 'number'],
-            [['goods_spec', 'cart_goods_attr', 'goods_attr'], 'string'],
+            [['goods_spec', 'cart_goods_attr', 'goods_attr', 'lettering'], 'string'],
             [['goods_sn'], 'string', 'max' => 50],
             [['goods_name'], 'string', 'max' => 300],
             [['goods_image'], 'string', 'max' => 100],
@@ -79,6 +80,7 @@ class OrderTouristDetails extends \common\models\base\BaseModel
             'cart_goods_attr' => Yii::t('app', 'Cart Goods Attr'),
             'created_at' => Yii::t('app', '创建时间'),
             'updated_at' => Yii::t('app', '更新时间'),
+            'lettering' => Yii::t('app', '刻字')
         ];
     }
 

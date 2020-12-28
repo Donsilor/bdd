@@ -1409,6 +1409,9 @@ DOM;
             ['主石色彩', 'id', 'function', function ($row) use($specList) {
                 return $specList[$row->id]['zssc'];
             }],
+            ['刻字内容', 'id', 'function', function ($row) use($specList) {
+                return $row->lettering;
+            }],
             ['商品原价', 'id', 'function', function ($row) {
                 return $row->order->account->currency . ' ' . $row->goods_price;
             }],
