@@ -41,7 +41,10 @@ $OrderStatusEnum['12'] = '不需发货';
                     <div class="box-header box-tools">
                         <?= Html::a('导出订单商品',['export-goods']+$params, ['class' => 'btn btn-info btn-sm']) ?>
                         <?= Html::a('订单导出',['export']+$params, ['class' => 'btn btn-info btn-sm']) ?>
-                        <?= Html::a('导出发票文件',['export-invoice-file']+$params, ['class' => 'btn btn-info btn-sm']) ?>
+                        <?= Html::a('导出发票文件', ['export-invoice-file'] + $params, [
+                            'class' => 'btn btn-info btn-sm',
+                            'onClick' => 'DownloadInvoice(this);return false'
+                        ]) ?>
                         <span class="red">（*数量需<100）</span>
                     </div>
                 </li>
@@ -461,6 +464,22 @@ $OrderStatusEnum['12'] = '不需发货';
         else {
             _id.push(id)
         }
+    }
+
+    function DownloadInvoice(e)
+    {
+        let href = $(e).attr('href');
+        let ids = $('#grid').yiiGridView("getSelectedRows").join(',');
+        if(ids !== '') {
+            if(/\?/.test(href)) {
+                href += encodeURI('&ids=' + ids);
+            }
+            else {
+                href += encodeURI('?ids=' + ids);
+            }
+        }
+        window.open(href);
+        return false;
     }
 
     (function ($) {
