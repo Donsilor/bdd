@@ -982,6 +982,8 @@ class OrderController extends BaseController
     }
 
     public function getExportInvoiceFile($list) {
+        $this->layout = false;
+
         if(!is_array($list) || empty($list)) {
             return $this->message("数据为空", $this->redirect(Yii::$app->request->referrer), 'error');
         }
