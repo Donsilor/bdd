@@ -191,6 +191,10 @@ class OrderController extends BaseController
                 $dataProvider->query->andWhere($where);
         }
 
+        if(!empty(Yii::$app->request->queryParams['ids'])) {
+            $dataProvider->query->andWhere(['in', 'order.id', explode(',', Yii::$app->request->queryParams['ids'])]);
+        }
+
         //导出
         if($this->export){
             $query = Yii::$app->request->queryParams;
