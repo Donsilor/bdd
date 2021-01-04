@@ -21,20 +21,39 @@ class OrderSaleService extends Service
     public function getData($start_time, $end_time)
     {
         $where = [];
-        $list = OrderView::find()->where($where)->asArray()->all();
+        $where['status'] = 2;
+        $list = OrderView::find()->where($where)->all();
 
         $result = [];
         foreach ($list as $item) {
-            $item['start_time'] = $start_time;
-            $item['end_time'] = $end_time;
-            $result[] = $this->getOneData($item);
+            $result[] = $this->getOneData($item, $start_time, $end_time);
         }
         return $result;
     }
 
-    public function getOneData($param)
+    //获取一个数据
+    public function getOneData($item, $start_time, $end_time)
     {
-        return null;
+        $sale_amount = 0;
+        $type_sale_amount = [];
+
+        $list = $item->getOrderProductTypeGroupDataBase($start_time, $end_time);
+        foreach ($list as $data) {
+            $sale_amount += $data['sum'];
+
+            if(!isset($type_sale_amount[$data['id']])) {
+                $type_sale_amount[$data['id']] = 0;
+            }
+
+            $type_sale_amount[$data['id']] += $data['sum'];
+        }
+
+        return [
+            'platform_group' => $item->platform_group,
+            'platform_id' => $item->platform_id,
+            'sale_amount' => $sale_amount,
+            'type_sale_amount' => $type_sale_amount,
+        ];
     }
 
     //删除缓存数据
