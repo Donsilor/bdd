@@ -99,7 +99,7 @@ class CartController extends UserAuthController
                 foreach ($goods['lang']['goods_attr'] as $vo){
                     $baseConfig[] = [
                             'configId' =>$vo['id'],
-                            'configAttrId' =>0,
+                            'configAttrId' =>$vo['value_id']??0,
                             'configVal' =>$vo['attr_name'],
                             'configAttrIVal' =>implode('/',$vo['value']),
                     ];                    
@@ -112,7 +112,7 @@ class CartController extends UserAuthController
                     
                     $detailConfig[] = [
                             'configId' =>$vo['attr_id'],
-                            'configAttrId' =>0,
+                            'configAttrId' =>$vo['value_id']??0,
                             'configVal' =>$vo['attr_name'],
                             'configAttrIVal' =>$vo['attr_value'],
                     ];
@@ -349,7 +349,7 @@ class CartController extends UserAuthController
                 foreach ($goods['lang']['goods_attr'] as $vo){
                     $baseConfig[] = [
                         'configId' =>$vo['id'],
-                        'configAttrId' =>0,
+                        'configAttrId' =>$vo['value_id']??0,
                         'configVal' =>$vo['attr_name'],
                         'configAttrIVal' =>implode('/',$vo['value']),
                     ];
@@ -361,7 +361,7 @@ class CartController extends UserAuthController
                 foreach ($goods['lang']['goods_spec'] as $vo){
                     $detailConfig[] = [
                         'configId' =>$vo['attr_id'],
-                        'configAttrId' =>$vo['value_id'],
+                        'configAttrId' =>$vo['value_id']??0,
                         'configVal' =>$vo['attr_name'],
                         'configAttrIVal' =>$vo['attr_value'],
                     ];
