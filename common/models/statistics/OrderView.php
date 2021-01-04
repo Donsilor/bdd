@@ -59,12 +59,9 @@ class OrderView extends \common\models\base\BaseModel
         ];
     }
 
-    private function getOrderRelation($searchModel)
+    private function getOrderRelationBase(int $start_time, int $end_time)
     {
-
-        list($start_time, $end_time) = explode('/', $searchModel->datetime);
-        $start_time = strtotime($start_time);
-        $end_time = strtotime($end_time) + 86400;
+        $end_time += 86400;
 
         $where = ['and'];
         $where[] = ['>=', 'order.created_at', $start_time];
@@ -97,6 +94,14 @@ class OrderView extends \common\models\base\BaseModel
         return Order::find()->where($where);
     }
 
+    private function getOrderRelation($searchModel)
+    {
+        list($start_time, $end_time) = explode('/', $searchModel->datetime);
+        $start_time = strtotime($start_time);
+        $end_time = strtotime($end_time);
+        return $this->getOrderRelationBase($start_time, $end_time);
+    }
+
     public function getOrderCount($searchModel)
     {
         return $this->getOrderRelation($searchModel)->count('id');
@@ -116,12 +121,12 @@ class OrderView extends \common\models\base\BaseModel
             ->count('order_goods.id');
     }
 
-    public function getOrderProductTypeGroupData($searchModel)
+    public function getOrderProductTypeGroupDataBase(int $start_time, int $end_time)
     {
         static $data;
 
         if(!isset($data[$this->id])) {
-            $data[$this->id] = $this->getOrderRelation($searchModel)
+            $data[$this->id] = $this->getOrderRelationBase($start_time, $end_time)
                 ->joinWith('goods')
                 ->groupBy('order_goods.goods_type')
                 ->select(['order_goods.goods_type as id', 'order_goods.goods_type as goods_type', 'count(order_goods.id) as count', 'sum(order_goods.goods_pay_price/order_goods.exchange_rate) as sum'])
@@ -130,6 +135,15 @@ class OrderView extends \common\models\base\BaseModel
         }
 
         return !empty($data[$this->id]) ? $data[$this->id] : [];
+    }
+
+    public function getOrderProductTypeGroupData($searchModel)
+    {
+        list($start_time, $end_time) = explode('/', $searchModel->datetime);
+        $start_time = strtotime($start_time);
+        $end_time = strtotime($end_time);
+
+        return $this->getOrderProductTypeGroupDataBase($start_time, $end_time);
     }
 
 //    public function getOrderProductTypeMoneySum($searchModel)
