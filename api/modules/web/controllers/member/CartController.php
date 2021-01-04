@@ -175,8 +175,16 @@ class CartController extends UserAuthController
                 if(!$goods || $goods['status'] != 1) {
                     throw new UnprocessableEntityHttpException("商品不是售卖状态");
                 }
-    
-                $cart = new OrderCart();
+
+                if (!empty($model->id)) {
+                    $cart = OrderCart::findOne($model->id);
+
+                    if ($cart->member_id != $this->merchant_id || $cart->status != 1) {
+                        throw new UnprocessableEntityHttpException("error: null");
+                    }
+                } else {
+                    $cart = new OrderCart();
+                }
                 $cart->attributes = $model->toArray();
                 $cart->merchant_id = $this->merchant_id;
                 $cart->member_id = $this->member_id;
