@@ -179,7 +179,7 @@ class CartController extends UserAuthController
                 if (!empty($model->id)) {
                     $cart = OrderCart::findOne($model->id);
 
-                    if (!$cart || $cart->member_id != $this->merchant_id || $cart->status != 1) {
+                    if (!$cart || $cart->member_id != $this->member_id || $cart->status != 1) {
                         throw new UnprocessableEntityHttpException("error: null");
                     }
                 } else {
