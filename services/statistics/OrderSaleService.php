@@ -18,7 +18,7 @@ class OrderSaleService extends Service
         //获取上次缓存更新时间
         $lastTime = $this->getLastTime();
 
-        //更新周期 2小时
+        //更新周期 24小时
         if ($lastTime + 3600 * 24 > time()) {
             return null;
         }
