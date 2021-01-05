@@ -14,18 +14,37 @@ class OrderSaleService extends Service
     //生成统计数据(检查更新数据,当天，数天，当月，数月)
     public function generate()
     {
+
         //获取上次缓存更新时间
         $lastTime = $this->getLastTime();
 
         //更新周期 2小时
+        if ($lastTime + 3600 * 2 > time()) {
+            return null;
+        }
 
-        //
+        //删除缓存
+        $this->delCache();
+
+        //获取最后时间
+        $lastTime = $this->getLastTime();
+
+        //当天时间
+        $time = strtotime(date('Y-m-d', time()));
+
+        //生成日数据
+        for ($i = $lastTime + 86400; $i <= $time; $i += 86400) {
+
+        }
+
+        //生成月数据
+
     }
 
     private function getLastTime()
     {
-        $result = OrderSale::find()->select('date')->orderBy('id desc')->one();
-        return $result['date'] ?? date('Y-m-d H:i:s', 0);
+        $result = OrderSale::find()->select('datetime')->orderBy('id desc')->one();
+        return $result['datetime'] ?? date('Y-m-d H:i:s', 0);
     }
 
     //获取数据（开始时间，结束时间）

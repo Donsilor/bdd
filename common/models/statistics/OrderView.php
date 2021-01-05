@@ -61,8 +61,6 @@ class OrderView extends \common\models\base\BaseModel
 
     private function getOrderRelationBase(int $start_time, int $end_time)
     {
-        $end_time += 86400;
-
         $where = ['and'];
         $where[] = ['>=', 'order.created_at', $start_time];
         $where[] = ['<', 'order.created_at', $end_time];
@@ -98,7 +96,7 @@ class OrderView extends \common\models\base\BaseModel
     {
         list($start_time, $end_time) = explode('/', $searchModel->datetime);
         $start_time = strtotime($start_time);
-        $end_time = strtotime($end_time);
+        $end_time = strtotime($end_time) + 86400;
         return $this->getOrderRelationBase($start_time, $end_time);
     }
 
@@ -141,7 +139,7 @@ class OrderView extends \common\models\base\BaseModel
     {
         list($start_time, $end_time) = explode('/', $searchModel->datetime);
         $start_time = strtotime($start_time);
-        $end_time = strtotime($end_time);
+        $end_time = strtotime($end_time) + 86400;
 
         return $this->getOrderProductTypeGroupDataBase($start_time, $end_time);
     }
