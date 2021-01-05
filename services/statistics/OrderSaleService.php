@@ -19,7 +19,7 @@ class OrderSaleService extends Service
         $lastTime = $this->getLastTime();
 
         //更新周期 2小时
-        if ($lastTime + 3600 * 2 > time()) {
+        if ($lastTime + 3600 * 24 > time()) {
             return null;
         }
 
