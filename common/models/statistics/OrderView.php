@@ -121,27 +121,27 @@ class OrderView extends \common\models\base\BaseModel
 
     public function getOrderProductTypeGroupDataBase(int $start_time, int $end_time)
     {
-        static $data;
-
-        if(!isset($data[$this->id])) {
-            $data[$this->id] = $this->getOrderRelationBase($start_time, $end_time)
-                ->joinWith('goods')
-                ->groupBy('order_goods.goods_type')
-                ->select(['order_goods.goods_type as id', 'order_goods.goods_type as goods_type', 'count(order_goods.id) as count', 'sum(order_goods.goods_pay_price/order_goods.exchange_rate) as sum'])
-                ->asArray()
-                ->all();
-        }
-
-        return !empty($data[$this->id]) ? $data[$this->id] : [];
+        return $this->getOrderRelationBase($start_time, $end_time)
+            ->joinWith('goods')
+            ->groupBy('order_goods.goods_type')
+            ->select(['order_goods.goods_type as id', 'order_goods.goods_type as goods_type', 'count(order_goods.id) as count', 'sum(order_goods.goods_pay_price/order_goods.exchange_rate) as sum'])
+            ->asArray()
+            ->all();
     }
 
     public function getOrderProductTypeGroupData($searchModel)
     {
+        static $data;
+
         list($start_time, $end_time) = explode('/', $searchModel->datetime);
         $start_time = strtotime($start_time);
         $end_time = strtotime($end_time) + 86400;
 
-        return $this->getOrderProductTypeGroupDataBase($start_time, $end_time);
+        if(!isset($data[$this->id])) {
+            $data[$this->id] =  $this->getOrderProductTypeGroupDataBase($start_time, $end_time);
+        }
+
+        return !empty($data[$this->id]) ? $data[$this->id] : [];
     }
 
 //    public function getOrderProductTypeMoneySum($searchModel)

@@ -2,9 +2,6 @@
 
 namespace common\models\statistics;
 
-use common\models\order\Order;
-use common\models\order\OrderAccount;
-use Yii;
 
 /**
  * This is the model class for table "{{%statistics_style_view}}".
@@ -20,6 +17,13 @@ use Yii;
  */
 class OrderSale extends \common\models\base\BaseModel
 {
+    /**
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [];
+    }
 
     /**
      * {@inheritdoc}
@@ -35,7 +39,7 @@ class OrderSale extends \common\models\base\BaseModel
     public function rules()
     {
         return [
-            [['type', 'datetime', 'platform_group', 'platform_id', 'sale_amount', 'type_sale_amount', 'is_cache'], 'required'],
+            [['type', 'datetime', 'platform_group', 'platform_id', 'sale_amount', 'is_cache'], 'required'],
             [['id', 'datetime', 'platform_id', 'is_cache'], 'integer'],
             [['sale_amount'], 'number'],
             [['platform_group'], 'string', 'max' => 2],

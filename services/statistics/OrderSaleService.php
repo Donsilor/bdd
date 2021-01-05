@@ -27,24 +27,55 @@ class OrderSaleService extends Service
         $this->delCache();
 
         //获取最后时间
-        $lastTime = $this->getLastTime();
+        $start_time = $this->getLastTime();
 
         //当天时间
         $time = strtotime(date('Y-m-d', time()));
 
         //生成日数据
-        for ($i = $lastTime + 86400; $i <= $time; $i += 86400) {
+        for ($start_time = $start_time + 86400; $start_time <= $time; $start_time += 86400) {
+            $end_time = $start_time + 86400;
 
+            $list = $this->getData($start_time, $end_time);
+
+            foreach ($list as $item) {
+                $item['type'] = 1;
+                $item['datetime'] = $start_time;
+                $item['is_cache'] = ($start_time > $time - 86400 * 31) ? 1 : 0;//缓存最近31天的数据，
+
+                $this->insertData($item);
+            }
         }
 
+        //获取最后时间
+        $start_time = $this->getLastTime(2);
+
         //生成月数据
+        while (True) {
+            $start_time = strtotime("+1month", $start_time);
+            $end_time = strtotime("+1month", $start_time);
+
+            $list = $this->getData($start_time, $end_time);
+
+            foreach ($list as $item) {
+                $item['type'] = 2;
+                $item['datetime'] = $start_time;
+                $item['is_cache'] = ($end_time > $time - 86400 * 31) ? 1 : 0;//缓存最近31天的数据，
+
+                $this->insertData($item);
+            }
+
+            if($end_time > $time) {
+                break;
+            }
+        }
 
     }
 
-    private function getLastTime()
+    private function getLastTime($type = 1)
     {
-        $result = OrderSale::find()->select('datetime')->orderBy('id desc')->one();
-        return $result['datetime'] ?? date('Y-m-d H:i:s', 0);
+        $result = OrderSale::find()->select('datetime')->where(['type' => $type])->orderBy('id desc')->one();
+        return $result['datetime'] ?? strtotime('2020-01-01 00:00:00');
     }
 
     //获取数据（开始时间，结束时间）
