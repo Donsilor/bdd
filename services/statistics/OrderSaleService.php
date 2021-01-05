@@ -14,7 +14,18 @@ class OrderSaleService extends Service
     //生成统计数据(检查更新数据,当天，数天，当月，数月)
     public function generate()
     {
+        //获取上次缓存更新时间
+        $lastTime = $this->getLastTime();
 
+        //更新周期 2小时
+
+        //
+    }
+
+    private function getLastTime()
+    {
+        $result = OrderSale::find()->select('date')->orderBy('id desc')->one();
+        return $result['date'] ?? date('Y-m-d H:i:s', 0);
     }
 
     //获取数据（开始时间，结束时间）
@@ -41,7 +52,7 @@ class OrderSaleService extends Service
         foreach ($list as $data) {
             $sale_amount += $data['sum'];
 
-            if(!isset($type_sale_amount[$data['id']])) {
+            if (!isset($type_sale_amount[$data['id']])) {
                 $type_sale_amount[$data['id']] = 0;
             }
 
@@ -59,7 +70,7 @@ class OrderSaleService extends Service
     //删除缓存数据
     public function delCache()
     {
-        OrderSale::deleteAll(['is_cache'=>1]);
+        OrderSale::deleteAll(['is_cache' => 1]);
     }
 
     /**
@@ -72,7 +83,7 @@ class OrderSaleService extends Service
         $orderSale = new OrderSale($data);
         $result = $orderSale->save();
 
-        if(!$result) {
+        if (!$result) {
             throw new UnprocessableEntityHttpException($this->getError($orderSale));
         }
     }
