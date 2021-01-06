@@ -79,7 +79,7 @@ class OrderSaleService extends Service
     }
 
     //获取数据（开始时间，结束时间）
-    public function getData($start_time, $end_time)
+    private function getData($start_time, $end_time)
     {
         $where = [];
         $where['status'] = 2;
@@ -93,7 +93,7 @@ class OrderSaleService extends Service
     }
 
     //获取一个数据
-    public function getOneData($item, $start_time, $end_time)
+    private function getOneData($item, $start_time, $end_time)
     {
         $sale_amount = 0;
         $type_sale_amount = [];
@@ -118,7 +118,7 @@ class OrderSaleService extends Service
     }
 
     //删除缓存数据
-    public function delCache()
+    private function delCache()
     {
         OrderSale::deleteAll(['is_cache' => 1]);
     }
@@ -128,7 +128,7 @@ class OrderSaleService extends Service
      * @param $data
      * @throws UnprocessableEntityHttpException
      */
-    public function insertData($data)
+    private function insertData($data)
     {
         $orderSale = new OrderSale($data);
         $result = $orderSale->save();
