@@ -32,6 +32,7 @@ class MainController extends BaseController
      */
     public function actionSystem()
     {
+
         return $this->render($this->action->id, [
         ]);
     }
