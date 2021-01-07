@@ -45,6 +45,8 @@ class OrderTouristController extends OnAuthController
         $buyer_remark = \Yii::$app->request->post('buyer_remark');
         $addressInfo = \Yii::$app->request->post('address', null);
 
+        $order_from = $this->platform;
+
         if(empty($orderSn)) {
             if (empty($goodsCartList)) {
                 return ResultHelper::api(422, "goodsCartList不能为空");
@@ -60,15 +62,14 @@ class OrderTouristController extends OnAuthController
                 }
                 $cart_list[] = $model->toArray();
             }
-        }
-        $order_from = $this->platform;
 
-        $model = new OrderTouristAddressForm();
-        $model->attributes = $addressInfo;
-        $model->platform = $order_from;
-        if (!$model->validate()) {
-            // 返回数据验证失败
-            throw new UnprocessableEntityHttpException($this->getError($model));
+            $model2 = new OrderTouristAddressForm();
+            $model2->attributes = $addressInfo;
+            $model2->platform = $order_from;
+            if (!$model2->validate()) {
+                // 返回数据验证失败
+                throw new UnprocessableEntityHttpException($this->getError($model2));
+            }
         }
 
         try {            
