@@ -36,7 +36,7 @@ class OrderTouristAddressForm extends OrderTouristAddress
     public function validateCountryId($attribute)
     {
         $platforms = OrderFromEnum::countryIdToPlatforms($this->country_id);
-        if(!is_array($this->platform, $platforms)) {
+        if(!in_array($this->platform, $platforms)) {
             $this->addError($attribute, \Yii::t('address', '您选择的配送地址跟当前所在地区不一致，请重新选择或联系客服处理！'));
         }
     }
