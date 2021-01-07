@@ -133,4 +133,69 @@ class StyleController extends Controller
 
         BaseConsole::output('操作完成');
     }
+
+    /**
+     * 导出购物卡
+     */
+    public function actionTwPrice()
+    {
+        //修改的地区
+        $areaId = 4;
+
+        //请输入操作的款号，多个用逗号隔开
+        $typeId = \yii\helpers\BaseConsole::input("请输入操作产品线，多个用逗号隔开：");
+
+        $typeId = str_replace(['，', ' '], [',', ''], $typeId);
+        $typeId = explode(',', $typeId);
+
+        $styles = Style::find()->where(['type_id' => $typeId])->all();
+
+        $count = count($styles);
+
+        $trans = \Yii::$app->db->beginTransaction();
+        try {
+            Console::startProgress(0, $count);
+
+            $progress = 0;
+
+            foreach ($styles as $n => $style) {
+                $time = time();
+
+                //第5秒更新一次进度
+                if($progress!= $time && $time%6==0) {
+                    $progress = $time;
+                    Console::updateProgress($n, $count);
+                }
+
+                $styleSalepolicy = json_decode($style->style_salepolicy, true);
+
+                foreach ($styleSalepolicy as $key => $salepolicy) {
+                    if ($salepolicy['area_id'] == $areaId) {
+                        $styleSalepolicy[$key]['markup_value'] = 300;
+                    }
+                }
+
+                $style->style_salepolicy = $styleSalepolicy;
+
+                $style->save();
+
+                //记录日志
+//                \Yii::$app->services->goods->recordGoodsLog($style, $old_style_info);
+
+                //商品更新
+                \Yii::$app->services->goods->syncStyleToGoods($style->id);
+            }
+
+            $trans->commit();
+        } catch (\Exception $exception) {
+            $trans->rollBack();
+
+            throw $exception;
+        }
+
+        Console::updateProgress($count, $count);
+        Console::endProgress();
+
+        BaseConsole::output('操作完成');
+    }
 }
