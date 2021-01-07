@@ -4,6 +4,7 @@ namespace api\modules\web\controllers\member;
 
 use api\controllers\OnAuthController;
 use api\modules\web\forms\CartForm;
+use api\modules\web\forms\OrderTouristAddressForm;
 use backend\modules\order\forms\OrderAddressForm;
 use common\enums\CurrencyEnum;
 use common\enums\OrderTouristStatusEnum;
@@ -61,6 +62,14 @@ class OrderTouristController extends OnAuthController
             }
         }
         $order_from = $this->platform;
+
+        $model = new OrderTouristAddressForm();
+        $model->attributes = $addressInfo;
+        $model->platform = $order_from;
+        if (!$model->validate()) {
+            // 返回数据验证失败
+            throw new UnprocessableEntityHttpException($this->getError($model));
+        }
 
         try {            
             $trans = \Yii::$app->db->beginTransaction();
