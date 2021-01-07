@@ -4,6 +4,7 @@ namespace api\modules\web\controllers\member;
 
 use api\controllers\OnAuthController;
 use api\modules\web\forms\CartForm;
+use api\modules\web\forms\OrderTouristAddressForm;
 use backend\modules\order\forms\OrderAddressForm;
 use common\enums\CurrencyEnum;
 use common\enums\OrderTouristStatusEnum;
@@ -44,6 +45,8 @@ class OrderTouristController extends OnAuthController
         $buyer_remark = \Yii::$app->request->post('buyer_remark');
         $addressInfo = \Yii::$app->request->post('address', null);
 
+        $order_from = $this->platform;
+
         if(empty($orderSn)) {
             if (empty($goodsCartList)) {
                 return ResultHelper::api(422, "goodsCartList不能为空");
@@ -59,8 +62,15 @@ class OrderTouristController extends OnAuthController
                 }
                 $cart_list[] = $model->toArray();
             }
+
+            $model2 = new OrderTouristAddressForm();
+            $model2->attributes = $addressInfo;
+            $model2->platform = $order_from;
+            if (!$model2->validate()) {
+                // 返回数据验证失败
+                throw new UnprocessableEntityHttpException($this->getError($model2));
+            }
         }
-        $order_from = $this->platform;
 
         try {            
             $trans = \Yii::$app->db->beginTransaction();

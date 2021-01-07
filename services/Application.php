@@ -5,6 +5,7 @@ namespace services;
 use common\components\Service;
 use common\queues\ServicesJob;
 use services\common\NotifyContactsService;
+use services\statistics\OrderSaleService;
 
 /**
  * Class Application
@@ -156,5 +157,6 @@ class Application extends Service
         'card' => 'services\market\CardService',
         'job' => ServicesJob::class,
         'notifyContacts' => NotifyContactsService::class,
+        'OrderSale' => OrderSaleService::class,
     ];
 }
