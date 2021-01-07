@@ -151,7 +151,7 @@ class StyleController extends Controller
 
         $diamonds = [];
         if(in_array(15, $typeId)) {
-            $diamonds = Diamond::find()->where([])->all();
+            $diamonds = Diamond::find()->where(['status'=>1])->all();
             $typeId = array_merge(array_diff($typeId, [15]));
         }
 
@@ -168,10 +168,12 @@ class StyleController extends Controller
 
             $progress = 0;
 
-            foreach ($styles as $n => $style) {
+            $n = 0;
+            foreach ($styles as $style) {
                 $time = time();
 
                 //第5秒更新一次进度
+                $n++;
                 if($progress!= $time && $time%6==0) {
                     $progress = $time;
                     Console::updateProgress($n, $count);
@@ -187,7 +189,10 @@ class StyleController extends Controller
 
                 $style->style_salepolicy = $styleSalepolicy;
 
-                $style->save();
+                if(!$style->save()) {
+                    var_dump($style->getErrors());
+                    throw new \Exception($style->id . ' 失败，请重试！');
+                }
 
                 //商品更新
                 \Yii::$app->services->goods->syncStyleToGoods($style->id);
@@ -197,20 +202,21 @@ class StyleController extends Controller
                 $time = time();
 
                 //第5秒更新一次进度
+                $n++;
                 if($progress!= $time && $time%6==0) {
                     $progress = $time;
                     Console::updateProgress($n, $count);
                 }
 
-                if(!empty($style->sale_policy)) {
-                    $styleSalepolicy = json_decode($style->sale_policy, true);
+                if(!empty($diamond->sale_policy)) {
+                    $styleSalepolicy = json_decode($diamond->sale_policy, true);
                 }
                 else {
                     $styleSalepolicy = [
                         "1" => [
                             "area_id" => "1",
                             "area_name" => "中国",
-                            "sale_price" => $style->sale_price,
+                            "sale_price" => $diamond->sale_price,
                             "markup_rate" => "1",
                             "markup_value" => "0",
                             "status" => "1"
@@ -218,7 +224,7 @@ class StyleController extends Controller
                         "2" => [
                             "area_id" => "2",
                             "area_name" => "香港",
-                            "sale_price" => $style->sale_price,
+                            "sale_price" => $diamond->sale_price,
                             "markup_rate" => "1",
                             "markup_value" => "0",
                             "status" => "1"
@@ -226,7 +232,7 @@ class StyleController extends Controller
                         "3" => [
                             "area_id" => "3",
                             "area_name" => "澳门",
-                            "sale_price" => $style->sale_price,
+                            "sale_price" => $diamond->sale_price,
                             "markup_rate" => "1",
                             "markup_value" => "0",
                             "status" => "1"
@@ -234,15 +240,15 @@ class StyleController extends Controller
                         "4" => [
                             "area_id" => "4",
                             "area_name" => "台湾",
-                            "sale_price" => $style->sale_price,
+                            "sale_price" => $diamond->sale_price,
                             "markup_rate" => "1",
                             "markup_value" => "0",
-                            "status" => "0"
+                            "status" => "1"
                         ],
                         "99" => [
                             "area_id" => "99",
                             "area_name" => "国外",
-                            "sale_price" => $style->sale_price,
+                            "sale_price" => $diamond->sale_price,
                             "markup_rate" => "1",
                             "markup_value" => "0",
                             "status" => "1"
@@ -256,12 +262,24 @@ class StyleController extends Controller
                     }
                 }
 
-                $style->sale_policy = $styleSalepolicy;
+                $diamond->sale_policy = $styleSalepolicy;
 
-                $style->save();
+                $diamond->cut = (string)$diamond->cut;
+                $diamond->color = (string)$diamond->color;
+                $diamond->symmetry = (string)$diamond->symmetry;
+                $diamond->polish = (string)$diamond->polish;
+                $diamond->fluorescence = (string)$diamond->fluorescence;
+                $diamond->clarity = (string)$diamond->clarity;
+                $diamond->depth_lv = (string)$diamond->depth_lv;
+                $diamond->table_lv = (string)$diamond->table_lv;
+
+                if(!$diamond->save()) {
+                    var_dump($diamond->getErrors());
+                    throw new \Exception($diamond->id . ' 失败，请重试！');
+                }
 
                 //商品更新
-                \Yii::$app->services->goods->syncStyleToGoods($style->id);
+                \Yii::$app->services->diamond->syncDiamondToGoods($diamond->id);
             }
 
             $trans->commit();
