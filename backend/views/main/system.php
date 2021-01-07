@@ -10,7 +10,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
     <div class="col-sm-12">
         <!-- 具体内容 -->
         <div class="box">
-            <div id="main" style="width: 600px;height:1600px;"></div>
+            <div id="main" style="width: 1000px;height:750px;"></div>
         </div>
     </div>
 </div>
@@ -20,9 +20,9 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 
     // 指定图表的配置项和数据
     option = {
-        title: {
-            text: '折线图堆叠'
-        },
+        // title: {
+        //     text: '折线图堆叠'
+        // },
         legend: {},
         tooltip: {
             trigger: 'axis',
@@ -33,13 +33,13 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
             right: '4%',
             bottom: '3%',
             containLabel: true,
-        top: '55%'
+            top: '55%'
         },
-        toolbox: {
-            feature: {
-                saveAsImage: {}
-            }
-        },
+        // toolbox: {
+        //     feature: {
+        //         saveAsImage: {}
+        //     }
+        // },
         dataset: {
             source: [
                 ['product', '周一', '周二', '周三', '周四', '周五', '周六', '周日'],
@@ -52,11 +52,10 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
         },
         xAxis: {
             type: 'category',
-            boundaryGap: false,
-            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+            // boundaryGap: false,
+            // data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
         },
         yAxis: {
-            type: 'value',
             gridIndex: 0
         },
         series: [
@@ -69,10 +68,25 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                 type: 'pie',
                 id: 'pie',
                 radius: '30%',
-                center: ['50%', '25%'],
+                center: ['25%', '25%'],
                 emphasis: {focus: 'data'},
                 label: {
-                    formatter: '{b}: {@2012} ({d}%)'
+                    formatter: '{b}: {@周一} ({d}%)'
+                },
+                encode: {
+                    itemName: 'product',
+                    value: '周一',
+                    tooltip: '周一'
+                }
+            },
+            {
+                type: 'pie',
+                id: 'pie2',
+                radius: '30%',
+                center: ['75%', '25%'],
+                emphasis: {focus: 'data'},
+                label: {
+                    formatter: '{b}: {@周一} ({d}%)'
                 },
                 encode: {
                     itemName: 'product',
@@ -87,6 +101,9 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
         var xAxisInfo = event.axesInfo[0];
         if (xAxisInfo) {
             var dimension = xAxisInfo.value + 1;
+
+            console.log(dimension);
+
             myChart.setOption({
                 series: {
                     id: 'pie',
