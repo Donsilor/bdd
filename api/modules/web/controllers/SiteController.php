@@ -307,9 +307,15 @@ class SiteController extends OnAuthController
      * 站点默认配置（默认语言和货币）
      */
     public function actionSetting()
-    {       
+    {
 
         $area_id = \Yii::$app->debris->config("web_area_id");
+        $localIp = \Yii::$app->debris->config("web_area_local_ip");
+
+        if(!in_array(Yii::$app->request->userIP, explode(',', $localIp))) {
+            $area_id = null;
+        }
+
         if(!$area_id) {
             $area_id = \Yii::$app->ipLocation->getAreaId();
             $language = 'zh_CN';
