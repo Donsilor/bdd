@@ -6,6 +6,7 @@ use common\enums\AreaEnum;
 use common\enums\StatusEnum;
 use common\models\common\EmailLog;
 use common\models\common\SmsLog;
+use common\models\goods\Diamond;
 use common\models\goods\Style;
 use common\models\market\MarketCard;
 use common\models\order\Order;
@@ -119,6 +120,166 @@ class StyleController extends Controller
 
                 //商品更新
                 \Yii::$app->services->goods->syncStyleToGoods($style->id);
+            }
+
+            $trans->commit();
+        } catch (\Exception $exception) {
+            $trans->rollBack();
+
+            throw $exception;
+        }
+
+        Console::updateProgress($count, $count);
+        Console::endProgress();
+
+        BaseConsole::output('操作完成');
+    }
+
+    /**
+     * 导出购物卡
+     */
+    public function actionTwPrice()
+    {
+        //修改的地区
+        $areaId = 4;
+
+        //请输入操作的款号，多个用逗号隔开
+        $typeId = \yii\helpers\BaseConsole::input("请输入操作产品线，多个用逗号隔开：");
+
+        $typeId = str_replace(['，', ' '], [',', ''], $typeId);
+        $typeId = explode(',', $typeId);
+
+        $diamonds = [];
+        if(in_array(15, $typeId)) {
+            $diamonds = Diamond::find()->where(['status'=>1])->all();
+            $typeId = array_merge(array_diff($typeId, [15]));
+        }
+
+        $styles = [];
+        if(!empty($typeId)) {
+            $styles = Style::find()->where(['type_id' => $typeId])->all();
+        }
+
+        $count = count($styles) + count($diamonds);
+
+        $trans = \Yii::$app->db->beginTransaction();
+        try {
+            Console::startProgress(0, $count);
+
+            $progress = 0;
+
+            $n = 0;
+            foreach ($styles as $style) {
+                $time = time();
+
+                //第5秒更新一次进度
+                $n++;
+                if($progress!= $time && $time%6==0) {
+                    $progress = $time;
+                    Console::updateProgress($n, $count);
+                }
+
+                $styleSalepolicy = json_decode($style->style_salepolicy, true);
+
+                foreach ($styleSalepolicy as $key => $salepolicy) {
+                    if ($salepolicy['area_id'] == $areaId) {
+                        $styleSalepolicy[$key]['markup_value'] = 300;
+                    }
+                }
+
+                $style->style_salepolicy = $styleSalepolicy;
+
+                if(!$style->save()) {
+                    var_dump($style->getErrors());
+                    throw new \Exception($style->id . ' 失败，请重试！');
+                }
+
+                //商品更新
+                \Yii::$app->services->goods->syncStyleToGoods($style->id);
+            }
+
+            foreach ($diamonds as $diamond) {
+                $time = time();
+
+                //第5秒更新一次进度
+                $n++;
+                if($progress!= $time && $time%6==0) {
+                    $progress = $time;
+                    Console::updateProgress($n, $count);
+                }
+
+                if(!empty($diamond->sale_policy)) {
+                    $styleSalepolicy = json_decode($diamond->sale_policy, true);
+                }
+                else {
+                    $styleSalepolicy = [
+                        "1" => [
+                            "area_id" => "1",
+                            "area_name" => "中国",
+                            "sale_price" => $diamond->sale_price,
+                            "markup_rate" => "1",
+                            "markup_value" => "0",
+                            "status" => "1"
+                        ],
+                        "2" => [
+                            "area_id" => "2",
+                            "area_name" => "香港",
+                            "sale_price" => $diamond->sale_price,
+                            "markup_rate" => "1",
+                            "markup_value" => "0",
+                            "status" => "1"
+                        ],
+                        "3" => [
+                            "area_id" => "3",
+                            "area_name" => "澳门",
+                            "sale_price" => $diamond->sale_price,
+                            "markup_rate" => "1",
+                            "markup_value" => "0",
+                            "status" => "1"
+                        ],
+                        "4" => [
+                            "area_id" => "4",
+                            "area_name" => "台湾",
+                            "sale_price" => $diamond->sale_price,
+                            "markup_rate" => "1",
+                            "markup_value" => "0",
+                            "status" => "1"
+                        ],
+                        "99" => [
+                            "area_id" => "99",
+                            "area_name" => "国外",
+                            "sale_price" => $diamond->sale_price,
+                            "markup_rate" => "1",
+                            "markup_value" => "0",
+                            "status" => "1"
+                        ]
+                    ];
+                }
+
+                foreach ($styleSalepolicy as $key => $salepolicy) {
+                    if ($salepolicy['area_id'] == $areaId) {
+                        $styleSalepolicy[$key]['markup_value'] = 300;
+                    }
+                }
+
+                $diamond->sale_policy = $styleSalepolicy;
+
+                $diamond->cut = (string)$diamond->cut;
+                $diamond->color = (string)$diamond->color;
+                $diamond->symmetry = (string)$diamond->symmetry;
+                $diamond->polish = (string)$diamond->polish;
+                $diamond->fluorescence = (string)$diamond->fluorescence;
+                $diamond->clarity = (string)$diamond->clarity;
+                $diamond->depth_lv = (string)$diamond->depth_lv;
+                $diamond->table_lv = (string)$diamond->table_lv;
+
+                if(!$diamond->save()) {
+                    var_dump($diamond->getErrors());
+                    throw new \Exception($diamond->id . ' 失败，请重试！');
+                }
+
+                //商品更新
+                \Yii::$app->services->diamond->syncDiamondToGoods($diamond->id);
             }
 
             $trans->commit();
