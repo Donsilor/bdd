@@ -98,8 +98,8 @@ console.log(list);
             {
                 type: 'pie',
                 id: 'pie',
-                radius: '30%',
-                center: ['25%', '25%'],
+                radius: '40%',
+                center: ['50%', '30%'],
                 // seriesLayoutBy: 'row',
                 // dimensions: ['1', '2', '3'],
                 label: {
