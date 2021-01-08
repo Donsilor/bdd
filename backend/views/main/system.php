@@ -15,18 +15,17 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
     </div>
 </div>
 <script type="text/javascript">
+    var list = <?= json_encode($list) ?>;
+console.log(list);
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById("main"));
 
     // 指定图表的配置项和数据
     option = {
-        // title: {
-        //     text: '折线图堆叠'
-        // },
         legend: {},
         tooltip: {
             trigger: 'axis',
-            showContent: false
+            showContent: true
         },
         grid: {
             left: '3%',
@@ -35,89 +34,141 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
             containLabel: true,
             top: '55%'
         },
-        // toolbox: {
-        //     feature: {
-        //         saveAsImage: {}
-        //     }
-        // },
         dataset: {
-            source: [
-                ['product', '周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-                ['邮件营销', 120, 132, 101, 134, 90, 230, 210],
-                ['联盟广告', 220, 182, 191, 234, 290, 330, 310],
-                ['视频广告', 150, 232, 201, 154, 190, 330, 410],
-                ['直接访问', 320, 332, 301, 334, 390, 330, 1320],
-                ['搜索引擎', 820, 932, 901, 934, 1290, 1330, 1320],
-            ]
+            source: list,
         },
         xAxis: {
             type: 'category',
-            // boundaryGap: false,
-            // data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+            boundaryGap: false,
         },
         yAxis: {
             gridIndex: 0
         },
         series: [
-            {type: 'line', smooth: true, seriesLayoutBy: 'row', emphasis: {focus: 'series'}},
-            {type: 'line', smooth: true, seriesLayoutBy: 'row', emphasis: {focus: 'series'}},
-            {type: 'line', smooth: true, seriesLayoutBy: 'row', emphasis: {focus: 'series'}},
-            {type: 'line', smooth: true, seriesLayoutBy: 'row', emphasis: {focus: 'series'}},
-            {type: 'line', smooth: true, seriesLayoutBy: 'row', emphasis: {focus: 'series'}},
+            // {
+            //     type: 'line',
+            //     smooth: 0.2,
+            //     seriesLayoutBy: 'column',
+            //     encode: {
+            //         x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
+            //         y: 'sale_amount_all',              // 表示维度 2 映射到 y 轴。
+            //         tooltip: ['name_all', 'sale_amount_all'] // 表示维度 3、2、4 会在 tooltip 中显示。
+            //     }
+            // },
+            {
+                type: 'line',
+                smooth: 0.2,
+                seriesLayoutBy: 'column',
+                encode: {
+                    x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
+                    y: 'sale_amount_hk',              // 表示维度 2 映射到 y 轴。
+                    tooltip: ['name_hk', 'sale_amount_hk'] // 表示维度 3、2、4 会在 tooltip 中显示。
+                }
+            },
+            {
+                type: 'line',
+                smooth: 0.2,
+                seriesLayoutBy: 'column',
+                encode: {
+                    x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
+                    y: 'sale_amount_cn',              // 表示维度 2 映射到 y 轴。
+                    tooltip: ['name_cn', 'sale_amount_cn'] // 表示维度 3、2、4 会在 tooltip 中显示。
+                }
+            },
+            {
+                type: 'line',
+                smooth: 0.2,
+                seriesLayoutBy: 'column',
+                encode: {
+                    x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
+                    y: 'sale_amount_tw',              // 表示维度 2 映射到 y 轴。
+                    tooltip: ['name_tw', 'sale_amount_tw'] // 表示维度 3、2、4 会在 tooltip 中显示。
+                }
+            },
+            {
+                type: 'line',
+                smooth: 0.2,
+                seriesLayoutBy: 'column',
+                encode: {
+                    x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
+                    y: 'sale_amount_us',              // 表示维度 2 映射到 y 轴。
+                    tooltip: ['name_us', 'sale_amount_us'] // 表示维度 3、2、4 会在 tooltip 中显示。
+                }
+            },
             {
                 type: 'pie',
                 id: 'pie',
                 radius: '30%',
                 center: ['25%', '25%'],
-                emphasis: {focus: 'data'},
+                // seriesLayoutBy: 'row',
+                // dimensions: ['1', '2', '3'],
                 label: {
-                    formatter: '{b}: {@周一} ({d}%)'
+                    formatter: '{b}: {@0} ({d}%)'
                 },
-                encode: {
-                    itemName: 'product',
-                    value: '周一',
-                    tooltip: '周一'
-                }
+                data: [
+                    {
+                        name: list[0]['name_hk'],
+                        value: list[0]['sale_amount_hk'],
+                        // tooltip: ['datetime', 'sale_amount_us']
+                    },
+                    {
+                        name: list[0]['name_cn'],
+                        value: list[0]['sale_amount_cn'],
+                        // tooltip: ['datetime', 'sale_amount_us']
+                    },
+                    {
+                        name: list[0]['name_tw'],
+                        value: list[0]['sale_amount_tw'],
+                        // tooltip: ['datetime', 'sale_amount_us']
+                    },
+                    {
+                        name: list[0]['name_us'],
+                        value: list[0]['sale_amount_us'],
+                        // tooltip: ['datetime', 'sale_amount_us']
+                    },
+                ]
             },
-            {
-                type: 'pie',
-                id: 'pie2',
-                radius: '30%',
-                center: ['75%', '25%'],
-                emphasis: {focus: 'data'},
-                label: {
-                    formatter: '{b}: {@周一} ({d}%)'
-                },
-                encode: {
-                    itemName: 'product',
-                    value: '周一',
-                    tooltip: '周一'
-                }
-            }
+            // {
+            //     type: 'pie',
+            //     dimensions: ['date', 'open2'],
+            //     id: 'pie2',
+            //     radius: '30%',
+            //     center: ['75%', '25%'],
+            //     emphasis: {focus: 'data'},
+            //     label: {
+            //         formatter: '{b}: {@周一} ({d}%)'
+            //     },
+            //     encode: {
+            //         itemName: 'product',
+            //         value: 'date',
+            //         tooltip: 'date'
+            //     }
+            // }
         ]
     };
 
-    myChart.on('updateAxisPointer', function (event) {
-        var xAxisInfo = event.axesInfo[0];
-        if (xAxisInfo) {
-            var dimension = xAxisInfo.value + 1;
-
-            console.log(dimension);
-
-            myChart.setOption({
-                series: {
-                    id: 'pie',
-                    label: {
-                        formatter: '{b}: {@[' + dimension + ']} ({d}%)'
-                    },
-                    encode: {
-                        value: dimension,
-                        tooltip: dimension
-                    }
-                }
-            });
-        }
-    });
+    // myChart.on('updateAxisPointer', function (event) {
+    //     var xAxisInfo = event.axesInfo[0];
+    //     if (xAxisInfo) {
+    //         var dimension = xAxisInfo.value + 1;
+    //
+    //         console.log(dimension);
+    //
+    //         myChart.setOption({
+    //             series: [{
+    //                 id: 'pie',
+    //                 label: {
+    //                     formatter: '{b}: {@[' + dimension + ']} ({d}%)'
+    //                 },
+    //                 encode: {
+    //                     value: dimension,
+    //                     tooltip: dimension
+    //                 }
+    //                 // data: [{value:20,name:"aa"}, {value:30,name:"aa"}],
+    //             }]
+    //         });
+    //     }
+    // });
 
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);

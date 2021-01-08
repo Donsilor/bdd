@@ -2,6 +2,8 @@
 
 namespace backend\controllers;
 
+use common\enums\OrderFromEnum;
+use common\models\statistics\OrderSale;
 use Yii;
 use backend\forms\ClearCache;
 
@@ -32,8 +34,67 @@ class MainController extends BaseController
      */
     public function actionSystem()
     {
+        $type = 2;
+        $where = [];
+        $where['type'] = $type;
+        $date = OrderSale::find()->where($where)->asArray()->all();
+
+        $list = [];
+        foreach ($date as $item) {
+            if(!isset($list[$item['datetime']])) {
+                $list[$item['datetime']] = [
+                    'datetime' => date($type == 2 ? "Y-m" : "Y-m-d", $item['datetime']),
+
+                    'name_all' => '总和',
+                    'sale_amount_all' => 0,
+                    'type_sale_amount_all' => [],
+
+                    'name_hk' => '香港',
+                    'sale_amount_hk' => 0,
+                    'type_sale_amount_hk' => [],
+
+                    'name_cn' => '大陆',
+                    'sale_amount_cn' => 0,
+                    'type_sale_amount_cn' => [],
+
+                    'name_tw' => '台湾',
+                    'sale_amount_tw' => 0,
+                    'type_sale_amount_tw' => [],
+
+                    'name_us' => '国外',
+                    'sale_amount_us' => 0,
+                    'type_sale_amount_us' => [],
+                ];
+            }
+
+            $tmp = &$list[$item['datetime']];
+
+            $tmp['sale_amount_all'] = bcadd($tmp['sale_amount_all'], $item['sale_amount'], 2);
+
+            if($item['platform_group'] == OrderFromEnum::GROUP_HK) {
+                $tmp['sale_amount_hk'] = bcadd($tmp['sale_amount_hk'], $item['sale_amount'], 2);
+//                    'type_sale_amount_hk' => [],
+            }
+
+            if($item['platform_group'] == OrderFromEnum::GROUP_CN) {
+                $tmp['sale_amount_cn'] = bcadd($tmp['sale_amount_cn'], $item['sale_amount'], 2);
+//                    'type_sale_amount_hk' => [],
+            }
+
+            if($item['platform_group'] == OrderFromEnum::GROUP_TW) {
+                $tmp['sale_amount_tw'] = bcadd($tmp['sale_amount_tw'], $item['sale_amount'], 2);
+//                    'type_sale_amount_hk' => [],
+            }
+
+            if($item['platform_group'] == OrderFromEnum::GROUP_US) {
+                $tmp['sale_amount_us'] = bcadd($tmp['sale_amount_us'], $item['sale_amount'], 2);
+//                    'type_sale_amount_hk' => [],
+            }
+        }
+
 
         return $this->render($this->action->id, [
+            'list' => array_values($list)
         ]);
     }
 
