@@ -45,16 +45,16 @@ console.log(list);
             gridIndex: 0
         },
         series: [
-            // {
-            //     type: 'line',
-            //     smooth: 0.2,
-            //     seriesLayoutBy: 'column',
-            //     encode: {
-            //         x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
-            //         y: 'sale_amount_all',              // 表示维度 2 映射到 y 轴。
-            //         tooltip: ['name_all', 'sale_amount_all'] // 表示维度 3、2、4 会在 tooltip 中显示。
-            //     }
-            // },
+            {
+                type: 'line',
+                smooth: 0.2,
+                seriesLayoutBy: 'column',
+                encode: {
+                    x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
+                    y: 'sale_amount_all',              // 表示维度 2 映射到 y 轴。
+                    tooltip: ['name_all', 'sale_amount_all'] // 表示维度 3、2、4 会在 tooltip 中显示。
+                }
+            },
             {
                 type: 'line',
                 smooth: 0.2,
