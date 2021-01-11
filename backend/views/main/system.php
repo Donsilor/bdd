@@ -1,6 +1,7 @@
 <?php
 
 use common\helpers\Url;
+use \common\helpers\Html;
 
 $this->title = '首页';
 $this->params['breadcrumbs'][] = ['label' => $this->title];
@@ -17,25 +18,28 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                             <h4 style="padding: 10px 25px; background:#ecf0f5">数据来源</h4>
                         </div>
                         <div class="row">
-                            <input name="site" type="radio" value=""><span style="padding-left: 8px;">全部站点</span>
+                            <input name="site" type="radio" value="all" checked /><span style="padding-left: 8px;">全部站点</span>
                         </div>
                         <div class="row">
-                            <input name="site" type="radio" value="cn"><span style="padding-left: 8px;">大陆</span>
+                            <input name="site" type="radio" value="cn" /><span style="padding-left: 8px;">大陆</span>
                         </div>
                         <div class="row">
-                            <input name="site" type="radio" value="hk"><span style="padding-left: 8px;">香港</span>
+                            <input name="site" type="radio" value="hk" /><span style="padding-left: 8px;">香港</span>
                         </div>
                         <div class="row">
-                            <input name="site" type="radio" value="tw"><span style="padding-left: 8px;">台湾</span>
+                            <input name="site" type="radio" value="tw" /><span style="padding-left: 8px;">台湾</span>
                         </div>
                         <div class="row">
-                            <input name="site" type="radio" value="us"><span style="padding-left: 8px;">美国</span>
+                            <input name="site" type="radio" value="us" /><span style="padding-left: 8px;">美国</span>
                         </div>
                     </div>
-                    <div class="box">
+                    <div class="box" style="margin: 35px 45px;">
                         <div class="row">
-                            <button>日销售额</button>
-                            <button>月销售额</button>
+                            <?php if($type==2) { ?>
+                            <?= Html::a('查看日销售额 >>',['', 'type'=>1], ['class' => 'btn btn-info btn-sm']) ?>
+                            <?php } else { ?>
+                            <?= Html::a('查看月销售额 >>',['', 'type'=>2], ['class' => 'btn btn-info btn-sm']) ?>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
@@ -48,8 +52,8 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 </div>
 <script type="text/javascript">
     var list = <?= json_encode($list) ?>;
-    var dimension = 0;
-    var siteName = "cn";
+    var dimension = list.length-1;
+    var siteName = "all";
 
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById("main"));
@@ -82,7 +86,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
         },
         series: [
             {
-                name: '全部站点',
+                // name: '全部站点',
                 type: 'line',
                 smooth: 0.2,
                 encode: {
@@ -142,20 +146,20 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                 },
                 data: [
                     {
-                        name: list[0]['name_hk'],
-                        value: list[0]['sale_amount_hk'],
+                        name: list[dimension]['name_hk'],
+                        value: list[dimension]['sale_amount_hk'],
                     },
                     {
-                        name: list[0]['name_cn'],
-                        value: list[0]['sale_amount_cn'],
+                        name: list[dimension]['name_cn'],
+                        value: list[dimension]['sale_amount_cn'],
                     },
                     {
-                        name: list[0]['name_tw'],
-                        value: list[0]['sale_amount_tw'],
+                        name: list[dimension]['name_tw'],
+                        value: list[dimension]['sale_amount_tw'],
                     },
                     {
-                        name: list[0]['name_us'],
-                        value: list[0]['sale_amount_us'],
+                        name: list[dimension]['name_us'],
+                        value: list[dimension]['sale_amount_us'],
                     },
                 ]
             }
@@ -166,7 +170,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
         var datas = list[dimension]
         var data = [];
 
-        if(siteName=="") {
+        if(siteName=="all") {
             data = [
                 {
                     name: datas['name_hk'],
@@ -194,16 +198,34 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                     value: value,
                 });
             });
+
+            if(data.length===0) {
+                data.push({
+                    name: datas['name_'+siteName],
+                    value: 0,
+                });
+            }
         }
-// console.log(data);
+
         myChart.setOption({
-            series: [{
-                id: 'pie',
-                label: {
-                    formatter: '{b}: {@[' + dimension + ']} ({d}%)'
+            series: [
+                {
+                    // name: 'name_cn',
+                    type: 'line',
+                    encode: {
+                        x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
+                        y: 'sale_amount_'+siteName,              // 表示维度 2 映射到 y 轴。
+                        tooltip: ['name_'+siteName, 'sale_amount_'+siteName] // 表示维度 3、2、4 会在 tooltip 中显示。
+                    },
                 },
-                data: data
-            }]
+                {
+                    id: 'pie',
+                    label: {
+                        formatter: '{b}: {@[' + dimension + ']} ({d}%)'
+                    },
+                    data: data
+                }
+            ]
         });
     }
 
@@ -211,36 +233,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
         var xAxisInfo = event.axesInfo[0];
         if (xAxisInfo) {
             dimension = xAxisInfo.value;
-
             updatePie();
-            // var datas = list[dimension]
-            //
-            // myChart.setOption({
-            //     series: [{
-            //         id: 'pie',
-            //         label: {
-            //             formatter: '{b}: {@[' + dimension + ']} ({d}%)'
-            //         },
-            //         data: [
-            //             {
-            //                 name: datas['name_hk'],
-            //                 value: datas['sale_amount_hk'],
-            //             },
-            //             {
-            //                 name: datas['name_cn'],
-            //                 value: datas['sale_amount_cn'],
-            //             },
-            //             {
-            //                 name: datas['name_tw'],
-            //                 value: datas['sale_amount_tw'],
-            //             },
-            //             {
-            //                 name: datas['name_us'],
-            //                 value: datas['sale_amount_us'],
-            //             },
-            //         ]
-            //     }]
-            // });
         }
     });
 
@@ -249,5 +242,8 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 </script>
 
 <script type="text/javascript">
-
+    $("input[name=site]").click(function () {
+        siteName = $(this).val();
+        updatePie();
+    });
 </script>

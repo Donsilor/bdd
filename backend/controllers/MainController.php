@@ -40,7 +40,7 @@ class MainController extends BaseController
 
         $typeList = Yii::$app->services->goodsType->getTypeList();
 
-        $type = 1;
+        $type = Yii::$app->request->get('type', 2);
         $where = [];
         $where['type'] = $type;
         $date = OrderSale::find()->where($where)->all();
@@ -151,7 +151,8 @@ class MainController extends BaseController
         }
 
         return $this->render($this->action->id, [
-            'list' => array_values($list)
+            'list' => array_values($list),
+            'type' => $type
         ]);
     }
 
