@@ -86,55 +86,55 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
         },
         series: [
             {
-                // name: '全部站点',
+                name: '全部站点',
                 type: 'line',
                 smooth: 0.2,
                 encode: {
                     x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
                     y: 'sale_amount_all',              // 表示维度 2 映射到 y 轴。
-                    tooltip: ['name_all', 'sale_amount_all'] // 表示维度 3、2、4 会在 tooltip 中显示。
+                    tooltip: ['sale_amount_all'] // 表示维度 3、2、4 会在 tooltip 中显示。
                 },
             },
-            // {
-            //     // name: '香港',
-            //     type: 'line',
-            //     smooth: 0.2,
-            //     encode: {
-            //         x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
-            //         y: 'sale_amount_hk',              // 表示维度 2 映射到 y 轴。
-            //         tooltip: ['name_hk', 'sale_amount_hk'] // 表示维度 3、2、4 会在 tooltip 中显示。
-            //     }
-            // },
-            // {
-            //     // name: '大陆',
-            //     type: 'line',
-            //     smooth: 0.2,
-            //     encode: {
-            //         x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
-            //         y: 'sale_amount_cn',              // 表示维度 2 映射到 y 轴。
-            //         tooltip: ['name_cn', 'sale_amount_cn'] // 表示维度 3、2、4 会在 tooltip 中显示。
-            //     }
-            // },
-            // {
-            //     // name: '台湾',
-            //     type: 'line',
-            //     smooth: 0.2,
-            //     encode: {
-            //         x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
-            //         y: 'sale_amount_tw',              // 表示维度 2 映射到 y 轴。
-            //         tooltip: ['name_tw', 'sale_amount_tw'] // 表示维度 3、2、4 会在 tooltip 中显示。
-            //     }
-            // },
-            // {
-            //     // name: '美国',
-            //     type: 'line',
-            //     smooth: 0.2,
-            //     encode: {
-            //         x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
-            //         y: 'sale_amount_us',              // 表示维度 2 映射到 y 轴。
-            //         tooltip: ['name_us', 'sale_amount_us'] // 表示维度 3、2、4 会在 tooltip 中显示。
-            //     }
-            // },
+            {
+                name: '香港',
+                type: 'line',
+                smooth: 0.2,
+                encode: {
+                    x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
+                    y: 'sale_amount_hk',              // 表示维度 2 映射到 y 轴。
+                    tooltip: ['sale_amount_hk'] // 表示维度 3、2、4 会在 tooltip 中显示。
+                }
+            },
+            {
+                name: '大陆',
+                type: 'line',
+                smooth: 0.2,
+                encode: {
+                    x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
+                    y: 'sale_amount_cn',              // 表示维度 2 映射到 y 轴。
+                    tooltip: ['sale_amount_cn'] // 表示维度 3、2、4 会在 tooltip 中显示。
+                }
+            },
+            {
+                name: '台湾',
+                type: 'line',
+                smooth: 0.2,
+                encode: {
+                    x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
+                    y: 'sale_amount_tw',              // 表示维度 2 映射到 y 轴。
+                    tooltip: ['sale_amount_tw'] // 表示维度 3、2、4 会在 tooltip 中显示。
+                }
+            },
+            {
+                name: '美国',
+                type: 'line',
+                smooth: 0.2,
+                encode: {
+                    x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
+                    y: 'sale_amount_us',              // 表示维度 2 映射到 y 轴。
+                    tooltip: ['sale_amount_us'] // 表示维度 3、2、4 会在 tooltip 中显示。
+                }
+            },
             {
                 visualMap: false,
                 type: 'pie',
@@ -208,14 +208,23 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
         }
 
         myChart.setOption({
+            legend: {
+                selected : {
+                    "全部站点": "all"===siteName,
+                    "大陆": "cn"===siteName || "all"===siteName,
+                    "香港": "hk"===siteName || "all"===siteName,
+                    "台湾": "tw"===siteName || "all"===siteName,
+                    "美国": "us"===siteName || "all"===siteName,
+                }
+            },
             series: [
                 {
-                    // name: 'name_cn',
+                    name: datas['name_'+siteName],
                     type: 'line',
                     encode: {
                         x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
                         y: 'sale_amount_'+siteName,              // 表示维度 2 映射到 y 轴。
-                        tooltip: ['name_'+siteName, 'sale_amount_'+siteName] // 表示维度 3、2、4 会在 tooltip 中显示。
+                        tooltip: ['sale_amount_'+siteName] // 表示维度 3、2、4 会在 tooltip 中显示。
                     },
                 },
                 {

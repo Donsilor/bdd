@@ -51,7 +51,7 @@ class MainController extends BaseController
                 $list[$item['datetime']] = [
                     'datetime' => date($type == 2 ? "Y-m" : "Y-m-d", $item['datetime']),
 
-                    'name_all' => '总和',
+                    'name_all' => '全部站点',
                     'sale_amount_all' => 0,
                     'type_sale_amount_all' => [],
 
@@ -67,7 +67,7 @@ class MainController extends BaseController
                     'sale_amount_tw' => 0,
                     'type_sale_amount_tw' => [],
 
-                    'name_us' => '国外',
+                    'name_us' => '美国',
                     'sale_amount_us' => 0,
                     'type_sale_amount_us' => [],
                 ];
