@@ -38,10 +38,12 @@ class MainController extends BaseController
         //刷新列表
         \Yii::$app->services->OrderSale->generate();
 
+        $typeList = Yii::$app->services->goodsType->getTypeList();
+
         $type = 1;
         $where = [];
         $where['type'] = $type;
-        $date = OrderSale::find()->where($where)->asArray()->all();
+        $date = OrderSale::find()->where($where)->all();
 
         $list = [];
         foreach ($date as $item) {
@@ -76,7 +78,9 @@ class MainController extends BaseController
             $tmp['sale_amount_all'] = bcadd($tmp['sale_amount_all'], $item['sale_amount'], 2);
 
             if(isset($item['type_sale_amount']) && is_array($item['type_sale_amount'])) {
+
                 foreach ($item['type_sale_amount'] as $key => $value) {
+                    $key = $typeList[$key]??null;
                     if(!isset($tmp['type_sale_amount_all'][$key])) {
                         $tmp['type_sale_amount_all'][$key] = 0;
                     }
@@ -90,6 +94,7 @@ class MainController extends BaseController
 
                 if(isset($item['type_sale_amount']) && is_array($item['type_sale_amount'])) {
                     foreach ($item['type_sale_amount'] as $key => $value) {
+                        $key = $typeList[$key]??null;
                         if(!isset($tmp['type_sale_amount_hk'][$key])) {
                             $tmp['type_sale_amount_hk'][$key] = 0;
                         }
@@ -104,6 +109,7 @@ class MainController extends BaseController
 
                 if(isset($item['type_sale_amount']) && is_array($item['type_sale_amount'])) {
                     foreach ($item['type_sale_amount'] as $key => $value) {
+                        $key = $typeList[$key]??null;
                         if(!isset($tmp['type_sale_amount_cn'][$key])) {
                             $tmp['type_sale_amount_cn'][$key] = 0;
                         }
@@ -118,6 +124,7 @@ class MainController extends BaseController
 
                 if(isset($item['type_sale_amount']) && is_array($item['type_sale_amount'])) {
                     foreach ($item['type_sale_amount'] as $key => $value) {
+                        $key = $typeList[$key]??null;
                         if(!isset($tmp['type_sale_amount_tw'][$key])) {
                             $tmp['type_sale_amount_tw'][$key] = 0;
                         }
@@ -132,6 +139,7 @@ class MainController extends BaseController
 
                 if(isset($item['type_sale_amount']) && is_array($item['type_sale_amount'])) {
                     foreach ($item['type_sale_amount'] as $key => $value) {
+                        $key = $typeList[$key]??null;
                         if(!isset($tmp['type_sale_amount_us'][$key])) {
                             $tmp['type_sale_amount_us'][$key] = 0;
                         }

@@ -49,6 +49,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 <script type="text/javascript">
     var list = <?= json_encode($list) ?>;
     var dimension = 0;
+    var siteName = "cn";
 
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById("main"));
@@ -161,39 +162,85 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
         ]
     };
 
+    function updatePie() {
+        var datas = list[dimension]
+        var data = [];
+
+        if(siteName=="") {
+            data = [
+                {
+                    name: datas['name_hk'],
+                    value: datas['sale_amount_hk'],
+                },
+                {
+                    name: datas['name_cn'],
+                    value: datas['sale_amount_cn'],
+                },
+                {
+                    name: datas['name_tw'],
+                    value: datas['sale_amount_tw'],
+                },
+                {
+                    name: datas['name_us'],
+                    value: datas['sale_amount_us'],
+                },
+            ];
+        }
+        else {
+            let key = 'type_sale_amount_' + siteName;
+            $.each(datas[key], function (name, value) {
+                data.push({
+                    name: name,
+                    value: value,
+                });
+            });
+        }
+// console.log(data);
+        myChart.setOption({
+            series: [{
+                id: 'pie',
+                label: {
+                    formatter: '{b}: {@[' + dimension + ']} ({d}%)'
+                },
+                data: data
+            }]
+        });
+    }
+
     myChart.on('updateAxisPointer', function (event) {
         var xAxisInfo = event.axesInfo[0];
         if (xAxisInfo) {
             dimension = xAxisInfo.value;
 
-            var datas = list[dimension]
-
-            myChart.setOption({
-                series: [{
-                    id: 'pie',
-                    label: {
-                        formatter: '{b}: {@[' + dimension + ']} ({d}%)'
-                    },
-                    data: [
-                        {
-                            name: datas['name_hk'],
-                            value: datas['sale_amount_hk'],
-                        },
-                        {
-                            name: datas['name_cn'],
-                            value: datas['sale_amount_cn'],
-                        },
-                        {
-                            name: datas['name_tw'],
-                            value: datas['sale_amount_tw'],
-                        },
-                        {
-                            name: datas['name_us'],
-                            value: datas['sale_amount_us'],
-                        },
-                    ]
-                }]
-            });
+            updatePie();
+            // var datas = list[dimension]
+            //
+            // myChart.setOption({
+            //     series: [{
+            //         id: 'pie',
+            //         label: {
+            //             formatter: '{b}: {@[' + dimension + ']} ({d}%)'
+            //         },
+            //         data: [
+            //             {
+            //                 name: datas['name_hk'],
+            //                 value: datas['sale_amount_hk'],
+            //             },
+            //             {
+            //                 name: datas['name_cn'],
+            //                 value: datas['sale_amount_cn'],
+            //             },
+            //             {
+            //                 name: datas['name_tw'],
+            //                 value: datas['sale_amount_tw'],
+            //             },
+            //             {
+            //                 name: datas['name_us'],
+            //                 value: datas['sale_amount_us'],
+            //             },
+            //         ]
+            //     }]
+            // });
         }
     });
 
