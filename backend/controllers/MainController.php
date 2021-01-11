@@ -6,6 +6,7 @@ use common\enums\OrderFromEnum;
 use common\models\statistics\OrderSale;
 use Yii;
 use backend\forms\ClearCache;
+use function Clue\StreamFilter\fun;
 
 /**
  * 主控制器
@@ -74,27 +75,72 @@ class MainController extends BaseController
 
             $tmp['sale_amount_all'] = bcadd($tmp['sale_amount_all'], $item['sale_amount'], 2);
 
+            if(isset($item['type_sale_amount']) && is_array($item['type_sale_amount'])) {
+                foreach ($item['type_sale_amount'] as $key => $value) {
+                    if(!isset($tmp['type_sale_amount_all'][$key])) {
+                        $tmp['type_sale_amount_all'][$key] = 0;
+                    }
+
+                    $tmp['type_sale_amount_all'][$key] = bcadd($tmp['type_sale_amount_all'][$key], $value, 2);
+                }
+            }
+
             if($item['platform_group'] == OrderFromEnum::GROUP_HK) {
                 $tmp['sale_amount_hk'] = bcadd($tmp['sale_amount_hk'], $item['sale_amount'], 2);
-//                    'type_sale_amount_hk' => [],
+
+                if(isset($item['type_sale_amount']) && is_array($item['type_sale_amount'])) {
+                    foreach ($item['type_sale_amount'] as $key => $value) {
+                        if(!isset($tmp['type_sale_amount_hk'][$key])) {
+                            $tmp['type_sale_amount_hk'][$key] = 0;
+                        }
+
+                        $tmp['type_sale_amount_hk'][$key] = bcadd($tmp['type_sale_amount_hk'][$key], $value, 2);
+                    }
+                }
             }
 
             if($item['platform_group'] == OrderFromEnum::GROUP_CN) {
                 $tmp['sale_amount_cn'] = bcadd($tmp['sale_amount_cn'], $item['sale_amount'], 2);
-//                    'type_sale_amount_hk' => [],
+
+                if(isset($item['type_sale_amount']) && is_array($item['type_sale_amount'])) {
+                    foreach ($item['type_sale_amount'] as $key => $value) {
+                        if(!isset($tmp['type_sale_amount_cn'][$key])) {
+                            $tmp['type_sale_amount_cn'][$key] = 0;
+                        }
+
+                        $tmp['type_sale_amount_cn'][$key] = bcadd($tmp['type_sale_amount_cn'][$key], $value, 2);
+                    }
+                }
             }
 
             if($item['platform_group'] == OrderFromEnum::GROUP_TW) {
                 $tmp['sale_amount_tw'] = bcadd($tmp['sale_amount_tw'], $item['sale_amount'], 2);
-//                    'type_sale_amount_hk' => [],
+
+                if(isset($item['type_sale_amount']) && is_array($item['type_sale_amount'])) {
+                    foreach ($item['type_sale_amount'] as $key => $value) {
+                        if(!isset($tmp['type_sale_amount_tw'][$key])) {
+                            $tmp['type_sale_amount_tw'][$key] = 0;
+                        }
+
+                        $tmp['type_sale_amount_tw'][$key] = bcadd($tmp['type_sale_amount_tw'][$key], $value, 2);
+                    }
+                }
             }
 
             if($item['platform_group'] == OrderFromEnum::GROUP_US) {
                 $tmp['sale_amount_us'] = bcadd($tmp['sale_amount_us'], $item['sale_amount'], 2);
-//                    'type_sale_amount_hk' => [],
+
+                if(isset($item['type_sale_amount']) && is_array($item['type_sale_amount'])) {
+                    foreach ($item['type_sale_amount'] as $key => $value) {
+                        if(!isset($tmp['type_sale_amount_us'][$key])) {
+                            $tmp['type_sale_amount_us'][$key] = 0;
+                        }
+
+                        $tmp['type_sale_amount_us'][$key] = bcadd($tmp['type_sale_amount_us'][$key], $value, 2);
+                    }
+                }
             }
         }
-
 
         return $this->render($this->action->id, [
             'list' => array_values($list)
