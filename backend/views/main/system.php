@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
 </div>
 <script type="text/javascript">
     var list = <?= json_encode($list) ?>;
-console.log(list);
+
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById("main"));
 
@@ -48,7 +48,6 @@ console.log(list);
             {
                 type: 'line',
                 smooth: 0.2,
-                seriesLayoutBy: 'column',
                 encode: {
                     x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
                     y: 'sale_amount_all',              // 表示维度 2 映射到 y 轴。
@@ -58,7 +57,6 @@ console.log(list);
             {
                 type: 'line',
                 smooth: 0.2,
-                seriesLayoutBy: 'column',
                 encode: {
                     x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
                     y: 'sale_amount_hk',              // 表示维度 2 映射到 y 轴。
@@ -68,7 +66,6 @@ console.log(list);
             {
                 type: 'line',
                 smooth: 0.2,
-                seriesLayoutBy: 'column',
                 encode: {
                     x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
                     y: 'sale_amount_cn',              // 表示维度 2 映射到 y 轴。
@@ -78,7 +75,6 @@ console.log(list);
             {
                 type: 'line',
                 smooth: 0.2,
-                seriesLayoutBy: 'column',
                 encode: {
                     x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
                     y: 'sale_amount_tw',              // 表示维度 2 映射到 y 轴。
@@ -88,7 +84,6 @@ console.log(list);
             {
                 type: 'line',
                 smooth: 0.2,
-                seriesLayoutBy: 'column',
                 encode: {
                     x: 'datetime',      // 表示维度 3、1、5 映射到 x 轴。
                     y: 'sale_amount_us',              // 表示维度 2 映射到 y 轴。
@@ -147,28 +142,50 @@ console.log(list);
         ]
     };
 
-    // myChart.on('updateAxisPointer', function (event) {
-    //     var xAxisInfo = event.axesInfo[0];
-    //     if (xAxisInfo) {
-    //         var dimension = xAxisInfo.value + 1;
-    //
-    //         console.log(dimension);
-    //
-    //         myChart.setOption({
-    //             series: [{
-    //                 id: 'pie',
-    //                 label: {
-    //                     formatter: '{b}: {@[' + dimension + ']} ({d}%)'
-    //                 },
-    //                 encode: {
-    //                     value: dimension,
-    //                     tooltip: dimension
-    //                 }
-    //                 // data: [{value:20,name:"aa"}, {value:30,name:"aa"}],
-    //             }]
-    //         });
-    //     }
-    // });
+    myChart.on('updateAxisPointer', function (event) {
+        var xAxisInfo = event.axesInfo[0];
+        if (xAxisInfo) {
+            var dimension = xAxisInfo.value;
+
+            var datas = list[dimension]
+
+            myChart.setOption({
+                series: [{
+                    id: 'pie',
+                    label: {
+                        formatter: '{b}: {@[' + dimension + ']} ({d}%)'
+                    },
+                    // encode: {
+                    //     value: dimension,
+                    //     tooltip: dimension
+                    // }
+                    // data: [{value:20,name:"aa"}, {value:30,name:"aa"}],
+                    data: [
+                        {
+                            name: datas['name_hk'],
+                            value: datas['sale_amount_hk'],
+                            // tooltip: ['datetime', 'sale_amount_us']
+                        },
+                        {
+                            name: datas['name_cn'],
+                            value: datas['sale_amount_cn'],
+                            // tooltip: ['datetime', 'sale_amount_us']
+                        },
+                        {
+                            name: datas['name_tw'],
+                            value: datas['sale_amount_tw'],
+                            // tooltip: ['datetime', 'sale_amount_us']
+                        },
+                        {
+                            name: datas['name_us'],
+                            value: datas['sale_amount_us'],
+                            // tooltip: ['datetime', 'sale_amount_us']
+                        },
+                    ]
+                }]
+            });
+        }
+    });
 
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);

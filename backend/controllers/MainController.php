@@ -34,7 +34,7 @@ class MainController extends BaseController
      */
     public function actionSystem()
     {
-        $type = 2;
+        $type = 1;
         $where = [];
         $where['type'] = $type;
         $date = OrderSale::find()->where($where)->asArray()->all();
