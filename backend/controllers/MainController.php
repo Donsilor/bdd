@@ -34,6 +34,9 @@ class MainController extends BaseController
      */
     public function actionSystem()
     {
+        //刷新列表
+        \Yii::$app->services->OrderSale->generate();
+
         $type = 1;
         $where = [];
         $where['type'] = $type;

@@ -46,6 +46,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
         },
         series: [
             {
+                // name: '总和',
                 type: 'line',
                 smooth: 0.2,
                 encode: {
@@ -55,6 +56,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                 }
             },
             {
+                // name: '香港',
                 type: 'line',
                 smooth: 0.2,
                 encode: {
@@ -64,6 +66,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                 }
             },
             {
+                // name: '大陆',
                 type: 'line',
                 smooth: 0.2,
                 encode: {
@@ -73,6 +76,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                 }
             },
             {
+                // name: '台湾',
                 type: 'line',
                 smooth: 0.2,
                 encode: {
@@ -82,6 +86,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                 }
             },
             {
+                // name: '美国',
                 type: 'line',
                 smooth: 0.2,
                 encode: {
@@ -91,6 +96,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                 }
             },
             {
+                visualMap: false,
                 type: 'pie',
                 id: 'pie',
                 radius: '40%',
@@ -102,43 +108,27 @@ $this->params['breadcrumbs'][] = ['label' => $this->title];
                 },
                 data: [
                     {
-                        name: list[0]['name_hk'],
+                        // name: list[0]['name_hk'],
                         value: list[0]['sale_amount_hk'],
                         // tooltip: ['datetime', 'sale_amount_us']
                     },
                     {
-                        name: list[0]['name_cn'],
+                        // name: list[0]['name_cn'],
                         value: list[0]['sale_amount_cn'],
                         // tooltip: ['datetime', 'sale_amount_us']
                     },
                     {
-                        name: list[0]['name_tw'],
+                        // name: list[0]['name_tw'],
                         value: list[0]['sale_amount_tw'],
                         // tooltip: ['datetime', 'sale_amount_us']
                     },
                     {
-                        name: list[0]['name_us'],
+                        // name: list[0]['name_us'],
                         value: list[0]['sale_amount_us'],
                         // tooltip: ['datetime', 'sale_amount_us']
                     },
                 ]
-            },
-            // {
-            //     type: 'pie',
-            //     dimensions: ['date', 'open2'],
-            //     id: 'pie2',
-            //     radius: '30%',
-            //     center: ['75%', '25%'],
-            //     emphasis: {focus: 'data'},
-            //     label: {
-            //         formatter: '{b}: {@周一} ({d}%)'
-            //     },
-            //     encode: {
-            //         itemName: 'product',
-            //         value: 'date',
-            //         tooltip: 'date'
-            //     }
-            // }
+            }
         ]
     };
 
