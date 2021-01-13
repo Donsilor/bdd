@@ -316,6 +316,40 @@ class SiteController extends OnAuthController
             $area_id = null;
         }
 
+        $IBCLocalIp = \Yii::$app->debris->config("web_area_ibc_local_ip");
+        if(in_array(Yii::$app->request->userIP, explode(',', $IBCLocalIp))) {
+            // 输入域名，不作跳转
+            $referer = Yii::$app->request->referrer;
+
+            $url = parse_url($referer);
+
+            if(!empty($url['host'])) {
+                $domains = [
+                    'www.bddco.cn' => 1,
+                    'www.bddco.com' => 2,
+                    'us.bddco.com' => 99,
+                    'tw.bddco.com' => 4,
+
+                    'wap.bddco.cn' => 1,
+                    'wap.bddco.com' => 2,
+                    'wap-us.bddco.com' => 99,
+                    'wap-tw.bddco.com' => 4,
+
+                    'cn-bdd.bddco.cn' => 1,
+                    'www-bdd.bddco.cn' => 2,
+                    'us-bdd.bddco.cn' => 99,
+                    'tw-bdd.bddco.cn' => 4,
+
+                    'wap-cn-bdd.bddco.cn' => 1,
+                    'wap-bdd.bddco.cn' => 2,
+                    'wap-us-bdd.bddco.cn' => 99,
+                    'wap-tw-bdd.bddco.cn' => 4,
+                ];
+
+                $area_id = $domains[$url['host']]??null;
+            }
+        }
+
         if(!$area_id) {
             $area_id = \Yii::$app->ipLocation->getAreaId();
             $language = 'zh_CN';
