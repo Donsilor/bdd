@@ -167,6 +167,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             </div>
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4">ERP推送状态：</label>
+                                <?= $model->orderSync->sync_created ? '已同步' : '未同步'; ?>
                             </div>
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4">退款时间 ：</label>

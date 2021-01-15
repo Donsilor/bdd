@@ -285,4 +285,13 @@ class Order extends \common\models\base\BaseModel
         return $this->hasOne(OrderTourist::class, ['order_sn'=>'order_sn']);
     }
 
+    /**
+     * 订单同步
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrderSync()
+    {
+        return $this->hasOne(OrderSync::class, ['order_id'=>'id']);
+    }
+
 }
