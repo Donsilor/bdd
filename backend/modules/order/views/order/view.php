@@ -89,10 +89,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?= \common\enums\PayStatusEnum::getValue($model->payment_status)?>
                             </div>
                         </div>
+
                         <div class="row">
                             <div class="col-lg-4">
-                                <label class="text-right col-lg-4"><?= $model->getAttributeLabel('member.username') ?>：</label>
-                                <?= $model->member->username ?? '' ?>
+                                <label class="text-right col-lg-4"><?= $model->getAttributeLabel('address.email') ?>：</label>
+                                <?= $model->address->email ?>
                             </div>
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4"><?= $model->getAttributeLabel('order_from') ?>：</label>
@@ -105,8 +106,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div class="row">
                             <div class="col-lg-4">
-                                <label class="text-right col-lg-4"><?= $model->getAttributeLabel('address.country_name') ?> ：</label>
-                                <?= $model->address->country_name ?>
+                                <label class="text-right col-lg-4"><?= $model->getAttributeLabel('member.username') ?>：</label>
+                                <?= $model->member->username ?? '' ?>
                             </div>
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4"><?= $model->getAttributeLabel('ip') ?>：</label>
@@ -119,8 +120,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div class="row">
                             <div class="col-lg-4">
-                                <label class="text-right col-lg-4"><?= $model->getAttributeLabel('address.province_name') ?>，<?= $model->getAttributeLabel('address.city_name') ?>：</label>
-                                <?= $model->address->province_name ?>，<?= $model->address->city_name ?>
+                                <label class="text-right col-lg-4"><?= $model->getAttributeLabel('address.country_name') ?> ：</label>
+                                <?= $model->address->country_name ?>
                             </div>
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4"><?= $model->getAttributeLabel('ip_location') ?>：</label>
@@ -133,16 +134,43 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div class="row">
                             <div class="col-lg-4">
+                                <label class="text-right col-lg-4"><?= $model->getAttributeLabel('address.province_name') ?>，<?= $model->getAttributeLabel('address.city_name') ?>：</label>
+                                <?= $model->address->province_name ?>，<?= $model->address->city_name ?>
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="text-right col-lg-4">下单类型 ：</label>
+                                <?= $model->orderTourist ? '游客' : '登录' ?>
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="text-right col-lg-4">支付时间 ：</label>
+                                <?= $model->payment_time ? Yii::$app->formatter->asDatetime($model->payment_time) : ''; ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4">
                                 <label class="text-right col-lg-4"><?= $model->getAttributeLabel('address.address_details') ?>：</label>
                                 <?= $model->address->address_details ?>
                             </div>
+                            <div class="col-lg-4">
+                                <label class="text-right col-lg-4">是否使用购物卡：</label>
+                                <?= $model->cards?'是':'否' ?>
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="text-right col-lg-4">退款状态 ：</label>
+                                <?= \common\enums\OrderStatusEnum::getValue($model->refund_status, 'refundStatus') ?>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-lg-4">
                                 <label class="text-right col-lg-4"><?= $model->getAttributeLabel('address.zip_code') ?>：</label>
                                 <?= $model->address->zip_code ?>
                             </div>
                             <div class="col-lg-4">
-                                <label class="text-right col-lg-4"><?= $model->getAttributeLabel('address.email') ?>：</label>
-                                <?= $model->address->email ?>
+                                <label class="text-right col-lg-4">ERP推送状态：</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="text-right col-lg-4">退款时间 ：</label>
+                                <?= $model->refund_time ? Yii::$app->formatter->asDatetime($model->refund_time) : ''; ?>
                             </div>
                         </div>
                         <div class="row">
@@ -151,12 +179,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?= $model->buyer_remark ?>
                             </div>
                             <div class="col-lg-4">
-                                <label class="text-right col-lg-4">下单类型 ：</label>
-                                <?= $model->orderTourist ? '游客' : '登录' ?>
                             </div>
                             <div class="col-lg-4">
-                                <label class="text-right col-lg-4">是否使用购物卡：</label>
-                                <?= $model->cards?'是':'否' ?>
+                                <label class="text-right col-lg-4">发货时间 ：</label>
+                                <?= $model->delivery_time ? Yii::$app->formatter->asDatetime($model->delivery_time) : ''; ?>
                             </div>
                         </div>
                     </div>
