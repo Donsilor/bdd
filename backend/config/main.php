@@ -49,6 +49,10 @@ return [
         'statistics' => [
             'class' => 'backend\modules\statistics\Module',
         ],
+        /** ------ERPAPI ------ **/
+        'erpapi' => [
+            'class' => 'backend\modules\erpapi\Module',
+        ],
     ],
     'components' => [
         'request' => [
