@@ -44,9 +44,10 @@ class DiamondController extends BaseController
         if(empty($model)) {
             $model = new DiamondErpForm();
             $model->loadDefaultValues();
+            $model->status = 0;
         }
 
-        $status = $model ? $model->status : 0;
+//        $status = $model ? $model->status : 0;
 
         $old_diamond_info = $model->toArray();
 
@@ -57,23 +58,18 @@ class DiamondController extends BaseController
             $trans = Yii::$app->db->beginTransaction();
 
             // 上架时间
-            if ($model->status == 1 && $status == 0) {
-                $model->onsale_time = time();
-            }
+//            if ($model->status == 1 && $status == 0) {
+//                $model->onsale_time = time();
+//            }
 
             if (false === $model->save()) {
                 throw new Exception($this->getError($model));
             }
 
-            //同步款式库的状态
-//                Style::updateAll(['status' => $model->status, 'virtual_clicks' => $model->virtual_clicks, 'virtual_volume' => $model->virtual_volume], ['id' => $model->style_id]);
-
-            $this->editLang($model);
-
             //记录日志
-            \Yii::$app->services->goods->recordGoodsLog($model, $old_diamond_info);
-
-            //同步裸钻数据到goods
+//            \Yii::$app->services->goods->recordGoodsLog($model, $old_diamond_info);
+//
+//            //同步裸钻数据到goods
             \Yii::$app->services->diamond->syncDiamondToGoods($model->id);
 
             $trans->commit();
