@@ -178,7 +178,7 @@ class DiamondErpForm extends Diamond
 
         return sprintf($tmp,
             $this->carat,
-            $shapeList[$this->shape],
+            $shapeList[$this->shape]??'',
             $colorList[$this->color],
             $clarityList[$this->clarity],
             $certTypeList[$this->cert_type]
