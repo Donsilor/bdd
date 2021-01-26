@@ -51,6 +51,10 @@ class DiamondController extends BaseController
 
         $old_diamond_info = $model->toArray();
 
+        $old_diamond_info['langs'] = [];
+        foreach ($model->langs as $lang) {
+            $old_diamond_info['langs'][$lang->id] = $lang->toArray();
+        }
         $model->setAttributes(Yii::$app->request->post());
         $model->type_id = 15;
 
@@ -67,7 +71,7 @@ class DiamondController extends BaseController
             }
 
             //记录日志
-//            \Yii::$app->services->goods->recordGoodsLog($model, $old_diamond_info);
+            \Yii::$app->services->goods->recordGoodsLog($model, $old_diamond_info);
 //
 //            //同步裸钻数据到goods
             \Yii::$app->services->diamond->syncDiamondToGoods($model->id);
