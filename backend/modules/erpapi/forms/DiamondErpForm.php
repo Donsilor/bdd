@@ -3,58 +3,60 @@
 namespace backend\modules\erpapi\forms;
 
 
+use common\enums\AttrIdEnum;
 use common\enums\LanguageEnum;
 use common\models\goods\Diamond;
 use common\models\goods\DiamondLang;
 use yii\web\UnprocessableEntityHttpException;
+use \common\enums\DiamondEnum;
 
 class DiamondErpForm extends Diamond
 {
     public function beforeValidate()
     {
-        foreach (\common\enums\DiamondEnum::getCertTypeList() as $key => $typeOption) {
+        foreach (DiamondEnum::getCertTypeList() as $key => $typeOption) {
             if ($this->cert_type == $typeOption) {
                 $this->cert_type = (string)$key;
             }
         }
 
-        foreach (\common\enums\DiamondEnum::getClarityList() as $key => $clarityOption) {
+        foreach (DiamondEnum::getClarityList() as $key => $clarityOption) {
             if ($this->clarity == $clarityOption) {
                 $this->clarity = (string)$key;
             }
         }
 
-        foreach (\common\enums\DiamondEnum::getCutList() as $key => $cutOption) {
+        foreach (DiamondEnum::getCutList() as $key => $cutOption) {
             if ($this->cut == $cutOption) {
                 $this->cut = (string)$key;
             }
         }
 
-        foreach (\common\enums\DiamondEnum::getColorList() as $key => $colorOption) {
+        foreach (DiamondEnum::getColorList() as $key => $colorOption) {
             if ($this->color == $colorOption) {
                 $this->color = (string)$key;
             }
         }
 
-        foreach (\common\enums\DiamondEnum::getShapeList() as $key => $shapeOption) {
+        foreach (DiamondEnum::getShapeList() as $key => $shapeOption) {
             if ($this->shape == $shapeOption) {
                 $this->shape = $key;
             }
         }
 
-        foreach (\common\enums\DiamondEnum::getSymmetryList() as $key => $symmetryOption) {
+        foreach (DiamondEnum::getSymmetryList() as $key => $symmetryOption) {
             if ($this->symmetry == $symmetryOption) {
                 $this->symmetry = (string)$key;
             }
         }
 
-        foreach (\common\enums\DiamondEnum::getPolishList() as $key => $polishOption) {
+        foreach (DiamondEnum::getPolishList() as $key => $polishOption) {
             if ($this->polish == $polishOption) {
                 $this->polish = (string)$key;
             }
         }
 
-        foreach (\common\enums\DiamondEnum::getFluorescenceList() as $key => $fluorescenceOption) {
+        foreach (DiamondEnum::getFluorescenceList() as $key => $fluorescenceOption) {
             if ($this->fluorescence == $fluorescenceOption) {
                 $this->fluorescence = $key;
             }
@@ -154,6 +156,32 @@ class DiamondErpForm extends Diamond
 
     private function getErpTitle($language)
     {
-        return $language . $this->goods_name . 'aaaaaaaaaaaaaaaaaaaaaa';
+//        【BDD简体名称】0.4ct 圆形 H色 VS2净度 GIA（同ERP原始名称）
+//        【BDD繁体名称】0.4ct 圓形 H色 VS2淨度 GIA
+//        【BDD英文名称】0.4ct Round H/Colour VS2/Clarity GIA
+        switch ($language) {
+            case LanguageEnum::EN_US :
+                $tmp = "%sct %s %s/Colour %s/Clarity %s";
+                break;
+            case LanguageEnum::ZH_HK :
+                $tmp = "%sct %s %s色 %s淨度 %s";
+                break;
+            default :
+                $tmp = "%sct %s %s色 %s净度 %s";
+        }
+
+
+        $shapeList = \Yii::$app->services->goodsAttribute->getValuesByAttrId(AttrIdEnum::SHAPE, 1, $language);
+        $colorList =  \Yii::$app->services->goodsAttribute->getValuesByAttrId(AttrIdEnum::COLOR, 1, $language);
+        $clarityList = \Yii::$app->services->goodsAttribute->getValuesByAttrId(AttrIdEnum::CLARITY, 1, $language);
+        $certTypeList = \Yii::$app->services->goodsAttribute->getValuesByAttrId(AttrIdEnum::CERT_TYPE, 1, $language);
+
+        return sprintf($tmp,
+            $this->carat,
+            $shapeList[$this->shape],
+            $colorList[$this->color],
+            $clarityList[$this->clarity],
+            $certTypeList[$this->cert_type]
+        );
     }
 }
