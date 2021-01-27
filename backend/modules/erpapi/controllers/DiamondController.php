@@ -38,16 +38,21 @@ class DiamondController extends BaseController
      */
     public function actionEdit()
     {
+        $param = Yii::$app->request->post();
+
         $goodsSn = Yii::$app->request->post('goods_sn');
 
         $model = DiamondErpForm::findOne(['goods_sn' => $goodsSn]);
         if(empty($model)) {
             $model = new DiamondErpForm();
             $model->loadDefaultValues();
-            $model->status = 0;
         }
-
-//        $status = $model ? $model->status : 0;
+        else {
+            unset($param['status']);
+            unset($param['sale_price']);
+            unset($param['market_price']);
+            unset($param['cost_price']);
+        }
 
         $old_diamond_info = $model->toArray();
 
@@ -55,16 +60,11 @@ class DiamondController extends BaseController
         foreach ($model->langs as $lang) {
             $old_diamond_info['langs'][$lang->id] = $lang->toArray();
         }
-        $model->setAttributes(Yii::$app->request->post());
+        $model->setAttributes($param);
         $model->type_id = 15;
 
         try {
             $trans = Yii::$app->db->beginTransaction();
-
-            // 上架时间
-//            if ($model->status == 1 && $status == 0) {
-//                $model->onsale_time = time();
-//            }
 
             if (false === $model->save()) {
                 throw new Exception($this->getError($model));
