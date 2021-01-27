@@ -72,8 +72,8 @@ class DiamondController extends BaseController
 
             //记录日志
             \Yii::$app->services->goods->recordGoodsLog($model, $old_diamond_info);
-//
-//            //同步裸钻数据到goods
+
+            //同步裸钻数据到goods
             \Yii::$app->services->diamond->syncDiamondToGoods($model->id);
 
             $trans->commit();
