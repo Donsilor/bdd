@@ -32,15 +32,17 @@ class DiamondErpForm extends Diamond
             }
         }
 
+        $this->color = "0";
         foreach (DiamondEnum::getColorList() as $key => $colorOption) {
             if ($this->color == $colorOption) {
                 $this->color = (string)$key;
             }
         }
 
+        $this->shape = 0;
         foreach (DiamondEnum::getShapeList() as $key => $shapeOption) {
             if ($this->shape == $shapeOption) {
-                $this->shape = $key;
+                $this->shape = (int)$key;
             }
         }
 
