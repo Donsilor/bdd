@@ -26,6 +26,7 @@ class DiamondErpForm extends Diamond
             }
         }
 
+        $this->cut = "0";
         foreach (DiamondEnum::getCutList() as $key => $cutOption) {
             if ($this->cut == $cutOption) {
                 $this->cut = (string)$key;
@@ -58,13 +59,13 @@ class DiamondErpForm extends Diamond
             }
         }
 
+        $this->fluorescence = "0";
         foreach (DiamondEnum::getFluorescenceList() as $key => $fluorescenceOption) {
             if ($this->fluorescence == $fluorescenceOption) {
                 $this->fluorescence = (string)$key;
             }
         }
 
-        $this->fluorescence = $this->fluorescence?:"0";
         $this->source_discount = 0;
 
         $this->updated_at = time();
