@@ -36,6 +36,7 @@ use Yii;
  * @property int $hk_status 地区状态
  * @property int $cn_status 地区状态
  * @property int $us_status 地区状态
+ * @property int $user_id 添加人
  */
 class Diamond extends \yii\db\ActiveRecord
 {
@@ -59,12 +60,15 @@ class Diamond extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id','goods_num', 'shape', 'source_id', 'is_stock', 'status', 'created_at', 'updated_at','onsale_time','type_id','goods_id','sale_volume','virtual_volume','virtual_clicks','goods_clicks', 'hk_status', 'tw_status', 'cn_status', 'us_status'], 'integer'],
+            [['id','goods_num', 'shape', 'source_id', 'is_stock', 'status', 'created_at', 'updated_at','onsale_time','type_id','goods_id','sale_volume','virtual_volume','virtual_clicks','goods_clicks', 'hk_status', 'tw_status', 'cn_status', 'us_status', 'user_id'], 'integer'],
             [['sale_price','source_id',
 //                'shape',
                 'goods_num','goods_sn', 'carat', 'clarity',
 //                'cut',
-                'color', 'symmetry', 'polish', 'fluorescence'], 'required'],
+//                'color',
+                'symmetry', 'polish',
+//                'fluorescence'
+            ], 'required'],
             [['goods_num','market_price', 'sale_price', 'cost_price', 'carat', 'source_discount','length','width','aspect_ratio'], 'number'],
             ['sale_price','compare','compareValue' => 0, 'operator' => '>'],
             ['market_price','compare','compareValue' => 0, 'operator' => '>'],
@@ -166,6 +170,7 @@ class Diamond extends \yii\db\ActiveRecord
             'status' => '上架状态',
             'created_at' => Yii::t('common', '创建时间'),
             'updated_at' => Yii::t('common', '更新时间'),
+            'user_id' => '添加人',
 
             'hk_status' => '香港上架',
             'tw_status' => '台湾上架',

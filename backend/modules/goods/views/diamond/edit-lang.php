@@ -477,5 +477,38 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php } ?>
     });
 
+    <?php
+        if(!empty($model->user_id)) {
+    ?>
+    $(function() {
+        $("input,select,textarea").attr('disabled', 'true');
+
+        $('input[name="Diamond[status]').removeAttr('disabled');
+        $('input[name="DiamondLang[zh-CN][goods_name]"]').removeAttr('disabled');
+        $('input[name="DiamondLang[zh-TW][goods_name]"]').removeAttr('disabled');
+        $('input[name="DiamondLang[en-US][goods_name]"]').removeAttr('disabled');
+
+        $('input[name="Diamond[sale_policy][1][markup_rate]"]').removeAttr('disabled');
+        $('input[name="Diamond[sale_policy][2][markup_rate]"]').removeAttr('disabled');
+        $('input[name="Diamond[sale_policy][3][markup_rate]"]').removeAttr('disabled');
+        $('input[name="Diamond[sale_policy][4][markup_rate]"]').removeAttr('disabled');
+        $('input[name="Diamond[sale_policy][99][markup_rate]"]').removeAttr('disabled');
+
+        $('input[name="Diamond[sale_policy][1][markup_value]"]').removeAttr('disabled');
+        $('input[name="Diamond[sale_policy][2][markup_value]"]').removeAttr('disabled');
+        $('input[name="Diamond[sale_policy][3][markup_value]"]').removeAttr('disabled');
+        $('input[name="Diamond[sale_policy][4][markup_value]"]').removeAttr('disabled');
+        $('input[name="Diamond[sale_policy][99][markup_value]"]').removeAttr('disabled');
+
+        $('select[name="Diamond[sale_policy][1][status]"]').removeAttr('disabled');
+        $('select[name="Diamond[sale_policy][2][status]"]').removeAttr('disabled');
+        $('select[name="Diamond[sale_policy][3][status]"]').removeAttr('disabled');
+        $('select[name="Diamond[sale_policy][4][status]"]').removeAttr('disabled');
+        $('select[name="Diamond[sale_policy][99][status]"]').removeAttr('disabled');
+    });
+    <?php
+        }
+    ?>
+
 </script>
 
