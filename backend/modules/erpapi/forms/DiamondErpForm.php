@@ -14,12 +14,14 @@ class DiamondErpForm extends Diamond
 {
     public function beforeValidate()
     {
+        $this->cert_type = "0";
         foreach (DiamondEnum::getCertTypeList() as $key => $typeOption) {
             if ($this->cert_type == $typeOption) {
                 $this->cert_type = (string)$key;
             }
         }
 
+        $this->clarity = "0";
         foreach (DiamondEnum::getClarityList() as $key => $clarityOption) {
             if ($this->clarity == $clarityOption) {
                 $this->clarity = (string)$key;
@@ -47,12 +49,14 @@ class DiamondErpForm extends Diamond
             }
         }
 
+        $this->symmetry = "0";
         foreach (DiamondEnum::getSymmetryList() as $key => $symmetryOption) {
             if ($this->symmetry == $symmetryOption) {
                 $this->symmetry = (string)$key;
             }
         }
 
+        $this->polish = "0";
         foreach (DiamondEnum::getPolishList() as $key => $polishOption) {
             if ($this->polish == $polishOption) {
                 $this->polish = (string)$key;
