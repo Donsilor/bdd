@@ -128,19 +128,8 @@ DOM;
     public function actionEditLang()
     {
         $id = Yii::$app->request->get('id');
-        $param = Yii::$app->request->post();
-        $returnUrl = Yii::$app->request->get('returnUrl',['index']);
         
         $model = $this->findModel($id);
-
-        if(!empty($param['Diamond']) && !empty($model->user_id)) {
-            $param['Diamond'] = array_filter($param['Diamond'], function ($key) {
-                return in_array($key, [
-                    'status',
-                    'sale_policy'
-                ]);
-            }, ARRAY_FILTER_USE_KEY);
-        }
 
         $status = $model ? $model->status:0;
         $old_diamond_info = $model->toArray();
@@ -148,7 +137,7 @@ DOM;
         foreach ($model->langs as $lang) {
             $old_diamond_info['langs'][$lang->id] = $lang->toArray();
         }
-        if ($model->load($param)) {
+        if ($model->load(Yii::$app->request->post())) {
             $model->type_id = 15;
             try{
                 $trans = Yii::$app->db->beginTransaction();
