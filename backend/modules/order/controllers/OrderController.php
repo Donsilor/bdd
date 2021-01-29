@@ -1389,15 +1389,15 @@ DOM;
                 }
                 return $row->order->account->currency . ' ' . $pay_amount;
             }],
-
             ['商品款号', 'id', 'function', function ($row) {
+                return $row->style->style_sn;
+            }],
+            ['SKU', 'id', 'function', function ($row) {
                 return $row->goods_sn;
             }],
             ['商品名称', 'id', 'function', function ($row) {
                 return $row->goods_name;
             }],
-
-
             ['成色', 'id', 'function', function ($row) use($specList) {
                 return $specList[$row->id]['cs'];
             }],
