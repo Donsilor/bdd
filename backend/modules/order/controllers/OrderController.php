@@ -94,6 +94,7 @@ class OrderController extends BaseController
                 'member' => ['username', 'realname', 'mobile', 'email'],
                 'follower' => ['username'],
                 'wireTransfer' => ['collection_status'],
+                'orderSync' => ['sync_created'],
             ],
 
         ]);
