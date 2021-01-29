@@ -2,6 +2,7 @@
 
 namespace common\models\order;
 
+use common\models\goods\Style;
 use common\models\market\MarketCoupon;
 use Yii;
 
@@ -119,5 +120,15 @@ class OrderGoods extends \common\models\base\BaseModel
     public function getOrder()
     {
         return $this->hasOne(Order::class, ['id'=>'order_id']);
+    }
+
+
+    /**
+     * 对应款式模型
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStyle()
+    {
+        return $this->hasOne(Style::class, ['id'=>'style_id']);
     }
 }

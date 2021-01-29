@@ -369,7 +369,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                             $html = <<<DOM
         <div class="row" style="margin: 10px -15px;">
         
-        <div class="col-lg-11">%s<br/>SKU：%s&nbsp;%s</div>
+        <div class="col-lg-11">
+        %s<br/>
+        SKU：%s&nbsp;%s
+        </div>
         </div>
 DOM;
 
@@ -439,7 +442,7 @@ DOM;
                                                     }
                                                 }
                                                 $value .= sprintf($html,
-                                                    '对戒名：' . $model->goods_name,
+                                                    '对戒名：' . $model->goods_name . '<br />款号：' . $model->style->style_sn,
                                                     $model->goods_sn,
                                                     $goods_spec
                                                 );
@@ -467,7 +470,7 @@ DOM;
                                                     $goods_spec .= sprintf('<br />刻字内容：%s', $model->lettering);
 
                                                 $value .= sprintf($html,
-                                                    $model->goods_name,
+                                                    $model->goods_name . '<br />款号：' . $model->style->style_sn,
                                                     $model->goods_sn,
                                                     $goods_spec
                                                 );
