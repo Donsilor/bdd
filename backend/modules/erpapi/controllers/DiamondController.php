@@ -49,9 +49,6 @@ class DiamondController extends BaseController
         }
         else {
             unset($param['status']);
-            unset($param['sale_price']);
-            unset($param['market_price']);
-            unset($param['cost_price']);
         }
 
         $old_diamond_info = $model->toArray();
