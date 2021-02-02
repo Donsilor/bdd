@@ -14,60 +14,95 @@ class DiamondErpForm extends Diamond
 {
     public function beforeValidate()
     {
-        $this->cert_type = "0";
+        $cert_type_set = false;
         foreach (DiamondEnum::getCertTypeList() as $key => $typeOption) {
             if ($this->cert_type == $typeOption) {
                 $this->cert_type = (string)$key;
+
+                $cert_type_set = true;
             }
         }
+        if(!$cert_type_set) {
+            $this->cert_type = "0";
+        }
 
-        $this->clarity = "0";
+        $clarity_set = false;
         foreach (DiamondEnum::getClarityList() as $key => $clarityOption) {
             if ($this->clarity == $clarityOption) {
                 $this->clarity = (string)$key;
+
+                $clarity_set = true;
             }
         }
+        if(!$clarity_set) {
+            $this->clarity = "0";
+        }
 
-        $this->cut = "0";
+        $cut_set = false;
         foreach (DiamondEnum::getCutList() as $key => $cutOption) {
             if ($this->cut == $cutOption) {
                 $this->cut = (string)$key;
+
+                $cut_set = true;
             }
         }
+        if(!$cut_set) {
+            $this->cut = "0";
+        }
 
-        $this->color = "0";
+        $color_set = false;
         foreach (DiamondEnum::getColorList() as $key => $colorOption) {
             if ($this->color == $colorOption) {
                 $this->color = (string)$key;
+                $color_set = true;
             }
         }
+        if(!$color_set) {
+            $this->color = "0";
+        }
 
-        $this->shape = 0;
+        $shape_set = false;
         foreach (DiamondEnum::getShapeList() as $key => $shapeOption) {
             if ($this->shape == $shapeOption) {
                 $this->shape = (int)$key;
+                $shape_set = true;
             }
         }
+        if(!$shape_set) {
+            $this->shape = 0;
+        }
 
-        $this->symmetry = "0";
+        $symmetry_set = false;
         foreach (DiamondEnum::getSymmetryList() as $key => $symmetryOption) {
             if ($this->symmetry == $symmetryOption) {
                 $this->symmetry = (string)$key;
+                $symmetry_set = true;
             }
         }
+        if(!$symmetry_set) {
+            $this->symmetry = "0";
+        }
 
-        $this->polish = "0";
+        $polish_set = false;
         foreach (DiamondEnum::getPolishList() as $key => $polishOption) {
             if ($this->polish == $polishOption) {
                 $this->polish = (string)$key;
+                $polish_set = true;
             }
         }
+        if(!$polish_set) {
+            $this->polish = "0";
+        }
 
-        $this->fluorescence = "0";
+        $fluorescence_set = false;
         foreach (DiamondEnum::getFluorescenceList() as $key => $fluorescenceOption) {
             if ($this->fluorescence == $fluorescenceOption) {
                 $this->fluorescence = (string)$key;
+                $fluorescence_set = true;
             }
+        }
+        if(!$fluorescence_set) {
+            $this->fluorescence = "0";
         }
 
         $this->source_discount = 0;
