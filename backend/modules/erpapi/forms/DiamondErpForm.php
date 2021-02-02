@@ -110,12 +110,12 @@ class DiamondErpForm extends Diamond
         $this->updated_at = time();
         $this->user_id = \Yii::$app->getUser()->identity->getId();
 
+        $this->sale_price = $this->sale_price != 0 ? $this->sale_price : 0.01;
+        $this->market_price = $this->market_price != 0 ? $this->market_price : 0.01;
+        $this->cost_price = $this->market_price != 0 ? $this->market_price : 0.01;
+
         if (empty($this->created_at)) {
             $this->created_at = time();
-
-            $this->sale_price = $this->sale_price != 0 ? $this->sale_price : 0.01;
-            $this->market_price = $this->market_price != 0 ? $this->market_price : 0.01;
-            $this->cost_price = $this->market_price != 0 ? $this->market_price : 0.01;
 
             $this->sale_policy = [
                 "1" => [
