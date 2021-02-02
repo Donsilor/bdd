@@ -369,7 +369,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                             $html = <<<DOM
         <div class="row" style="margin: 10px -15px;">
         
-        <div class="col-lg-11">%s<br/>SKU：%s&nbsp;%s</div>
+        <div class="col-lg-11">
+        %s<br/>
+        SKU：%s&nbsp;%s
+        </div>
         </div>
 DOM;
 
@@ -439,7 +442,7 @@ DOM;
                                                     }
                                                 }
                                                 $value .= sprintf($html,
-                                                    '对戒名：' . $model->goods_name,
+                                                    '对戒名：' . $model->goods_name . '<br />款号：' . $model->style->style_sn,
                                                     $model->goods_sn,
                                                     $goods_spec
                                                 );
@@ -467,7 +470,7 @@ DOM;
                                                     $goods_spec .= sprintf('<br />刻字内容：%s', $model->lettering);
 
                                                 $value .= sprintf($html,
-                                                    $model->goods_name,
+                                                    $model->goods_name . '<br />款号：' . $model->style->style_sn,
                                                     $model->goods_sn,
                                                     $goods_spec
                                                 );
@@ -574,6 +577,16 @@ DOM;
                                             ：</label></div>
                                     <div class="col-lg-7"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount(-$model->account->coupon_amount, 1, 2, ',') ?></div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-lg-5 text-right"><label style="font-weight:bold">应付款：</label></div>
+                                    <?php
+                                    $pay_amount = bcadd($model->account->pay_amount, $model->account->card_amount, 2);
+                                    if($model->account->currency == CurrencyEnum::TWD) {
+                                        $pay_amount = sprintf("%.2f", intval($pay_amount));
+                                    }
+                                    ?>
+                                    <div class="col-lg-7 text-red"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($pay_amount, 2, ',') ?></div>
+                                </div>
                                 <?php
                                 $cardUseAmount = 0;
                                 foreach($model->cards as $n => $card) {
@@ -588,16 +601,6 @@ DOM;
                                 <?php
                                 }
                                 ?>
-                                <div class="row">
-                                    <div class="col-lg-5 text-right"><label style="font-weight:bold">应付款：</label></div>
-                                    <?php
-                                    $pay_amount = $model->account->pay_amount;
-                                    if($model->account->currency == CurrencyEnum::TWD) {
-                                        $pay_amount = sprintf("%.2f", intval($pay_amount));
-                                    }
-                                    ?>
-                                    <div class="col-lg-7 text-red"><?= $model->account->currency ?>&nbsp;<?= \common\helpers\AmountHelper::formatAmount($pay_amount, 2, ',') ?></div>
-                                </div>
                                 <div class="row">
                                     <div class="col-lg-5 text-right"><label style="font-weight:bold"><?= $model->getAttributeLabel('account.paid_currency') ?>：</label></div>
                                     <div class="col-lg-7 text-red"><?= $model->account->paid_currency ?>&nbsp;<?= \common\helpers\AmountHelper::rateAmount($model->account->paid_amount, 1, 2, ',') ?></div>

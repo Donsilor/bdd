@@ -339,6 +339,19 @@ $OrderStatusEnum['12'] = '不需发货';
                                 },
                                 'format' => 'raw',
                             ],
+                            [
+                                'label' => 'erp推送状态',
+                                'headerOptions' => ['class' => 'col-md-1'],
+                                'filter' => Html::activeDropDownList($searchModel, 'orderSync.sync_created',common\enums\OrderSyncStatusEnum::getMap(), [
+                                    'prompt' => '全部',
+                                    'class' => 'form-control',
+                                ]),
+                                'value' => function ($model) {
+                                    $value = \common\enums\OrderSyncStatusEnum::getValue($model->orderSync->sync_created);
+                                    return $value;
+                                },
+                                'format' => 'raw',
+                            ],
 //                            [
 //                                'label' => '审核状态',
 //                                'headerOptions' => ['class' => 'col-md-1'],
