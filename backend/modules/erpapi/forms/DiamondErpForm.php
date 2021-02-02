@@ -112,7 +112,7 @@ class DiamondErpForm extends Diamond
 
         $this->sale_price = $this->sale_price != 0 ? $this->sale_price : 0.01;
         $this->market_price = $this->market_price != 0 ? $this->market_price : 0.01;
-        $this->cost_price = $this->market_price != 0 ? $this->market_price : 0.01;
+        $this->cost_price = $this->cost_price != 0 ? $this->cost_price : 0.01;
 
         if (empty($this->created_at)) {
             $this->created_at = time();
