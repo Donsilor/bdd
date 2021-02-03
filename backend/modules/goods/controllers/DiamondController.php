@@ -144,6 +144,9 @@ DOM;
                 if($model->status == 1 && $status == 0){
                     $model->onsale_time = time();
                 }
+                if(empty($model->goods_id)) {
+                    $model->goods_id = 0;
+                }
                 if(false === $model->save()){
                     throw new Exception($this->getError($model));
                 }

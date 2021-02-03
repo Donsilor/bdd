@@ -60,6 +60,10 @@ class DiamondController extends BaseController
         $model->setAttributes($param);
         $model->type_id = 15;
 
+        if(empty($model->goods_id)) {
+            $model->goods_id = 0;
+        }
+
         try {
             $trans = Yii::$app->db->beginTransaction();
 
