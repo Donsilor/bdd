@@ -128,12 +128,16 @@ DOM;
     public function actionEditLang()
     {
         $id = Yii::$app->request->get('id');
-        $returnUrl = Yii::$app->request->get('returnUrl',['index']);
         
         $model = $this->findModel($id);
+
         $status = $model ? $model->status:0;
         $old_diamond_info = $model->toArray();
-        if ($model->load(Yii::$app->request->post())) { 
+        $old_diamond_info['langs'] = [];
+        foreach ($model->langs as $lang) {
+            $old_diamond_info['langs'][$lang->id] = $lang->toArray();
+        }
+        if ($model->load(Yii::$app->request->post())) {
             $model->type_id = 15;
             try{
                 $trans = Yii::$app->db->beginTransaction();
@@ -169,7 +173,7 @@ DOM;
             
             return $this->message("保存成功", $this->redirect([$this->action->id,'id'=>$model->id]), 'success');
         }
-        
+
         return $this->render($this->action->id, [
             'model' => $model,
         ]);

@@ -734,7 +734,7 @@ class GoodsService extends Service
                 continue;
 
             $langs[$langModel->id] = $langModel->toArray();
-            $oldLang = $old_goods_info['langs'][$langModel->id];
+            $oldLang = $old_goods_info['langs'][$langModel->id]??[];
 
             $diff_lang = array_diff_assoc($langs[$langModel->id], $oldLang);
 
@@ -742,7 +742,7 @@ class GoodsService extends Service
                 $langAttrLab = $langModel->attributeLabels();
                 $langs_msg .= LanguageEnum::getValue($langModel->language).'：';
                 foreach ($diff_lang as $key => $item) {
-                    $langs_msg .= sprintf('%s："%s" 变更为："%s"；', $langAttrLab[$key], $oldLang[$key], $langs[$langModel->id][$key]);
+                    $langs_msg .= sprintf('%s："%s" 变更为："%s"；', $langAttrLab[$key], $oldLang[$key]??'', $langs[$langModel->id][$key]);
                 }
             }
         }

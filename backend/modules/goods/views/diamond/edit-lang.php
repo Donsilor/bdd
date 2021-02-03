@@ -477,5 +477,23 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php } ?>
     });
 
+    <?php
+        if(!empty($model->user_id)) {
+    ?>
+    $(function() {
+        $("input,select,textarea").attr('disabled', 'true');
+
+        $('input[name="Diamond[sale_price]').removeAttr('disabled');
+        $('input[name="Diamond[status]').removeAttr('disabled');
+        $('input[name="DiamondLang[zh-CN][goods_name]"]').removeAttr('disabled');
+        $('input[name="DiamondLang[zh-TW][goods_name]"]').removeAttr('disabled');
+        $('input[name="DiamondLang[en-US][goods_name]"]').removeAttr('disabled');
+
+        $('input[name^="Diamond[sale_policy]"]').removeAttr('disabled');
+    });
+    <?php
+        }
+    ?>
+
 </script>
 
